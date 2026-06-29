@@ -73,55 +73,132 @@ pub fn parse_environment_variables(input: &str) -> HashMap<String, String> {
 pub fn build_graphics_environment_variables(
   api: &GraphicsApi,
   renderer: &str,
-  mesa_loader_dir: Option<&Path>,
+  _mesa_loader_dir: Option<&Path>,
 ) -> HashMap<String, String> {
   let renderer = renderer.trim().to_ascii_lowercase();
   let mut env = HashMap::new();
 
-  match api {
-    GraphicsApi::Opengl => match renderer.as_str() {
-      "llvmpipe" => {
-        env.insert("__GLX_VENDOR_LIBRARY_NAME".to_string(), "mesa".to_string());
-        env.insert("LIBGL_ALWAYS_SOFTWARE".to_string(), "1".to_string());
-      }
-      "zink" => {
-        env.insert("__GLX_VENDOR_LIBRARY_NAME".to_string(), "mesa".to_string());
-        env.insert(
-          "MESA_LOADER_DRIVER_OVERRIDE".to_string(),
-          "zink".to_string(),
-        );
-        env.insert("LIBGL_KOPPER_DRI2".to_string(), "1".to_string());
-      }
-      "d3d12" => {
-        env.insert("GALLIUM_DRIVER".to_string(), "d3d12".to_string());
-        env.insert(
-          "MESA_LOADER_DRIVER_OVERRIDE".to_string(),
-          "d3d12".to_string(),
-        );
-      }
-      _ => {}
-    },
-    GraphicsApi::Vulkan => {
-      if let Some(icd_name) = mesa_vulkan_icd_name(&renderer) {
-        if let Some(mesa_loader_dir) = mesa_loader_dir {
-          let icd_file = mesa_loader_dir.join(format!("{icd_name}_icd.json"));
-          let icd_file = icd_file.to_string_lossy().to_string();
-          env.insert("VK_ICD_FILENAMES".to_string(), icd_file.clone());
-          env.insert("VK_DRIVER_FILES".to_string(), icd_file);
-          return env;
+  #[cfg(target_os = "windows")]
+  {
+    match api {
+      GraphicsApi::Opengl => match renderer.as_str() {
+        "zink" | "d3d12" => {
+          env.insert("GALLIUM_DRIVER".to_string(), renderer.clone());
+        }
+        _ => {}
+      },
+      GraphicsApi::Vulkan => {
+        if let Some(icd_name) = mesa_vulkan_icd_name(&renderer)
+          && let Some(mesa_loader_dir) = _mesa_loader_dir
+        {
+          set_vulkan_icd_file(
+            &mut env,
+            mesa_loader_dir.join(format!("{icd_name}_icd.json")),
+          );
+        } else if let Some(icd_file) = find_vulkan_icd_file(&renderer) {
+          set_vulkan_icd_file(&mut env, icd_file);
         }
       }
-
-      if let Some(icd_file) = find_vulkan_icd_file(&renderer) {
-        let icd_file = icd_file.to_string_lossy().to_string();
-        env.insert("VK_ICD_FILENAMES".to_string(), icd_file.clone());
-        env.insert("VK_DRIVER_FILES".to_string(), icd_file);
-      }
+      GraphicsApi::Default => {}
     }
-    GraphicsApi::Default => {}
+  }
+
+  #[cfg(any(target_os = "linux", target_os = "freebsd"))]
+  {
+    match api {
+      GraphicsApi::Opengl => match renderer.as_str() {
+        "llvmpipe" => {
+          env.insert("__GLX_VENDOR_LIBRARY_NAME".to_string(), "mesa".to_string());
+          env.insert("LIBGL_ALWAYS_SOFTWARE".to_string(), "1".to_string());
+        }
+        "zink" => {
+          env.insert("__GLX_VENDOR_LIBRARY_NAME".to_string(), "mesa".to_string());
+          env.insert(
+            "MESA_LOADER_DRIVER_OVERRIDE".to_string(),
+            "zink".to_string(),
+          );
+          env.insert("LIBGL_KOPPER_DRI2".to_string(), "1".to_string());
+        }
+        _ => {}
+      },
+      GraphicsApi::Vulkan => {
+        if let Some(icd_file) = find_vulkan_icd_file(&renderer) {
+          set_vulkan_icd_file(&mut env, icd_file);
+        }
+      }
+      GraphicsApi::Default => {}
+    }
+  }
+
+  #[cfg(target_os = "macos")]
+  {
+    if let GraphicsApi::Vulkan = api
+      && renderer != "moltenvk"
+      && let Some(icd_file) = find_vulkan_icd_file(&renderer)
+    {
+      set_vulkan_icd_file(&mut env, icd_file);
+    }
   }
 
   env
+}
+
+pub fn supported_graphics_renderers(api: &GraphicsApi) -> Vec<String> {
+  match api {
+    GraphicsApi::Default => vec!["default".to_string()],
+    GraphicsApi::Opengl => {
+      let renderers = [
+        "default",
+        "llvmpipe",
+        "zink",
+        #[cfg(target_os = "windows")]
+        "d3d12",
+      ];
+
+      renderers.into_iter().map(str::to_string).collect()
+    }
+    GraphicsApi::Vulkan => {
+      let mut renderers = vec!["default"];
+
+      #[cfg(target_os = "windows")]
+      {
+        renderers.extend(["lavapipe", "dozen"]);
+      }
+
+      #[cfg(target_os = "macos")]
+      {
+        renderers.push("moltenvk");
+      }
+
+      for renderer in [
+        "lavapipe",
+        "dozen",
+        "nvidia_vulkan",
+        "nvidia_nvk",
+        "amdvlk",
+        "amd_radv",
+        "intel_vulkan",
+        "intel_anv",
+        "intel_hasvk",
+        "qualcomm",
+        "turnip",
+        "moltenvk",
+        "kosmickrisp",
+        "powervr",
+        "panvk",
+        "v3dv",
+      ] {
+        if renderers.contains(&renderer) {
+          continue;
+        }
+        if find_vulkan_icd_file(renderer).is_some() {
+          renderers.push(renderer);
+        }
+      }
+
+      renderers.into_iter().map(str::to_string).collect()
+    }
+  }
 }
 
 pub fn mesa_driver_name(api: &GraphicsApi, renderer: &str) -> Option<&'static str> {
@@ -142,6 +219,7 @@ pub fn mesa_driver_name(api: &GraphicsApi, renderer: &str) -> Option<&'static st
   }
 }
 
+#[cfg(target_os = "windows")]
 fn mesa_vulkan_icd_name(renderer: &str) -> Option<&'static str> {
   match renderer {
     "lavapipe" => Some("lvp"),
@@ -150,7 +228,7 @@ fn mesa_vulkan_icd_name(renderer: &str) -> Option<&'static str> {
   }
 }
 
-fn find_vulkan_icd_file(renderer: &str) -> Option<PathBuf> {
+pub fn find_vulkan_icd_file(renderer: &str) -> Option<PathBuf> {
   let candidates = match renderer {
     "lavapipe" => &["lvp"][..],
     "dozen" => &["dzn"],
@@ -202,6 +280,22 @@ fn vulkan_icd_dirs() -> Vec<PathBuf> {
   }
 
   dirs
+}
+
+pub fn find_macos_libvulkan() -> Option<PathBuf> {
+  [
+    "/opt/homebrew/lib/libvulkan.1.dylib",
+    "/usr/local/lib/libvulkan.1.dylib",
+  ]
+  .into_iter()
+  .map(PathBuf::from)
+  .find(|path| path.is_file())
+}
+
+fn set_vulkan_icd_file(env: &mut HashMap<String, String>, icd_file: PathBuf) {
+  let icd_file = icd_file.to_string_lossy().to_string();
+  env.insert("VK_ICD_FILENAMES".to_string(), icd_file.clone());
+  env.insert("VK_DRIVER_FILES".to_string(), icd_file);
 }
 
 fn find_icd_file_in_dir(dir: &Path, candidates: &[&str]) -> Option<PathBuf> {

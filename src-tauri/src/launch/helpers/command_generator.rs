@@ -5,6 +5,7 @@ use serde_json::Value;
 use shlex::try_quote;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::borrow::Cow;
+use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -16,10 +17,14 @@ use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
-use crate::launch::helpers::file_validator::{
-  get_nonnative_library_paths, get_windows_mesa_loader_path,
-};
-use crate::launch::helpers::misc::{get_separator, mesa_driver_name, replace_arguments};
+use crate::launch::helpers::file_validator::get_nonnative_library_paths;
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::file_validator::get_windows_mesa_loader_path;
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::misc::mesa_driver_name;
+#[cfg(target_os = "macos")]
+use crate::launch::helpers::misc::{find_macos_libvulkan, find_vulkan_icd_file};
+use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
@@ -288,6 +293,18 @@ pub async fn generate_launch_command(
     }
   }
 
+  #[cfg(target_os = "macos")]
+  if game_config.advanced.graphics.api == GraphicsApi::Vulkan
+    && game_config.advanced.graphics.renderer != "moltenvk"
+    && find_vulkan_icd_file(&game_config.advanced.graphics.renderer).is_some()
+    && let Some(libvulkan_path) = find_macos_libvulkan()
+  {
+    cmd.push(format!(
+      "-Dorg.lwjgl.vulkan.libname={}",
+      libvulkan_path.to_string_lossy()
+    ));
+  }
+
   if !game_config.advanced.workaround.no_jvm_args {
     cmd.push(format!("-Dminecraft.client.jar={}", client_jar_path));
 
@@ -453,6 +470,21 @@ pub async fn generate_launch_command(
   // fullscreen
   if game_config.game_window.resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
+  }
+
+  if game_config.advanced.graphics.api != GraphicsApi::Default
+    && compare_game_versions(app, &selected_instance.version, "26.2-snapshot-2", false).await
+      >= Ordering::Equal
+  {
+    cmd.push("--graphicsBackend".to_string());
+    cmd.push(
+      match game_config.advanced.graphics.api {
+        GraphicsApi::Opengl => "opengl",
+        GraphicsApi::Vulkan => "vulkan",
+        GraphicsApi::Default => unreachable!(),
+      }
+      .to_string(),
+    );
   }
 
   if !game_config

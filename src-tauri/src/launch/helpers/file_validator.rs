@@ -141,6 +141,7 @@ pub fn get_windows_mesa_loader_library(app: &AppHandle) -> SJMCLResult<Option<Li
   )
 }
 
+#[cfg(target_os = "windows")]
 pub fn get_windows_mesa_loader_path(
   app: &AppHandle,
   library_path: &Path,

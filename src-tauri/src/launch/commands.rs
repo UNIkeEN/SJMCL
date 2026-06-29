@@ -29,13 +29,16 @@ use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
 use crate::launch::helpers::misc::{
   build_graphics_environment_variables, get_separator, parse_environment_variables,
+  supported_graphics_renderers,
 };
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
 };
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
-use crate::launcher_config::models::{FileValidatePolicy, LauncherConfig, LauncherVisiablity};
+use crate::launcher_config::models::{
+  FileValidatePolicy, GraphicsApi, LauncherConfig, LauncherVisiablity,
+};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
@@ -392,6 +395,17 @@ pub async fn launch_game(
   }
 
   Ok(())
+}
+
+#[tauri::command]
+pub fn retrieve_supported_graphics_renderers(api: String) -> SJMCLResult<Vec<String>> {
+  let api = match api.trim().to_ascii_lowercase().as_str() {
+    "opengl" => GraphicsApi::Opengl,
+    "vulkan" => GraphicsApi::Vulkan,
+    _ => GraphicsApi::Default,
+  };
+
+  Ok(supported_graphics_renderers(&api))
 }
 
 #[tauri::command]

@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
@@ -23,6 +23,7 @@ import {
 import { Section } from "@/components/common/section";
 import { GameSettingsGroupsProps } from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
+import { LaunchService } from "@/services/launch";
 
 const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   gameConfig,
@@ -62,42 +63,47 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   ];
 
   const graphicsApis = ["default", "opengl", "vulkan"];
-  const openglRenderers = [
-    "default",
-    "llvmpipe",
-    "zink",
-    ...(config.basicInfo.platform === "windows" ? ["d3d12"] : []),
-  ];
-  const vulkanRenderers = [
-    "default",
-    "lavapipe",
-    ...(config.basicInfo.platform === "windows" ? ["dozen"] : []),
-    "nvidia_vulkan",
-    "nvidia_nvk",
-    "amdvlk",
-    "amd_radv",
-    "intel_vulkan",
-    "intel_anv",
-    "intel_hasvk",
-    "qualcomm",
-    "turnip",
-    "moltenvk",
-    "kosmickrisp",
-    "powervr",
-    "panvk",
-    "v3dv",
-  ];
-  const rendererOptions =
-    gameConfig.advanced.graphics.api === "opengl"
-      ? openglRenderers
-      : gameConfig.advanced.graphics.api === "vulkan"
-        ? vulkanRenderers
-        : ["default"];
+  const [supportedRenderers, setSupportedRenderers] = useState<string[] | null>(
+    null
+  );
+  const rendererOptions = supportedRenderers ?? ["default"];
 
   const gameFileValidatePolicies = ["disable", "normal", "full"];
-  const updateGameAdvancedConfig = (key: string, value: any) => {
-    updateGameConfig(`advanced.${key}`, value);
-  };
+  const updateGameAdvancedConfig = useCallback(
+    (key: string, value: any) => {
+      updateGameConfig(`advanced.${key}`, value);
+    },
+    [updateGameConfig]
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    setSupportedRenderers(null);
+    LaunchService.retrieveSupportedGraphicsRenderers(
+      gameConfig.advanced.graphics.api
+    ).then((res) => {
+      if (cancelled) return;
+      setSupportedRenderers(
+        res.status === "success" && res.data.length > 0 ? res.data : ["default"]
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gameConfig.advanced.graphics.api]);
+
+  useEffect(() => {
+    if (supportedRenderers === null) return;
+    if (!supportedRenderers.includes(gameConfig.advanced.graphics.renderer)) {
+      updateGameAdvancedConfig("graphics.renderer", "default");
+    }
+  }, [
+    supportedRenderers,
+    gameConfig.advanced.graphics.renderer,
+    updateGameAdvancedConfig,
+  ]);
 
   const handleSelectAuthlibJar = async () => {
     const selected = await open({
