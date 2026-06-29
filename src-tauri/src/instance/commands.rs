@@ -1,9 +1,26 @@
-use super::helpers::loader::fabric::remove_fabric_api_mods;
-use crate::error::SJMCLResult;
+use futures::{StreamExt, TryStreamExt};
+use lazy_static::lazy_static;
+use regex::{Regex, RegexBuilder};
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::partial::{PartialError, PartialUpdate};
+use sjmcl_types::storage::{Storage, load_json_async, save_json_async};
+use std::collections::HashMap;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
+use std::time::SystemTime;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use tokio;
+use tokio::sync::Semaphore;
+use url::Url;
+use zip::read::ZipArchive;
+
 use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
+use crate::instance::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::loader::optifine::{
   download_optifine_installer, finish_optifine_install,
@@ -25,7 +42,7 @@ use crate::instance::helpers::mods::common::{
 use crate::instance::helpers::mods::translation::{
   LocalModTranslationEntry, LocalModTranslationsCache, add_local_mod_translations,
 };
-use crate::instance::helpers::options_txt::get_zh_hans_lang_tag;
+use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
 };
@@ -47,34 +64,18 @@ use crate::launch::models::LaunchError;
 use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
-use crate::partial::{PartialError, PartialUpdate};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
 };
-use crate::storage::{Storage, load_json_async, save_json_async};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::{
-  copy_whole_dir, create_url_shortcut, generate_unique_filename, get_files_with_regex,
-  get_subdirectories, normalize_relative_path,
+  RemoveDirGuard, copy_whole_dir, create_url_shortcut, generate_unique_filename,
+  get_files_with_regex, get_subdirectories, normalize_relative_path,
 };
 use crate::utils::image::ImageWrapper;
-use futures::{StreamExt, TryStreamExt};
-use lazy_static::lazy_static;
-use regex::{Regex, RegexBuilder};
-use std::collections::HashMap;
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
-use std::time::SystemTime;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use tokio;
-use tokio::sync::Semaphore;
-use url::Url;
-use zip::read::ZipArchive;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
@@ -410,7 +411,7 @@ pub async fn copy_resources_to_instances(
     };
 
   futures::stream::iter(entries)
-    .map(Ok::<_, crate::error::SJMCLError>)
+    .map(Ok::<_, sjmcl_types::error::SJMCLError>)
     .try_for_each_concurrent(None, move |(src_path, tgt_path)| {
       let semaphore = semaphore.clone();
 
@@ -427,7 +428,7 @@ pub async fn copy_resources_to_instances(
         .await
         .map_err(|_| InstanceError::FileCopyFailed)??;
 
-        Ok::<(), crate::error::SJMCLError>(())
+        Ok::<(), sjmcl_types::error::SJMCLError>(())
       }
     })
     .await?;
@@ -1036,8 +1037,8 @@ pub async fn create_instance(
   mod_loader: ModLoaderResourceInfo,
   optifine: Option<OptiFineResourceInfo>,
   modpack_path: Option<String>,
-  is_install_fabric_api: Option<bool>,
-  is_install_qf_api: Option<bool>,
+  mut is_install_fabric_api: Option<bool>,
+  mut is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -1055,6 +1056,10 @@ pub async fn create_instance(
   if version_path.exists() {
     return Err(InstanceError::ConflictNameError.into());
   }
+
+  // Guard removes version_path on any early return (errors), fix #1105 #1310
+  let dir_guard = RemoveDirGuard::new(version_path.clone());
+
   let optifine_info = optifine.as_ref().map(|info| OptiFine {
     filename: info.filename.clone(),
     version: format!("{}_{}", info.r#type, info.patch),
@@ -1171,6 +1176,13 @@ pub async fn create_instance(
   task_params
     .extend(get_invalid_assets(&app, &version_info, priority_list[0], assets_dir, false).await?);
 
+  // When installing a modpack, skip auto-installing Fabric API / QFAPI to avoid
+  // duplicates — the modpack manifest already specifies the exact version needed.
+  if modpack_path.is_some() {
+    is_install_fabric_api = Some(false);
+    is_install_qf_api = Some(false);
+  }
+
   // download loader (installer)
   if instance.mod_loader.loader_type != ModLoaderType::Unknown {
     install_mod_loader(
@@ -1217,7 +1229,7 @@ pub async fn create_instance(
   )
   .await?;
 
-  // Optionally skip first-screen options by adding options.txt (available for zh-Hans only)
+  // Optionally skip first-screen options by adding options.txt.
   let (language, skip_first_screen_options) = {
     let launcher_config = launcher_config_state.lock()?;
     (
@@ -1228,9 +1240,8 @@ pub async fn create_instance(
         .skip_first_screen_options,
     )
   };
-  if language == "zh-Hans"
-    && skip_first_screen_options
-    && let Some(lang_code) = get_zh_hans_lang_tag(&instance.version, &app).await
+  if skip_first_screen_options
+    && let Some(lang_code) = get_minecraft_lang_tag(&language, &instance.version, &app)
   {
     let options_path = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
       .ok_or(InstanceError::InstanceNotFoundByID)?[0]
@@ -1249,6 +1260,7 @@ pub async fn create_instance(
     .await
     .map_err(|_| InstanceError::FileCreationFailed)?;
 
+  dir_guard.commit();
   Ok(())
 }
 

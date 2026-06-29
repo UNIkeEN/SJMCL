@@ -1,16 +1,5 @@
 pub mod misc;
 
-use crate::error::SJMCLResult;
-use crate::resource::helpers::misc::{
-  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
-  levenshtein_distance, sort_localized_search_results,
-};
-use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
-use crate::resource::models::{
-  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
-  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
-  OtherResourceVersionPackQuery, ResourceError,
-};
 use hex;
 use misc::{
   CurseForgeFileInfo, CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
@@ -21,9 +10,21 @@ use misc::{
 use murmur2::murmur2;
 use serde_json::json;
 use sha1::{Digest, Sha1};
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::resource::helpers::misc::{
+  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
+  levenshtein_distance, sort_localized_search_results,
+};
+use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
+use crate::resource::models::{
+  OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
+  OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
+  OtherResourceVersionPackQuery, ResourceError,
+};
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";

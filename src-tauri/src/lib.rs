@@ -1,14 +1,11 @@
 mod account;
 mod discover;
-mod error;
 mod extension;
 mod instance;
 mod intelligence;
 mod launch;
 mod launcher_config;
-mod partial;
 mod resource;
-mod storage;
 mod tasks;
 mod utils;
 
@@ -23,15 +20,15 @@ use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::misc::ResourceDescriptionTranslationsCache;
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
+use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
-use storage::Storage;
 use tasks::monitor::TaskMonitor;
+use tauri::Manager;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
-use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
 
@@ -187,6 +184,7 @@ pub async fn run() {
         tasks::commands::resume_progressive_task_group,
         tasks::commands::delete_progressive_task_group,
         utils::commands::retrieve_memory_info,
+        utils::commands::retrieve_resolution_upbound,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
         utils::commands::extract_filename,

@@ -1,6 +1,16 @@
 name: Publish Winget Manifest
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to read assets from. Defaults to v<version>."
+        required: false
+        type: string
   workflow_call:
     inputs:
       version:
@@ -33,7 +43,7 @@ jobs:
         env:
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
           VERSION: ${{ inputs.version }}
         run: |
           get_asset_digest() {
@@ -81,7 +91,7 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ inputs.version }}
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
         run: |
           OUTPUT_DIR="winget-manifests/manifests/s/SJMC/SJMCL/${VERSION}"
           mkdir -p "$OUTPUT_DIR"
@@ -163,20 +173,20 @@ jobs:
 
           git -C winget-pkgs remote add upstream https://github.com/microsoft/winget-pkgs.git
           git -C winget-pkgs fetch upstream master
-          git -C winget-pkgs fetch origin "$BRANCH_NAME" || true
           git -C winget-pkgs checkout -B "$BRANCH_NAME" upstream/master
 
           mkdir -p "winget-pkgs/${MANIFEST_DIR}"
           cp winget-manifests/manifests/s/SJMC/SJMCL/${VERSION}/* "winget-pkgs/${MANIFEST_DIR}/"
 
-          if git -C winget-pkgs diff --quiet -- "$MANIFEST_DIR"; then
+          git -C winget-pkgs add "$MANIFEST_DIR"
+
+          if git -C winget-pkgs diff --cached --quiet -- "$MANIFEST_DIR"; then
             echo "No Winget manifest changes to submit."
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          git -C winget-pkgs add "$MANIFEST_DIR"
           git -C winget-pkgs commit -m "Add SJMC.SJMCL version ${VERSION}"
           git -C winget-pkgs push --force-with-lease origin "$BRANCH_NAME"
 
@@ -208,5 +218,4 @@ jobs:
             --base master \
             --head "SJMC-Dev-Bot:${BRANCH_NAME}" \
             --title "New version: SJMC.SJMCL version ${VERSION}" \
-            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in ${{ github.repository }}" \
-            --label Windows-Package-Manager-Manifest
+            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in ${{ github.repository }}"

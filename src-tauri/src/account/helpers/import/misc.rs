@@ -1,9 +1,10 @@
-use crate::EXE_DIR;
-use crate::launcher_config::models::LauncherConfig;
 use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+
+use crate::EXE_DIR;
+use crate::launcher_config::models::LauncherConfig;
 
 pub const ACCESS_TOKEN_EXPIRED: &str = "%failed:access_token_expired%";
 

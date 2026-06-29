@@ -1,16 +1,17 @@
-use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
-use crate::launcher_config::migrations::{deserialize_background, deserialize_discover_sources};
-use crate::partial::PartialUpdate;
-use crate::storage::Storage;
-use crate::utils::string::snake_to_camel_case;
-use crate::utils::sys_info;
-use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
-use partial_derive::Partial;
 use serde::{Deserialize, Serialize};
+use sjmcl_macros::Partial;
+use sjmcl_types::partial::PartialUpdate;
+use sjmcl_types::storage::Storage;
 use smart_default::SmartDefault;
 use std::path::PathBuf;
 use strum_macros::Display;
 use tauri::{AppHandle, Emitter};
+
+use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
+use crate::launcher_config::migrations::{deserialize_background, deserialize_discover_sources};
+use crate::utils::string::snake_to_camel_case;
+use crate::utils::sys_info;
+use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -155,6 +156,10 @@ structstruck::strike! {
         pub dont_patch_natives: bool,
         #[default = true]
         pub use_lwjgl_unsafe_agent: bool,
+        pub use_custom_authlib_injector: struct {
+          pub enabled: bool,
+          pub path: String,
+        },
         pub use_native_glfw: bool,
         pub use_native_openal: bool,
       },
@@ -219,6 +224,8 @@ structstruck::strike! {
       pub font: struct {
         #[default = "%built-in"]
         pub font_family: String,
+        #[default = "%built-in"]
+        pub log_font_family: String,
         #[default = 100]
         pub font_size: usize, // as percent
       },
@@ -282,7 +289,7 @@ structstruck::strike! {
         #[default = true]
         pub translated_filename_prefix: bool, // only available in zh-Hans
         #[default = true]
-        pub skip_first_screen_options: bool,  // only available in zh-Hans
+        pub skip_first_screen_options: bool,
       },
       pub advanced: struct GeneralConfigAdvanced {
         #[default = true]

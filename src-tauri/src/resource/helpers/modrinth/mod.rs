@@ -1,6 +1,18 @@
 pub mod misc;
 
-use crate::error::SJMCLResult;
+use hex;
+use misc::{
+  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
+  map_modrinth_file_to_version_pack,
+};
+use sha1::{Digest, Sha1};
+use sjmcl_types::error::SJMCLResult;
+use std::collections::HashMap;
+use std::path::PathBuf;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use url::Url;
+
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::{
   apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
@@ -13,17 +25,6 @@ use crate::resource::models::{
   OtherResourceVersionPackQuery, ResourceError,
 };
 use crate::tasks::download::DownloadParam;
-use hex;
-use misc::{
-  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
-  map_modrinth_file_to_version_pack,
-};
-use sha1::{Digest, Sha1};
-use std::collections::HashMap;
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use url::Url;
 
 const ALL_FILTER: &str = "All";
 

@@ -48,6 +48,10 @@ export interface GameConfig {
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useLwjglUnsafeAgent: boolean;
+      useCustomAuthlibInjector: {
+        enabled: boolean;
+        path: string;
+      };
       useNativeGlfw: boolean;
       useNativeOpenal: boolean;
     };
@@ -84,6 +88,7 @@ export interface LauncherConfig {
     };
     font: {
       fontFamily: string;
+      logFontFamily: string;
       fontSize: number;
     };
     background: {
@@ -228,6 +233,10 @@ export const defaultGameConfig: GameConfig = {
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useLwjglUnsafeAgent: true,
+      useCustomAuthlibInjector: {
+        enabled: false,
+        path: "",
+      },
       useNativeGlfw: false,
       useNativeOpenal: false,
     },
@@ -260,6 +269,7 @@ export const defaultConfig: LauncherConfig = {
     font: {
       fontFamily: "%built-in",
       fontSize: 100,
+      logFontFamily: "%built-in",
     },
     background: {
       choice: "%built-in:Florwyn",

@@ -1,16 +1,6 @@
 use crate::APP_DATA_DIR;
-use crate::error::SJMCLResult;
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
-use crate::resource::helpers::mod_db::ModDataBase;
-use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
-use crate::resource::models::{
-  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
-  SourceType,
-};
-use crate::storage::Storage;
-use futures::StreamExt;
-use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -19,6 +9,17 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use strum::IntoEnumIterator;
 use tauri::{AppHandle, Manager};
 use url::Url;
+
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
+use crate::resource::helpers::mod_db::ModDataBase;
+use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
+use crate::resource::models::{
+  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
+  SourceType,
+};
+use futures::StreamExt;
+use serde::{Deserialize, Serialize};
 
 const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME: &str =
   "resource_description_translations.json";

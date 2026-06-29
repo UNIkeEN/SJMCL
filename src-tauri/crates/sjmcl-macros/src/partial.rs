@@ -2,13 +2,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::DeriveInput;
 
-#[proc_macro_derive(Partial)]
-pub fn derive_partial(input: TokenStream) -> TokenStream {
-  let derived_input = syn::parse_macro_input!(input as DeriveInput);
-  derive_partial_traits(&derived_input)
-}
-
-fn derive_partial_traits(input: &syn::DeriveInput) -> TokenStream {
+pub(crate) fn derive_partial_impl(input: &DeriveInput) -> TokenStream {
   let ident = &input.ident;
   let fields = match &input.data {
     syn::Data::Struct(data) => &data.fields,
@@ -32,32 +26,32 @@ fn derive_partial_traits(input: &syn::DeriveInput) -> TokenStream {
   });
 
   let expanded = quote! {
-      impl crate::partial::PartialAccess<'_> for #ident {
-          fn access(&self, path: &str) -> crate::partial::PartialResult<String> {
+      impl ::sjmcl_types::partial::PartialAccess<'_> for #ident {
+          fn access(&self, path: &str) -> ::sjmcl_types::partial::PartialResult<String> {
               if path.is_empty() {
                   Ok(serde_json::to_string(self).unwrap())
               } else {
                   let (field, rest) = path.split_once('.').unwrap_or((path, ""));
                   match field {
                       #(#access_match_arms)*
-                      _ => Err(crate::partial::PartialError::NotFound),
+                      _ => Err(::sjmcl_types::partial::PartialError::NotFound),
                   }
               }
           }
       }
 
-      impl crate::partial::PartialUpdate<'_> for #ident {
-          fn update (&mut self, path: &str, value: &str) -> crate::partial::PartialResult<()> {
+      impl ::sjmcl_types::partial::PartialUpdate<'_> for #ident {
+          fn update (&mut self, path: &str, value: &str) -> ::sjmcl_types::partial::PartialResult<()> {
               if path.is_empty() {
                   match serde_json::from_str::<Self>(value) {
                       Ok(value) => {*self = value; Ok(())},
-                      Err(_) => Err(crate::partial::PartialError::InvalidType),
+                      Err(_) => Err(::sjmcl_types::partial::PartialError::InvalidType),
                   }
               } else {
                   let (field, rest) = path.split_once('.').unwrap_or((path, ""));
                   match field {
                       #(#update_match_arms)*
-                      _ => Err(crate::partial::PartialError::NotFound),
+                      _ => Err(::sjmcl_types::partial::PartialError::NotFound),
                   }
               }
           }

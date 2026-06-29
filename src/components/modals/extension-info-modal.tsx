@@ -47,7 +47,11 @@ const ExtensionInfoModal: React.FC<ExtensionInfoModalProps> = ({
   );
 
   return (
-    <Modal size={{ base: "md", lg: "lg", xl: "xl" }} {...modalProps}>
+    <Modal
+      size={{ base: "md", lg: "lg", xl: "xl" }}
+      returnFocusOnClose={false}
+      {...modalProps}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />

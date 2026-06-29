@@ -1,4 +1,12 @@
-use crate::error::SJMCLResult;
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
+use std::fs;
+use std::fs::File;
+use std::path::Path;
+use tauri::AppHandle;
+use zip::ZipArchive;
+
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
@@ -6,13 +14,6 @@ use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::commands::fetch_mod_loader_version_list;
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
-use std::fs;
-use std::fs::File;
-use std::path::Path;
-use tauri::AppHandle;
-use zip::ZipArchive;
 
 #[async_trait]
 pub trait ModpackManifest {

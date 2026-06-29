@@ -9,9 +9,11 @@ on:
       version:
         description: "Version to publish"
         required: true
+        type: string
       release_tag:
-        description: "Release tag to download assets from"
-        required: true
+        description: "Release tag to download assets from. Defaults to v<version>."
+        required: false
+        type: string
   workflow_call:
     inputs:
       version:
@@ -42,10 +44,11 @@ jobs:
         env:
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
         run: |
           get_asset_digest() {
             local asset_name="$1"
-            gh api "repos/${GH_REPO}/releases/tags/${{ inputs.release_tag }}" \
+            gh api "repos/${GH_REPO}/releases/tags/${RELEASE_TAG}" \
               --jq ".assets[] | select(.name == \"${asset_name}\") | .digest"
           }
 

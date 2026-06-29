@@ -1,6 +1,7 @@
 use reqwest::redirect::Policy;
 use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Read;
@@ -10,7 +11,6 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::{LaunchArgumentTemplate, LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;

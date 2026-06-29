@@ -1,10 +1,11 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::launcher_config::models::MemoryInfo;
 use serde_json::json;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::net::{SocketAddr, TcpListener};
 use systemstat::{Platform, saturating_sub_bytes};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_os::locale;
+
+use crate::launcher_config::models::MemoryInfo;
 
 /// Sends app version, OS type and self SHA-256 as statistic data to SJMC asynchronously.
 ///
@@ -43,6 +44,7 @@ pub fn get_mapped_locale() -> String {
   #[cfg(target_os = "macos")]
   {
     let language_map = [
+      ("es", vec!["es"]),
       ("fr", vec!["fr"]),
       ("ja", vec!["ja"]),
       ("zh-Hans", vec!["zh-Hans", "wuu-Hans", "yue-Hans"]),
@@ -58,6 +60,7 @@ pub fn get_mapped_locale() -> String {
   #[cfg(not(target_os = "macos"))]
   {
     let language_map = [
+      ("es", vec!["es"]),
       ("fr", vec!["fr"]),
       ("ja", vec!["ja"]),
       ("zh-Hans", vec!["zh-CN", "zh-SG"]),

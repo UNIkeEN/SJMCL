@@ -1095,12 +1095,14 @@ const ActiveExtensionHostContextProvider: React.FC<{
           UtilsService.deleteDirectory
         );
       },
+      toast,
       logger,
       reloadSelf: () => reloadExtension(extension.identifier),
       updateSelf: async (src: string, newVersion: string) =>
         await scheduleExtensionUpdate(extension, src, newVersion),
     }),
     [
+      toast,
       invoke,
       navigate,
       openExternalLink,

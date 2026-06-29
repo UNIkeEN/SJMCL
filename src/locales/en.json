@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Provides Simplified Chinese translations for mod information"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"
@@ -112,12 +116,6 @@
         "title": "Download Game Server",
         "description": "Download game server files for different versions"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Import Modpack",
-      "desc": "Import modpack file {{fileName}} to SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "Font Family",
           "default": "Default"
         },
+        "logFontFamily": {
+          "title": "Log Font"
+        },
         "fontSize": {
           "title": "Font Size",
           "small": "T",
@@ -463,8 +464,8 @@
       "title": "Delete Game Instance",
       "content": "Confirm delete the game instance \"{{instanceName}}\" ? It will be lost forever! (A long time!)",
       "warning": {
-        "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
-        "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+        "withVerIso": "Please note that since instance isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if instance isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
       }
     }
   },
@@ -596,7 +597,8 @@
       "headExtra": "Restart Required",
       "settings": {
         "enabled": {
-          "title": "Enable Proxy"
+          "title": "Enable Proxy",
+          "description": "When disabled, the launcher will use the system proxy automatically"
         },
         "type": {
           "title": "Proxy Type"
@@ -621,6 +623,13 @@
       "alpha": "Alpha",
       "beta": "Beta",
       "release": "Release"
+    },
+    "button": {
+      "cancel": "Cancel",
+      "download": "Download",
+      "installToInstance": "Install to Instance",
+      "installToCurrentInstance": "Install to Current Instance",
+      "install": "Install"
     }
   },
   "DownloadTasksPage": {
@@ -649,6 +658,7 @@
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
       "modpack": "Modpack",
+      "modpack-wo-install": "Modpack",
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
@@ -928,7 +938,10 @@
           "title": "Game File Validation Policy",
           "disable": "Disable Check",
           "normal": "Normal Check",
-          "full": "Full Check"
+          "full": "Full Check",
+          "disableDesc": "",
+          "normalDesc": "Check if files exist, auto-download missing ones",
+          "fullDesc": "Check file SHA1 integrity, auto-download missing ones (takes longer)"
         },
         "dontCheckJvmValidity": {
           "title": "Do not check Java VM compatibility"
@@ -937,8 +950,15 @@
           "title": "Do not attempt to automatically replace native libraries"
         },
         "useLwjglUnsafeAgent": {
-          "title": "Enable LWJGL Unsafe Agent",
+          "title": "Use LWJGL Unsafe Agent",
           "description": "Automatically use HMCL's <hmcl>LWJGL Unsafe Agent</hmcl> on affected Minecraft versions to fix performance issues."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Use Custom Authlib Injector",
+          "description": {
+            "notSet": "No custom path set, will use the built-in version"
+          },
+          "select": "Modify"
         },
         "useNativeGlfw": {
           "title": "Use System GLFW(Linux Only)"
@@ -1133,8 +1153,8 @@
           "description": "%only available in zh-Hans"
         },
         "skipFirstScreenOptions": {
-          "title": "Skip First Launch Screen Options",
-          "description": "%only available in zh-Hans"
+          "title": "Automatically Set Instance Language",
+          "description": "When enabled, new instances will follow the launcher language and skip the in-game accessibility setup screen."
         }
       }
     },
@@ -1232,14 +1252,16 @@
       "settings": {
         "resolution": {
           "title": "Game Resolution",
-          "switch": "Fullscreen"
+          "preset": "Preset",
+          "switch": "Fullscreen",
+          "warning": "Resolution may exceed monitor limit"
         },
         "customTitle": {
           "title": "Custom Window Title"
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page (only effective for Minecraft versions before 26.1)."
         }
       }
     },
@@ -1268,7 +1290,7 @@
     },
     "versionIsolation": {
       "settings": {
-        "title": "Enable Version Isolation"
+        "title": "Enable Instance Isolation"
       }
     },
     "moreOptions": {
@@ -1354,6 +1376,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Discover the world's largest Minecraft mod repository"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "An open-source, modern Minecraft resource platform"
         }
       }
     },
@@ -1383,8 +1409,14 @@
     "header": {
       "title": "Import Players and Auth Servers"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1630,6 +1662,17 @@
       "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "",
+      "es": "Spanish",
+      "fr": "French",
+      "ja": "Japanese",
+      "lzh": "Literary Chinese",
+      "zh-Hans": "Simplified Chinese",
+      "zh-Hant": "Traditional Chinese"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "Previous Run Exited Abnormally",
@@ -1677,6 +1720,12 @@
     "notCompatibleWith": "Not compatible with {{item}}",
     "noVersionSelected": "No version selected"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Import Modpack",
+      "desc": "Import modpack file {{fileName}} to SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "This page is provided by extension {{name}}"
   },
@@ -1685,7 +1734,7 @@
     "default": "Default",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "Upload",
+    "upload": "Choose Local Skin",
     "skin": "Skin",
     "cape": "Cape",
     "model": {
