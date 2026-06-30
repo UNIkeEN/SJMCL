@@ -259,6 +259,7 @@ try {
     // Installed (NSIS): run the downloaded installer directly.
     if restart {
       let _ = Command::new(&downloaded_path)
+        .args(["/UPDATE", "/P"])
         .creation_flags(0x08000000)
         .spawn()?;
       app.exit(0);
