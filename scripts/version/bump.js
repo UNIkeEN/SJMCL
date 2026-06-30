@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { spawnSync } = require("child_process");
+const { execSync } = require("child_process");
 
 const newVersion = process.argv[3];
 
@@ -35,13 +35,10 @@ console.log(`✅ Updated all version numbers to ${newVersion}`);
 // Sync pnpm-lock.yaml with package.json
 console.log("\n🔄 Syncing pnpm-lock.yaml with package.json...");
 try {
-  const result = spawnSync("pnpm", ["install", "--lockfile-only"], {
+  execSync("pnpm install --lockfile-only", {
     stdio: "inherit",
     cwd: path.join(__dirname, "../../"),
   });
-  if (result.status !== 0) {
-    throw new Error(`pnpm install failed with exit code ${result.status}`);
-  }
   console.log("✅ pnpm-lock.yaml synced successfully!");
 } catch (error) {
   console.error("❌ Failed to sync pnpm-lock.yaml:", error.message);
