@@ -83,6 +83,15 @@ pub enum GarbageCollector {
   Auto,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum GraphicsApi {
+  Opengl,
+  Vulkan,
+  #[serde(other)]
+  Default,
+}
+
 // Partial Derive is used for these structs and we can use it for key value storage.
 // And partially update some fields for better performance and hygiene.
 //
@@ -135,6 +144,12 @@ structstruck::strike! {
       pub enabled: bool,
     },
     pub advanced: struct {
+      pub graphics: struct {
+        #[default(GraphicsApi::Default)]
+        pub api: GraphicsApi,
+        #[default = "default"]
+        pub renderer: String,
+      },
       pub custom_commands: struct {
         pub minecraft_argument: String,
         pub precall_command: String,

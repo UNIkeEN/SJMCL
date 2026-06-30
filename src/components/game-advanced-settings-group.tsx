@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
@@ -23,6 +23,7 @@ import {
 import { Section } from "@/components/common/section";
 import { GameSettingsGroupsProps } from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
+import { LaunchService } from "@/services/launch";
 
 const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   gameConfig,
@@ -61,10 +62,48 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     "serial",
   ];
 
+  const graphicsApis = ["default", "opengl", "vulkan"];
+  const [supportedRenderers, setSupportedRenderers] = useState<string[] | null>(
+    null
+  );
+  const rendererOptions = supportedRenderers ?? ["default"];
+
   const gameFileValidatePolicies = ["disable", "normal", "full"];
-  const updateGameAdvancedConfig = (key: string, value: any) => {
-    updateGameConfig(`advanced.${key}`, value);
-  };
+  const updateGameAdvancedConfig = useCallback(
+    (key: string, value: any) => {
+      updateGameConfig(`advanced.${key}`, value);
+    },
+    [updateGameConfig]
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    setSupportedRenderers(null);
+    LaunchService.retrieveSupportedGraphicsRenderers(
+      gameConfig.advanced.graphics.api
+    ).then((res) => {
+      if (cancelled) return;
+      setSupportedRenderers(
+        res.status === "success" && res.data.length > 0 ? res.data : ["default"]
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gameConfig.advanced.graphics.api]);
+
+  useEffect(() => {
+    if (supportedRenderers === null) return;
+    if (!supportedRenderers.includes(gameConfig.advanced.graphics.renderer)) {
+      updateGameAdvancedConfig("graphics.renderer", "default");
+    }
+  }, [
+    supportedRenderers,
+    gameConfig.advanced.graphics.renderer,
+    updateGameAdvancedConfig,
+  ]);
 
   const handleSelectAuthlibJar = async () => {
     const selected = await open({
@@ -175,6 +214,59 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               placeholder={t(
                 "GameAdvancedSettingsPage.customCommands.settings.postExitCommand.placeholder"
               )}
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: t("GameAdvancedSettingsPage.graphics.title"),
+      items: [
+        {
+          title: t("GameAdvancedSettingsPage.graphics.settings.api.title"),
+          description: t(
+            `GameAdvancedSettingsPage.graphics.settings.api.${gameConfig.advanced.graphics.api}.desc`
+          ),
+          children: (
+            <MenuSelector
+              options={graphicsApis.map((value) => ({
+                value,
+                label: t(
+                  `GameAdvancedSettingsPage.graphics.settings.api.${value}.label`
+                ),
+              }))}
+              value={gameConfig.advanced.graphics.api}
+              onSelect={(val) => {
+                updateGameAdvancedConfig("graphics.api", val);
+                updateGameAdvancedConfig("graphics.renderer", "default");
+              }}
+            />
+          ),
+        },
+        {
+          title: t("GameAdvancedSettingsPage.graphics.settings.renderer.title"),
+          description: t(
+            `GameAdvancedSettingsPage.graphics.settings.renderer.${gameConfig.advanced.graphics.renderer}.desc`,
+            { defaultValue: "" }
+          ),
+          children: (
+            <MenuSelector
+              disabled={gameConfig.advanced.graphics.api === "default"}
+              options={rendererOptions.map((value) => ({
+                value,
+                label: t(
+                  `GameAdvancedSettingsPage.graphics.settings.renderer.${value}.label`
+                ),
+              }))}
+              value={
+                rendererOptions.includes(gameConfig.advanced.graphics.renderer)
+                  ? gameConfig.advanced.graphics.renderer
+                  : "default"
+              }
+              onSelect={(val) => {
+                updateGameAdvancedConfig("graphics.renderer", val);
+              }}
+              menuListProps={{ maxH: 72, overflowY: "auto" }}
             />
           ),
         },
