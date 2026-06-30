@@ -71,17 +71,6 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.26.1
-          run_install: false
-
       - name: Download macOS artifacts
         uses: actions/download-artifact@v4
         with:
@@ -113,10 +102,7 @@ jobs:
 
       - name: Install appdmg
         run: |
-          echo "PNPM_HOME=${HOME}/.local/share/pnpm" >> "$GITHUB_ENV"
-          echo "${HOME}/.local/share/pnpm" >> "$GITHUB_PATH"
-          pnpm add -g appdmg
-          appdmg --version
+          npm install -g appdmg
 
       - name: Extract and sign .app
         env:
