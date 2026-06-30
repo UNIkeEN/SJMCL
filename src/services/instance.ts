@@ -500,17 +500,32 @@ export class InstanceService {
   @responseHandler("instance")
   static async changeModLoader(
     instanceId: string,
-    newModLoader?: ModLoaderResourceInfo | null,
-    newOptifine?: OptiFineResourceInfo | null,
+    newModLoader: ModLoaderResourceInfo,
     isInstallFabricApi?: boolean,
     isInstallQfApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
-      newModLoader: newModLoader ?? null,
-      newOptifine: newOptifine ?? null,
+      newModLoader,
       isInstallFabricApi,
       isInstallQfApi,
+    });
+  }
+
+  /**
+   * CHANGE the OptiFine version for a given instance.
+   * @param {string} instanceId - The ID of the instance to update.
+   * @param {OptiFineResourceInfo} newOptifine - The new OptiFine information.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async changeOptiFine(
+    instanceId: string,
+    newOptifine: OptiFineResourceInfo
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("change_optifine", {
+      instanceId,
+      newOptifine,
     });
   }
 

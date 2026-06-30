@@ -2860,6 +2860,11 @@
           }
         }
       },
+      "changeOptiFine": {
+        "error": {
+          "title": "OptiFine の変更に失敗"
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "モッドパックリソース情報の取得に失敗",
