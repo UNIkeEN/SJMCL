@@ -567,16 +567,16 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   (t) => t.taskGroup === payload.taskGroup
                 );
                 if (group && group.taskDescs.length > 0) {
-                  const isMSI =
+                  const isInstaller =
                     config.basicInfo.osType === "windows" &&
                     !config.basicInfo.isPortable;
                   openGenericConfirmDialog({
                     title: t("RestartForUpdateConfirmDialog.title"),
                     body: t(
-                      `RestartForUpdateConfirmDialog.${isMSI ? "bodyMSI" : "body"}`
+                      `RestartForUpdateConfirmDialog.${isInstaller ? "bodyInstaller" : "body"}`
                     ),
                     btnOK: t(
-                      `RestartForUpdateConfirmDialog.button.${isMSI ? "install" : "restart"}`
+                      `RestartForUpdateConfirmDialog.button.${isInstaller ? "install" : "restart"}`
                     ),
                     btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
                     onOKCallback: () => {

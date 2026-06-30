@@ -2151,7 +2151,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "啟動器更新",
     "body": "新版本已完成下載，重新開啟 SJMCL 以完成更新",
-    "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
+    "bodyInstaller": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
     "button": {
       "restart": "重新啟動",
       "install": "安裝",

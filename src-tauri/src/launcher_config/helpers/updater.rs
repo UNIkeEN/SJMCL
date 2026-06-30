@@ -256,10 +256,9 @@ try {
     }
     Ok(())
   } else {
-    // MSI: run installer in passive mode.
+    // Installed (NSIS): run the downloaded installer directly.
     if restart {
-      let _ = Command::new("msiexec.exe")
-        .args(["/i", &downloaded_path.to_string_lossy(), "/passive"])
+      let _ = Command::new(&downloaded_path)
         .creation_flags(0x08000000)
         .spawn()?;
       app.exit(0);
