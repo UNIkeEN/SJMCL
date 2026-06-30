@@ -4,6 +4,8 @@ use tauri_plugin_http::reqwest;
 
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{OptiFineResourceInfo, ResourceError, ResourceType, SourceType};
+use crate::utils::fs::split_filename;
+use std::ffi::OsStr;
 
 fn get_optifine_sort_key(info: &OptiFineResourceInfo) -> (u32, u32, u32) {
   let Some((_, suffix)) = info.filename.rsplit_once("_HD_U_") else {
@@ -37,6 +39,9 @@ async fn get_optifine_meta_by_game_version_bmcl(
           .json::<Vec<OptiFineResourceInfo>>()
           .await
           .map_err(|_| ResourceError::ParseError)?;
+        for info in &mut manifest {
+          info.filename = split_filename(OsStr::new(&info.filename)).0;
+        }
         manifest.sort_by(|a, b| {
           get_optifine_sort_key(b)
             .cmp(&get_optifine_sort_key(a))
