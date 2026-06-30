@@ -95,7 +95,6 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
       loaderType: summary.modLoader.loaderType,
       version: summary.modLoader.version || "",
       description: "",
-      stable: true,
     };
   }, [summary]);
 
@@ -146,6 +145,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      returnFocusOnClose={false}
       onCloseComplete={() => {
         setSelectedModLoader(defaultModLoaderResourceInfo);
         setSelectedOptifine(undefined);

@@ -63,6 +63,7 @@ package-lock.json
 
 # AI Agents & Coding Assistants
 .codex/
-.claude/
+.claude/*
+!.claude/skills
 .gemini/
 .cursor/

@@ -385,6 +385,9 @@ const DownloadSettingsPage = () => {
       items: [
         {
           title: t("DownloadSettingPage.proxy.settings.enabled.title"),
+          description: !downloadConfigs.proxy.enabled
+            ? t("DownloadSettingPage.proxy.settings.enabled.description")
+            : undefined,
           children: (
             <Switch
               colorScheme={primaryColor}

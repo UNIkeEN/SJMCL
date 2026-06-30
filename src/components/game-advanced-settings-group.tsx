@@ -279,9 +279,14 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               <MenuSelector
                 options={gameFileValidatePolicies.map((type) => ({
                   value: type,
-                  label: t(
-                    `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
-                  ),
+                  label: {
+                    title: t(
+                      `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
+                    ),
+                    desc: t(
+                      `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}Desc`
+                    ),
+                  },
                 }))}
                 value={gameConfig.advanced.workaround.gameFileValidatePolicy}
                 onSelect={(val) => {
@@ -468,7 +473,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       title={t("GameAdvancedSettingsPage.title")}
       withBackButton
     >
-      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+      <VStack align="stretch" spacing={4} flex="1">
         <Alert status="warning" fontSize="xs-sm" borderRadius="md">
           <AlertIcon />
           {t("GameAdvancedSettingsPage.topWarning")}

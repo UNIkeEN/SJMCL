@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "提供模组信息的简体中文翻译"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "感谢 SCL 开发团队与我们的持续交流与相互启发"
@@ -95,7 +99,7 @@
       },
       "modpack": {
         "title": "导入整合包",
-        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
+        "description": "从本地文件或互联网导入整合包（CurseForge、Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理游戏目录",
@@ -112,12 +116,6 @@
         "title": "下载服务端",
         "description": "下载各版本原版游戏服务端文件"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "导入整合包",
-      "desc": "将整合包文件 {{fileName}} 导入到 SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "界面字体",
           "default": "默认"
         },
+        "logFontFamily": {
+          "title": "日志字体"
+        },
         "fontSize": {
           "title": "字体大小",
           "small": "小",
@@ -445,23 +446,23 @@
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+      "content": "确定要删除认证服务器“{{name}}”吗？它将不再出现在你的服务器列表中。"
     }
   },
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "删除好友",
-      "content": "确定要删除好友 “{{name}}” 吗？"
+      "content": "确定要删除好友“{{name}}”吗？"
     }
   },
   "DeleteGameServerAlertDialog": {
     "title": "删除游戏服务器",
-    "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
+    "content": "确定要删除游戏服务器“{{name}}”（{{addr}}）吗？它将会永久消失！（真的很久！）"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{instanceName}}” 吗？它将会永久消失！（真的很久！）",
+      "content": "确定要删除游戏实例“{{instanceName}}”吗？它将会永久消失！（真的很久！）",
       "warning": {
         "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
         "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
@@ -471,13 +472,13 @@
   "DeleteModAlertDialog": {
     "dialog": {
       "title": "删除模组",
-      "content": "确定要删除游戏实例 “{{instanceName}}” 中的模组 “{{modName}}” 吗？"
+      "content": "确定要删除游戏实例“{{instanceName}}”中的模组“{{modName}}”吗？"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
-      "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
+      "content": "确定要删除角色“{{name}}”吗？这一操作不可逆！"
     }
   },
   "DevToolbar": {
@@ -593,10 +594,11 @@
     },
     "proxy": {
       "title": "代理",
-      "headExtra": "以下设置重启时生效",
+      "headExtra": "以下设置重启后生效",
       "settings": {
         "enabled": {
-          "title": "启用代理"
+          "title": "启用代理",
+          "description": "此项关闭时，启动器将自动使用系统代理"
         },
         "type": {
           "title": "代理类型"
@@ -936,7 +938,10 @@
           "title": "游戏文件完整性检查策略",
           "disable": "不检查",
           "normal": "普通检查",
-          "full": "增强检查"
+          "full": "增强检查",
+          "disableDesc": "",
+          "normalDesc": "检查文件是否存在，缺失时自动补全",
+          "fullDesc": "检查文件 SHA1 完整性，缺失时自动补全（耗时较长）"
         },
         "dontCheckJvmValidity": {
           "title": "不检查 JVM 与游戏的兼容性"
@@ -1149,7 +1154,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "自动设置实例语言",
-          "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
+          "description": "启用后，新建实例的语言将自动设置为启动器语言，这将同时跳过游戏内辅助功能设置"
         }
       }
     },
@@ -1247,14 +1252,16 @@
       "settings": {
         "resolution": {
           "title": "游戏分辨率",
-          "switch": "全屏"
+          "preset": "预设",
+          "switch": "全屏",
+          "warning": "分辨率可能超出显示器上限"
         },
         "customTitle": {
           "title": "自定义窗口标题"
         },
         "customInfo": {
           "title": "自定义信息",
-          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角"
+          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角（仅在 Minecraft 26.1 之前的版本生效）"
         }
       }
     },
@@ -1322,7 +1329,7 @@
     },
     "step3": {
       "title": "发现页",
-      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开 “聚合搜索”。"
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开“聚合搜索”。"
     },
     "step4": {
       "title": "Minecraft，启动！",
@@ -1369,6 +1376,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "探索世界上最大的 Minecraft 模组存储库"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "开源、现代的 Minecraft 资源平台"
         }
       }
     },
@@ -1398,8 +1409,14 @@
     "header": {
       "title": "从其他启动器导入账户信息"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1645,6 +1662,17 @@
       "description": "确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英语",
+      "es": "西班牙语",
+      "fr": "法语",
+      "ja": "日语",
+      "lzh": "",
+      "zh-Hans": "",
+      "zh-Hant": ""
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次运行异常退出",
@@ -1692,6 +1720,12 @@
     "notCompatibleWith": "与 {{item}} 不兼容",
     "noVersionSelected": "未选择版本"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "导入整合包",
+      "desc": "将整合包文件 {{fileName}} 导入到 SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "当前页面由扩展 {{name}} 提供"
   },
@@ -1700,7 +1734,7 @@
     "default": "默认",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "本地上传",
+    "upload": "选择本地皮肤",
     "skin": "皮肤",
     "cape": "披风",
     "model": {
@@ -1773,7 +1807,7 @@
   },
   "NoSuitableJavaDialog": {
     "title": "未找到合适的 Java 运行时",
-    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
+    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击“确定”以前往 Java 管理页面手动添加或下载 Java。"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"

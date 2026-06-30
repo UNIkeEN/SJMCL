@@ -1,10 +1,11 @@
+use rmcp::handler::server::tool::ToolRoute;
+
 use crate::account::commands::*;
 use crate::account::helpers::import::misc::ACCESS_TOKEN_EXPIRED;
 use crate::account::models::{AccountError, Player, PresetRole};
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::intelligence::mcp_server::model::MCPError;
 use crate::mcp_tool;
-use rmcp::handler::server::tool::ToolRoute;
 
 fn strip_sensitive_player_info(players: &mut [Player]) {
   for player in players {
@@ -51,7 +52,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       } => async move {
         let id = params.id.trim();
         let value =
-          serde_json::to_string(&id).map_err(|e| crate::error::SJMCLError(e.to_string()))?;
+          serde_json::to_string(&id).map_err(|e| sjmcl_types::error::SJMCLError(e.to_string()))?;
         crate::launcher_config::commands::update_launcher_config(
           app,
           "states.shared.selectedPlayerId".to_string(),

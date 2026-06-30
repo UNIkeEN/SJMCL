@@ -1,9 +1,5 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 use serde_json::Value;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
@@ -11,6 +7,11 @@ use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
+use crate::tasks::PTaskParam;
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::tasks::download::DownloadParam;
 
 type SourceTuple = (&'static str, &'static str, fn(&str, &str) -> String);
 const SOURCES: [SourceTuple; 2] = [

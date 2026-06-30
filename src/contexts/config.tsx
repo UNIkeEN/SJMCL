@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useToast } from "@/contexts/toast";
 import { useGetState } from "@/hooks/get-state";
+import { localeResources } from "@/locales";
 import {
   LauncherConfig,
   VersionMetaInfo,
@@ -117,6 +118,8 @@ export const LauncherConfigContextProvider: React.FC<{
 
   useEffect(() => {
     i18n.changeLanguage(language);
+    document.documentElement.lang =
+      localeResources[language]?.htmlLang || language;
   }, [language]);
 
   useEffect(() => {

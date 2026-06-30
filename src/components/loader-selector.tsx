@@ -107,34 +107,37 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     (
       version: ModLoaderResourceInfo | OptiFineResourceInfo
     ): OptionItemProps => {
-      let title = isModLoaderResourceInfo(version)
-        ? version.version
-        : version?.filename;
+      const isModLoader = isModLoaderResourceInfo(version);
+      let title = isModLoader ? version.version : version?.filename;
       return {
         title,
-        description: isModLoaderResourceInfo(version) && version.description,
+        description: isModLoader && version.description,
         prefixElement: (
           <HStack spacing={2.5}>
             <Radio value={title} colorScheme={primaryColor} />
             <Image
-              src={`/images/icons/${isModLoaderResourceInfo(version) ? modLoaderTypesToIcon[version.loaderType] : "OptiFine.png"}`}
+              src={`/images/icons/${isModLoader ? modLoaderTypesToIcon[version.loaderType] : "OptiFine.png"}`}
               alt={title}
               boxSize="28px"
               borderRadius="4px"
             />
           </HStack>
         ),
-        titleExtra: (
-          <Tag colorScheme={primaryColor} className="tag-xs">
-            {t(
-              `LoaderSelector.${(isModLoaderResourceInfo(version) ? version.stable : !version.patch.startsWith("pre")) ? "stable" : "beta"}`
-            )}
-          </Tag>
-        ),
+        titleExtra: (() => {
+          const stableFlag = isModLoader
+            ? version.stable
+            : !version.patch.startsWith("pre");
+          if (stableFlag == null) return;
+          return (
+            <Tag colorScheme={primaryColor} className="tag-xs">
+              {t(`LoaderSelector.${stableFlag ? "stable" : "beta"}`)}
+            </Tag>
+          );
+        })(),
         children: <></>,
         isFullClickZone: true,
         onClick: () => {
-          if (isModLoaderResourceInfo(version)) {
+          if (isModLoader) {
             onSelectModLoader(version);
           } else {
             onSelectOptiFine?.(version);
@@ -219,7 +222,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
             loaderType: type,
             version: "",
             description: "",
-            stable: false,
           });
           setSelectedId("");
         } else {

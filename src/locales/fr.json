@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Merci à LittleSkin et @tnqzh123 pour l'aide sur la conception du processus de connexion"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Fournit des traductions en chinois simplifié des informations des mods"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Merci aux développeurs de SCL pour la communication continue et l'inspiration mutuelle avec nous"
@@ -112,12 +116,6 @@
         "title": "Télécharger le serveur",
         "description": "Télécharger les fichiers serveur de toutes les versions officielles du jeu"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Importer un modpack",
-      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -301,6 +299,9 @@
         "fontFamily": {
           "title": "Polices d'interface",
           "default": "Par défaut"
+        },
+        "logFontFamily": {
+          "title": "Police du journal"
         },
         "fontSize": {
           "title": "Taille de la police",
@@ -596,7 +597,8 @@
       "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
-          "title": "Activer le proxy"
+          "title": "Activer le proxy",
+          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système"
         },
         "type": {
           "title": "Type de proxy"
@@ -936,7 +938,10 @@
           "title": "Stratégie de vérification de l'intégrité des fichiers du jeu",
           "disable": "Ne pas vérifier",
           "normal": "Vérification normale",
-          "full": "Vérification renforcée"
+          "full": "Vérification renforcée",
+          "disableDesc": "",
+          "normalDesc": "Vérifier l'existence des fichiers, télécharger les manquants",
+          "fullDesc": "Vérifier l'intégrité SHA1 des fichiers, télécharger les manquants (plus long)"
         },
         "dontCheckJvmValidity": {
           "title": "Ne pas vérifier la compatibilité de la JVM avec le jeu"
@@ -1149,7 +1154,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "Définir automatiquement la langue de l'instance",
-          "description": "%only available in zh-Hans"
+          "description": "Lorsque cette option est activée, les nouvelles instances utiliseront la langue du launcher et ignoreront l'écran de configuration d'accessibilité du jeu."
         }
       }
     },
@@ -1247,14 +1252,16 @@
       "settings": {
         "resolution": {
           "title": "Résolution du jeu",
-          "switch": "Plein écran"
+          "preset": "Préréglage",
+          "switch": "Plein écran",
+          "warning": "La résolution peut dépasser la limite du moniteur"
         },
         "customTitle": {
           "title": "Titre de la fenêtre personnalisée"
         },
         "customInfo": {
           "title": "Informations personnalisées",
-          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3"
+          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3 (uniquement pour les versions de Minecraft antérieures à 26.1)."
         }
       }
     },
@@ -1369,6 +1376,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Explorez le plus grand dépôt de mods Minecraft au monde"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "Une plateforme de ressources Minecraft moderne et open source"
         }
       }
     },
@@ -1398,8 +1409,14 @@
     "header": {
       "title": "Importer des comptes depuis d'autres launchers"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1645,6 +1662,17 @@
       "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (SJMCL ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "Anglais",
+      "es": "Espagnol",
+      "fr": "",
+      "ja": "Japonais",
+      "lzh": "Chinois littéraire",
+      "zh-Hans": "Chinois simplifié",
+      "zh-Hant": "Chinois traditionnel"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La dernière exécution s'est terminée anormalement",
@@ -1692,6 +1720,12 @@
     "notCompatibleWith": "Incompatible avec {{item}}",
     "noVersionSelected": "Version non sélectionnée"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Importer un modpack",
+      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "Cette page est fournie par l'extension {{name}}"
   },
@@ -1700,7 +1734,7 @@
     "default": "Par défaut",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "Téléchargement local",
+    "upload": "Choisir un skin local",
     "skin": "Skin",
     "cape": "Cape",
     "model": {
