@@ -2151,7 +2151,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "Actualización del lanzador",
     "body": "La nueva versión ha sido descargada. Reinicia SJMCL para completar la actualización.",
-    "bodyInstaller": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará SJMCL y se ejecutará el instalador.",
+    "bodyWinInstaller": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará SJMCL y se ejecutará el instalador.",
     "button": {
       "restart": "Reiniciar",
       "install": "Instalar",

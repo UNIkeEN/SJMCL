@@ -2151,7 +2151,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "Mise à jour du lanceur",
     "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
-    "bodyInstaller": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
+    "bodyWinInstaller": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
     "button": {
       "restart": "Redémarrer",
       "install": "Installer",
