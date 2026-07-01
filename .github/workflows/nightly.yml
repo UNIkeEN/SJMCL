@@ -92,11 +92,18 @@ jobs:
         with:
           node-version: lts/*
 
+      - name: Setup pnpm for version bump
+        if: steps.check-changes.outputs.should_build == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
+
       - name: Bump version to 0.0.0
         if: steps.check-changes.outputs.should_build == 'true'
         run: |
           echo "Bumping version to 0.0.0..."
-          npm run version bump 0.0.0
+          pnpm run version bump 0.0.0
           
           # Commit the version change to nightly branch
           git add .
@@ -282,4 +289,4 @@ jobs:
             fi
           done
           
-          echo "Cleanup completed" 
+          echo "Cleanup completed"
