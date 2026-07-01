@@ -1,15 +1,16 @@
 use sjmcl_types::error::SJMCLResult;
+use std::ffi::OsStr;
 use tauri::Manager;
 use tauri_plugin_http::reqwest;
 
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{OptiFineResourceInfo, ResourceError, ResourceType, SourceType};
+use crate::utils::fs::split_filename;
 
 fn get_optifine_sort_key(info: &OptiFineResourceInfo) -> (u32, u32, u32) {
   let Some((_, suffix)) = info.filename.rsplit_once("_HD_U_") else {
     return (0, 0, 0);
   };
-  let suffix = suffix.trim_end_matches(".jar");
   let (version, pre) = match suffix.split_once("_pre") {
     Some((version, pre)) => (version, pre.parse().unwrap_or(0)),
     None => (suffix, u32::MAX),
@@ -37,11 +38,16 @@ async fn get_optifine_meta_by_game_version_bmcl(
           .json::<Vec<OptiFineResourceInfo>>()
           .await
           .map_err(|_| ResourceError::ParseError)?;
+
+        manifest.iter_mut().for_each(|info| {
+          info.filename = split_filename(OsStr::new(&info.filename)).0;
+        });
         manifest.sort_by(|a, b| {
           get_optifine_sort_key(b)
             .cmp(&get_optifine_sort_key(a))
             .then_with(|| b.filename.cmp(&a.filename))
         });
+
         Ok(manifest)
       } else {
         Err(ResourceError::NetworkError.into())
