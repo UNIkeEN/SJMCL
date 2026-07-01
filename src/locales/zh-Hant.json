@@ -790,7 +790,7 @@
       "includedFiles": "包含檔案",
       "exportOptions": "匯出選項",
       "packWithLauncher": "打包啟動器",
-      "minMemory": "最低記憶體 (MB)",
+      "minMemory": "最低記憶體 (MiB)",
       "noCreateRemoteFiles": "停用遠端檔案",
       "skipCurseForgeRemoteFiles": "略過 CurseForge 遠端檔案"
     },
@@ -920,7 +920,7 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
-          "placeholder": "單位 MB"
+          "placeholder": "單位 MiB"
         },
         "environmentVariable": {
           "title": "環境變數"
@@ -1277,7 +1277,7 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體 {{usedMemory}} GB；遊戲分配 {{allocatedMemory}} GB；總記憶體 {{totalMemory}} GB"
+          "description": "已用記憶體 {{usedMemory}} GiB；遊戲分配 {{allocatedMemory}} GiB；總記憶體 {{totalMemory}} GiB"
         },
         "processPriority": {
           "title": "處理程式優先度",
@@ -1762,7 +1762,7 @@
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "正在使用",
       "maxAllocation": "為 Minecraft 分配的最大值"

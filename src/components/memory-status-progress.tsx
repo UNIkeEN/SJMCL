@@ -7,7 +7,7 @@ import { MemoryInfo } from "@/models/system-info";
 
 interface MemoryStatusProgressProps {
   memoryInfo: MemoryInfo;
-  allocatedMemory?: number; // in MB
+  allocatedMemory?: number; // in MiB
 }
 
 const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
@@ -23,9 +23,9 @@ const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
   const allocatedPercentage =
     total > 0 ? ((allocatedMemory * 1024 * 1024) / total) * 100 : 0;
 
-  const totalInGB = (total / 1024 / 1024 / 1024).toFixed(2);
-  const usedInGB = (used / 1024 / 1024 / 1024).toFixed(2);
-  const allocatedInGB = (allocatedMemory / 1024).toFixed(2);
+  const totalInGiB = (total / 1024 / 1024 / 1024).toFixed(2);
+  const usedInGiB = (used / 1024 / 1024 / 1024).toFixed(2);
+  const allocatedInGiB = (allocatedMemory / 1024).toFixed(2);
 
   return (
     <VStack align="stretch" spacing={2}>
@@ -33,9 +33,9 @@ const MemoryStatusProgress: React.FC<MemoryStatusProgressProps> = ({
         <Text fontSize="xs-sm">{t("MemoryStatusProgress.title")}</Text>
         <Text fontSize="xs-sm" ml="auto" className="secondary-text">
           {t("MemoryStatusProgress.info", {
-            total: totalInGB,
-            used: usedInGB,
-            allocated: allocatedInGB,
+            total: totalInGiB,
+            used: usedInGiB,
+            allocated: allocatedInGiB,
           })}
         </Text>
       </Flex>

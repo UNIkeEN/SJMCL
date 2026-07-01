@@ -790,7 +790,7 @@
       "includedFiles": "Included Files",
       "exportOptions": "Export Options",
       "packWithLauncher": "Pack With Launcher",
-      "minMemory": "Minimum Memory (MB)",
+      "minMemory": "Minimum Memory (MiB)",
       "noCreateRemoteFiles": "Disable Remote Files",
       "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
     },
@@ -920,7 +920,7 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "PermGen Space",
-          "placeholder": "in MB"
+          "placeholder": "in MiB"
         },
         "environmentVariable": {
           "title": "Environment Variables"
@@ -1277,7 +1277,7 @@
         },
         "memoryUsage": {
           "title": "Memory Usage",
-          "description": "Used memory {{usedMemory}}GB; Game allocated {{allocatedMemory}}GB; Total memory {{totalMemory}}GB"
+          "description": "Used memory {{usedMemory}}GiB; Game allocated {{allocatedMemory}}GiB; Total memory {{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "Process Priority",
@@ -1762,7 +1762,7 @@
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
-    "info": "{{used}} / {{total}} GB used",
+    "info": "{{used}} / {{total}} GiB used",
     "label": {
       "now": "In use",
       "maxAllocation": "Maximum allocated for Minecraft"

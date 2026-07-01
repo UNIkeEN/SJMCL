@@ -296,7 +296,7 @@ const DownloadSettingsPage = () => {
                       {/* no stepper NumberInput, use pr={0} */}
                       <NumberInputField pr={0} />
                     </NumberInput>
-                    <Text fontSize="xs">KB/s</Text>
+                    <Text fontSize="xs">KiB/s</Text>
                   </HStack>
                 ),
               },
