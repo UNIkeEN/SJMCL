@@ -2151,7 +2151,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "啟者迭更",
     "body": "新版已畢引，復啟 SJMCL 以畢迭更",
-    "bodyMSI": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
+    "bodyWinInstaller": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
     "button": {
       "restart": "復啟",
       "install": "置",
