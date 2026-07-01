@@ -54,7 +54,7 @@ export function useProxySettingsItems(
     ...(config.enabled
       ? [
           {
-            title: t(`${rootKey}.settings.type.title`),
+            title: t("ProxySettingsGroup.type.title"),
             children: (
               <HStack>
                 <SegmentedControl
@@ -69,7 +69,7 @@ export function useProxySettingsItems(
             ),
           },
           {
-            title: t(`${rootKey}.settings.host.title`),
+            title: t("ProxySettingsGroup.host.title"),
             children: (
               <Input
                 size="xs"
@@ -86,7 +86,7 @@ export function useProxySettingsItems(
             ),
           },
           {
-            title: t(`${rootKey}.settings.port.title`),
+            title: t("ProxySettingsGroup.port.title"),
             children: (
               <NumberInput
                 size="xs"

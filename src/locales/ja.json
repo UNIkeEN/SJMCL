@@ -599,15 +599,6 @@
         "enabled": {
           "title": "ダウンロードタスクのプロキシを有効化",
           "description": "無効時、起動器はシステムプロキシで自動的にリソースをダウンロードします"
-        },
-        "type": {
-          "title": "プロキシタイプ"
-        },
-        "host": {
-          "title": "サーバー"
-        },
-        "port": {
-          "title": "ポート"
         }
       }
     }
@@ -936,15 +927,6 @@
         "enabled": {
           "title": "ゲームプロセスにプロキシを有効化",
           "description": "無効にすると、ゲームはシステムプロキシを自動的に使用します"
-        },
-        "type": {
-          "title": "プロキシタイプ"
-        },
-        "host": {
-          "title": "ホスト"
-        },
-        "port": {
-          "title": "ポート"
         }
       }
     },
@@ -1865,6 +1847,17 @@
     "toast": {
       "refreshing": "キャラクター情報を更新中",
       "deleting": "キャラクターを削除中"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "プロキシタイプ"
+    },
+    "host": {
+      "title": "ホスト"
+    },
+    "port": {
+      "title": "ポート"
     }
   },
   "ReLoginPlayerModal": {

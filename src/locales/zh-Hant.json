@@ -599,15 +599,6 @@
         "enabled": {
           "title": "為下載任務啟用代理",
           "description": "此項關閉時，啟動器將自動使用系統代理下載資源"
-        },
-        "type": {
-          "title": "Proxy 類型"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "埠"
         }
       }
     }
@@ -936,15 +927,6 @@
         "enabled": {
           "title": "為遊戲處理程序啟用代理",
           "description": "此項關閉時，遊戲將自動使用系統代理"
-        },
-        "type": {
-          "title": "代理類型"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "連接埠"
         }
       }
     },
@@ -1865,6 +1847,17 @@
     "toast": {
       "refreshing": "正在重新整理角色資訊",
       "deleting": "正在刪除角色"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理類型"
+    },
+    "host": {
+      "title": "伺服器"
+    },
+    "port": {
+      "title": "連接埠"
     }
   },
   "ReLoginPlayerModal": {

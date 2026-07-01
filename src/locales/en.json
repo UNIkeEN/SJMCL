@@ -599,15 +599,6 @@
         "enabled": {
           "title": "Enable Proxy for Downloads",
           "description": "When disabled, the launcher will use the system proxy to download resources automatically"
-        },
-        "type": {
-          "title": "Proxy Type"
-        },
-        "host": {
-          "title": "Host"
-        },
-        "port": {
-          "title": "Port"
         }
       }
     }
@@ -936,15 +927,6 @@
         "enabled": {
           "title": "Enable Proxy for Game Process",
           "description": "When disabled, the game will use the system proxy automatically"
-        },
-        "type": {
-          "title": "Proxy Type"
-        },
-        "host": {
-          "title": "Host"
-        },
-        "port": {
-          "title": "Port"
         }
       }
     },
@@ -1865,6 +1847,17 @@
     "toast": {
       "refreshing": "Refreshing player info",
       "deleting": "Deleting player"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Proxy Type"
+    },
+    "host": {
+      "title": "Host"
+    },
+    "port": {
+      "title": "Port"
     }
   },
   "ReLoginPlayerModal": {

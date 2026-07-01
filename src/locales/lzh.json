@@ -599,15 +599,6 @@
         "enabled": {
           "title": "為下載之務啟代",
           "description": "閉則自用系統之代以載資源"
-        },
-        "type": {
-          "title": "代型別"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "埠"
         }
       }
     }
@@ -936,15 +927,6 @@
         "enabled": {
           "title": "為戲程啟代理",
           "description": "若閉，則戲自用系統代理"
-        },
-        "type": {
-          "title": "代理式"
-        },
-        "host": {
-          "title": "主機"
-        },
-        "port": {
-          "title": "埠"
         }
       }
     },
@@ -1865,6 +1847,17 @@
     "toast": {
       "refreshing": "方重整戲者資訊",
       "deleting": "方刪戲者"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理式"
+    },
+    "host": {
+      "title": "主機"
+    },
+    "port": {
+      "title": "埠"
     }
   },
   "ReLoginPlayerModal": {
