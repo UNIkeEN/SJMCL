@@ -597,8 +597,8 @@
       "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
-          "title": "Activer le proxy",
-          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système"
+          "title": "Activer le proxy pour les téléchargements",
+          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système pour télécharger les ressources"
         },
         "type": {
           "title": "Type de proxy"
@@ -927,6 +927,24 @@
         },
         "args": {
           "title": "Arguments JVM"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Activer le proxy pour le processus de jeu",
+          "description": "Lorsqu'il est désactivé, le jeu utilisera automatiquement le proxy système"
+        },
+        "type": {
+          "title": "Type de proxy"
+        },
+        "host": {
+          "title": "Hôte"
+        },
+        "port": {
+          "title": "Port"
         }
       }
     },

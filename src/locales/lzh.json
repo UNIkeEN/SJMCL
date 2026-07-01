@@ -597,8 +597,8 @@
       "headExtra": "以下置設復啟而效",
       "settings": {
         "enabled": {
-          "title": "啟代",
-          "description": "閉則自用系統之代"
+          "title": "為下載之務啟代",
+          "description": "閉則自用系統之代以載資源"
         },
         "type": {
           "title": "代型別"
@@ -927,6 +927,24 @@
         },
         "args": {
           "title": "餘 JVM 通弦"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "為戲程啟代理",
+          "description": "若閉，則戲自用系統代理"
+        },
+        "type": {
+          "title": "代理式"
+        },
+        "host": {
+          "title": "主機"
+        },
+        "port": {
+          "title": "埠"
         }
       }
     },

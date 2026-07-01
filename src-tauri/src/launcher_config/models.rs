@@ -83,6 +83,27 @@ pub enum GarbageCollector {
   Auto,
 }
 
+// see java.net.proxy
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum ProxyType {
+  Socks,
+  #[serde(other)]
+  Http,
+}
+
+#[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize, SmartDefault)]
+#[serde(default)]
+#[serde(rename_all = "camelCase")]
+pub struct ProxyConfig {
+  pub enabled: bool,
+  #[default(ProxyType::Http)]
+  pub selected_type: ProxyType,
+  pub host: String,
+  pub port: usize,
+}
+
 // Partial Derive is used for these structs and we can use it for key value storage.
 // And partially update some fields for better performance and hygiene.
 //
@@ -141,6 +162,7 @@ structstruck::strike! {
         pub wrapper_launcher: String,
         pub post_exit_command: String,
       },
+      pub proxy: ProxyConfig,
       pub jvm: struct {
         #[default(GarbageCollector::Auto)]
         pub garbage_collector: GarbageCollector,
@@ -172,16 +194,6 @@ structstruck::strike! {
 pub struct GameDirectory {
   pub name: String,
   pub dir: PathBuf,
-}
-
-// see java.net.proxy
-// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
-#[serde(rename_all = "camelCase")]
-pub enum ProxyType {
-  Socks,
-  #[serde(other)]
-  Http,
 }
 
 structstruck::strike! {
@@ -262,13 +274,7 @@ structstruck::strike! {
       pub cache: struct {
         pub directory: PathBuf,
       },
-      pub proxy: struct ProxyConfig {
-        pub enabled: bool,
-        #[default(ProxyType::Http)]
-        pub selected_type: ProxyType,
-        pub host: String,
-        pub port: usize,
-      }
+      pub proxy: ProxyConfig,
     },
     pub general: struct GeneralConfig {
       pub general: struct {

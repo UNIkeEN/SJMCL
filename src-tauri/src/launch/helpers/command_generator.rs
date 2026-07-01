@@ -104,11 +104,7 @@ pub async fn generate_launch_command(
   let launcher_config = { app.state::<Mutex<LauncherConfig>>().lock()?.clone() };
   let launching_queue = { app.state::<Mutex<Vec<LaunchingState>>>().lock()?.clone() };
 
-  let LauncherConfig {
-    basic_info,
-    download,
-    ..
-  } = launcher_config;
+  let LauncherConfig { basic_info, .. } = launcher_config;
   let launching = launching_queue
     .last()
     .ok_or(LaunchError::LaunchingStateNotFound)?
@@ -228,6 +224,7 @@ pub async fn generate_launch_command(
     }
   ));
 
+  // advanced JVM options
   let jvm = &game_config.advanced.jvm;
   {
     if jvm.java_permanent_generation_space != 0 {
@@ -258,24 +255,27 @@ pub async fn generate_launch_command(
     }
   }
 
-  // Pass launcher/system proxy settings to the game process as JVM network properties.
-  if !download.proxy.enabled {
-    cmd.push("-Djava.net.useSystemProxies=true".to_string());
-  } else {
-    let host = download.proxy.host.trim();
-    if host.is_empty() || download.proxy.port == 0 {
-      log::warn!("Skipped game proxy JVM arguments because proxy host or port is empty");
+  // custom proxy settings for game process (separate from system and launcher proxy)
+  let game_proxy = &game_config.advanced.proxy;
+  {
+    if !game_proxy.enabled {
+      cmd.push("-Djava.net.useSystemProxies=true".to_string());
     } else {
-      match &download.proxy.selected_type {
-        ProxyType::Http => {
-          cmd.push(format!("-Dhttp.proxyHost={}", host));
-          cmd.push(format!("-Dhttp.proxyPort={}", download.proxy.port));
-          cmd.push(format!("-Dhttps.proxyHost={}", host));
-          cmd.push(format!("-Dhttps.proxyPort={}", download.proxy.port));
-        }
-        ProxyType::Socks => {
-          cmd.push(format!("-DsocksProxyHost={}", host));
-          cmd.push(format!("-DsocksProxyPort={}", download.proxy.port));
+      let host = game_proxy.host.trim();
+      if host.is_empty() || game_proxy.port == 0 {
+        log::warn!("Skipped game proxy JVM arguments because proxy host or port is empty");
+      } else {
+        match &game_proxy.selected_type {
+          ProxyType::Http => {
+            cmd.push(format!("-Dhttp.proxyHost={}", host));
+            cmd.push(format!("-Dhttp.proxyPort={}", game_proxy.port));
+            cmd.push(format!("-Dhttps.proxyHost={}", host));
+            cmd.push(format!("-Dhttps.proxyPort={}", game_proxy.port));
+          }
+          ProxyType::Socks => {
+            cmd.push(format!("-DsocksProxyHost={}", host));
+            cmd.push(format!("-DsocksProxyPort={}", game_proxy.port));
+          }
         }
       }
     }
