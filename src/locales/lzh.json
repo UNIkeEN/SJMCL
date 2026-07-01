@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "爪哇版"
     },
+    "button": {
+      "exportGameInfo": "錄出戲潰報告",
+      "gameLogs": "戲誌",
+      "help": "助"
+    },
+    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "潰資訊",
       "OPENJ9": "今例不能在 OpenJ9 JVM 上行，請用 HotSpot JVM。",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "今例以 Vics Modern Warfare 改囊謬，不能續行。請試迭更或刪該改囊。",
       "FORGE_LITELOADER_CONFLICT": "今例以 Forge 與 LiteLoader 衝突，不能續行。請試刪 LiteLoader 或更換 Forge 版。",
       "UNKNOWN": "暫時不能分析該謬，請覽戲誌或錄出謬潰報告。"
-    },
-    "button": {
-      "exportGameInfo": "錄出戲潰報告",
-      "gameLogs": "戲誌",
-      "help": "助"
-    },
-    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影"
+    }
   },
   "GameLogPage": {
     "placeholder": "書關鍵字以篩",

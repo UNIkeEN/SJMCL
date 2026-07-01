@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Java バージョン"
     },
+    "button": {
+      "exportGameInfo": "クラッシュレポートをエクスポート",
+      "gameLogs": "ゲームログ",
+      "help": "サポート"
+    },
+    "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "クラッシュ情報",
       "OPENJ9": "OpenJ9 JVM で実行できません。HotSpot JVM を使用してください。",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "Vics Modern Warfare モッドのエラーにより実行できません。このモッドを更新または削除してみてください。",
       "FORGE_LITELOADER_CONFLICT": "Forge と LiteLoader が競合しているため実行できません。LiteLoader を削除するか、Forge バージョンを変更してみてください。",
       "UNKNOWN": "このエラーを一時的に分析できません。ゲームログを確認するか、エラークラッシュレポートをエクスポートしてください。"
-    },
-    "button": {
-      "exportGameInfo": "クラッシュレポートをエクスポート",
-      "gameLogs": "ゲームログ",
-      "help": "サポート"
-    },
-    "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。"
+    }
   },
   "GameLogPage": {
     "placeholder": "キーワードを入力して検索",

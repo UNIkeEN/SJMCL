@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Java Version"
     },
+    "button": {
+      "exportGameInfo": "Export Crash Report",
+      "gameLogs": "Game Logs",
+      "help": "Help"
+    },
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Crash Details",
       "OPENJ9": "OpenJ9 JVM is not supported. Please use HotSpot JVM.",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
       "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
-    },
-    "button": {
-      "exportGameInfo": "Export Crash Report",
-      "gameLogs": "Game Logs",
-      "help": "Help"
-    },
-    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",

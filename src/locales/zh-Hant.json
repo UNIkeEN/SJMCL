@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Java 版本"
     },
+    "button": {
+      "exportGameInfo": "匯出遊戲崩潰報告",
+      "gameLogs": "遊戲日誌",
+      "help": "幫助"
+    },
+    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "崩潰資訊",
       "OPENJ9": "目前實例無法在 OpenJ9 JVM 上執行，請使用 HotSpot JVM。",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "目前實例由於 Vics Modern Warfare 模組錯誤，無法繼續執行。請嘗試更新或刪除該模組。",
       "FORGE_LITELOADER_CONFLICT": "目前實例由於 Forge 與 LiteLoader 衝突，無法繼續執行。請嘗試刪除 LiteLoader 或更換 Forge 版本。",
       "UNKNOWN": "暫時無法分析該錯誤，請檢視遊戲日誌或匯出錯誤崩潰報告。"
-    },
-    "button": {
-      "exportGameInfo": "匯出遊戲崩潰報告",
-      "gameLogs": "遊戲日誌",
-      "help": "幫助"
-    },
-    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖"
+    }
   },
   "GameLogPage": {
     "placeholder": "輸入關鍵字篩選",

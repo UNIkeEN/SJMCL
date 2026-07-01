@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Versión de Java"
     },
+    "button": {
+      "exportGameInfo": "Exportar Reporte de Error",
+      "gameLogs": "Registros del Juego",
+      "help": "Ayuda"
+    },
+    "bottomAlert": "Exporta y envía el reporte de error en lugar de una captura de pantalla de esta página para obtener ayuda.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Detalles del Error",
       "OPENJ9": "OpenJ9 JVM no es compatible. Por favor usa HotSpot JVM.",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "La instancia no puede continuar debido a un error del mod Vic's Modern Warfare. Intenta actualizar o eliminar el mod.",
       "FORGE_LITELOADER_CONFLICT": "La instancia no puede continuar debido a un conflicto entre Forge y LiteLoader. Intenta eliminar LiteLoader o cambiar la versión de Forge.",
       "UNKNOWN": "No se puede determinar la causa del error. Por favor revisa los registros para más detalles o exporta el reporte de error."
-    },
-    "button": {
-      "exportGameInfo": "Exportar Reporte de Error",
-      "gameLogs": "Registros del Juego",
-      "help": "Ayuda"
-    },
-    "bottomAlert": "Exporta y envía el reporte de error en lugar de una captura de pantalla de esta página para obtener ayuda."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filtrar por Texto",

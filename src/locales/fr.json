@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Version Java"
     },
+    "button": {
+      "exportGameInfo": "Exporter le rapport de crash du jeu",
+      "gameLogs": "Journaux du jeu",
+      "help": "Aide"
+    },
+    "bottomAlert": "Pour obtenir de l'aide, veuillez exporter et envoyer le rapport de crash, et non une capture d'écran de cette fenêtre.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Détails du crash",
       "OPENJ9": "Cette instance ne peut pas s'exécuter sur une JVM OpenJ9. Veuillez utiliser une JVM HotSpot.",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare Cette instance ne peut pas continuer à s'exécuter en raison d'une erreur avec le mod Vics Modern Warfare. Essayez de mettre à jour ou de supprimer ce mod.",
       "FORGE_LITELOADER_CONFLICT": "Cette instance ne peut pas continuer à s'exécuter en raison d'un conflit entre Forge et LiteLoader. Essayez de supprimer LiteLoader ou de changer la version de Forge.",
       "UNKNOWN": "Impossible d'analyser cette erreur pour le moment. Veuillez consulter les journaux du jeu ou exporter un rapport de plantage."
-    },
-    "button": {
-      "exportGameInfo": "Exporter le rapport de crash du jeu",
-      "gameLogs": "Journaux du jeu",
-      "help": "Aide"
-    },
-    "bottomAlert": "Pour obtenir de l'aide, veuillez exporter et envoyer le rapport de crash, et non une capture d'écran de cette fenêtre."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filtrer par mot-clé",
