@@ -2910,6 +2910,11 @@
           }
         }
       },
+      "changeOptiFine": {
+        "error": {
+          "title": "修改 OptiFine 失敗"
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "獲取模組包資源資訊失敗",

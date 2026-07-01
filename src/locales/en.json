@@ -2910,6 +2910,11 @@
           }
         }
       },
+      "changeOptiFine": {
+        "error": {
+          "title": "Failed to Change OptiFine"
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "Failed to retrieve modpack resource info",

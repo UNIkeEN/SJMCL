@@ -2910,6 +2910,11 @@
           }
         }
       },
+      "changeOptiFine": {
+        "error": {
+          "title": "Échec de la modification d'OptiFine"
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "Échec de la récupération des informations de ressources du pack de mods",

@@ -2910,6 +2910,11 @@
           }
         }
       },
+      "changeOptiFine": {
+        "error": {
+          "title": "改 OptiFine 未成"
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "獲取改囊集資源資訊未成",
