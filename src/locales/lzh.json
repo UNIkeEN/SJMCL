@@ -903,6 +903,67 @@
         }
       }
     },
+    "graphics": {
+      "title": "圖形",
+      "settings": {
+        "api": {
+          "title": "圖形 API",
+          "default": {
+            "label": "本",
+            "desc": "用礦藝及驅動之本設。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "用 OpenGL 繪器，亦可覆 Mesa 驅動。"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "用 Vulkan 繪器，亦可選 ICD 驅動。"
+          }
+        },
+        "renderer": {
+          "title": "繪器 / 驅動",
+          "default": {
+            "label": "本",
+            "desc": "不設繪器所專環境易量。"
+          },
+          "llvmpipe": {
+            "label": "LLVMpipe",
+            "desc": "Mesa 之軟體 OpenGL 繪器。"
+          },
+          "zink": {
+            "label": "Zink",
+            "desc": "藉 Mesa 於 Vulkan 上行 OpenGL。"
+          },
+          "d3d12": {
+            "label": "D3D12",
+            "desc": "基於 DirectX 12 之 Mesa OpenGL 驅動。"
+          },
+          "lavapipe": {
+            "label": "Lavapipe",
+            "desc": "Mesa 之軟體 Vulkan 驅動。"
+          },
+          "dozen": {
+            "label": "Dozen",
+            "desc": "基於 DirectX 12 之 Mesa Vulkan 驅動。"
+          },
+          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
+          "nvidia_nvk": { "label": "NVK" },
+          "amdvlk": { "label": "AMDVLK" },
+          "amd_radv": { "label": "RADV" },
+          "intel_vulkan": { "label": "Intel Vulkan" },
+          "intel_anv": { "label": "ANV" },
+          "intel_hasvk": { "label": "HASVK" },
+          "qualcomm": { "label": "Qualcomm Vulkan" },
+          "turnip": { "label": "Turnip" },
+          "moltenvk": { "label": "MoltenVK" },
+          "kosmickrisp": { "label": "KosmicKrisp" },
+          "powervr": { "label": "PowerVR" },
+          "panvk": { "label": "PanVK" },
+          "v3dv": { "label": "V3DV" }
+        }
+      }
+    },
     "jvm": {
       "title": "爪哇虛機置設",
       "settings": {

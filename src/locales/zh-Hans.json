@@ -903,6 +903,67 @@
         }
       }
     },
+    "graphics": {
+      "title": "图形",
+      "settings": {
+        "api": {
+          "title": "图形 API",
+          "default": {
+            "label": "默认",
+            "desc": "使用 Minecraft 和显卡驱动的默认设置。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "使用 OpenGL，并可选择 Mesa 渲染器覆盖。"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "使用 Vulkan，并可选择 ICD 驱动。"
+          }
+        },
+        "renderer": {
+          "title": "渲染器 / 驱动",
+          "default": {
+            "label": "默认",
+            "desc": "不设置额外的图形环境变量。"
+          },
+          "llvmpipe": {
+            "label": "LLVMpipe",
+            "desc": "Mesa 软件 OpenGL 渲染器。"
+          },
+          "zink": {
+            "label": "Zink",
+            "desc": "通过 Mesa 在 Vulkan 之上运行 OpenGL。"
+          },
+          "d3d12": {
+            "label": "D3D12",
+            "desc": "基于 DirectX 12 的 Mesa OpenGL 驱动。"
+          },
+          "lavapipe": {
+            "label": "Lavapipe",
+            "desc": "Mesa 软件 Vulkan 驱动。"
+          },
+          "dozen": {
+            "label": "Dozen",
+            "desc": "基于 DirectX 12 的 Mesa Vulkan 驱动。"
+          },
+          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
+          "nvidia_nvk": { "label": "NVK" },
+          "amdvlk": { "label": "AMDVLK" },
+          "amd_radv": { "label": "RADV" },
+          "intel_vulkan": { "label": "Intel Vulkan" },
+          "intel_anv": { "label": "ANV" },
+          "intel_hasvk": { "label": "HASVK" },
+          "qualcomm": { "label": "Qualcomm Vulkan" },
+          "turnip": { "label": "Turnip" },
+          "moltenvk": { "label": "MoltenVK" },
+          "kosmickrisp": { "label": "KosmicKrisp" },
+          "powervr": { "label": "PowerVR" },
+          "panvk": { "label": "PanVK" },
+          "v3dv": { "label": "V3DV" }
+        }
+      }
+    },
     "jvm": {
       "title": "Java 虚拟机设置",
       "settings": {

@@ -903,6 +903,67 @@
         }
       }
     },
+    "graphics": {
+      "title": "Graphismes",
+      "settings": {
+        "api": {
+          "title": "API graphique",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Utiliser les paramètres par défaut de Minecraft et du pilote."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Utiliser le moteur OpenGL et les remplacements facultatifs du pilote Mesa."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Utiliser le moteur Vulkan et la sélection facultative du pilote ICD."
+          }
+        },
+        "renderer": {
+          "title": "Moteur de rendu / pilote",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Ne pas définir de variables d'environnement propres au moteur de rendu."
+          },
+          "llvmpipe": {
+            "label": "LLVMpipe",
+            "desc": "Moteur OpenGL logiciel de Mesa."
+          },
+          "zink": {
+            "label": "Zink",
+            "desc": "Exécuter OpenGL au-dessus de Vulkan via Mesa."
+          },
+          "d3d12": {
+            "label": "D3D12",
+            "desc": "Pilote OpenGL Mesa basé sur DirectX 12."
+          },
+          "lavapipe": {
+            "label": "Lavapipe",
+            "desc": "Pilote Vulkan logiciel de Mesa."
+          },
+          "dozen": {
+            "label": "Dozen",
+            "desc": "Pilote Vulkan Mesa basé sur DirectX 12."
+          },
+          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
+          "nvidia_nvk": { "label": "NVK" },
+          "amdvlk": { "label": "AMDVLK" },
+          "amd_radv": { "label": "RADV" },
+          "intel_vulkan": { "label": "Intel Vulkan" },
+          "intel_anv": { "label": "ANV" },
+          "intel_hasvk": { "label": "HASVK" },
+          "qualcomm": { "label": "Qualcomm Vulkan" },
+          "turnip": { "label": "Turnip" },
+          "moltenvk": { "label": "MoltenVK" },
+          "kosmickrisp": { "label": "KosmicKrisp" },
+          "powervr": { "label": "PowerVR" },
+          "panvk": { "label": "PanVK" },
+          "v3dv": { "label": "V3DV" }
+        }
+      }
+    },
     "jvm": {
       "title": "Paramètres de la machine virtuelle Java",
       "settings": {
