@@ -1,6 +1,7 @@
 use sjmcl_types::error::SJMCLResult;
 use std::cmp::Ordering;
 use std::sync::Mutex;
+use std::sync::RwLock;
 use strum::IntoEnumIterator;
 use tauri::{AppHandle, Manager};
 use url::Url;
@@ -14,10 +15,42 @@ use crate::resource::models::{
   SourceType,
 };
 
+const DEFAULT_MIRROR_BASE: &str = "https://bmclapi2.bangbang93.com";
+
+static CUSTOM_MIRROR_ENDPOINT: RwLock<String> = RwLock::new(String::new());
+
+// Validates and stores the custom mirror endpoint. An empty value clears the
+// override (falling back to the default mirror). Invalid URLs are rejected so
+// they can never enter global state — the frontend validates too, but this
+// guards against hand-edited or migrated config files.
+pub fn set_custom_mirror_endpoint(endpoint: String) {
+  let trimmed = endpoint.trim().trim_end_matches('/');
+  let mut guard = CUSTOM_MIRROR_ENDPOINT.write().unwrap();
+  if trimmed.is_empty() {
+    *guard = String::new();
+    return;
+  }
+  if Url::parse(trimmed).is_ok() {
+    *guard = trimmed.to_string();
+  } else {
+    log::warn!("Invalid custom mirror endpoint ignored: {trimmed}");
+    *guard = String::new();
+  }
+}
+
+fn get_effective_mirror_base() -> String {
+  let custom = CUSTOM_MIRROR_ENDPOINT.read().unwrap();
+  if custom.is_empty() {
+    DEFAULT_MIRROR_BASE.to_string()
+  } else {
+    custom.clone()
+  }
+}
+
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
     "official" => vec![SourceType::Official, SourceType::BMCLAPIMirror],
-    "mirror" => vec![SourceType::BMCLAPIMirror, SourceType::Official],
+    "mirror" | "custom" => vec![SourceType::BMCLAPIMirror, SourceType::Official],
     "auto" => match launcher_config.basic_info.is_china_mainland_ip {
       true => vec![SourceType::BMCLAPIMirror, SourceType::Official],
       false => vec![SourceType::Official, SourceType::BMCLAPIMirror],
@@ -69,45 +102,44 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::QuiltMaven => Ok(Url::parse("https://maven.quiltmc.org/repository/release/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://meta.quiltmc.org/")?),
     },
-    SourceType::BMCLAPIMirror => match resource_type {
-      ResourceType::VersionManifest => Ok(Url::parse(
-        "https://bmclapi2.bangbang93.com/mc/game/version_manifest.json",
-      )?),
-      ResourceType::VersionManifestV2 => Ok(Url::parse(
-        "https://bmclapi2.bangbang93.com/mc/game/version_manifest_v2.json",
-      )?),
-      ResourceType::LauncherMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/")?),
-      ResourceType::Launcher => Ok(Url::parse("https://bmclapi2.bangbang93.com/")?),
-      ResourceType::Assets => Ok(Url::parse("https://bmclapi2.bangbang93.com/assets/")?),
-      ResourceType::Libraries => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::MojangJava => Ok(Url::parse(
-        "https://bmclapi2.bangbang93.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json",
-      )?),
-      ResourceType::ForgeMaven | ResourceType::ForgeMavenNew | ResourceType::NeoforgeMaven => {
-        Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?)
+    SourceType::BMCLAPIMirror => {
+      let base = get_effective_mirror_base();
+      match resource_type {
+        ResourceType::VersionManifest => Ok(Url::parse(&format!(
+          "{base}/mc/game/version_manifest.json"
+        ))?),
+        ResourceType::VersionManifestV2 => Ok(Url::parse(&format!(
+          "{base}/mc/game/version_manifest_v2.json"
+        ))?),
+        ResourceType::LauncherMeta => Ok(Url::parse(&format!("{base}/"))?),
+        ResourceType::Launcher => Ok(Url::parse(&format!("{base}/"))?),
+        ResourceType::Assets => Ok(Url::parse(&format!("{base}/assets/"))?),
+        ResourceType::Libraries => Ok(Url::parse(&format!("{base}/maven/"))?),
+        ResourceType::MojangJava => Ok(Url::parse(&format!(
+          "{base}/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json"
+        ))?),
+        ResourceType::ForgeMaven | ResourceType::ForgeMavenNew | ResourceType::NeoforgeMaven => {
+          Ok(Url::parse(&format!("{base}/maven/"))?)
+        }
+        ResourceType::ForgeInstall => Ok(Url::parse(&format!("{base}/forge/download/"))?),
+        ResourceType::ForgeMeta => Ok(Url::parse(&format!("{base}/forge/"))?),
+        ResourceType::Liteloader => Ok(Url::parse(&format!(
+          "{base}/maven/com/mumfrey/liteloader/versions.json"
+        ))?),
+        ResourceType::AuthlibInjector => {
+          Ok(Url::parse(&format!("{base}/mirrors/authlib-injector/"))?)
+        }
+        ResourceType::FabricMeta => Ok(Url::parse(&format!("{base}/fabric-meta/"))?),
+        ResourceType::FabricMaven => Ok(Url::parse(&format!("{base}/maven/"))?),
+        ResourceType::NeoforgeMetaForge | ResourceType::NeoforgeMetaNeoforge => {
+          Ok(Url::parse(&format!("{base}/neoforge/"))?)
+        }
+        ResourceType::NeoforgeInstall => Ok(Url::parse(&format!("{base}/neoforge/version/"))?),
+        ResourceType::OptiFine => Ok(Url::parse(&format!("{base}/optifine/"))?),
+        ResourceType::QuiltMaven => Ok(Url::parse(&format!("{base}/maven/"))?),
+        ResourceType::QuiltMeta => Ok(Url::parse(&format!("{base}/quilt-meta/"))?), // seems 'not found'
       }
-      ResourceType::ForgeInstall => Ok(Url::parse(
-        "https://bmclapi2.bangbang93.com/forge/download/",
-      )?),
-      ResourceType::ForgeMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/forge/")?),
-      ResourceType::Liteloader => Ok(Url::parse(
-        "https://bmclapi.bangbang93.com/maven/com/mumfrey/liteloader/versions.json",
-      )?),
-      ResourceType::AuthlibInjector => Ok(Url::parse(
-        "https://bmclapi2.bangbang93.com/mirrors/authlib-injector/",
-      )?),
-      ResourceType::FabricMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/fabric-meta/")?),
-      ResourceType::FabricMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::NeoforgeMetaForge | ResourceType::NeoforgeMetaNeoforge => {
-        Ok(Url::parse("https://bmclapi2.bangbang93.com/neoforge/")?)
-      }
-      ResourceType::NeoforgeInstall => Ok(Url::parse(
-        "https://bmclapi2.bangbang93.com/neoforge/version/",
-      )?),
-      ResourceType::OptiFine => Ok(Url::parse("https://bmclapi2.bangbang93.com/optifine/")?),
-      ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?), // seems 'not found'
-    },
+    }
   }
 }
 

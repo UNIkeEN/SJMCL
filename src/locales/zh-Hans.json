@@ -554,10 +554,13 @@
       "title": "源",
       "settings": {
         "strategy": {
-          "title": "下载源选择策略",
+          "title": "游戏资源下载源策略",
           "auto": "自动选择",
           "official": "官方源优先",
-          "mirror": "镜像源优先"
+          "mirror": "镜像源优先",
+          "custom": "自定义镜像源",
+          "customEndpoint": "自定义镜像源端点",
+          "customEndpointInvalid": "镜像源端点URL无效，请输入有效的URL（包含协议头）"
         }
       }
     },

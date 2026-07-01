@@ -554,10 +554,13 @@
       "title": "ソース",
       "settings": {
         "strategy": {
-          "title": "ダウンロードソースポリシー選択",
+          "title": "ゲームリソースダウンロードソースポリシー",
           "auto": "スマート選択",
           "official": "公式ソース優先",
-          "mirror": "ミラーソース優先"
+          "mirror": "ミラーソース優先",
+          "custom": "カスタムミラー",
+          "customEndpoint": "カスタムミラーエンドポイント",
+          "customEndpointInvalid": "ミラーエンドポイントURLが無効です。有効なURLを入力してください（プロトコルを含む）"
         }
       }
     },

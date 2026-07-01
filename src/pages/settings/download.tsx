@@ -70,10 +70,13 @@ const DownloadSettingsPage = () => {
   const [proxyHost, setProxyHost] = useState<string>(
     downloadConfigs.proxy.host
   );
+  const [customEndpoint, setCustomEndpoint] = useState<string>(
+    downloadConfigs.source.customEndpoint || ""
+  );
   const [isClearingDownloadCache, setIsClearingDownloadCache] =
     useState<boolean>(false);
 
-  const sourceStrategyTypes = ["auto", "official", "mirror"];
+  const sourceStrategyTypes = ["auto", "official", "mirror", "custom"];
   const proxyTypeOptions = [
     {
       label: "HTTP",
@@ -164,6 +167,48 @@ const DownloadSettingsPage = () => {
             />
           ),
         },
+        ...(downloadConfigs.source.strategy === "custom"
+          ? [
+              {
+                title: t(
+                  "DownloadSettingPage.source.settings.strategy.customEndpoint"
+                ),
+                children: (
+                  <Input
+                    size="xs"
+                    w="220px"
+                    focusBorderColor={`${primaryColor}.500`}
+                    value={customEndpoint}
+                    onChange={(event) => {
+                      setCustomEndpoint(event.target.value);
+                    }}
+                    onBlur={() => {
+                      try {
+                        if (customEndpoint) {
+                          new URL(customEndpoint);
+                        }
+                        update(
+                          "download.source.customEndpoint",
+                          customEndpoint
+                        );
+                      } catch {
+                        setCustomEndpoint(
+                          downloadConfigs.source.customEndpoint || ""
+                        );
+                        toast({
+                          title: t(
+                            "DownloadSettingPage.source.settings.strategy.customEndpointInvalid"
+                          ),
+                          status: "error",
+                        });
+                      }
+                    }}
+                    placeholder="https://example.com/mirror"
+                  />
+                ),
+              },
+            ]
+          : []),
       ],
     },
     {

@@ -40,6 +40,14 @@ pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -
   let key_path = camel_to_snake_case(key_path.as_str());
   config_state.partial_update(&app, &key_path, &value)?;
   config_state.save()?;
+  // Sync custom mirror endpoint to global state
+  let strategy = config_state.download.source.strategy.clone();
+  let endpoint = config_state.download.source.custom_endpoint.clone();
+  if strategy == "custom" {
+    crate::resource::helpers::misc::set_custom_mirror_endpoint(endpoint);
+  } else {
+    crate::resource::helpers::misc::set_custom_mirror_endpoint(String::new());
+  }
   Ok(())
 }
 

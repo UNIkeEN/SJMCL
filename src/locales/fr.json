@@ -554,10 +554,13 @@
       "title": "Source",
       "settings": {
         "strategy": {
-          "title": "Stratégie de sélection de la source de téléchargement",
+          "title": "Stratégie de source de téléchargement des ressources du jeu",
           "auto": "Sélection automatique",
           "official": "Priorité à la source officielle",
-          "mirror": "Priorité au miroir"
+          "mirror": "Priorité au miroir",
+          "custom": "Miroir Personnalisé",
+          "customEndpoint": "Endpoint de Miroir Personnalisé",
+          "customEndpointInvalid": "URL d'endpoint de miroir invalide. Veuillez entrer une URL valide (protocole inclus)"
         }
       }
     },
