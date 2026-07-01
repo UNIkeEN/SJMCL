@@ -170,6 +170,9 @@ pub async fn generate_launch_command(
     _ => String::new(),
   };
 
+  let custom_info = game_config.game_window.custom_info.trim();
+  let custom_info = (!custom_info.is_empty()).then(|| custom_info.to_string());
+
   let arguments_value = LaunchArguments {
     game_assets: assets_dir
       .join("virtual/legacy")
@@ -179,13 +182,11 @@ pub async fn generate_launch_command(
     assets_index_name: client_info.asset_index.id.clone(),
     game_directory: root_dir.to_string_lossy().to_string(),
 
-    version_name: selected_instance.name.clone(),
+    version_name: custom_info
+      .clone()
+      .unwrap_or_else(|| selected_instance.name.clone()),
     primary_jar_name: format!("{}.jar", selected_instance.name.clone()),
-    version_type: if !game_config.game_window.custom_info.is_empty() {
-      game_config.game_window.custom_info.clone()
-    } else {
-      client_info.type_.clone()
-    },
+    version_type: custom_info.unwrap_or_else(|| client_info.type_.clone()),
     natives_directory: natives_dir.to_string_lossy().to_string(),
     launcher_name: "SJMC Launcher".to_string(),
     launcher_version: basic_info.launcher_version,
