@@ -1,3 +1,4 @@
+import { BuildType } from "@/enums/misc";
 import type { HomeWidgetStateTuple } from "@/models/extension";
 
 export interface GameConfig {
@@ -82,7 +83,7 @@ export interface LauncherConfig {
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
     // Build metadata, sourced from compile-time constants injected by build.rs.
-    buildType: string;
+    buildType: BuildType;
     buildCommitSha: string;
   };
   mocked: boolean;
@@ -270,7 +271,7 @@ export const defaultConfig: LauncherConfig = {
     isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
-    buildType: "dev",
+    buildType: BuildType.Dev,
     buildCommitSha: "",
   },
   mocked: true,
