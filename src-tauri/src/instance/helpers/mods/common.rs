@@ -10,6 +10,46 @@ use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, qu
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::ImageWrapper;
 
+pub fn sanitize_lenient_json(input: &str) -> String {
+  let mut out = String::with_capacity(input.len());
+  let mut in_string = false;
+  let mut escaped = false;
+  for c in input.chars() {
+    if in_string {
+      if escaped {
+        out.push(c);
+        escaped = false;
+        continue;
+      }
+      match c {
+        '\\' => {
+          out.push(c);
+          escaped = true;
+        }
+        '"' => {
+          out.push(c);
+          in_string = false;
+        }
+        '\u{0000}'..='\u{001F}' => match c {
+          '\n' => out.push_str("\\n"),
+          '\r' => out.push_str("\\r"),
+          '\t' => out.push_str("\\t"),
+          '\u{0008}' => out.push_str("\\b"),
+          '\u{000C}' => out.push_str("\\f"),
+          other => out.push_str(&format!("\\u{:04x}", other as u32)),
+        },
+        _ => out.push(c),
+      }
+    } else {
+      if c == '"' {
+        in_string = true;
+      }
+      out.push(c);
+    }
+  }
+  out
+}
+
 pub fn compress_icon(wrapper: ImageWrapper) -> ImageWrapper {
   let resized_image = image::imageops::resize(
     &wrapper.image,
