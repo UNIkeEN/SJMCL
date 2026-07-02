@@ -29,16 +29,11 @@ fn clean_keyword(word: &str) -> Option<String> {
   Some(cleaned)
 }
 
-fn extract_keywords_from_slug(slug: &str) -> Vec<String> {
-  let mut keywords = Vec::new();
-
-  for word in slug.replace(['-', '/', '_', ','], " ").split_whitespace() {
-    if let Some(cleaned) = clean_keyword(word) {
-      keywords.push(cleaned);
-    }
-  }
-
-  keywords
+fn extract_search_words(text: &str) -> Vec<String> {
+  text
+    .split(|c: char| !c.is_alphanumeric())
+    .filter_map(clean_keyword)
+    .collect()
 }
 
 fn calculate_similarity(source: &str, query: &str) -> f64 {
@@ -137,6 +132,11 @@ pub struct MCModRecord {
   pub name: String,
   pub subname: Option<String>,
   pub abbr: Option<String>,
+}
+
+pub struct HandledSearchQuery {
+  pub query: String,
+  pub is_chinese: bool,
 }
 
 impl MCModRecord {
@@ -366,22 +366,35 @@ pub async fn initialize_mod_db(app: &AppHandle) -> SJMCLResult<()> {
   Ok(())
 }
 
-pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<String> {
+pub async fn handle_localized_search_query(
+  app: &AppHandle,
+  query: &str,
+) -> SJMCLResult<HandledSearchQuery> {
   let query = query.split_whitespace().collect::<Vec<_>>().join(" ");
 
-  // Only process Chinese queries
   if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
-    return Ok(query.to_string());
+    return Ok(HandledSearchQuery {
+      query,
+      is_chinese: false,
+    });
   }
 
   let state = app.state::<Mutex<ModDataBase>>();
   let search_results = match state.lock() {
-    Ok(cache) => cache.get_mods_by_chinese(&query, 5),
-    Err(_) => return Ok(query.to_string()),
+    Ok(cache) => cache.get_mods_by_chinese(&query, 3),
+    Err(_) => {
+      return Ok(HandledSearchQuery {
+        query,
+        is_chinese: true,
+      });
+    }
   };
 
   if search_results.is_empty() {
-    return Ok(query.to_string());
+    return Ok(HandledSearchQuery {
+      query,
+      is_chinese: true,
+    });
   }
 
   // Short-circuit: if exists a very confident match, search by its name directly
@@ -413,7 +426,10 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
       .or(mod_record.curseforge_slug.as_ref())
       .or(mod_record.modrinth_slug.as_ref())
   {
-    return Ok(exact_name.chars().take(24).collect());
+    return Ok(HandledSearchQuery {
+      query: exact_name.chars().take(24).collect(),
+      is_chinese: true,
+    });
   }
 
   // Count keyword frequency across all found mods
@@ -423,14 +439,20 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
   for mod_record in &search_results {
     let mut mod_keywords = HashSet::new();
 
+    if let Some(subname) = &mod_record.subname {
+      for keyword in extract_search_words(subname) {
+        mod_keywords.insert(keyword);
+      }
+    }
+
     if let Some(curseforge_slug) = &mod_record.curseforge_slug {
-      for keyword in extract_keywords_from_slug(curseforge_slug) {
+      for keyword in extract_search_words(curseforge_slug) {
         mod_keywords.insert(keyword);
       }
     }
 
     if let Some(modrinth_slug) = &mod_record.modrinth_slug {
-      for keyword in extract_keywords_from_slug(modrinth_slug) {
+      for keyword in extract_search_words(modrinth_slug) {
         mod_keywords.insert(keyword);
       }
     }
@@ -441,7 +463,10 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
   }
 
   if keyword_count.is_empty() {
-    return Ok(query.to_string());
+    return Ok(HandledSearchQuery {
+      query,
+      is_chinese: true,
+    });
   }
 
   // Calculate keyword scores: frequency / total_mods * length_bonus
@@ -486,11 +511,12 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
     }
   }
 
-  if final_keywords.is_empty() {
-    return Ok(query.to_string());
-  }
-
-  let result = final_keywords.join(" ");
-
-  Ok(result)
+  Ok(HandledSearchQuery {
+    query: if final_keywords.is_empty() {
+      query
+    } else {
+      final_keywords.join(" ")
+    },
+    is_chinese: true,
+  })
 }

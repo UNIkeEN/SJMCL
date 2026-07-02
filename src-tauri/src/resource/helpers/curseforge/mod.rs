@@ -15,8 +15,11 @@ use std::collections::HashMap;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-use crate::resource::helpers::misc::apply_other_resource_enhancements;
-use crate::resource::helpers::mod_db::handle_search_query;
+use crate::resource::helpers::misc::{
+  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
+  levenshtein_distance, sort_localized_search_results,
+};
+use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
@@ -25,34 +28,10 @@ use crate::resource::models::{
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";
-const WORD_PERFECT_MATCH_WEIGHT: usize = 10;
+const WORD_PERFECT_MATCH_WEIGHT: usize = 5;
 
 fn tokenize_words(text: &str) -> impl Iterator<Item = &str> {
-  text
-    .split(|c: char| !c.is_alphanumeric())
-    .filter(|token| !token.is_empty())
-}
-
-fn levenshtein_distance(a: &str, b: &str) -> usize {
-  let b_chars: Vec<char> = b.chars().collect();
-  let mut prev: Vec<usize> = (0..=b_chars.len()).collect();
-
-  for (i, a_ch) in a.chars().enumerate() {
-    let mut current = Vec::with_capacity(b_chars.len() + 1);
-    current.push(i + 1);
-
-    for (j, b_ch) in b_chars.iter().enumerate() {
-      let cost = if a_ch == *b_ch { 0 } else { 1 };
-      let insertion = current[j] + 1;
-      let deletion = prev[j + 1] + 1;
-      let substitution = prev[j] + cost;
-      current.push(insertion.min(deletion).min(substitution));
-    }
-
-    prev = current;
-  }
-
-  *prev.last().unwrap_or(&0)
+  text.split_whitespace()
 }
 
 pub async fn fetch_resource_list_by_name_curseforge(
@@ -71,12 +50,19 @@ pub async fn fetch_resource_list_by_name_curseforge(
     page_size,
   } = query;
 
-  let handled_search_query = handle_search_query(app, search_query)
+  let handled_search_query = handle_localized_search_query(app, search_query)
     .await
-    .unwrap_or(search_query.clone()); // Handle Chinese query
+    .unwrap_or_else(|_| HandledSearchQuery {
+      query: search_query.clone(),
+      is_chinese: false,
+    });
 
   let class_id = cvt_type_to_class_id(resource_type);
-  let sort_field = cvt_sort_by_to_id(sort_by);
+  let sort_field = if handled_search_query.is_chinese {
+    cvt_sort_by_to_id("Popularity")
+  } else {
+    cvt_sort_by_to_id(sort_by)
+  };
   let sort_order = match sort_field {
     4 => "asc",
     _ => "desc",
@@ -85,7 +71,10 @@ pub async fn fetch_resource_list_by_name_curseforge(
   let mut params = HashMap::new();
   params.insert("gameId".to_string(), MINECRAFT_GAME_ID.to_string());
   params.insert("classId".to_string(), class_id.to_string());
-  params.insert("searchFilter".to_string(), handled_search_query.clone());
+  params.insert(
+    "searchFilter".to_string(),
+    handled_search_query.query.clone(),
+  );
   if game_version != ALL_FILTER {
     params.insert("gameVersion".to_string(), game_version.to_string());
   }
@@ -110,44 +99,53 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
   let mut search_result: OtherResourceSearchRes = results.into();
 
-  let lower_case_search_filter = handled_search_query.to_lowercase();
-  let mut search_filter_words = HashMap::new();
-  for token in tokenize_words(&lower_case_search_filter) {
-    *search_filter_words
-      .entry(token.to_string())
-      .or_insert(0usize) += 1;
+  let has_search_filter = !handled_search_query.query.trim().is_empty();
+  // Empty search is browsing by the selected API sort; avoid re-ranking by title length.
+  let should_rerank_by_search_filter =
+    !handled_search_query.is_chinese && sort_by == "Popularity" && has_search_filter;
+
+  if should_rerank_by_search_filter {
+    let lower_case_search_filter = handled_search_query.query.to_lowercase();
+    let mut search_filter_words = HashMap::new();
+    for token in tokenize_words(&lower_case_search_filter) {
+      *search_filter_words
+        .entry(token.to_string())
+        .or_insert(0usize) += 1;
+    }
+
+    let mut scored_results: Vec<(OtherResourceInfo, i64)> = search_result
+      .list
+      .into_iter()
+      .map(|resource| {
+        let title = resource
+          .translated_name
+          .as_deref()
+          .unwrap_or(resource.name.as_str());
+        let lower_case_result = title.to_lowercase();
+
+        let mut diff = levenshtein_distance(&lower_case_search_filter, &lower_case_result) as i64;
+
+        for token in tokenize_words(&lower_case_result) {
+          if let Some(count) = search_filter_words.get(token) {
+            diff -= (WORD_PERFECT_MATCH_WEIGHT * *count * token.len()) as i64;
+          }
+        }
+
+        (resource, diff)
+      })
+      .collect();
+
+    scored_results.sort_by_key(|(_, diff)| *diff);
+    search_result.list = scored_results
+      .into_iter()
+      .map(|(resource, _)| resource)
+      .collect();
   }
 
-  let mut scored_results: Vec<(OtherResourceInfo, i64)> = search_result
-    .list
-    .into_iter()
-    .map(|resource| {
-      let title = resource
-        .translated_name
-        .as_deref()
-        .unwrap_or(resource.name.as_str());
-      let lower_case_result = title.to_lowercase();
+  apply_other_resource_enhancements_concurrently(app, &mut search_result.list).await;
 
-      let mut diff = levenshtein_distance(&lower_case_search_filter, &lower_case_result) as i64;
-
-      for token in tokenize_words(&lower_case_result) {
-        if let Some(count) = search_filter_words.get(token) {
-          diff -= (WORD_PERFECT_MATCH_WEIGHT * *count * token.len()) as i64;
-        }
-      }
-
-      (resource, diff)
-    })
-    .collect();
-
-  scored_results.sort_by_key(|(_, diff)| *diff);
-  search_result.list = scored_results
-    .into_iter()
-    .map(|(resource, _)| resource)
-    .collect();
-
-  for resource_info in &mut search_result.list {
-    let _ = apply_other_resource_enhancements(app, resource_info).await;
+  if handled_search_query.is_chinese {
+    sort_localized_search_results(&mut search_result.list, search_query);
   }
 
   Ok(search_result)

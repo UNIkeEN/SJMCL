@@ -1,6 +1,11 @@
+use crate::APP_DATA_DIR;
 use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::cmp::Ordering;
+use std::collections::HashMap;
+use std::path::PathBuf;
 use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 use strum::IntoEnumIterator;
 use tauri::{AppHandle, Manager};
 use url::Url;
@@ -13,6 +18,66 @@ use crate::resource::models::{
   OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
   SourceType,
 };
+use futures::StreamExt;
+use serde::{Deserialize, Serialize};
+
+const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME: &str =
+  "resource_description_translations.json";
+const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_EXPIRY_HOURS: u64 = 24 * 30;
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct ResourceDescriptionTranslationsCache {
+  #[serde(flatten)]
+  pub translations: HashMap<String, ResourceDescriptionTranslationEntry>,
+}
+
+impl ResourceDescriptionTranslationsCache {
+  fn cache_key(source: &OtherResourceSource, resource_id: &str) -> String {
+    let source = match source {
+      OtherResourceSource::CurseForge => "curseforge",
+      OtherResourceSource::Modrinth => "modrinth",
+      OtherResourceSource::MultiMc => "multimc",
+      OtherResourceSource::Unknown => "unknown",
+    };
+
+    format!("{}:{}", source, resource_id)
+  }
+}
+
+impl Storage for ResourceDescriptionTranslationsCache {
+  fn file_path() -> PathBuf {
+    APP_DATA_DIR
+      .get()
+      .unwrap()
+      .join(RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME)
+  }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResourceDescriptionTranslationEntry {
+  pub translated_description: String,
+  pub timestamp: u64,
+}
+
+impl ResourceDescriptionTranslationEntry {
+  fn new(translated_description: String) -> Self {
+    Self {
+      translated_description,
+      timestamp: SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs(),
+    }
+  }
+
+  fn is_expired(&self, max_age_hours: u64) -> bool {
+    let current_time = SystemTime::now()
+      .duration_since(UNIX_EPOCH)
+      .unwrap_or_default()
+      .as_secs();
+    current_time > self.timestamp + (max_age_hours * 60 * 60)
+  }
+}
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
@@ -217,6 +282,67 @@ pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionP
   compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
 }
 
+pub(crate) fn levenshtein_distance(a: &str, b: &str) -> usize {
+  let b_chars: Vec<char> = b.chars().collect();
+  let mut prev: Vec<usize> = (0..=b_chars.len()).collect();
+
+  for (i, a_ch) in a.chars().enumerate() {
+    let mut current = Vec::with_capacity(b_chars.len() + 1);
+    current.push(i + 1);
+
+    for (j, b_ch) in b_chars.iter().enumerate() {
+      let cost = if a_ch == *b_ch { 0 } else { 1 };
+      let insertion = current[j] + 1;
+      let deletion = prev[j + 1] + 1;
+      let substitution = prev[j] + cost;
+      current.push(insertion.min(deletion).min(substitution));
+    }
+
+    prev = current;
+  }
+
+  *prev.last().unwrap_or(&0)
+}
+
+pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_query: &str) {
+  const CONTAIN_CHINESE_WEIGHT: i64 = 10;
+
+  if search_query.trim().is_empty() {
+    return;
+  }
+
+  let mut translated_results = Vec::new();
+  let mut untranslated_results = Vec::new();
+
+  for resource in list.drain(..) {
+    if resource
+      .translated_name
+      .as_deref()
+      .is_some_and(|name| name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')))
+    {
+      translated_results.push(resource);
+    } else {
+      untranslated_results.push(resource);
+    }
+  }
+
+  translated_results.sort_by_key(|resource| {
+    let translated_name = resource.translated_name.as_deref().unwrap_or_default();
+
+    let mut diff = levenshtein_distance(search_query, translated_name) as i64;
+    for ch in search_query.chars() {
+      if translated_name.contains(ch) {
+        diff -= CONTAIN_CHINESE_WEIGHT;
+      }
+    }
+
+    diff
+  });
+
+  list.extend(translated_results);
+  list.extend(untranslated_results);
+}
+
 pub async fn apply_other_resource_enhancements(
   app: &AppHandle,
   resource_info: &mut OtherResourceInfo,
@@ -245,7 +371,33 @@ pub async fn apply_other_resource_enhancements(
     resource_info.mcmod_id = id;
   }
 
-  // Get translated description
+  let should_translate_resource_description = app
+    .state::<Mutex<LauncherConfig>>()
+    .lock()
+    .map(|config| {
+      config.general.general.language == "zh-Hans"
+        && config.general.functionality.resource_translation
+    })
+    .unwrap_or(false);
+
+  if !should_translate_resource_description {
+    return Ok(());
+  }
+
+  let translation_cache_key =
+    ResourceDescriptionTranslationsCache::cache_key(&resource_info.source, &resource_info.id);
+  if let Ok(cache) = app
+    .state::<Mutex<ResourceDescriptionTranslationsCache>>()
+    .lock()
+  {
+    if let Some(entry) = cache.translations.get(&translation_cache_key)
+      && !entry.is_expired(RESOURCE_DESCRIPTION_TRANSLATION_CACHE_EXPIRY_HOURS)
+    {
+      resource_info.translated_description = Some(entry.translated_description.clone());
+      return Ok(());
+    }
+  }
+
   let translated_desc = match resource_info.source {
     OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
     OtherResourceSource::CurseForge => {
@@ -255,8 +407,42 @@ pub async fn apply_other_resource_enhancements(
   };
 
   if let Some(desc) = translated_desc {
+    if let Ok(mut cache) = app
+      .state::<Mutex<ResourceDescriptionTranslationsCache>>()
+      .lock()
+    {
+      cache.translations.insert(
+        translation_cache_key,
+        ResourceDescriptionTranslationEntry::new(desc.clone()),
+      );
+      let _ = cache.save();
+    }
     resource_info.translated_description = Some(desc);
   }
 
   Ok(())
+}
+
+pub async fn apply_other_resource_enhancements_concurrently(
+  app: &AppHandle,
+  list: &mut Vec<OtherResourceInfo>,
+) {
+  let concurrency = std::thread::available_parallelism()
+    .map(usize::from)
+    .unwrap_or(4);
+
+  let mut enhanced = futures::stream::iter(std::mem::take(list).into_iter().enumerate())
+    .map(|(index, mut resource_info)| async move {
+      let _ = apply_other_resource_enhancements(app, &mut resource_info).await;
+      (index, resource_info)
+    })
+    .buffer_unordered(concurrency)
+    .collect::<Vec<_>>()
+    .await;
+
+  enhanced.sort_by_key(|(index, _)| *index);
+  *list = enhanced
+    .into_iter()
+    .map(|(_, resource_info)| resource_info)
+    .collect();
 }

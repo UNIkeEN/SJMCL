@@ -18,6 +18,7 @@ use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
+use resource::helpers::misc::ResourceDescriptionTranslationsCache;
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
 use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
@@ -234,6 +235,10 @@ pub async fn run() {
 
         let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(local_mod_translations));
+
+        let resource_description_translations =
+          ResourceDescriptionTranslationsCache::load().unwrap_or_default();
+        app.manage(Mutex::new(resource_description_translations));
 
         let client = build_sjmcl_client(app.handle(), true);
         app.manage(client);
