@@ -1,3 +1,5 @@
+import { BuildType } from "@/enums/misc";
+
 export const base64ImgSrc = (base64: string): string => {
   return `data:image/png;base64,${base64}`;
 };
@@ -125,13 +127,13 @@ export const isPathSanitized = (path: string, maxLength = 255): boolean => {
 export const isValidSemanticVersion = (version: string) =>
   /^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$/.test(version);
 
-export const formatLauncherVersion = (info: {
+export const displayLauncherVersion = (info: {
   launcherVersion: string;
-  buildType: string;
+  buildType: BuildType;
   buildCommitSha: string;
   isPortable: boolean;
 }): string => {
-  if (info.buildType !== "release") {
+  if (info.buildType !== BuildType.Release) {
     // non-release builds: show the commit short hash in parentheses when
     // available; local dev builds have no injected SHA, so no suffix then.
     const shortSha = info.buildCommitSha.slice(0, 7);

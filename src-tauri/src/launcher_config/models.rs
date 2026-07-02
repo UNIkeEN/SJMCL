@@ -4,7 +4,7 @@ use sjmcl_types::partial::PartialUpdate;
 use sjmcl_types::storage::Storage;
 use smart_default::SmartDefault;
 use std::path::PathBuf;
-use strum_macros::Display;
+use strum_macros::{Display, EnumString};
 use tauri::{AppHandle, Emitter};
 
 use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
@@ -12,6 +12,16 @@ use crate::launcher_config::migrations::{deserialize_background, deserialize_dis
 use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
 use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
+
+// Info about the latest release version fetched from remote, shown to the user to update.
+#[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VersionMetaInfo {
+  pub version: String,
+  pub file_name: String,
+  pub release_notes: String,
+  pub published_at: String,
+}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -30,16 +40,6 @@ pub struct JavaInfo {
   pub major_version: i32, // major version + LTS flag
   pub is_lts: bool,
   pub is_user_added: bool,
-}
-
-// Info about the latest release version fetched from remote, shown to the user to update.
-#[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct VersionMetaInfo {
-  pub version: String,
-  pub file_name: String,
-  pub release_notes: String,
-  pub published_at: String,
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
@@ -196,6 +196,21 @@ pub struct GameDirectory {
   pub dir: PathBuf,
 }
 
+// Build metadata: compile-time constants injected by build.rs.
+// Values match frontend src/enums/misc.ts BuildType.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default, EnumString, Display)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "kebab-case")]
+pub enum BuildType {
+  #[default]
+  Dev,
+  #[serde(rename = "test-build")]
+  TestBuild,
+  Nightly,
+  Beta,
+  Release,
+}
+
 structstruck::strike! {
   #[strikethrough[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize)]]
   #[strikethrough[serde(rename_all = "camelCase")]]
@@ -219,8 +234,8 @@ structstruck::strike! {
       pub allow_full_login_feature: bool,
       // Build metadata, sourced from compile-time constants injected by build.rs.
       // Filled by setup_with_app; not meant to be edited by the user.
-      #[default = "dev"]
-      pub build_type: String,
+      #[default(BuildType::Dev)]
+      pub build_type: BuildType,
       pub build_commit_sha: String,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.

@@ -21,6 +21,7 @@ import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";
 import { useGuidedTour } from "@/components/special/guided-tour-provider";
 import { useLauncherConfig } from "@/contexts/config";
+import { BuildType } from "@/enums/misc";
 
 const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
@@ -36,17 +37,15 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     startGuidedTour();
   };
 
-  // Map build_type to an unstable-version label for the warning alert.
+  // For non-release builds, use the build type as the version label for the warning alert.
   // release builds get no warning; the rest reuse General.version.<label>.
-  const buildTypeToLabel: Record<string, string> = {
-    dev: "dev",
-    nightly: "nightly",
-    "test-build": "test-build",
-  };
-  const launcherVersion = config.basicInfo.launcherVersion;
-  const matchedVersionLabel =
-    buildTypeToLabel[config.basicInfo.buildType] ??
-    (launcherVersion.includes("beta") ? "beta" : undefined);
+  const matchedUnstableVersionLabel =
+    config.basicInfo.buildType !== BuildType.Release
+      ? config.basicInfo.buildType
+      : config.basicInfo.launcherVersion.startsWith("0.") ||
+          config.basicInfo.launcherVersion.includes("beta")
+        ? BuildType.Beta
+        : undefined;
 
   const isWinArm64 =
     config.basicInfo.platform === "windows" &&
@@ -87,11 +86,13 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
               }}
             />
           </Text>
-          {matchedVersionLabel && (
+          {matchedUnstableVersionLabel && (
             <Alert status="warning" mt={3} fontSize="xs-sm" borderRadius="md">
               <AlertIcon />
               {t("WelcomeAndTermsModal.warning.unstableVersion", {
-                versionLabel: t(`General.version.${matchedVersionLabel}`),
+                versionLabel: t(
+                  `General.version.${matchedUnstableVersionLabel}`
+                ),
               })}
             </Alert>
           )}
