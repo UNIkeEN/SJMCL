@@ -597,17 +597,8 @@
       "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
-          "title": "Activer le proxy",
-          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système"
-        },
-        "type": {
-          "title": "Type de proxy"
-        },
-        "host": {
-          "title": "Serveur"
-        },
-        "port": {
-          "title": "Port"
+          "title": "Activer le proxy pour les téléchargements",
+          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système pour télécharger les ressources"
         }
       }
     }
@@ -927,6 +918,15 @@
         },
         "args": {
           "title": "Arguments JVM"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Activer le proxy pour le processus de jeu",
+          "description": "Lorsqu'il est désactivé, le jeu utilisera automatiquement le proxy système"
         }
       }
     },
@@ -1848,6 +1848,17 @@
     "toast": {
       "refreshing": "Actualisation des informations du personnage en cours",
       "deleting": "Suppression du personnage en cours"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Type de proxy"
+    },
+    "host": {
+      "title": "Hôte"
+    },
+    "port": {
+      "title": "Port"
     }
   },
   "ReLoginPlayerModal": {

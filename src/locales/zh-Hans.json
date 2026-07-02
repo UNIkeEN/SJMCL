@@ -597,17 +597,8 @@
       "headExtra": "以下设置重启后生效",
       "settings": {
         "enabled": {
-          "title": "启用代理",
-          "description": "此项关闭时，启动器将自动使用系统代理"
-        },
-        "type": {
-          "title": "代理类型"
-        },
-        "host": {
-          "title": "服务器"
-        },
-        "port": {
-          "title": "端口"
+          "title": "为下载任务启用代理",
+          "description": "此项关闭时，启动器将自动使用系统代理下载资源"
         }
       }
     }
@@ -927,6 +918,15 @@
         },
         "args": {
           "title": "其他 JVM 参数"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "为游戏进程启用代理",
+          "description": "此项关闭时，游戏将自动使用系统代理"
         }
       }
     },
@@ -1848,6 +1848,17 @@
     "toast": {
       "refreshing": "正在刷新角色信息",
       "deleting": "正在删除角色"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理类型"
+    },
+    "host": {
+      "title": "服务器"
+    },
+    "port": {
+      "title": "端口"
     }
   },
   "ReLoginPlayerModal": {

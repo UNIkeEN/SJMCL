@@ -36,6 +36,12 @@ export interface GameConfig {
       wrapperLauncher: string;
       postExitCommand: string;
     };
+    proxy: {
+      enabled: boolean;
+      selectedType: string;
+      host: string;
+      port: number;
+    };
     jvm: {
       garbageCollector: string;
       javaPermanentGenerationSpace: number;
@@ -220,6 +226,12 @@ export const defaultGameConfig: GameConfig = {
       precallCommand: "",
       wrapperLauncher: "",
       postExitCommand: "",
+    },
+    proxy: {
+      enabled: false,
+      selectedType: "http",
+      host: "",
+      port: 80,
     },
     jvm: {
       garbageCollector: "auto",
