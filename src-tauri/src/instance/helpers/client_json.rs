@@ -368,6 +368,11 @@ pub fn remove_mod_loader_from_client_info(
   reset_fields_from_patches(client_info);
 }
 
+pub fn remove_optifine_from_client_info(client_info: &mut McClientInfo) {
+  client_info.patches.retain(|patch| patch.id != "optifine");
+  reset_fields_from_patches(client_info);
+}
+
 fn reset_fields_from_patches(client_info: &mut McClientInfo) {
   let patches = client_info.patches.clone();
   let Some(base) = patches.first() else {
