@@ -459,7 +459,8 @@ const DownloadSpecificResourceModal: React.FC<
         resourceId,
         modLoader,
         gameVersions,
-        downloadSource
+        downloadSource,
+        resource.type
       )
         .then((response) => {
           if (response.status === "success") {
@@ -478,7 +479,7 @@ const DownloadSpecificResourceModal: React.FC<
           setIsLoadingVersionPacks(false);
         });
     },
-    [toast]
+    [resource.type, toast]
   );
 
   const reFetchVersionPacks = useCallback(() => {
