@@ -124,3 +124,21 @@ export const isPathSanitized = (path: string, maxLength = 255): boolean => {
 
 export const isValidSemanticVersion = (version: string) =>
   /^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$/.test(version);
+
+export const formatLauncherVersion = (info: {
+  launcherVersion: string;
+  buildType: string;
+  buildCommitSha: string;
+  isPortable: boolean;
+}): string => {
+  if (info.buildType !== "release") {
+    // non-release builds: show the commit short hash in parentheses when
+    // available; local dev builds have no injected SHA, so no suffix then.
+    const shortSha = info.buildCommitSha.slice(0, 7);
+    return shortSha
+      ? `${info.launcherVersion} (${shortSha})`
+      : info.launcherVersion;
+  }
+  // release builds: keep the existing format, distinguishing portable.
+  return `${info.launcherVersion}${info.isPortable ? " (Portable)" : ""}`;
+};

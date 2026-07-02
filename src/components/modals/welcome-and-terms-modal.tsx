@@ -36,12 +36,17 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     startGuidedTour();
   };
 
-  const unstableVersionLabels = ["dev", "nightly", "beta"];
+  // Map build_type to an unstable-version label for the warning alert.
+  // release builds get no warning; the rest reuse General.version.<label>.
+  const buildTypeToLabel: Record<string, string> = {
+    dev: "dev",
+    nightly: "nightly",
+    "test-build": "test-build",
+  };
   const launcherVersion = config.basicInfo.launcherVersion;
-
   const matchedVersionLabel =
-    unstableVersionLabels.find((k) => launcherVersion.includes(k)) ||
-    (launcherVersion.startsWith("0.") ? "beta" : undefined);
+    buildTypeToLabel[config.basicInfo.buildType] ??
+    (launcherVersion.includes("beta") ? "beta" : undefined);
 
   const isWinArm64 =
     config.basicInfo.platform === "windows" &&

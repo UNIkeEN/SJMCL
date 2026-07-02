@@ -81,6 +81,9 @@ export interface LauncherConfig {
     isExePathAvailable: boolean;
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
+    // Build metadata, sourced from compile-time constants injected by build.rs.
+    buildType: string;
+    buildCommitSha: string;
   };
   mocked: boolean;
   runCount: number;
@@ -267,6 +270,8 @@ export const defaultConfig: LauncherConfig = {
     isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
+    buildType: "dev",
+    buildCommitSha: "",
   },
   mocked: true,
   runCount: -1,

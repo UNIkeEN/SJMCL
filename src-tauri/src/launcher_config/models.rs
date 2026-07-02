@@ -217,6 +217,11 @@ structstruck::strike! {
       pub is_china_mainland_ip: bool,
       #[default = false]
       pub allow_full_login_feature: bool,
+      // Build metadata, sourced from compile-time constants injected by build.rs.
+      // Filled by setup_with_app; not meant to be edited by the user.
+      #[default = "dev"]
+      pub build_type: String,
+      pub build_commit_sha: String,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,

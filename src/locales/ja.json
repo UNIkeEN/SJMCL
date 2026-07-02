@@ -1133,7 +1133,8 @@
     "version": {
       "dev": "開発版",
       "nightly": "ナイトリービルド版",
-      "beta": "ベータ版"
+      "beta": "ベータ版",
+      "test-build": "テストビルド版"
     },
     "viewOnWiki": "Minecraft Wiki へ"
   },

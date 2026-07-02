@@ -1133,7 +1133,8 @@
     "version": {
       "dev": "开发版本",
       "nightly": "夜间构建版本",
-      "beta": "测试版本"
+      "beta": "测试版本",
+      "test-build": "测试构建版本"
     },
     "viewOnWiki": "在 Minecraft Wiki 中查看"
   },

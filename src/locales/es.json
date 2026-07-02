@@ -1133,7 +1133,8 @@
     "version": {
       "dev": "versión de desarrollo",
       "nightly": "compilación nocturna",
-      "beta": "versión beta"
+      "beta": "versión beta",
+      "test-build": "compilación de prueba"
     },
     "viewOnWiki": "Ver en Minecraft Wiki"
   },
