@@ -22,7 +22,7 @@ export const removeFileExt = (filename: string): string => {
 
 export const formatByteSize = (bytes: number) => {
   bytes = Math.max(0, bytes);
-  const sizes = ["B", "KB", "MB", "GB"];
+  const sizes = ["B", "KiB", "MiB", "GiB"];
 
   if (bytes >= 1024) {
     let i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), 3);

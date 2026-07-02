@@ -781,7 +781,7 @@
       "includedFiles": "含めるファイル",
       "exportOptions": "エクスポートオプション",
       "packWithLauncher": "ランチャーを同梱",
-      "minMemory": "最小メモリ (MB)",
+      "minMemory": "最小メモリ (MiB)",
       "noCreateRemoteFiles": "リモートファイルを無効化",
       "skipCurseForgeRemoteFiles": "CurseForge のリモートファイルをスキップ"
     },
@@ -910,8 +910,8 @@
           }
         },
         "javaPermanentGenerationSpace": {
-          "title": "メモリ永続保存領域(MB)",
-          "placeholder": "MB"
+          "title": "メモリ永続保存領域(MiB)",
+          "placeholder": "MiB"
         },
         "environmentVariable": {
           "title": "環境変数"
@@ -1277,7 +1277,7 @@
         },
         "memoryUsage": {
           "title": "メモリ使用状況",
-          "description": "使用済メモリ{{usedMemory}}GB・ゲーム割当メモリ{{allocatedMemory}}GB・総メモリ{{totalMemory}}GB"
+          "description": "使用済メモリ{{usedMemory}}GiB・ゲーム割当メモリ{{allocatedMemory}}GiB・総メモリ{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "プロセス優先度",
@@ -1762,7 +1762,7 @@
   },
   "MemoryStatusProgress": {
     "title": "メモリ状況",
-    "info": "使用済メモリ {{used}} / {{total}} GB",
+    "info": "使用済メモリ {{used}} / {{total}} GiB",
     "label": {
       "now": "使用済",
       "maxAllocation": "Minecraft の最大割当量"

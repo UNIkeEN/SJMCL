@@ -781,7 +781,7 @@
       "includedFiles": "所納之案",
       "exportOptions": "錄出之選",
       "packWithLauncher": "納啟者於包",
-      "minMemory": "至低憶（MB）",
+      "minMemory": "至低憶（MiB）",
       "noCreateRemoteFiles": "弗用遠案",
       "skipCurseForgeRemoteFiles": "略 CurseForge 遠案"
     },
@@ -911,7 +911,7 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
-          "placeholder": "單位 MB"
+          "placeholder": "單位 MiB"
         },
         "environmentVariable": {
           "title": "環境易量"
@@ -1277,7 +1277,7 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體{{usedMemory}}GB；戲分配{{allocatedMemory}}GB；總記憶體{{totalMemory}}GB"
+          "description": "已用記憶體{{usedMemory}}GiB；戲分配{{allocatedMemory}}GiB；總記憶體{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "程序優先順序",
@@ -1762,7 +1762,7 @@
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "方使用",
       "maxAllocation": "為 礦藝 分配的最大值"

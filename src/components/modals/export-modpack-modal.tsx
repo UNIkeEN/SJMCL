@@ -522,7 +522,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
                       />
                     </NumberInput>
                     <Text fontSize="xs" className="secondary-text">
-                      MB
+                      MiB
                     </Text>
                   </HStack>
                 ),
