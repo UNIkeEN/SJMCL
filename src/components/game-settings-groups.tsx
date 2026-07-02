@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
@@ -43,17 +43,30 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
 
-  // use state and useEffect to track and render
-  const [gameWindowWidth, setGameWindowWidth] = useState<number>(400);
-  const [gameWindowHeight, setGameWindowHeight] = useState<number>(300);
-  const [maxMemAllocation, setMaxMemAllocation] = useState<number>(0);
-  const [sliderMaxMemAllocation, setSliderMaxMemAllocation] =
-    useState<number>(0);
-  const [customTitle, setCustomTitle] = useState<string>("");
-  const [customInfo, setCustomInfo] = useState<string>("");
-  const [serverUrl, setServerUrl] = useState<string>("");
+  // Stage editable values locally before committing them to config.
+  const [gameWindowWidth, setGameWindowWidth] = useState<number>(
+    gameConfig.gameWindow.resolution.width
+  );
+  const [gameWindowHeight, setGameWindowHeight] = useState<number>(
+    gameConfig.gameWindow.resolution.height
+  );
+  const [maxMemAllocation, setMaxMemAllocation] = useState<number>(
+    gameConfig.performance.maxMemAllocation
+  );
+  const [sliderMaxMemAllocation, setSliderMaxMemAllocation] = useState<number>(
+    gameConfig.performance.maxMemAllocation
+  );
+  const [customTitle, setCustomTitle] = useState<string>(
+    gameConfig.gameWindow.customTitle
+  );
+  const [customInfo, setCustomInfo] = useState<string>(
+    gameConfig.gameWindow.customInfo
+  );
+  const [serverUrl, setServerUrl] = useState<string>(
+    gameConfig.gameServer.serverUrl
+  );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setGameWindowWidth(gameConfig.gameWindow.resolution.width);
     setGameWindowHeight(gameConfig.gameWindow.resolution.height);
     setMaxMemAllocation(gameConfig.performance.maxMemAllocation);
@@ -361,16 +374,14 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                       step={16}
                       w={32}
                       colorScheme={primaryColor}
+                      focusThumbOnChange={false}
                       value={sliderMaxMemAllocation}
                       onChange={(value) => {
                         setSliderMaxMemAllocation(value);
                         setMaxMemAllocation(value);
                       }}
-                      onBlur={() => {
-                        updateGameConfig(
-                          "performance.maxMemAllocation",
-                          maxMemAllocation
-                        );
+                      onChangeEnd={(value) => {
+                        updateGameConfig("performance.maxMemAllocation", value);
                       }}
                     >
                       <SliderTrack>
