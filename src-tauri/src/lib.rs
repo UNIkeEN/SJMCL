@@ -142,6 +142,8 @@ pub async fn run() {
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
         instance::commands::change_optifine,
+        instance::commands::remove_mod_loader,
+        instance::commands::remove_optifine,
         instance::commands::retrieve_modpack_meta_info,
         instance::commands::add_custom_instance_icon,
         instance::commands::retrieve_exportable_file_list,
