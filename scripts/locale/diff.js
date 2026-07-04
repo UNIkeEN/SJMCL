@@ -4,8 +4,8 @@
  * compared to a reference locale file.
  *
  * Usage:
- *   npm run locale diff <base_locale> <target_locales>
- *   e.g. npm run locale diff en zh-Hans
+ *   pnpm locale diff <base_locale> <target_locales>
+ *   e.g. pnpm locale diff en zh-Hans
  *
  * Parameters:
  *   base_locale (optional) : str, defaults to zh-Hans, the base language

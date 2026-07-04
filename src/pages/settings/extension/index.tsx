@@ -200,7 +200,7 @@ const ExtensionSettingsPage = () => {
         key={extension.identifier}
         title={extension.name}
         titleExtra={
-          <Text fontSize="xs" className="secondary-text">
+          <Text fontSize="xs" className="secondary-text ellipsis-text">
             {[extension.identifier, extension.version]
               .filter(Boolean)
               .join(" · ")}
@@ -210,7 +210,7 @@ const ExtensionSettingsPage = () => {
         childrenOnHover
         titleLineWrap={false}
         maxTitleLines={1}
-        maxDescriptionLines={2}
+        maxDescriptionLines={1}
         prefixElement={
           <Avatar
             boxSize="28px"

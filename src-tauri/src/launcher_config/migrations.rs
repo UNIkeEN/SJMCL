@@ -1,7 +1,8 @@
-use crate::launcher_config::models::AppearanceBackgroundConfig;
-use serde::de::Deserializer;
 use serde::Deserialize;
+use serde::de::Deserializer;
 use serde_json::Value;
+
+use crate::launcher_config::models::AppearanceBackgroundConfig;
 
 // Migrate old built-in wallpaper choices to the new default preset.
 const LEGACY_BUILT_IN_BACKGROUNDS: &[&str] = &["%built-in:Jokull", "%built-in:GNLXC"];

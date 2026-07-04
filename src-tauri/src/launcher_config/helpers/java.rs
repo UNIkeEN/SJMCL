@@ -1,10 +1,5 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::launcher_config::models::{JavaInfo, LauncherConfig};
-use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
-use crate::resource::models::ResourceType;
-use crate::tasks::{download::DownloadParam, PTaskParam};
-use crate::utils::fs::{manage_permissions_unix, PermissionOperation};
 use serde_json::Value;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -12,6 +7,12 @@ use std::process::Command;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::launcher_config::models::{JavaInfo, LauncherConfig};
+use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
+use crate::resource::models::ResourceType;
+use crate::tasks::{PTaskParam, download::DownloadParam};
+use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 
 #[cfg(target_os = "windows")]
 use {crate::utils::sys_info::get_all_drive_mount_points, std::os::windows::process::CommandExt};
@@ -105,17 +106,17 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   #[cfg(any(target_os = "macos", target_os = "linux"))]
   let command_output = Command::new("which").args(["-a", "java"]).output();
 
-  if let Ok(output) = command_output {
-    if output.status.success() {
-      let stdout = String::from_utf8_lossy(&output.stdout);
-      for line in stdout.lines() {
-        let path = line.trim();
-        if path.is_empty() {
-          continue;
-        }
-        if let Ok(resolved_path) = fs::canonicalize(path) {
-          paths.insert(resolved_path.to_string_lossy().into_owned());
-        }
+  if let Ok(output) = command_output
+    && output.status.success()
+  {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    for line in stdout.lines() {
+      let path = line.trim();
+      if path.is_empty() {
+        continue;
+      }
+      if let Ok(resolved_path) = fs::canonicalize(path) {
+        paths.insert(resolved_path.to_string_lossy().into_owned());
       }
     }
   }
@@ -146,19 +147,19 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
   // For macOS, run "/usr/libexec/java_home -V" additionally
   #[cfg(target_os = "macos")]
   {
-    if let Ok(output) = Command::new("/usr/libexec/java_home").arg("-V").output() {
-      if output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        for line in stderr.lines() {
-          let trimmed = line.trim();
-          // Don't use `split_whitespace().last()` because the path may contain spaces.
-          if let Some(idx) = trimmed.rfind('"') {
-            let path_part = &trimmed[idx + 1..].trim();
-            if !path_part.is_empty() {
-              let java_bin = PathBuf::from(path_part).join("bin/java");
-              if let Ok(resolved_path) = fs::canonicalize(java_bin) {
-                paths.insert(resolved_path.to_string_lossy().into_owned());
-              }
+    if let Ok(output) = Command::new("/usr/libexec/java_home").arg("-V").output()
+      && output.status.success()
+    {
+      let stderr = String::from_utf8_lossy(&output.stderr);
+      for line in stderr.lines() {
+        let trimmed = line.trim();
+        // Don't use `split_whitespace().last()` because the path may contain spaces.
+        if let Some(idx) = trimmed.rfind('"') {
+          let path_part = &trimmed[idx + 1..].trim();
+          if !path_part.is_empty() {
+            let java_bin = PathBuf::from(path_part).join("bin/java");
+            if let Ok(resolved_path) = fs::canonicalize(java_bin) {
+              paths.insert(resolved_path.to_string_lossy().into_owned());
             }
           }
         }
@@ -285,10 +286,10 @@ fn scan_java_paths_in_common_directories(app: &AppHandle) -> Vec<String> {
     if let Ok(entries) = fs::read_dir(PathBuf::from("/opt/homebrew/Cellar")) {
       for entry in entries.flatten() {
         let path = entry.path();
-        if let Some(name) = path.file_name() {
-          if name.to_string_lossy().starts_with("openjdk") {
-            java_paths.extend(search_java_homes_in_directory(path));
-          }
+        if let Some(name) = path.file_name()
+          && name.to_string_lossy().starts_with("openjdk")
+        {
+          java_paths.extend(search_java_homes_in_directory(path));
         }
       }
     }
@@ -355,7 +356,7 @@ fn scan_java_paths_in_windows_registry() -> Vec<String> {
         version_name
           .chars()
           .next()
-          .map_or(false, |c| c.is_ascii_digit())
+          .is_some_and(|c| c.is_ascii_digit())
       })
       .filter_map(|version_name| {
         base_key
@@ -401,10 +402,10 @@ pub fn get_java_info_from_release_file(java_path: &str) -> (Option<String>, Opti
       if let Some(val) = line.split('=').nth(1) {
         full_version = Some(val.trim().trim_matches('"').to_string());
       }
-    } else if line.starts_with("IMPLEMENTOR=") {
-      if let Some(val) = line.split('=').nth(1) {
-        vendor = Some(val.trim().trim_matches('"').to_string());
-      }
+    } else if line.starts_with("IMPLEMENTOR=")
+      && let Some(val) = line.split('=').nth(1)
+    {
+      vendor = Some(val.trim().trim_matches('"').to_string());
     }
   }
 
@@ -437,15 +438,15 @@ pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<St
 
   for line in output_str.lines() {
     let trimmed = line.trim();
-    if trimmed.starts_with("java.vendor = ") {
-      if let Some(val) = line.split('=').nth(1) {
-        vendor = Some(val.trim().trim_matches('"').to_string());
-      }
+    if trimmed.starts_with("java.vendor = ")
+      && let Some(val) = line.split('=').nth(1)
+    {
+      vendor = Some(val.trim().trim_matches('"').to_string());
     }
-    if trimmed.starts_with("java.version = ") {
-      if let Some(val) = line.split('=').nth(1) {
-        full_version = Some(val.trim().trim_matches('"').to_string());
-      }
+    if trimmed.starts_with("java.version = ")
+      && let Some(val) = line.split('=').nth(1)
+    {
+      full_version = Some(val.trim().trim_matches('"').to_string());
     }
   }
 
@@ -502,13 +503,12 @@ pub async fn build_mojang_java_download_params(
   let mut json: Option<Value> = None;
 
   for source_type in priority_list.iter() {
-    if let Ok(api_url) = get_download_api(*source_type, ResourceType::MojangJava) {
-      if let Ok(response) = client.get(api_url).send().await {
-        if let Ok(parsed_json) = response.json::<Value>().await {
-          json = Some(parsed_json);
-          break;
-        }
-      }
+    if let Ok(api_url) = get_download_api(*source_type, ResourceType::MojangJava)
+      && let Ok(response) = client.get(api_url).send().await
+      && let Ok(parsed_json) = response.json::<Value>().await
+    {
+      json = Some(parsed_json);
+      break;
     }
   }
 

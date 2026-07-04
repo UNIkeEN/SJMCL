@@ -1,9 +1,10 @@
-use crate::error::SJMCLResult;
-use crate::resource::models::{OtherResourceSource, ResourceError};
-use crate::utils::fs::get_app_resource_filepath;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+
+use crate::resource::models::{OtherResourceSource, ResourceError};
+use crate::utils::fs::get_app_resource_filepath;
 
 fn clean_keyword(word: &str) -> Option<String> {
   const STOP_WORDS: &[&str] = &["a", "of", "the", "for", "mod", "with", "and", "ftb"];
@@ -142,22 +143,22 @@ impl MCModRecord {
   pub fn get_display_name(&self) -> String {
     let mut builder = String::new();
 
-    if let Some(abbr) = &self.abbr {
-      if !abbr.trim().is_empty() {
-        builder.push('[');
-        builder.push_str(abbr.trim());
-        builder.push_str("] ");
-      }
+    if let Some(abbr) = &self.abbr
+      && !abbr.trim().is_empty()
+    {
+      builder.push('[');
+      builder.push_str(abbr.trim());
+      builder.push_str("] ");
     }
 
     builder.push_str(&self.name);
 
-    if let Some(subname) = &self.subname {
-      if !subname.trim().is_empty() {
-        builder.push_str(" (");
-        builder.push_str(subname);
-        builder.push(')');
-      }
+    if let Some(subname) = &self.subname
+      && !subname.trim().is_empty()
+    {
+      builder.push_str(" (");
+      builder.push_str(subname);
+      builder.push(')');
     }
 
     builder
@@ -404,17 +405,15 @@ pub async fn handle_search_query(app: &AppHandle, query: &str) -> SJMCLResult<St
     }
   }
 
-  if let Some((mod_record, similarity, absolute)) = best_match {
-    if absolute || similarity >= 0.9 {
-      if let Some(exact_name) = mod_record
-        .subname
-        .as_ref()
-        .or(mod_record.curseforge_slug.as_ref())
-        .or(mod_record.modrinth_slug.as_ref())
-      {
-        return Ok(exact_name.chars().take(24).collect());
-      }
-    }
+  if let Some((mod_record, similarity, absolute)) = best_match
+    && (absolute || similarity >= 0.9)
+    && let Some(exact_name) = mod_record
+      .subname
+      .as_ref()
+      .or(mod_record.curseforge_slug.as_ref())
+      .or(mod_record.modrinth_slug.as_ref())
+  {
+    return Ok(exact_name.chars().take(24).collect());
   }
 
   // Count keyword frequency across all found mods

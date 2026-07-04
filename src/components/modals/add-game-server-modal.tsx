@@ -91,6 +91,7 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
       initialFocusRef={initialRef}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

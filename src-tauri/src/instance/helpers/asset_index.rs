@@ -1,13 +1,12 @@
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::{load_json_async, save_json_async};
 use std::collections::HashMap;
 use std::path::Path;
-
-use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-use crate::error::SJMCLResult;
 use crate::instance::models::misc::InstanceError;
-use crate::storage::{load_json_async, save_json_async};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]

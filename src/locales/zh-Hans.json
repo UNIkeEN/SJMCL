@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感谢 LittleSkin 和 @tnqzh123 对登录流程设计的帮助"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "提供模组信息的简体中文翻译"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "感谢 SCL 开发团队与我们的持续交流与相互启发"
@@ -95,7 +99,7 @@
       },
       "modpack": {
         "title": "导入整合包",
-        "description": "从本地文件或互联网导入整合包（CurseForge, Modrinth 或 MultiMC 格式）"
+        "description": "从本地文件或互联网导入整合包（CurseForge、Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理游戏目录",
@@ -112,12 +116,6 @@
         "title": "下载服务端",
         "description": "下载各版本原版游戏服务端文件"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "导入整合包",
-      "desc": "将整合包文件 {{fileName}} 导入到 SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "界面字体",
           "default": "默认"
         },
+        "logFontFamily": {
+          "title": "日志字体"
+        },
         "fontSize": {
           "title": "字体大小",
           "small": "小",
@@ -445,17 +446,23 @@
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "删除认证服务器",
-      "content": "确定要删除认证服务器 “{{name}}” 吗？它将不再出现在你的服务器列表中。"
+      "content": "确定要删除认证服务器“{{name}}”吗？它将不再出现在你的服务器列表中。"
+    }
+  },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "删除好友",
+      "content": "确定要删除好友“{{name}}”吗？"
     }
   },
   "DeleteGameServerAlertDialog": {
     "title": "删除游戏服务器",
-    "content": "确定要删除游戏服务器 “{{name}}”（{{addr}}） 吗？它将会永久消失！（真的很久！）"
+    "content": "确定要删除游戏服务器“{{name}}”（{{addr}}）吗？它将会永久消失！（真的很久！）"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "删除游戏实例",
-      "content": "确定要删除游戏实例 “{{instanceName}}” 吗？它将会永久消失！（真的很久！）",
+      "content": "确定要删除游戏实例“{{instanceName}}”吗？它将会永久消失！（真的很久！）",
       "warning": {
         "withVerIso": "请注意，由于此实例已启用版本隔离，删除该实例将导致存档等数据一同被删除。如需保留相关数据，请先迁移。",
         "woVerIso": "请注意，如果该实例此前启用过版本隔离，未迁移的存档等数据将一同被删除。"
@@ -465,13 +472,13 @@
   "DeleteModAlertDialog": {
     "dialog": {
       "title": "删除模组",
-      "content": "确定要删除游戏实例 “{{instanceName}}” 中的模组 “{{modName}}” 吗？"
+      "content": "确定要删除游戏实例“{{instanceName}}”中的模组“{{modName}}”吗？"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "删除角色",
-      "content": "确定要删除角色 “{{name}}” 吗？这一操作不可逆！"
+      "content": "确定要删除角色“{{name}}”吗？这一操作不可逆！"
     }
   },
   "DevToolbar": {
@@ -587,18 +594,11 @@
     },
     "proxy": {
       "title": "代理",
+      "headExtra": "以下设置重启后生效",
       "settings": {
         "enabled": {
-          "title": "启用代理"
-        },
-        "type": {
-          "title": "代理类型"
-        },
-        "host": {
-          "title": "服务器"
-        },
-        "port": {
-          "title": "端口"
+          "title": "为下载任务启用代理",
+          "description": "此项关闭时，启动器将自动使用系统代理下载资源"
         }
       }
     }
@@ -614,6 +614,13 @@
       "alpha": "内测版",
       "beta": "公测版",
       "release": "正式版"
+    },
+    "button": {
+      "cancel": "取消",
+      "download": "下载",
+      "installToInstance": "安装到实例",
+      "installToCurrentInstance": "安装到当前实例",
+      "install": "安装"
     }
   },
   "DownloadTasksPage": {
@@ -642,6 +649,7 @@
       "resourcepack": "资源包",
       "shader": "光影",
       "modpack": "整合包",
+      "modpack-wo-install": "整合包",
       "datapack": "数据包",
       "patch-files": "修补游戏文件 {{param}}",
       "mod-update": "更新模组",
@@ -773,7 +781,7 @@
       "includedFiles": "包含文件",
       "exportOptions": "导出选项",
       "packWithLauncher": "打包启动器",
-      "minMemory": "最低内存 (MB)",
+      "minMemory": "最低内存 (MiB)",
       "noCreateRemoteFiles": "禁用远程文件",
       "skipCurseForgeRemoteFiles": "跳过 CurseForge 远程文件"
     },
@@ -859,6 +867,9 @@
     "title": "更新扩展",
     "body": "扩展 {{identifier}} 已从 {{src}} 下载新版本 {{version}}，是否确认安装？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} 等（共 {{count}} 个）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高级游戏设置",
     "topWarning": "高级游戏设置仅提供给专业玩家使用。修改以下选项可能导致游戏无法启动。除非您充分了解其中的意义，否则请不要修改这些选项！",
@@ -900,13 +911,22 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "内存永久保存区域",
-          "placeholder": "单位 MB"
+          "placeholder": "单位 MiB"
         },
         "environmentVariable": {
           "title": "环境变量"
         },
         "args": {
           "title": "其他 JVM 参数"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "为游戏进程启用代理",
+          "description": "此项关闭时，游戏将自动使用系统代理"
         }
       }
     },
@@ -918,7 +938,10 @@
           "title": "游戏文件完整性检查策略",
           "disable": "不检查",
           "normal": "普通检查",
-          "full": "增强检查"
+          "full": "增强检查",
+          "disableDesc": "",
+          "normalDesc": "检查文件是否存在，缺失时自动补全",
+          "fullDesc": "检查文件 SHA1 完整性，缺失时自动补全（耗时较长）"
         },
         "dontCheckJvmValidity": {
           "title": "不检查 JVM 与游戏的兼容性"
@@ -927,8 +950,15 @@
           "title": "不尝试自动替换本地库"
         },
         "useLwjglUnsafeAgent": {
-          "title": "启用 LWJGL Unsafe Agent",
+          "title": "使用 LWJGL Unsafe Agent",
           "description": "在受影响的 Minecraft 版本使用来自 HMCL 的 <hmcl>LWJGL Unsafe Agent</hmcl> 修复性能问题"
+        },
+        "useCustomAuthlibInjector": {
+          "title": "使用自定义 Authlib Injector",
+          "description": {
+            "notSet": "未设置自定义路径，将使用内置版本"
+          },
+          "select": "修改"
         },
         "useNativeGlfw": {
           "title": "使用系统 GLFW（仅 Linux）"
@@ -952,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Java 版本"
     },
+    "button": {
+      "exportGameInfo": "导出游戏崩溃报告",
+      "gameLogs": "游戏日志",
+      "help": "帮助"
+    },
+    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "崩溃信息",
       "OPENJ9": "当前实例无法在 OpenJ9 JVM 上运行，请使用 HotSpot JVM。",
@@ -1019,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare 模组错误，无法继续运行。请尝试更新或删除该模组。",
       "FORGE_LITELOADER_CONFLICT": "当前实例由于 Forge 与 LiteLoader 冲突，无法继续运行。请尝试删除 LiteLoader 或更换 Forge 版本。",
       "UNKNOWN": "暂时无法分析该错误，请查看游戏日志或导出错误崩溃报告。"
-    },
-    "button": {
-      "exportGameInfo": "导出游戏崩溃报告",
-      "gameLogs": "游戏日志",
-      "help": "帮助"
-    },
-    "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图"
+    }
   },
   "GameLogPage": {
     "placeholder": "输入关键词筛选",
@@ -1102,7 +1133,8 @@
     "version": {
       "dev": "开发版本",
       "nightly": "夜间构建版本",
-      "beta": "测试版本"
+      "beta": "测试版本",
+      "test-build": "测试构建版本"
     },
     "viewOnWiki": "在 Minecraft Wiki 中查看"
   },
@@ -1124,7 +1156,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "自动设置实例语言",
-          "description": "启用后，新建实例的语言将自动设置为简体中文，这将同时跳过辅助功能设置"
+          "description": "启用后，新建实例的语言将自动设置为启动器语言，这将同时跳过游戏内辅助功能设置"
         }
       }
     },
@@ -1222,14 +1254,16 @@
       "settings": {
         "resolution": {
           "title": "游戏分辨率",
-          "switch": "全屏"
+          "preset": "预设",
+          "switch": "全屏",
+          "warning": "分辨率可能超出显示器上限"
         },
         "customTitle": {
           "title": "自定义窗口标题"
         },
         "customInfo": {
           "title": "自定义信息",
-          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角"
+          "description": "将显示在游戏主界面左下角与 F3 调试页面左上角（仅在 Minecraft 26.1 之前的版本生效）"
         }
       }
     },
@@ -1244,7 +1278,7 @@
         },
         "memoryUsage": {
           "title": "内存占用情况",
-          "description": "已用内存{{usedMemory}}GB；游戏分配{{allocatedMemory}}GB；总内存{{totalMemory}}GB"
+          "description": "已用内存{{usedMemory}}GiB；游戏分配{{allocatedMemory}}GiB；总内存{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "进程优先级",
@@ -1297,7 +1331,7 @@
     },
     "step3": {
       "title": "发现页",
-      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开 “聚合搜索”。"
+      "content": "在此处浏览 Minecraft 与社区新闻，发现并下载各类相关资源，如模组、地图、整合包等。<br/>另外，您也可以通过键盘快捷键 <key>{{keyname}}</key> + <key>F</key> 快速打开“聚合搜索”。"
     },
     "step4": {
       "title": "Minecraft，启动！",
@@ -1344,6 +1378,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "探索世界上最大的 Minecraft 模组存储库"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "开源、现代的 Minecraft 资源平台"
         }
       }
     },
@@ -1373,8 +1411,14 @@
     "header": {
       "title": "从其他启动器导入账户信息"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1620,6 +1664,17 @@
       "description": "确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英语",
+      "es": "西班牙语",
+      "fr": "法语",
+      "ja": "日语",
+      "lzh": "",
+      "zh-Hans": "",
+      "zh-Hant": ""
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次运行异常退出",
@@ -1667,6 +1722,12 @@
     "notCompatibleWith": "与 {{item}} 不兼容",
     "noVersionSelected": "未选择版本"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "导入整合包",
+      "desc": "将整合包文件 {{fileName}} 导入到 SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "当前页面由扩展 {{name}} 提供"
   },
@@ -1675,7 +1736,7 @@
     "default": "默认",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "本地上传",
+    "upload": "选择本地皮肤",
     "skin": "皮肤",
     "cape": "披风",
     "model": {
@@ -1702,7 +1763,7 @@
   },
   "MemoryStatusProgress": {
     "title": "内存状态",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "正在使用",
       "maxAllocation": "为 Minecraft 分配的最大值"
@@ -1711,9 +1772,44 @@
   "MenuSelector": {
     "selectedCount": "已选 {{count}} 项"
   },
+  "MicrosoftFriendsModal": {
+    "title": "微软账户 {{name}} 的 Minecraft 好友",
+    "placeholder": {
+      "playerName": "输入玩家名称以添加好友"
+    },
+    "group": {
+      "requests": "请求",
+      "friends": "好友"
+    },
+    "request": {
+      "incoming": "收到的好友请求",
+      "outgoing": "已发送的好友请求"
+    },
+    "button": {
+      "add": "添加",
+      "accept": "接受",
+      "decline": "拒绝",
+      "revoke": "撤销",
+      "remove": "删除好友",
+      "xboxSettings": "XBOX 设置"
+    },
+    "empty": {
+      "requests": "暂无请求",
+      "friends": "暂无好友"
+    },
+    "status": {
+      "INVITED": "邀请你加入其世界",
+      "ONLINE": "在线",
+      "PLAYING_OFFLINE": "单人游戏中",
+      "PLAYING_REALMS": "正在玩 Realms",
+      "PLAYING_SERVER": "正在服务器中",
+      "PLAYING_HOSTED_SERVER": "开放局域网",
+      "OFFLINE": "离线"
+    }
+  },
   "NoSuitableJavaDialog": {
     "title": "未找到合适的 Java 运行时",
-    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击 “确定” 以前往 Java 管理页面手动添加或下载 Java。"
+    "body": "对于当前实例，没有合适的 Java 运行时可供选择。点击“确定”以前往 Java 管理页面手动添加或下载 Java。"
   },
   "NotFoundPage": {
     "text": "页面不存在，即将在 {{seconds}} 秒后跳转"
@@ -1744,6 +1840,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "好友",
       "manageSkin": "管理皮肤",
       "viewSkin": "查看皮肤",
       "delete": "删除此角色",
@@ -1752,6 +1849,17 @@
     "toast": {
       "refreshing": "正在刷新角色信息",
       "deleting": "正在删除角色"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理类型"
+    },
+    "host": {
+      "title": "服务器"
+    },
+    "port": {
+      "title": "端口"
     }
   },
   "ReLoginPlayerModal": {
@@ -2056,7 +2164,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "启动器更新",
     "body": "新版本已完成下载，重新启动 SJMCL 以完成更新",
-    "bodyMSI": "新版本已完成下载，点击安装将关闭 SJMCL 并运行安装程序",
+    "bodyWinInstaller": "新版本已完成下载，点击安装将关闭 SJMCL 并运行安装程序",
     "button": {
       "restart": "重新启动",
       "install": "安装",
@@ -2229,11 +2337,11 @@
             "CANCELLED": "已取消",
             "INVALID": "无效的认证服务器地址",
             "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft 并创建角色",
-            "XSTS_BANNED": "您的账号已被 Xbox 封禁",
+            "XSTS_BANNED": "您的账号已被 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "您的账号受到家长管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "您的微软账号未关联 Xbox 账号，请前往 minecraft.net 创建",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能继续",
-            "XSTS_REGION_BANNED": "您所在的国家或地区不受 Xbox Live 支持",
+            "XSTS_NO_XBOX_ACCOUNT": "您的微软账号未关联 XBOX 账号，请前往 minecraft.net 创建",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 XBOX 服务条款才能继续",
+            "XSTS_REGION_BANNED": "您所在的国家或地区不受 XBOX Live 支持",
             "XSTS_CHILD_ACCOUNT": "您的账号为未成年账号，请前往 family.microsoft.com 进行家长授权",
             "XSTS_UNKNOWN_ERROR": "XSTS 验证时发生未知错误"
           }
@@ -2251,11 +2359,11 @@
             "INVALID": "不支持离线角色刷新",
             "CANCELLED": "已取消",
             "NO_MINECRAFT_PROFILE": "未找到角色，请确认是否已购买 Minecraft 并创建角色",
-            "XSTS_BANNED": "您的账号已被 Xbox 封禁",
+            "XSTS_BANNED": "您的账号已被 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "您的账号受到家长管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "您的微软账号未关联 Xbox 账号，请前往 minecraft.net 创建",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 Xbox 服务条款才能继续",
-            "XSTS_REGION_BANNED": "您所在的国家或地区不受 Xbox Live 支持",
+            "XSTS_NO_XBOX_ACCOUNT": "您的微软账号未关联 XBOX 账号，请前往 minecraft.net 创建",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 XBOX 服务条款才能继续",
+            "XSTS_REGION_BANNED": "您所在的国家或地区不受 XBOX Live 支持",
             "XSTS_CHILD_ACCOUNT": "您的账号为未成年账号，请前往 family.microsoft.com 进行家长授权",
             "XSTS_UNKNOWN_ERROR": "XSTS 验证时发生未知错误"
           }
@@ -2343,6 +2451,41 @@
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NETWORK_ERROR": "无法连接至认证服务器",
             "INVALID": "不支持离线角色刷新"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "好友列表获取成功",
+        "error": {
+          "title": "获取微软好友列表失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "当前角色不是微软账户",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至 Minecraft 服务",
+            "FORBIDDEN": "无权限，请检查您的账户设置",
+            "TOO_MANY_REQUESTS": "请求过于频繁，请稍后再试",
+            "SERVICE_UNAVAILABLE": "Minecraft 服务暂时不可用"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "好友操作成功",
+        "error": {
+          "title": "微软好友操作失败",
+          "description": {
+            "NOT_FOUND": "角色不存在",
+            "INVALID": "好友参数无效",
+            "EXPIRED": "令牌已过期，请重新登录",
+            "PARSE_ERROR": "服务器返回数据格式错误",
+            "NETWORK_ERROR": "无法连接至 Minecraft 服务",
+            "FORBIDDEN": "当前无法添加，请检查您与对方账户的相关设置",
+            "TOO_MANY_REQUESTS": "请求过于频繁，请稍后再试",
+            "SERVICE_UNAVAILABLE": "Minecraft 服务暂时不可用",
+            "UNKNOWN_PROFILE": "目标玩家不存在",
+            "CANNOT_ADD_SELF": "不能添加自己为好友",
+            "DUPLICATED_PROFILES": "重复的好友操作请求"
           }
         }
       },
@@ -2611,7 +2754,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "资源复制成功",
         "error": {
           "title": "复制资源失败",
@@ -2777,6 +2920,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "修改 OptiFine 失败"
         }
       },
       "retrieveModpackMetaInfo": {

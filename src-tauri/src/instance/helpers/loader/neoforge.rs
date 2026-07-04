@@ -1,3 +1,4 @@
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Read;
@@ -6,7 +7,6 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::error::SJMCLResult;
 use crate::instance::helpers::client_json::{LaunchArgumentTemplate, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -15,9 +15,9 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
+use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
-use crate::tasks::PTaskParam;
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],
@@ -139,10 +139,10 @@ pub async fn download_neoforge_libraries(
         fs::create_dir_all(&outpath)?;
       } else {
         // Create parent directories if they don't exist
-        if let Some(p) = outpath.parent() {
-          if !p.exists() {
-            fs::create_dir_all(p)?;
-          }
+        if let Some(p) = outpath.parent()
+          && !p.exists()
+        {
+          fs::create_dir_all(p)?;
         }
 
         // Extract file
@@ -204,15 +204,15 @@ pub async fn download_neoforge_libraries(
 
   for processor in profile.processors.iter_mut() {
     if processor.args.contains(&"DOWNLOAD_MOJMAPS".to_string()) {
-      if let Some(mojmaps) = args_map.get("{MOJMAPS}") {
-        if let Some(client_mappings) = client_info.downloads.get("client_mappings") {
-          task_params.push(PTaskParam::Download(DownloadParam {
-            src: client_mappings.url.parse()?,
-            dest: lib_dir.join(mojmaps),
-            filename: None,
-            sha1: Some(client_mappings.sha1.clone()),
-          }));
-        }
+      if let Some(mojmaps) = args_map.get("{MOJMAPS}")
+        && let Some(client_mappings) = client_info.downloads.get("client_mappings")
+      {
+        task_params.push(PTaskParam::Download(DownloadParam {
+          src: client_mappings.url.parse()?,
+          dest: lib_dir.join(mojmaps),
+          filename: None,
+          sha1: Some(client_mappings.sha1.clone()),
+        }));
       }
       processor.args.clear();
       continue;
@@ -263,9 +263,11 @@ pub async fn download_neoforge_libraries(
   let neoforge_info: McClientInfo = serde_json::from_str(&version)?;
   client_info.main_class = neoforge_info.main_class.clone();
 
+  let mut loader_libraries = vec![];
   for lib in neoforge_info.libraries.iter() {
     let name = &lib.name;
     add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
+    add_library_entry(&mut loader_libraries, name, Some(lib.clone()))?;
 
     let url = lib
       .downloads
@@ -308,6 +310,7 @@ pub async fn download_neoforge_libraries(
     inherits_from: neoforge_info.inherits_from.clone(),
     main_class: neoforge_info.main_class.clone(),
     arguments: Some(new_args.clone()),
+    libraries: loader_libraries,
     ..Default::default()
   });
 

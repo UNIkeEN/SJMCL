@@ -1,6 +1,20 @@
 pub mod misc;
 
-use crate::error::SJMCLResult;
+use hex;
+use misc::{
+  CurseForgeFileInfo, CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
+  CurseForgeVersionPackSearchRes, cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id,
+  cvt_type_to_class_id, cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
+  map_curseforge_file_to_version_pack,
+};
+use murmur2::murmur2;
+use serde_json::json;
+use sha1::{Digest, Sha1};
+use sjmcl_types::error::SJMCLResult;
+use std::collections::HashMap;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::resource::helpers::misc::apply_other_resource_enhancements;
 use crate::resource::helpers::mod_db::handle_search_query;
 use crate::resource::models::{
@@ -8,19 +22,6 @@ use crate::resource::models::{
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
-use hex;
-use misc::{
-  cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id, cvt_type_to_class_id,
-  cvt_version_to_type_id, get_curseforge_api, make_curseforge_request,
-  map_curseforge_file_to_version_pack, CurseForgeFileInfo, CurseForgeFingerprintRes,
-  CurseForgeGetProjectRes, CurseForgeSearchRes, CurseForgeVersionPackSearchRes,
-};
-use murmur2::murmur2;
-use serde_json::json;
-use sha1::{Digest, Sha1};
-use std::collections::HashMap;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";
@@ -164,6 +165,7 @@ pub async fn fetch_resource_version_packs_curseforge(
     resource_id,
     mod_loader,
     game_versions,
+    ..
   } = query;
 
   loop {
@@ -176,13 +178,13 @@ pub async fn fetch_resource_version_packs_curseforge(
         cvt_mod_loader_to_id(mod_loader).to_string(),
       );
     }
-    if let Some(version) = game_versions.first() {
-      if version != ALL_FILTER {
-        params.insert(
-          "gameVersionTypeId".to_string(),
-          cvt_version_to_type_id(version).to_string(),
-        );
-      }
+    if let Some(version) = game_versions.first()
+      && version != ALL_FILTER
+    {
+      params.insert(
+        "gameVersionTypeId".to_string(),
+        cvt_version_to_type_id(version).to_string(),
+      );
     }
     params.insert("index".to_string(), (page * page_size).to_string());
     params.insert("pageSize".to_string(), page_size.to_string());

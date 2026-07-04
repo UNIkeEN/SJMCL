@@ -203,6 +203,7 @@ const AlertResourceDependencyModal: React.FC<
     <Modal
       scrollBehavior="inside"
       size={{ base: "md", lg: "lg", xl: "xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />
@@ -249,7 +250,10 @@ const AlertResourceDependencyModal: React.FC<
             </Button>
             <Button
               colorScheme={primaryColor}
-              onClick={downloadOriginalResource}
+              onClick={() => {
+                modalProps.onClose();
+                downloadOriginalResource();
+              }}
             >
               {t("AlertResourceDependencyModal.button.continue")}
             </Button>

@@ -15,8 +15,13 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
+import Editable from "@/components/common/editable";
+import { FormattedMCText } from "@/components/common/formatted-mc-text";
+import MarkdownContainer from "@/components/common/markdown-container";
+import { MenuSelector } from "@/components/common/menu-selector";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
+import Segmented from "@/components/common/segmented";
 import { WrapCard, WrapCardGroup } from "@/components/common/wrap-card";
 import ExtensionContributionWrapper from "@/components/extension/contribution-wrapper";
 import { useLauncherConfig } from "@/contexts/config";
@@ -61,9 +66,14 @@ interface ExtensionContextRegistrationApi {
   React: typeof React;
   ChakraUI: typeof ChakraUI;
   Components: {
+    Editable: typeof Editable;
+    FormattedMCText: typeof FormattedMCText;
+    MarkdownContainer: typeof MarkdownContainer;
+    MenuSelector: typeof MenuSelector;
     OptionItem: typeof OptionItem;
     OptionItemGroup: typeof OptionItemGroup;
     Section: typeof Section;
+    Segmented: typeof Segmented;
     WrapCard: typeof WrapCard;
     WrapCardGroup: typeof WrapCardGroup;
   };
@@ -340,10 +350,7 @@ export const ExtensionHostContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
 
-  if (
-    router.pathname === "/standalone/game-log" ||
-    router.pathname === "/standalone/game-error"
-  ) {
+  if (router.pathname === "/standalone/game-log") {
     return <>{children}</>;
   }
 
@@ -527,7 +534,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
               reject(error);
             }
           },
-          onCancelCallback: () => reject(new Error("Cancelled")),
+          onCancelCallback: () => resolve(),
         });
       });
     },
@@ -1085,12 +1092,14 @@ const ActiveExtensionHostContextProvider: React.FC<{
           UtilsService.deleteDirectory
         );
       },
+      toast,
       logger,
       reloadSelf: () => reloadExtension(extension.identifier),
       updateSelf: async (src: string, newVersion: string) =>
         await scheduleExtensionUpdate(extension, src, newVersion),
     }),
     [
+      toast,
       invoke,
       navigate,
       openExternalLink,
@@ -1245,6 +1254,12 @@ const ActiveExtensionHostContextProvider: React.FC<{
     [getScriptUrl]
   );
 
+  // Skip home widget and settings page registration in standalone windows,
+  // since neither is rendered outside the main window.
+  const isStandalonePageRef = useRef(
+    router.pathname.startsWith("/standalone/")
+  );
+
   const activateExtension = useCallback(
     async (extension: ExtensionInfo, signature: string) => {
       const { factory, scriptElement } = await loadExtensionFactory(
@@ -1256,9 +1271,14 @@ const ActiveExtensionHostContextProvider: React.FC<{
         React,
         ChakraUI,
         Components: {
+          Editable,
+          FormattedMCText,
+          MarkdownContainer,
+          MenuSelector,
           OptionItem,
           OptionItemGroup,
           Section,
+          Segmented,
           WrapCard,
           WrapCardGroup,
         },
@@ -1277,7 +1297,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
         ...(registration.homeWidgets || []),
       ];
 
-      if (homeWidgetDefinitions.length > 0) {
+      if (!isStandalonePageRef.current && homeWidgetDefinitions.length > 0) {
         setHomeWidgetMap((prev) => ({
           ...prev,
           [extension.identifier]: homeWidgetDefinitions.map(
@@ -1301,7 +1321,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
       }
 
       // ------- settings-page -------
-      if (registration.settingsPage) {
+      if (!isStandalonePageRef.current && registration.settingsPage) {
         setSettingsPageMap((prev) => ({
           ...prev,
           [extension.identifier]: {

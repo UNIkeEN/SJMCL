@@ -119,7 +119,7 @@ function removeRedundantKeys(source, target) {
 // Parse command-line arguments (skip node and the script path)
 const args = process.argv.slice(3);
 if (args.length < 2) {
-  console.error("Usage: npm run locale rm_redundancy <source> <target>");
+  console.error("Usage: pnpm locale rm_redundancy <source> <target>");
   process.exit(1);
 }
 

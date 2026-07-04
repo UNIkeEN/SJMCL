@@ -1,17 +1,18 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::fs::get_files_with_regex;
 use regex::Regex;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fmt::Arguments;
 use std::fs::create_dir_all;
 use std::path::PathBuf;
 use std::sync::LazyLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
-use tauri::{path::BaseDirectory, AppHandle};
+use tauri::{AppHandle, path::BaseDirectory};
 use tauri_plugin_log::fern::FormatCallback;
 use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
 use time::macros::format_description;
 use tokio::fs;
+
+use crate::utils::fs::get_files_with_regex;
 
 static LOG_FILENAME: LazyLock<String> = LazyLock::new(|| {
   let launching_id = SystemTime::now()
@@ -135,10 +136,10 @@ pub async fn purge_old_launcher_logs(app: AppHandle, days: u64) -> SJMCLResult<(
       .captures(name)
       .and_then(|c| c.get(1))
       .and_then(|m| m.as_str().parse::<u64>().ok());
-    if ts.is_some_and(|t| t < cutoff) {
-      if let Err(e) = fs::remove_file(&path).await {
-        log::warn!("Failed to remove {}: {}", path.display(), e);
-      }
+    if ts.is_some_and(|t| t < cutoff)
+      && let Err(e) = fs::remove_file(&path).await
+    {
+      log::warn!("Failed to remove {}: {}", path.display(), e);
     }
   }
 

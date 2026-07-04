@@ -1,14 +1,15 @@
-use crate::account::constants::ACCOUNTS_FILE_NAME;
-use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
-use crate::account::helpers::skin::draw_avatar;
-use crate::storage::Storage;
-use crate::utils::image::ImageWrapper;
-use crate::APP_DATA_DIR;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sjmcl_types::storage::Storage;
 use std::path::PathBuf;
 use strum_macros::{Display, EnumIter, EnumString};
 use uuid::Uuid;
+
+use crate::APP_DATA_DIR;
+use crate::account::constants::ACCOUNTS_FILE_NAME;
+use crate::account::helpers::authlib_injector::constants::PRESET_AUTH_SERVERS;
+use crate::account::helpers::skin::draw_avatar;
+use crate::utils::image::ImageWrapper;
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub enum PlayerType {
@@ -86,6 +87,7 @@ pub struct Player {
   pub auth_account: Option<String>,
   pub auth_server: Option<AuthServer>,
   pub access_token: Option<String>,
+  pub access_token_expires: Option<chrono::DateTime<chrono::Utc>>,
   pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
@@ -123,6 +125,7 @@ impl Player {
       player_type: player_info.player_type,
       auth_account: player_info.auth_account,
       access_token: player_info.access_token,
+      access_token_expires: player_info.access_token_expires,
       refresh_token: player_info.refresh_token,
       auth_server,
       textures: player_info.textures,
@@ -147,6 +150,7 @@ pub struct PlayerInfo {
   pub auth_account: Option<String>,
   pub auth_server_url: Option<String>,
   pub access_token: Option<String>,
+  pub access_token_expires: Option<chrono::DateTime<chrono::Utc>>,
   pub refresh_token: Option<String>,
   pub textures: Vec<Texture>,
 }
@@ -174,6 +178,7 @@ impl From<Player> for PlayerInfo {
       auth_account: player.auth_account,
       textures: player.textures,
       access_token: player.access_token,
+      access_token_expires: player.access_token_expires,
       refresh_token: player.refresh_token,
       auth_server_url: player
         .auth_server
@@ -330,6 +335,12 @@ pub enum AccountError {
   NotFound,
   TextureError,
   NetworkError,
+  ServiceUnavailable,
+  TooManyRequests,
+  Forbidden,
+  UnknownProfile,
+  CannotAddSelf,
+  DuplicatedProfiles,
   ParseError,
   Cancelled,
   NoDownloadApi,

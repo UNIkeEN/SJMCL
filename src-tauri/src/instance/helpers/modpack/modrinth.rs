@@ -1,20 +1,20 @@
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use sha1::Digest;
+use sjmcl_macros::serialize_skip_none;
+use sjmcl_types::error::SJMCLResult;
 use smart_default::SmartDefault;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-
-use async_trait::async_trait;
-use serde::{Deserialize, Serialize};
-use serialize_skip_none_derive::serialize_skip_none;
 use tauri::AppHandle;
 use tokio::sync::Semaphore;
 use zip::ZipArchive;
 
-use crate::error::SJMCLResult;
 use crate::instance::helpers::modpack::export::{
-  normalize_mod_loader_version, ExportModpackOptions, ModpackExportBundle,
+  ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
@@ -23,9 +23,8 @@ use crate::resource::helpers::{
   modrinth::fetch_remote_resource_by_local_modrinth,
 };
 use crate::resource::models::OtherResourceSource;
-use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
-use sha1::Digest;
+use crate::tasks::download::DownloadParam;
 
 structstruck::strike! {
 #[strikethrough[serialize_skip_none]]
@@ -227,12 +226,11 @@ async fn build_modrinth_remote_file(
     downloads.push(remote.download_url);
   }
 
-  if !skip_curseforge {
-    if let Ok(remote) =
+  if !skip_curseforge
+    && let Ok(remote) =
       fetch_remote_resource_by_local_curseforge(app, full.to_string_lossy().as_ref()).await
-    {
-      downloads.push(remote.download_url);
-    }
+  {
+    downloads.push(remote.download_url);
   }
 
   if downloads.is_empty() {

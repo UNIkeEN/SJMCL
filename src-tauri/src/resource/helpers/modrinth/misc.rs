@@ -1,13 +1,14 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use serde::Deserialize;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
   OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
   ResourceError,
 };
-use serde::Deserialize;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 pub async fn make_modrinth_request<T, P>(
   client: &reqwest::Client,
@@ -101,6 +102,8 @@ structstruck::strike! {
   pub struct ModrinthFileInfo {
     pub url: String,
     pub filename: String,
+    #[serde(default)]
+    pub primary: bool,
     pub hashes: pub struct {
       pub sha1: String,
     },
@@ -150,8 +153,10 @@ fn normalize_modrinth_loader(loader: &str) -> Option<String> {
 
 pub fn map_modrinth_file_to_version_pack(
   res: Vec<ModrinthVersionPack>,
+  resource_type: &str,
 ) -> Vec<OtherResourceVersionPack> {
   let mut version_packs = std::collections::HashMap::new();
+  let is_modpack = resource_type == "modpack";
 
   for version in res {
     let game_versions = if version.game_versions.is_empty() {
@@ -184,21 +189,40 @@ pub fn map_modrinth_file_to_version_pack(
     };
 
     for game_version in &game_versions {
-      for loader in &loaders {
-        let file_infos = version
+      if is_modpack {
+        let file = version
           .files
           .iter()
-          .map(|file| (&version, file, normalize_modrinth_loader(loader)).into())
-          .collect::<Vec<_>>();
+          .find(|file| file.primary)
+          .or_else(|| version.files.first());
 
-        version_packs
-          .entry(game_version.clone())
-          .or_insert_with(|| OtherResourceVersionPack {
-            name: game_version.clone(),
-            items: Vec::new(),
-          })
-          .items
-          .extend(file_infos);
+        if let Some(file) = file {
+          version_packs
+            .entry(game_version.clone())
+            .or_insert_with(|| OtherResourceVersionPack {
+              name: game_version.clone(),
+              items: Vec::new(),
+            })
+            .items
+            .push((&version, file, None).into());
+        }
+      } else {
+        for loader in &loaders {
+          let file_infos = version
+            .files
+            .iter()
+            .map(|file| (&version, file, normalize_modrinth_loader(loader)).into())
+            .collect::<Vec<_>>();
+
+          version_packs
+            .entry(game_version.clone())
+            .or_insert_with(|| OtherResourceVersionPack {
+              name: game_version.clone(),
+              items: Vec::new(),
+            })
+            .items
+            .extend(file_infos);
+        }
       }
     }
   }

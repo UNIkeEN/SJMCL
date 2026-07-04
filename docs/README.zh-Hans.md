@@ -1,7 +1,7 @@
 <img src="figs/banner.png" alt="SJMCL" />
 
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
-![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?style=for-the-badge)
+![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?logo=github&style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
 ![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count_str&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
 [![Deepwiki](https://img.shields.io/badge/Ask-DeepWiki-20B2AA?logo=&style=for-the-badge)](https://deepwiki.com/UNIkeEN/SJMCL)
@@ -33,25 +33,33 @@
 
 SJMCL 目前支持以下平台：
 
-| 平台    | 系统版本            | 架构               | 提供的的分发类型                              |
+| 平台    | 系统版本            | 架构               | 提供的分发类型                              |
 |---------|---------------------|--------------------|--------------------------------------------|
-| Windows | 7 及以上           | `aarch64`, `i686`, `x86_64`  | 安装版 `.exe`，便携版 `.exe` |
+| Windows | 10 及以上         | `aarch64`, `i686`, `x86_64`  | 安装版 `.exe`，便携版 `.exe` |
 | macOS   | 10.15 及以上        | `aarch64`, `x86_64` | `.app`，`.dmg`                   |
 | Linux   | webkit2gtk 4.1 (如 Ubuntu 22.04) | `aarch64`, `x86_64` | `.deb`, `.rpm`, 便携版二进制文件 |
 
 了解更多功能与常见问题，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/docs)。
 
-### Windows 7
-
-如果您需要在 Windows 7 运行 SJMCL，请先 [下载 Microsoft Edge WebView2 运行时](https://developer.microsoft.com/zh-cn/microsoft-edge/webview2#download) 并安装之，推荐选择“常青引导程序”。
-
 <details>
 <summary><h3>从命令行安装</h3></summary>
 
 <details>
-<summary><h4>Arch Linux</h4></summary>
+<summary><h4>Linux</h4></summary>
 
-SJMCL 已上传至 Arch Linux 用户仓库（AUR）。您可以使用常见的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 安装：
+使用 Linux 一键安装脚本安装最新正式版：
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
+```
+
+不使用 root 权限安装 Linux 便携版：
+
+```bash
+curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --portable --source sjmc
+```
+
+通过常见的 [AUR 助手](https://wiki.archlinux.org/title/AUR_helpers) 从 Arch Linux 用户仓库（AUR）安装：
 
 ```bash
 yay -S sjmcl-bin
@@ -65,7 +73,44 @@ cd sjmcl-bin
 makepkg -si
 ```
 
+通过 Snap Store 安装：
+
+```bash
+sudo snap install sjmcl
+```
+
+> [!WARNING]
+> 使用 Snap 安装时，游戏数据可能会默认存放在沙盒目录内。卸载启动器前，请及时备份存档、资源包、模组等重要数据。
+
 </details>
+
+<details>
+<summary><h4>macOS</h4></summary>
+
+通过 Homebrew 安装：
+
+```bash
+brew install --cask SJMC-Dev/SJMCL/sjmcl
+```
+
+</details>
+
+<details>
+<summary><h4>Windows</h4></summary>
+
+通过 Winget 安装：
+
+```powershell
+winget install SJMC.SJMCL
+```
+
+> [!WARNING]
+> Winget 的索引仓库是公开协作维护的。安装前建议运行 `winget show SJMC.SJMCL` 查看安装器地址，并确认下载来源来自 `github.com/UNIkeEN/SJMCL` 或 `sjmcl.club`。
+
+</details>
+
+更多安装方式与平台注意事项，请参阅 [用户文档](https://mc.sjtu.cn/sjmcl/docs/install)。
+
 </details>
 
 ## 开发与贡献
@@ -74,13 +119,13 @@ makepkg -si
 
 ```bash
 git clone git@github.com:UNIkeEN/SJMCL.git
-npm install
+pnpm install
 ```
 
 使用开发模式运行：
 
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 我们热烈欢迎每一位开发者的贡献。

@@ -1,4 +1,4 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::utils::config::WindowConfig;
 use tauri::{AppHandle, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use url::Url;

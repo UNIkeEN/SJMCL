@@ -1,6 +1,17 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::asset_index::load_asset_index;
+use futures::future::join_all;
+use futures::stream::{self, StreamExt, TryStreamExt};
+use semver::Version;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::storage::load_json_async;
+use std::collections::{HashMap, HashSet};
+use std::io::Cursor;
+use std::path::{Path, PathBuf};
+use tauri::AppHandle;
+use tokio::fs;
+use zip::ZipArchive;
+
 use crate::instance::helpers::asset_index::AssetIndex;
+use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
@@ -9,19 +20,9 @@ use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::storage::load_json_async;
-use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
-use futures::future::join_all;
-use futures::stream::{self, StreamExt, TryStreamExt};
-use semver::Version;
-use std::collections::{HashMap, HashSet};
-use std::io::Cursor;
-use std::path::{Path, PathBuf};
-use tauri::AppHandle;
-use tokio::fs;
-use zip::ZipArchive;
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
@@ -33,10 +34,10 @@ pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<Downlo
     if library.natives.is_some() {
       continue;
     }
-    if let Some(ref downloads) = &library.downloads {
-      if let Some(ref artifact) = &downloads.artifact {
-        artifacts.insert(artifact.clone());
-      }
+    if let Some(downloads) = &library.downloads
+      && let Some(artifact) = &downloads.artifact
+    {
+      artifacts.insert(artifact.clone());
     }
   }
   artifacts.into_iter().collect()
@@ -52,12 +53,11 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
     }
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        if let Some(ref downloads) = &library.downloads {
-          if let Some(ref classifiers) = &downloads.classifiers {
-            if let Some(artifact) = classifiers.get(&native) {
-              artifacts.insert(artifact.clone());
-            }
-          }
+        if let Some(downloads) = &library.downloads
+          && let Some(classifiers) = &downloads.classifiers
+          && let Some(artifact) = classifiers.get(&native)
+        {
+          artifacts.insert(artifact.clone());
         }
       } else {
         println!("natives is None");
@@ -328,7 +328,7 @@ pub async fn extract_native_libraries(
   for result in results {
     if let Err(e) = result {
       println!("Error handling artifact: {:?}", e);
-      return Err(crate::error::SJMCLError::from(e));
+      return Err(sjmcl_types::error::SJMCLError::from(e));
     }
   }
 
@@ -357,11 +357,11 @@ pub async fn get_invalid_assets(
       let exists = fs::try_exists(&dest).await?;
 
       if exists && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok()) {
-        Ok::<Option<PTaskParam>, crate::error::SJMCLError>(None)
+        Ok::<Option<PTaskParam>, sjmcl_types::error::SJMCLError>(None)
       } else {
         let src = assets_download_api
           .join(&path_in_repo)
-          .map_err(crate::error::SJMCLError::from)?;
+          .map_err(sjmcl_types::error::SJMCLError::from)?;
         Ok(Some(PTaskParam::Download(DownloadParam {
           src,
           dest,
@@ -402,7 +402,7 @@ pub async fn prepare_legacy_assets(
     load_json_async::<AssetIndex>(&assets_dir.join(format!("indexes/{}.json", assets_index_name)))
       .await?;
 
-  stream::iter(asset_index.objects.into_iter())
+  stream::iter(asset_index.objects)
     .map(Ok::<_, SJMCLError>)
     .try_for_each_concurrent(None, move |(name, item)| {
       let origin = objects_dir.join(format!("{}/{}", &item.hash[..2], item.hash));

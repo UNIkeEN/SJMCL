@@ -1,3 +1,4 @@
+import { BuildType } from "@/enums/misc";
 import type { HomeWidgetStateTuple } from "@/models/extension";
 
 export interface GameConfig {
@@ -36,6 +37,12 @@ export interface GameConfig {
       wrapperLauncher: string;
       postExitCommand: string;
     };
+    proxy: {
+      enabled: boolean;
+      selectedType: string;
+      host: string;
+      port: number;
+    };
     jvm: {
       garbageCollector: string;
       javaPermanentGenerationSpace: number;
@@ -48,6 +55,10 @@ export interface GameConfig {
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useLwjglUnsafeAgent: boolean;
+      useCustomAuthlibInjector: {
+        enabled: boolean;
+        path: string;
+      };
       useNativeGlfw: boolean;
       useNativeOpenal: boolean;
     };
@@ -71,6 +82,9 @@ export interface LauncherConfig {
     isExePathAvailable: boolean;
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
+    // Build metadata, sourced from compile-time constants injected by build.rs.
+    buildType: BuildType;
+    buildCommitSha: string;
   };
   mocked: boolean;
   runCount: number;
@@ -84,6 +98,7 @@ export interface LauncherConfig {
     };
     font: {
       fontFamily: string;
+      logFontFamily: string;
       fontSize: number;
     };
     background: {
@@ -216,6 +231,12 @@ export const defaultGameConfig: GameConfig = {
       wrapperLauncher: "",
       postExitCommand: "",
     },
+    proxy: {
+      enabled: false,
+      selectedType: "http",
+      host: "",
+      port: 80,
+    },
     jvm: {
       garbageCollector: "auto",
       javaPermanentGenerationSpace: 0,
@@ -228,6 +249,10 @@ export const defaultGameConfig: GameConfig = {
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useLwjglUnsafeAgent: true,
+      useCustomAuthlibInjector: {
+        enabled: false,
+        path: "",
+      },
       useNativeGlfw: false,
       useNativeOpenal: false,
     },
@@ -246,6 +271,8 @@ export const defaultConfig: LauncherConfig = {
     isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
+    buildType: BuildType.Dev,
+    buildCommitSha: "",
   },
   mocked: true,
   runCount: -1,
@@ -260,6 +287,7 @@ export const defaultConfig: LauncherConfig = {
     font: {
       fontFamily: "%built-in",
       fontSize: 100,
+      logFontFamily: "%built-in",
     },
     background: {
       choice: "%built-in:Florwyn",

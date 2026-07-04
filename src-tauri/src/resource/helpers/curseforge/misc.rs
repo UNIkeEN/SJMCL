@@ -1,22 +1,30 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::collections::HashMap;
+use std::env;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
   OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
   ResourceError,
 };
-use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::env;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 lazy_static! {
   pub static ref CURSEFORGE_API_KEY: String = {
     env::var("SJMCL_CURSEFORGE_API_KEY")
       .unwrap_or_else(|_| env!("SJMCL_CURSEFORGE_API_KEY").to_string())
   };
+}
+
+pub fn is_curseforge_authenticated_url(url: &url::Url) -> bool {
+  matches!(
+    url.host_str(),
+    Some("api.curseforge.com" | "edge.forgecdn.net" | "mediafilez.forgecdn.net")
+  )
 }
 
 pub async fn make_curseforge_request<T, P>(

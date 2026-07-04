@@ -2,6 +2,59 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.1.2
+
+`2026-06-04`
+
+- 🐛 修复登录第三方认证账户时启动器闪退的问题。#1663 @tangge233
+
+## 1.1.1
+
+`2026-06-03`
+
+- 🌟 支持在微软账户 Access Token 过期后自动刷新。#1627 @tangge233
+- 🌟 支持为实例单次导入多个资源文件（通过对话框或拖入启动器窗口）。#1630 @UNIkeEN
+- 🐛 修复 macOS 平台下无法为模组申请麦克风权限的问题。#1631 @AnemoFlower
+- 🐛 修复 Windows 平台下任务栏不显示程序标题的问题。#1637 @UNIkeEN
+- 🐛 修复用户在启动器内设置的代理未生效的问题。#1645 @UNIkeEN
+- 🐛 修复重新登录对话框与扩展列表页面的显示问题。#1646 #1660 @baiyuansjtu
+- 🐛 修复部分场景下实例列表无法加载的问题。#1652 @xunying123
+- 🐛 修复安装整合包时重复下载 Fabric API / QF API 模组的问题。#1654 @SALTWOOD
+- 🛠 重构前端部分代码，移除 `lodash` 依赖以降低项目复杂性。#1634 @xphost008
+- 🛠 在进程初始化期间新增错误处理与对话框提示。#1638 @UNIkeEN
+- 🛠 当创建新实例（包括安装整合包）失败时，自动删除新建的实例文件夹，避免用户在重试时产生困惑。#1658 @UNIkeEN
+- 🌐 调整与 XBOX 相关的国际化翻译。#1628 @3gf8jv4dv
+- 📦 将项目 Rust 升级至 2024 Edition。#1642 #1647 @w1049 @tangge233 @UNIkeEN
+- 📦 更新 Tauri 核心库及其插件。#1642 @w1049
+- 📦 移除 `jsonwebtoken` 的 `aws_lc_rs` 特性以减少安装包体积。#1662 @UNIkeEN
+- 扩展：
+   - 为 `MarkdownContainer` 组件新增 Chakra 表格渲染映射，供扩展使用。#1649 @zaixiZaixiSJTU
+- 工作流：
+   - 新增发版时自动上传 Winget 的工作流，现在可以通过 Winget 便捷安装 SJMCL（Windows 平台）。#1639 @pangbo13
+   - 新增适用于 Linux 平台的原生命令行安装脚本。#1643 @pangbo13
+
+## 1.1.0
+
+`2026-05-20`
+
+- **🔥 支持在启动器内查看并管理 Minecraft 好友（实验性功能）。#1617** @UNIkeEN @3gf8jv4dv @suhang12332 @Dainsleif233
+- 🌟 实例列表页现在会显示正在下载中的实例。#1580 @icgnos
+- 🐛 修复提示 Toast 的显示样式问题。#1599 @Chang-Yo
+- 🐛 修复 Linux 平台下已归档第三方依赖的潜在编译问题。#1601 @ToolmanP
+- 🐛 修复窗口状态存储的性能问题。@UNIkeEN
+- 🐛 修复部分情况下因 Deeplink 注册失败导致的崩溃问题。#1611 @pangbo13
+- 🐛 修复部分情况下，账户功能可用性检查失败的问题，提升中国大陆用户体验。#1616 @UNIkeEN @1357310795
+- 📦 更新 Tauri 核心库及其插件至最新版本。@UNIkeEN
+- 📦 更新 `rmcp` 库至正式版本。#1613 @xunying123
+- 扩展：
+   - 新增 `setHomeWidgetTitle` 方法，支持扩展动态更新主页组件标题。#1602 @UNIkeEN
+   - 新增 `MarkdownContainer`，`FormattedMCText` 等组件供扩展直接使用。@UNIkeEN
+   - 支持通过 Deeplink 重新加载扩展，提升开发者体验。#1608 @UNIkeEN
+- 工作流：
+   - 新增发版时自动上传 Snapcraft 的工作流，现在可以通过 Snapcraft 安装 SJMCL（实验性功能）。#1610 @pangbo13
+   - 调整发版工作流顺序、修改 AUR 工作流的校验字段类型。#1612 @pangbo13
+   - 新增发版时自动上传 Homebrew 的工作流，现在可以通过 Homebrew 便捷安装 SJMCL（macOS 平台）。#1620 @pangbo13
+
 ## 1.0.0
 
 `2026-05-05`

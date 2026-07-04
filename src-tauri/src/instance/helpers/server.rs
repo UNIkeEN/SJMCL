@@ -1,13 +1,14 @@
-use crate::error::SJMCLResult;
-use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
-use crate::instance::models::misc::InstanceSubdirType;
 use mc_server_status::{McClient, McError, ServerData, ServerEdition, ServerInfo, ServerStatus};
 use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
-use tauri::async_runtime;
 use tauri::AppHandle;
+use tauri::async_runtime;
+
+use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
+use crate::instance::models::misc::InstanceSubdirType;
 
 pub const SERVERS_DAT_FILENAME: &str = "servers.dat";
 
@@ -143,17 +144,17 @@ pub async fn query_servers_online(
     if let Some(server) = servers.iter_mut().find(|s| s.ip == info.address) {
       server.is_queried = true;
 
-      if let Ok(status) = result {
-        if let ServerData::Java(sv) = status.data {
-          server.online = true;
-          server.latency = Some(status.latency.round() as u64);
-          server.players_online = sv.players.online as usize;
-          server.players_max = sv.players.max as usize;
-          server.description = sv.description.clone();
+      if let Ok(status) = result
+        && let ServerData::Java(sv) = status.data
+      {
+        server.online = true;
+        server.latency = Some(status.latency.round() as u64);
+        server.players_online = sv.players.online as usize;
+        server.players_max = sv.players.max as usize;
+        server.description = sv.description.clone();
 
-          if let Some(favicon) = sv.favicon {
-            server.icon_src = favicon;
-          }
+        if let Some(favicon) = sv.favicon {
+          server.icon_src = favicon;
         }
       }
     }

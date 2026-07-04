@@ -1,11 +1,12 @@
-use crate::error::SJMCLResult;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use sjmcl_types::error::SJMCLResult;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Default)]
 struct ForgeMetaItem {
@@ -29,7 +30,7 @@ async fn get_forge_meta_by_game_version_bmcl(
     Ok(response) => {
       if response.status().is_success() {
         if let Ok(mut manifest) = response.json::<Vec<ForgeMetaItem>>().await {
-          manifest.sort_by(|a, b| b.build.cmp(&a.build));
+          manifest.sort_by_key(|b| std::cmp::Reverse(b.build));
           Ok(
             manifest
               .into_iter()
@@ -37,7 +38,8 @@ async fn get_forge_meta_by_game_version_bmcl(
                 loader_type: ModLoaderType::Forge,
                 version: info.version,
                 description: info.modified,
-                stable: true,
+                // stable: true,
+                stable: None,
                 branch: info.branch.and_then(|v| v.as_str().map(String::from)),
               })
               .collect(),

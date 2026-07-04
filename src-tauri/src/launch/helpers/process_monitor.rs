@@ -1,10 +1,4 @@
-use crate::error::SJMCLResult;
-use crate::instance::models::misc::Instance;
-use crate::launch::constants::*;
-use crate::launch::models::{LaunchError, LaunchingState};
-use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
-use crate::utils::shell::execute_command_line;
-use crate::utils::window::create_webview_window;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
@@ -19,6 +13,13 @@ use std::{fs, thread};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio;
+
+use crate::instance::models::misc::Instance;
+use crate::launch::constants::*;
+use crate::launch::models::{LaunchError, LaunchingState};
+use crate::launcher_config::models::{LauncherVisiablity, ProcessPriority};
+use crate::utils::shell::execute_command_line;
+use crate::utils::window::create_webview_window;
 
 const POLLING_OPERATION_INTERVAL_MS: u64 = 2000;
 
@@ -64,8 +65,8 @@ impl<T: Read + Send + 'static> OutputPipe<T> {
 pub async fn record_play_time(app: AppHandle, start_time: Instant, instance_id: String) {
   let instance_in_mem = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
-    let inst = binding.lock().unwrap().get(&instance_id).cloned();
-    inst
+
+    binding.lock().unwrap().get(&instance_id).cloned()
   };
 
   if let Some(instance_in_mem) = instance_in_mem {
@@ -374,7 +375,7 @@ pub fn change_process_window_title(pid: u32, new_title: &str) -> SJMCLResult<()>
     type ForEachCallback<'a> = Box<dyn FnMut(HWND) + 'a>;
     let wrapper: ForEachCallback = Box::new(closure);
     unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
-      if let Some(boxed) = (lparam as *mut ForEachCallback).as_mut() {
+      if let Some(boxed) = unsafe { (lparam as *mut ForEachCallback).as_mut() } {
         (*boxed)(hwnd);
       }
       TRUE

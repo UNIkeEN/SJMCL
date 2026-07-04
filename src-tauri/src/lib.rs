@@ -1,14 +1,11 @@
 mod account;
 mod discover;
-mod error;
 mod extension;
 mod instance;
 mod intelligence;
 mod launch;
 mod launcher_config;
-mod partial;
 mod resource;
-mod storage;
 mod tasks;
 mod utils;
 
@@ -21,29 +18,26 @@ use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
-use resource::helpers::mod_db::{initialize_mod_db, ModDataBase};
+use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
+use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
-use storage::Storage;
 use tasks::monitor::TaskMonitor;
+use tauri::Manager;
 use utils::portable::is_portable;
 use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
-use tauri::Manager;
 use tauri_plugin_opener::OpenerExt;
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
 
 static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
-
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
-
 static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
-
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
 pub async fn run() {
@@ -60,7 +54,7 @@ pub async fn run() {
       .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
         let _ = main_window.show(); // may hide by launcher_visibility settings
-                                    // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
+        // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
 
         // .mrpack file association (warm start)
@@ -75,7 +69,8 @@ pub async fn run() {
         tauri_plugin_window_state::Builder::new()
           .with_state_flags(
             tauri_plugin_window_state::StateFlags::POSITION
-              | tauri_plugin_window_state::StateFlags::SIZE,
+              | tauri_plugin_window_state::StateFlags::SIZE
+              | tauri_plugin_window_state::StateFlags::MAXIMIZED,
           )
           .with_filter(|label| label == "main")
           .build(),
@@ -116,6 +111,8 @@ pub async fn run() {
         account::commands::update_player_skin_offline_local,
         account::commands::delete_player,
         account::commands::refresh_player,
+        account::commands::retrieve_microsoft_friend_list,
+        account::commands::update_microsoft_friend,
         account::commands::retrieve_auth_server_list,
         account::commands::fetch_auth_server,
         account::commands::add_auth_server,
@@ -131,7 +128,7 @@ pub async fn run() {
         instance::commands::read_instance_file,
         instance::commands::delete_instance,
         instance::commands::rename_instance,
-        instance::commands::copy_resource_to_instances,
+        instance::commands::copy_resources_to_instances,
         instance::commands::move_resource_to_instance,
         instance::commands::retrieve_world_list,
         instance::commands::retrieve_world_details,
@@ -150,6 +147,7 @@ pub async fn run() {
         instance::commands::finish_optifine_loader_install,
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
+        instance::commands::change_optifine,
         instance::commands::retrieve_modpack_meta_info,
         instance::commands::add_custom_instance_icon,
         instance::commands::retrieve_exportable_file_list,
@@ -192,6 +190,7 @@ pub async fn run() {
         tasks::commands::resume_progressive_task_group,
         tasks::commands::delete_progressive_task_group,
         utils::commands::retrieve_memory_info,
+        utils::commands::retrieve_resolution_upbound,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
         utils::commands::extract_filename,
@@ -242,7 +241,7 @@ pub async fn run() {
         let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(local_mod_translations));
 
-        let client = build_sjmcl_client(app.handle(), true, false);
+        let client = build_sjmcl_client(app.handle(), true);
         app.manage(client);
 
         let launching_queue = Vec::<LaunchingState>::new();
@@ -319,10 +318,10 @@ pub async fn run() {
         // on Windows, setup overlay native caption buttons
         #[cfg(target_os = "windows")]
         {
-          if let Some(main_window) = app.get_webview_window("main") {
-            if let Err(e) = main_window.create_overlay_titlebar() {
-              log::warn!("Failed to setup native windows caption buttons: {e}");
-            }
+          if let Some(main_window) = app.get_webview_window("main")
+            && let Err(e) = main_window.create_overlay_titlebar()
+          {
+            log::warn!("Failed to setup native windows caption buttons: {e}");
           }
         }
 
@@ -344,7 +343,20 @@ pub async fn run() {
         Ok(())
       })
       .build(tauri::generate_context!())
-      .expect("error while building tauri application")
+      // Catch and show a native error dialog when Tauri fails to initialize.
+      // A plain panic would be invisible to the user by default, and tauri-plugin-dialog isn't available since the app never started.
+      .unwrap_or_else(|e| {
+        log::error!("Failed to build Tauri application: {:?}", e);
+        eprintln!("Failed to build Tauri application: {:?}", e); // fallback when logging is not available
+        native_dialog::DialogBuilder::message()
+          .set_title("Initialization error")
+          .set_text(format!("Cannot initialize SJMCL due to an error:\n{e}"))
+          .set_level(native_dialog::MessageLevel::Error)
+          .alert()
+          .show()
+          .ok();
+        std::process::exit(1);
+      })
       .run_return(|app_handle, event| {
         match event {
           // .mrpack file association (cold start, reopen with deeplink)
@@ -364,17 +376,15 @@ pub async fn run() {
           #[cfg(target_os = "macos")]
           tauri::RunEvent::Opened { urls } => {
             for url in urls {
-              if let Ok(path) = url.to_file_path() {
-                if path.extension().is_some_and(|ext| ext == "mrpack") {
-                  if let Some(path_str) = path.to_str() {
+              if let Ok(path) = url.to_file_path()
+                && path.extension().is_some_and(|ext| ext == "mrpack")
+                  && let Some(path_str) = path.to_str() {
                     let deep_link = format!(
                       "sjmcl://import-modpack?path={}",
                       urlencoding::encode(path_str)
                     );
                     let _ = app_handle.opener().open_url(&deep_link, None::<&str>);
                   }
-                }
-              }
             }
           }
           // set normal exit flag.

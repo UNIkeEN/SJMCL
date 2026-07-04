@@ -1,14 +1,15 @@
-use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
-use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
-use crate::launcher_config::models::GameConfig;
-use crate::storage::{load_json_async, save_json_async};
-use crate::utils::image::ImageWrapper;
 use serde::{Deserialize, Serialize};
+use sjmcl_types::storage::{load_json_async, save_json_async};
 use std::cmp::{Ord, Ordering, PartialOrd};
 use std::path::PathBuf;
 use std::str::FromStr;
 use strum_macros::Display;
 use tauri::AppHandle;
+
+use crate::instance::constants::INSTANCE_CFG_FILE_NAME;
+use crate::instance::helpers::game_version::{compare_game_versions, get_major_game_version};
+use crate::launcher_config::models::GameConfig;
+use crate::utils::image::ImageWrapper;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstanceSubdirType {

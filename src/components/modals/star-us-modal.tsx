@@ -22,7 +22,12 @@ const StarUsModal: React.FC<Omit<ModalProps, "children">> = ({ ...props }) => {
   };
 
   return (
-    <Modal autoFocus={false} size={{ base: "sm", lg: "md" }} {...props}>
+    <Modal
+      autoFocus={false}
+      size={{ base: "sm", lg: "md" }}
+      returnFocusOnClose={false}
+      {...props}
+    >
       <ModalOverlay />
       <ModalContent borderRadius="md" overflow="hidden">
         <video autoPlay loop muted width="100%" height="auto">

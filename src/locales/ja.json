@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "ログインフローの設計について LittleSkin 及び @tnqzh123 さんのご協力に感謝します。"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "MOD情報の簡体字中国語翻訳を提供"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "SCL開発者の皆さん、絶え間ない交流と相互の刺激に感謝。"
@@ -112,12 +116,6 @@
         "title": "サーバーダウンロード",
         "description": "各バージョンのヴァニラサーバーファイルをダウンロード"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "モッドパックをインポート",
-      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "UIフォント",
           "default": "デフォルト"
         },
+        "logFontFamily": {
+          "title": "ログフォント"
+        },
         "fontSize": {
           "title": "フォントサイズ",
           "small": "あ",
@@ -448,6 +449,12 @@
       "content": "この認証サーバー「{{name}}」を削除しますか。「{{name}}」はサーバーリストの中から消えます。"
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "フレンドを削除",
+      "content": "フレンド「{{name}}」を削除しますか？"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "ゲームサーバーを削除",
     "content": "ゲームサーバー「{{name}}」（{{addr}}）を削除しますか？この操作は取り消せません。"
@@ -587,18 +594,11 @@
     },
     "proxy": {
       "title": "プロキシ",
+      "headExtra": "再起動が必要",
       "settings": {
         "enabled": {
-          "title": "プロキシ有効化"
-        },
-        "type": {
-          "title": "プロキシタイプ"
-        },
-        "host": {
-          "title": "サーバー"
-        },
-        "port": {
-          "title": "ポート"
+          "title": "ダウンロードタスクのプロキシを有効化",
+          "description": "無効時、起動器はシステムプロキシで自動的にリソースをダウンロードします"
         }
       }
     }
@@ -614,6 +614,13 @@
       "alpha": "アルファ版",
       "beta": "ベータ版",
       "release": "正式版"
+    },
+    "button": {
+      "cancel": "キャンセル",
+      "download": "ダウンロード",
+      "installToInstance": "インスタンスにインストール",
+      "installToCurrentInstance": "現在のインスタンスにインストール",
+      "install": "インストール"
     }
   },
   "DownloadTasksPage": {
@@ -642,6 +649,7 @@
       "resourcepack": "リソースパック",
       "shader": "シェーダーパック",
       "modpack": "モッドパック",
+      "modpack-wo-install": "モッドパック",
       "datapack": "データパック",
       "patch-files": "ゲームファイルを修復 {{param}}",
       "mod-update": "モッドを更新",
@@ -773,7 +781,7 @@
       "includedFiles": "含めるファイル",
       "exportOptions": "エクスポートオプション",
       "packWithLauncher": "ランチャーを同梱",
-      "minMemory": "最小メモリ (MB)",
+      "minMemory": "最小メモリ (MiB)",
       "noCreateRemoteFiles": "リモートファイルを無効化",
       "skipCurseForgeRemoteFiles": "CurseForge のリモートファイルをスキップ"
     },
@@ -859,6 +867,9 @@
     "title": "拡張機能を更新",
     "body": "拡張機能 {{identifier}} は {{src}} から新しいバージョン {{version}} をダウンロードしました。インストールを確認しますか？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} など（全{{count}}件）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "高度起動設定",
     "topWarning": "本設定は上級者向けに設計されていますので、以下の項目を変更すると、ゲームの起動不能やデータの破損を引き起こす可能性があります。オプションの機能を完全に理解している場合のみ変更してください。",
@@ -899,14 +910,23 @@
           }
         },
         "javaPermanentGenerationSpace": {
-          "title": "メモリ永続保存領域(MB)",
-          "placeholder": "MB"
+          "title": "メモリ永続保存領域(MiB)",
+          "placeholder": "MiB"
         },
         "environmentVariable": {
           "title": "環境変数"
         },
         "args": {
           "title": "JVM パラメーター"
+        }
+      }
+    },
+    "proxy": {
+      "title": "プロキシ",
+      "settings": {
+        "enabled": {
+          "title": "ゲームプロセスにプロキシを有効化",
+          "description": "無効にすると、ゲームはシステムプロキシを自動的に使用します"
         }
       }
     },
@@ -918,7 +938,10 @@
           "title": "ファイル整合性チェックポリシー",
           "disable": "チェックしない",
           "normal": "一般チェック",
-          "full": "強化チェック"
+          "full": "強化チェック",
+          "disableDesc": "",
+          "normalDesc": "ファイルの存在を確認し、欠損時は自動補完",
+          "fullDesc": "ファイルの SHA1 整合性を確認し、欠損時は自動補完（時間がかかる）"
         },
         "dontCheckJvmValidity": {
           "title": "JVM とゲームの整合性をチェックしない"
@@ -927,8 +950,15 @@
           "title": "ローカルライブラリの自動置換をしない"
         },
         "useLwjglUnsafeAgent": {
-          "title": "LWJGL Unsafe Agent を有効にする",
+          "title": "LWJGL Unsafe Agent を利用する",
           "description": "影響を受ける Minecraft バージョンでは、HMCL の <hmcl>LWJGL Unsafe Agent</hmcl> を自動的に使用してパフォーマンス問題を修正します。"
+        },
+        "useCustomAuthlibInjector": {
+          "title": "カスタム Authlib Injector を利用する",
+          "description": {
+            "notSet": "カスタムパスが未設定です。内蔵版を使用します"
+          },
+          "select": "変更"
         },
         "useNativeGlfw": {
           "title": "システム GLFW を利用（Linux のみ）"
@@ -952,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Java バージョン"
     },
+    "button": {
+      "exportGameInfo": "クラッシュレポートをエクスポート",
+      "gameLogs": "ゲームログ",
+      "help": "サポート"
+    },
+    "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "クラッシュ情報",
       "OPENJ9": "OpenJ9 JVM で実行できません。HotSpot JVM を使用してください。",
@@ -1019,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "Vics Modern Warfare モッドのエラーにより実行できません。このモッドを更新または削除してみてください。",
       "FORGE_LITELOADER_CONFLICT": "Forge と LiteLoader が競合しているため実行できません。LiteLoader を削除するか、Forge バージョンを変更してみてください。",
       "UNKNOWN": "このエラーを一時的に分析できません。ゲームログを確認するか、エラークラッシュレポートをエクスポートしてください。"
-    },
-    "button": {
-      "exportGameInfo": "クラッシュレポートをエクスポート",
-      "gameLogs": "ゲームログ",
-      "help": "サポート"
-    },
-    "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。"
+    }
   },
   "GameLogPage": {
     "placeholder": "キーワードを入力して検索",
@@ -1102,7 +1133,8 @@
     "version": {
       "dev": "開発版",
       "nightly": "ナイトリービルド版",
-      "beta": "ベータ版"
+      "beta": "ベータ版",
+      "test-build": "テストビルド版"
     },
     "viewOnWiki": "Minecraft Wiki へ"
   },
@@ -1124,7 +1156,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "インスタンス言語を自動設定",
-          "description": "中国語のみ利用できます。"
+          "description": "有効にすると、新しいインスタンスはランチャーの言語に従い、ゲーム内のアクセシビリティ設定画面をスキップします。"
         }
       }
     },
@@ -1222,14 +1254,16 @@
       "settings": {
         "resolution": {
           "title": "ゲーム解像度",
-          "switch": "フルスクリーン"
+          "preset": "プリセット",
+          "switch": "フルスクリーン",
+          "warning": "モニター上限を超える可能性あり"
         },
         "customTitle": {
           "title": "カスタムウィンドウタイトル"
         },
         "customInfo": {
           "title": "カスタムメッセージ",
-          "description": "ゲームメイン画面の左下及び F3 デバッグ画面の左上に表示される。"
+          "description": "ゲームメイン画面の左下及び F3 デバッグ画面の左上に表示される（Minecraft 26.1 より前のバージョンのみ有効）。"
         }
       }
     },
@@ -1244,7 +1278,7 @@
         },
         "memoryUsage": {
           "title": "メモリ使用状況",
-          "description": "使用済メモリ{{usedMemory}}GB・ゲーム割当メモリ{{allocatedMemory}}GB・総メモリ{{totalMemory}}GB"
+          "description": "使用済メモリ{{usedMemory}}GiB・ゲーム割当メモリ{{allocatedMemory}}GiB・総メモリ{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "プロセス優先度",
@@ -1344,6 +1378,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "世界一番の Minecraft モッドライブラリ"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "オープンソースでモダンな Minecraft リソースプラットフォーム"
         }
       }
     },
@@ -1373,8 +1411,14 @@
     "header": {
       "title": "他のランチャーからアカウント情報をインポート"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1620,6 +1664,17 @@
       "description": "この Java を削除しますか。（この Java てゲームの起動ができなくなりますが、 Java ファイルの削除はしません。）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英語",
+      "es": "スペイン語",
+      "fr": "フランス語",
+      "ja": "",
+      "lzh": "漢文",
+      "zh-Hans": "中国語（簡体字）",
+      "zh-Hant": "中国語（繁体字）"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "前回の実行は異常終了しました",
@@ -1667,6 +1722,12 @@
     "notCompatibleWith": "{{item}} に非互換",
     "noVersionSelected": "バージョンを選択していない"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "モッドパックをインポート",
+      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
   },
@@ -1675,7 +1736,7 @@
     "default": "デフォルト",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "ローカルアップロード",
+    "upload": "ローカルスキンを選択",
     "skin": "スキン",
     "cape": "ケープ",
     "model": {
@@ -1702,7 +1763,7 @@
   },
   "MemoryStatusProgress": {
     "title": "メモリ状況",
-    "info": "使用済メモリ {{used}} / {{total}} GB",
+    "info": "使用済メモリ {{used}} / {{total}} GiB",
     "label": {
       "now": "使用済",
       "maxAllocation": "Minecraft の最大割当量"
@@ -1710,6 +1771,41 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} 個選択済み"
+  },
+  "MicrosoftFriendsModal": {
+    "title": "Microsoft アカウント {{name}} の Minecraft フレンド",
+    "placeholder": {
+      "playerName": "フレンド追加用のプレイヤー名を入力"
+    },
+    "group": {
+      "requests": "申請",
+      "friends": "フレンド"
+    },
+    "request": {
+      "incoming": "受信したフレンド申請",
+      "outgoing": "送信したフレンド申請"
+    },
+    "button": {
+      "add": "追加",
+      "accept": "承認",
+      "decline": "拒否",
+      "revoke": "取り消し",
+      "remove": "フレンド削除",
+      "xboxSettings": "XBOX 設定"
+    },
+    "empty": {
+      "requests": "申請はありません",
+      "friends": "フレンドはいません"
+    },
+    "status": {
+      "INVITED": "ワールドへの参加に招待されています",
+      "ONLINE": "オンライン",
+      "PLAYING_OFFLINE": "シングルプレイ中",
+      "PLAYING_REALMS": "Realms プレイ中",
+      "PLAYING_SERVER": "サーバー参加中",
+      "PLAYING_HOSTED_SERVER": "LAN ワールド公開中",
+      "OFFLINE": "オフライン"
+    }
   },
   "NoSuitableJavaDialog": {
     "title": "このインスタンスに適した Java ランタイムが見つかりません",
@@ -1744,6 +1840,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "フレンド",
       "manageSkin": "スキン管理",
       "viewSkin": "スキンを見る",
       "delete": "キャラクター削除",
@@ -1752,6 +1849,17 @@
     "toast": {
       "refreshing": "キャラクター情報を更新中",
       "deleting": "キャラクターを削除中"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "プロキシタイプ"
+    },
+    "host": {
+      "title": "ホスト"
+    },
+    "port": {
+      "title": "ポート"
     }
   },
   "ReLoginPlayerModal": {
@@ -2056,7 +2164,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "ランチャー更新",
     "body": "新しいバージョンのダウンロードが完了しました。SJMCL を再起動して更新を完了してください",
-    "bodyMSI": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
+    "bodyWinInstaller": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
     "button": {
       "restart": "再起動",
       "install": "インストール",
@@ -2229,11 +2337,11 @@
             "CANCELLED": "キャンセルした",
             "INVALID": "無効な認証サーバーアドレス",
             "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入済みか確認してください",
-            "XSTS_BANNED": "お使いのアカウントは Xbox によって封禁されています",
+            "XSTS_BANNED": "お使いのアカウントは XBOX によって封禁されています",
             "XSTS_PARENTAL_RESTRICTION": "お使いのアカウントは保護者の制限によりブロックされています",
-            "XSTS_NO_XBOX_ACCOUNT": "Microsoft アカウントに Xbox アカウントが関連付けられていません、minecraft.net で作成してください",
-            "XSTS_TERMS_NOT_ACCEPTED": "続行するには Xbox 利用規約への同意が必要です",
-            "XSTS_REGION_BANNED": "お使いのアカウントは、Xbox Live が利用できない国または地域のものです",
+            "XSTS_NO_XBOX_ACCOUNT": "Microsoft アカウントに XBOX アカウントが関連付けられていません、minecraft.net で作成してください",
+            "XSTS_TERMS_NOT_ACCEPTED": "続行するには XBOX 利用規約への同意が必要です",
+            "XSTS_REGION_BANNED": "お使いのアカウントは、XBOX Live が利用できない国または地域のものです",
             "XSTS_CHILD_ACCOUNT": "お使いのアカウントは未成年アカウントです、family.microsoft.com で保護者の承認が必要です",
             "XSTS_UNKNOWN_ERROR": "XSTS 認証中に不明なエラーが発生しました"
           }
@@ -2251,11 +2359,11 @@
             "INVALID": "オフラインキャラクターの更新に非対応",
             "CANCELLED": "キャンセルしました",
             "NO_MINECRAFT_PROFILE": "キャラクターが見つかりません。Minecraft を購入し、キャラクターを作成済みであることをご確認ください",
-            "XSTS_BANNED": "お使いのアカウントは Xbox によって封禁されています",
+            "XSTS_BANNED": "お使いのアカウントは XBOX によって封禁されています",
             "XSTS_PARENTAL_RESTRICTION": "お使いのアカウントは保護者の制限によりブロックされています",
-            "XSTS_NO_XBOX_ACCOUNT": "Microsoft アカウントに Xbox アカウントが関連付けられていません、minecraft.net で作成してください",
-            "XSTS_TERMS_NOT_ACCEPTED": "続行するには Xbox 利用規約への同意が必要です",
-            "XSTS_REGION_BANNED": "お使いのアカウントは、Xbox Live が利用できない国または地域のものです",
+            "XSTS_NO_XBOX_ACCOUNT": "Microsoft アカウントに XBOX アカウントが関連付けられていません、minecraft.net で作成してください",
+            "XSTS_TERMS_NOT_ACCEPTED": "続行するには XBOX 利用規約への同意が必要です",
+            "XSTS_REGION_BANNED": "お使いのアカウントは、XBOX Live が利用できない国または地域のものです",
             "XSTS_CHILD_ACCOUNT": "お使いのアカウントは未成年アカウントです、family.microsoft.com で保護者の承認が必要です",
             "XSTS_UNKNOWN_ERROR": "XSTS 認証中に不明なエラーが発生しました"
           }
@@ -2343,6 +2451,41 @@
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "NETWORK_ERROR": "認証サーバーへの接続に失敗",
             "INVALID": "オフラインキャラクターの更新に非対応"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "フレンド一覧を取得しました",
+        "error": {
+          "title": "Microsoft フレンド一覧の取得に失敗しました",
+          "description": {
+            "NOT_FOUND": "キャラクターが見つかりません",
+            "INVALID": "現在のキャラクターは Microsoft アカウントではありません",
+            "EXPIRED": "トークンの有効期限が切れています。再ログインしてください",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "Minecraft サービスに接続できませんでした",
+            "FORBIDDEN": "このアカウントではフレンド機能を利用できません",
+            "TOO_MANY_REQUESTS": "リクエストが多すぎます。しばらくしてから再試行してください",
+            "SERVICE_UNAVAILABLE": "Minecraft サービスは一時的に利用できません"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "フレンド操作が完了しました",
+        "error": {
+          "title": "Microsoft フレンド操作に失敗しました",
+          "description": {
+            "NOT_FOUND": "キャラクターが見つかりません",
+            "INVALID": "フレンド操作のパラメータが無効です",
+            "EXPIRED": "トークンの有効期限が切れています。再ログインしてください",
+            "PARSE_ERROR": "サーバー応答データ形式エラー",
+            "NETWORK_ERROR": "Minecraft サービスに接続できませんでした",
+            "FORBIDDEN": "現在フレンドを追加できません。あなたと相手のアカウント設定を確認してください",
+            "TOO_MANY_REQUESTS": "リクエストが多すぎます。しばらくしてから再試行してください",
+            "SERVICE_UNAVAILABLE": "Minecraft サービスは一時的に利用できません",
+            "UNKNOWN_PROFILE": "対象プレイヤーが存在しません",
+            "CANNOT_ADD_SELF": "自分自身をフレンド追加することはできません",
+            "DUPLICATED_PROFILES": "重複したフレンド操作リクエストです"
           }
         }
       },
@@ -2611,7 +2754,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "リソースをコピーした",
         "error": {
           "title": "リソースのコピーに失敗",
@@ -2777,6 +2920,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "外部からインストールされたバージョンのため、アンインストールまたは変更できません"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "OptiFine の変更に失敗"
         }
       },
       "retrieveModpackMetaInfo": {

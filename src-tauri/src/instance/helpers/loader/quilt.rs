@@ -1,9 +1,9 @@
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -11,8 +11,8 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth;
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::download::DownloadParam;
 use crate::tasks::PTaskParam;
+use crate::tasks::download::DownloadParam;
 
 const QFAPI_MOD_ID_MODRINTH: &str = "qvIfYCYJ";
 
@@ -42,20 +42,20 @@ pub async fn install_quilt_loader(
   let mut quilt_maven: Option<Url> = None;
 
   for source_type in priority.iter() {
-    if let Ok(base_url) = get_download_api(*source_type, ResourceType::QuiltMeta) {
-      if let Ok(url) = base_url.join(&format!("v3/versions/loader/{game_version}/{loader_ver}")) {
-        match client.get(url.clone()).send().await {
-          Ok(resp) if resp.status().is_success() => {
-            if let Ok(json) = resp.json::<serde_json::Value>().await {
-              meta = Some(json);
-              if let Ok(maven_url) = get_download_api(*source_type, ResourceType::QuiltMaven) {
-                quilt_maven = Some(maven_url);
-              }
-              break;
+    if let Ok(base_url) = get_download_api(*source_type, ResourceType::QuiltMeta)
+      && let Ok(url) = base_url.join(&format!("v3/versions/loader/{game_version}/{loader_ver}"))
+    {
+      match client.get(url.clone()).send().await {
+        Ok(resp) if resp.status().is_success() => {
+          if let Ok(json) = resp.json::<serde_json::Value>().await {
+            meta = Some(json);
+            if let Ok(maven_url) = get_download_api(*source_type, ResourceType::QuiltMaven) {
+              quilt_maven = Some(maven_url);
             }
+            break;
           }
-          _ => continue,
         }
+        _ => continue,
       }
     }
   }
@@ -173,8 +173,8 @@ pub async fn install_quilt_loader(
     }));
   }
 
-  if is_install_qf_api.unwrap_or(true) {
-    if let Ok(Some(qfapi_download)) = fetch_latest_mod_download_param_modrinth(
+  if is_install_qf_api.unwrap_or(true)
+    && let Ok(Some(qfapi_download)) = fetch_latest_mod_download_param_modrinth(
       &app,
       QFAPI_MOD_ID_MODRINTH,
       ModLoaderType::Quilt,
@@ -182,9 +182,8 @@ pub async fn install_quilt_loader(
       mods_dir,
     )
     .await
-    {
-      task_params.push(PTaskParam::Download(qfapi_download));
-    }
+  {
+    task_params.push(PTaskParam::Download(qfapi_download));
   }
 
   Ok(())

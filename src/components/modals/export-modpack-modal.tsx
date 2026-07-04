@@ -522,7 +522,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
                       />
                     </NumberInput>
                     <Text fontSize="xs" className="secondary-text">
-                      MB
+                      MiB
                     </Text>
                   </HStack>
                 ),
@@ -563,6 +563,7 @@ const ExportModpackModal: React.FC<ExportModpackModalProps> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

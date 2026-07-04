@@ -1,4 +1,10 @@
-use crate::error::SJMCLResult;
+use sjmcl_types::error::SJMCLResult;
+use std::cmp::Ordering;
+use std::sync::Mutex;
+use strum::IntoEnumIterator;
+use tauri::{AppHandle, Manager};
+use url::Url;
+
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
 use crate::resource::helpers::mod_db::ModDataBase;
@@ -7,11 +13,6 @@ use crate::resource::models::{
   OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
   SourceType,
 };
-use std::cmp::Ordering;
-use std::sync::Mutex;
-use strum::IntoEnumIterator;
-use tauri::{AppHandle, Manager};
-use url::Url;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
@@ -29,49 +30,83 @@ pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceT
 pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMCLResult<Url> {
   match source {
     SourceType::Official => match resource_type {
-      ResourceType::VersionManifest => Ok(Url::parse("https://launchermeta.mojang.com/mc/game/version_manifest.json")?),
-      ResourceType::VersionManifestV2 => Ok(Url::parse("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json")?),
+      ResourceType::VersionManifest => Ok(Url::parse(
+        "https://launchermeta.mojang.com/mc/game/version_manifest.json",
+      )?),
+      ResourceType::VersionManifestV2 => Ok(Url::parse(
+        "https://launchermeta.mojang.com/mc/game/version_manifest_v2.json",
+      )?),
       ResourceType::LauncherMeta => Ok(Url::parse("https://launchermeta.mojang.com/")?),
       ResourceType::Launcher => Ok(Url::parse("https://launcher.mojang.com/")?),
       ResourceType::Assets => Ok(Url::parse("https://resources.download.minecraft.net/")?),
       ResourceType::Libraries => Ok(Url::parse("https://libraries.minecraft.net/")?),
-      ResourceType::MojangJava => Ok(Url::parse("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json")?),
+      ResourceType::MojangJava => Ok(Url::parse(
+        "https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json",
+      )?),
       ResourceType::ForgeMaven => Ok(Url::parse("https://files.minecraftforge.net/maven/")?),
       ResourceType::ForgeMavenNew => Ok(Url::parse("https://maven.minecraftforge.net")?),
-      ResourceType::ForgeInstall => Ok(Url::parse("https://maven.minecraftforge.net/net/minecraftforge/forge/")?),
+      ResourceType::ForgeInstall => Ok(Url::parse(
+        "https://maven.minecraftforge.net/net/minecraftforge/forge/",
+      )?),
       ResourceType::ForgeMeta => Err(ResourceError::NoDownloadApi.into()), // https://github.com/HMCL-dev/HMCL/pull/3259/files
-      ResourceType::Liteloader => Ok(Url::parse("https://dl.liteloader.com/versions/versions.json")?),
-      ResourceType::OptiFine => Err(ResourceError::NoDownloadApi.into()), // 
+      ResourceType::Liteloader => Ok(Url::parse(
+        "https://dl.liteloader.com/versions/versions.json",
+      )?),
+      ResourceType::OptiFine => Err(ResourceError::NoDownloadApi.into()), //
       ResourceType::AuthlibInjector => Ok(Url::parse("https://authlib-injector.yushi.moe/")?),
       ResourceType::FabricMeta => Ok(Url::parse("https://meta.fabricmc.net/")?),
       ResourceType::FabricMaven => Ok(Url::parse("https://maven.fabricmc.net/")?),
       // https://github.com/HMCL-dev/HMCL/blob/efd088e014bf1c113f7b3fdf73fb983087ae3f5e/HMCLCore/src/main/java/org/jackhuang/hmcl/download/neoforge/NeoForgeOfficialVersionList.java#L28
-      ResourceType::NeoforgeMetaForge => Ok(Url::parse("https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/forge/")?),
-      ResourceType::NeoforgeMetaNeoforge => Ok(Url::parse("https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge/")?),
-      ResourceType::NeoforgeMaven | ResourceType::NeoforgeInstall => Ok(Url::parse("https://maven.neoforged.net/releases/")?),
+      ResourceType::NeoforgeMetaForge => Ok(Url::parse(
+        "https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/forge/",
+      )?),
+      ResourceType::NeoforgeMetaNeoforge => Ok(Url::parse(
+        "https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge/",
+      )?),
+      ResourceType::NeoforgeMaven | ResourceType::NeoforgeInstall => {
+        Ok(Url::parse("https://maven.neoforged.net/releases/")?)
+      }
       ResourceType::QuiltMaven => Ok(Url::parse("https://maven.quiltmc.org/repository/release/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://meta.quiltmc.org/")?),
     },
     SourceType::BMCLAPIMirror => match resource_type {
-      ResourceType::VersionManifest => Ok(Url::parse("https://bmclapi2.bangbang93.com/mc/game/version_manifest.json")?),
-      ResourceType::VersionManifestV2 => Ok(Url::parse("https://bmclapi2.bangbang93.com/mc/game/version_manifest_v2.json")?),
+      ResourceType::VersionManifest => Ok(Url::parse(
+        "https://bmclapi2.bangbang93.com/mc/game/version_manifest.json",
+      )?),
+      ResourceType::VersionManifestV2 => Ok(Url::parse(
+        "https://bmclapi2.bangbang93.com/mc/game/version_manifest_v2.json",
+      )?),
       ResourceType::LauncherMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/")?),
       ResourceType::Launcher => Ok(Url::parse("https://bmclapi2.bangbang93.com/")?),
       ResourceType::Assets => Ok(Url::parse("https://bmclapi2.bangbang93.com/assets/")?),
       ResourceType::Libraries => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::MojangJava => Ok(Url::parse("https://bmclapi2.bangbang93.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json")?),
-      ResourceType::ForgeMaven | ResourceType::ForgeMavenNew | ResourceType::NeoforgeMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::ForgeInstall => Ok(Url::parse("https://bmclapi2.bangbang93.com/forge/download/")?),
+      ResourceType::MojangJava => Ok(Url::parse(
+        "https://bmclapi2.bangbang93.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json",
+      )?),
+      ResourceType::ForgeMaven | ResourceType::ForgeMavenNew | ResourceType::NeoforgeMaven => {
+        Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?)
+      }
+      ResourceType::ForgeInstall => Ok(Url::parse(
+        "https://bmclapi2.bangbang93.com/forge/download/",
+      )?),
       ResourceType::ForgeMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/forge/")?),
-      ResourceType::Liteloader => Ok(Url::parse("https://bmclapi.bangbang93.com/maven/com/mumfrey/liteloader/versions.json")?),
-      ResourceType::AuthlibInjector => Ok(Url::parse("https://bmclapi2.bangbang93.com/mirrors/authlib-injector/")?),
+      ResourceType::Liteloader => Ok(Url::parse(
+        "https://bmclapi.bangbang93.com/maven/com/mumfrey/liteloader/versions.json",
+      )?),
+      ResourceType::AuthlibInjector => Ok(Url::parse(
+        "https://bmclapi2.bangbang93.com/mirrors/authlib-injector/",
+      )?),
       ResourceType::FabricMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/fabric-meta/")?),
       ResourceType::FabricMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::NeoforgeMetaForge | ResourceType::NeoforgeMetaNeoforge => Ok(Url::parse("https://bmclapi2.bangbang93.com/neoforge/")?),
-      ResourceType::NeoforgeInstall => Ok(Url::parse("https://bmclapi2.bangbang93.com/neoforge/version/")?),
+      ResourceType::NeoforgeMetaForge | ResourceType::NeoforgeMetaNeoforge => {
+        Ok(Url::parse("https://bmclapi2.bangbang93.com/neoforge/")?)
+      }
+      ResourceType::NeoforgeInstall => Ok(Url::parse(
+        "https://bmclapi2.bangbang93.com/neoforge/version/",
+      )?),
       ResourceType::OptiFine => Ok(Url::parse("https://bmclapi2.bangbang93.com/optifine/")?),
       ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?),// seems 'not found' 
+      ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?), // seems 'not found'
     },
   }
 }
@@ -119,11 +154,11 @@ pub fn convert_url_to_target_source(
         continue;
       }
 
-      if let Ok(src_api) = get_download_api(src_type, resource_type) {
-        if url_str.starts_with(src_api.as_str()) {
-          let new_url_str = url_str.replacen(src_api.as_str(), dst_api.as_str(), 1);
-          return Ok(Url::parse(&new_url_str)?);
-        }
+      if let Ok(src_api) = get_download_api(src_type, resource_type)
+        && url_str.starts_with(src_api.as_str())
+      {
+        let new_url_str = url_str.replacen(src_api.as_str(), dst_api.as_str(), 1);
+        return Ok(Url::parse(&new_url_str)?);
       }
     }
   }
@@ -201,10 +236,10 @@ pub async fn apply_other_resource_enhancements(
     }
   };
 
-  if let Some(name) = translated_name {
-    if name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
-      resource_info.translated_name = Some(name);
-    }
+  if let Some(name) = translated_name
+    && name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}'))
+  {
+    resource_info.translated_name = Some(name);
   }
   if let Some(id) = mcmod_id {
     resource_info.mcmod_id = id;

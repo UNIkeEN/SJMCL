@@ -1,16 +1,27 @@
+use serde::{Deserialize, Serialize};
+use sjmcl_macros::Partial;
+use sjmcl_types::partial::PartialUpdate;
+use sjmcl_types::storage::Storage;
+use smart_default::SmartDefault;
+use std::path::PathBuf;
+use strum_macros::{Display, EnumString};
+use tauri::{AppHandle, Emitter};
+
 use crate::launcher_config::constants::{CONFIG_PARTIAL_UPDATE_EVENT, LAUNCHER_CFG_FILE_NAME};
 use crate::launcher_config::migrations::{deserialize_background, deserialize_discover_sources};
-use crate::partial::PartialUpdate;
-use crate::storage::Storage;
 use crate::utils::string::snake_to_camel_case;
 use crate::utils::sys_info;
 use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
-use partial_derive::Partial;
-use serde::{Deserialize, Serialize};
-use smart_default::SmartDefault;
-use std::path::PathBuf;
-use strum_macros::Display;
-use tauri::{AppHandle, Emitter};
+
+// Info about the latest release version fetched from remote, shown to the user to update.
+#[derive(Debug, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct VersionMetaInfo {
+  pub version: String,
+  pub file_name: String,
+  pub release_notes: String,
+  pub published_at: String,
+}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -29,16 +40,6 @@ pub struct JavaInfo {
   pub major_version: i32, // major version + LTS flag
   pub is_lts: bool,
   pub is_user_added: bool,
-}
-
-// Info about the latest release version fetched from remote, shown to the user to update.
-#[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct VersionMetaInfo {
-  pub version: String,
-  pub file_name: String,
-  pub release_notes: String,
-  pub published_at: String,
 }
 
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/game/ProcessPriority.java#L20
@@ -80,6 +81,27 @@ pub enum GarbageCollector {
   Serial,
   #[serde(other)]
   Auto,
+}
+
+// see java.net.proxy
+// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub enum ProxyType {
+  Socks,
+  #[serde(other)]
+  Http,
+}
+
+#[derive(Partial, Debug, PartialEq, Eq, Clone, Deserialize, Serialize, SmartDefault)]
+#[serde(default)]
+#[serde(rename_all = "camelCase")]
+pub struct ProxyConfig {
+  pub enabled: bool,
+  #[default(ProxyType::Http)]
+  pub selected_type: ProxyType,
+  pub host: String,
+  pub port: usize,
 }
 
 // Partial Derive is used for these structs and we can use it for key value storage.
@@ -140,6 +162,7 @@ structstruck::strike! {
         pub wrapper_launcher: String,
         pub post_exit_command: String,
       },
+      pub proxy: ProxyConfig,
       pub jvm: struct {
         #[default(GarbageCollector::Auto)]
         pub garbage_collector: GarbageCollector,
@@ -155,6 +178,10 @@ structstruck::strike! {
         pub dont_patch_natives: bool,
         #[default = true]
         pub use_lwjgl_unsafe_agent: bool,
+        pub use_custom_authlib_injector: struct {
+          pub enabled: bool,
+          pub path: String,
+        },
         pub use_native_glfw: bool,
         pub use_native_openal: bool,
       },
@@ -169,14 +196,19 @@ pub struct GameDirectory {
   pub dir: PathBuf,
 }
 
-// see java.net.proxy
-// https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
-#[serde(rename_all = "camelCase")]
-pub enum ProxyType {
-  Socks,
-  #[serde(other)]
-  Http,
+// Build metadata: compile-time constants injected by build.rs.
+// Values match frontend src/enums/misc.ts BuildType.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Default, EnumString, Display)]
+#[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "kebab-case")]
+pub enum BuildType {
+  #[default]
+  Dev,
+  #[serde(rename = "test-build")]
+  TestBuild,
+  Nightly,
+  Beta,
+  Release,
 }
 
 structstruck::strike! {
@@ -200,6 +232,11 @@ structstruck::strike! {
       pub is_china_mainland_ip: bool,
       #[default = false]
       pub allow_full_login_feature: bool,
+      // Build metadata, sourced from compile-time constants injected by build.rs.
+      // Filled by setup_with_app; not meant to be edited by the user.
+      #[default(BuildType::Dev)]
+      pub build_type: BuildType,
+      pub build_commit_sha: String,
     },
     // mocked: false when invoked from the backend, true when the frontend placeholder data is used during loading.
     pub mocked: bool,
@@ -219,6 +256,8 @@ structstruck::strike! {
       pub font: struct {
         #[default = "%built-in"]
         pub font_family: String,
+        #[default = "%built-in"]
+        pub log_font_family: String,
         #[default = 100]
         pub font_size: usize, // as percent
       },
@@ -255,13 +294,7 @@ structstruck::strike! {
       pub cache: struct {
         pub directory: PathBuf,
       },
-      pub proxy: struct ProxyConfig {
-        pub enabled: bool,
-        #[default(ProxyType::Http)]
-        pub selected_type: ProxyType,
-        pub host: String,
-        pub port: usize,
-      }
+      pub proxy: ProxyConfig,
     },
     pub general: struct GeneralConfig {
       pub general: struct {
@@ -282,7 +315,7 @@ structstruck::strike! {
         #[default = true]
         pub translated_filename_prefix: bool, // only available in zh-Hans
         #[default = true]
-        pub skip_first_screen_options: bool,  // only available in zh-Hans
+        pub skip_first_screen_options: bool,
       },
       pub advanced: struct GeneralConfigAdvanced {
         #[default = true]

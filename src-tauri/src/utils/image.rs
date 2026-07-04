@@ -1,6 +1,6 @@
 use base64::Engine;
 use image::codecs::png::PngEncoder;
-use image::imageops::{resize, FilterType};
+use image::imageops::{FilterType, resize};
 use image::{ImageEncoder, ImageError, ImageReader, RgbaImage};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fs;

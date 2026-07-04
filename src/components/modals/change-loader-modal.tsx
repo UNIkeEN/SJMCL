@@ -95,7 +95,6 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
       loaderType: summary.modLoader.loaderType,
       version: summary.modLoader.version || "",
       description: "",
-      stable: true,
     };
   }, [summary]);
 
@@ -104,13 +103,19 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
     setIsLoading(true);
 
     try {
-      const res = await InstanceService.changeModLoader(
-        summary.id,
-        mode === "modloader" ? selectedModLoader : null,
-        mode === "optifine" ? selectedOptifine : null,
-        isInstallFabricApi,
-        isInstallQfApi
-      );
+      const res =
+        mode === "modloader"
+          ? await InstanceService.changeModLoader(
+              summary.id,
+              selectedModLoader,
+              isInstallFabricApi,
+              isInstallQfApi
+            )
+          : selectedOptifine
+            ? await InstanceService.changeOptiFine(summary.id, selectedOptifine)
+            : null;
+
+      if (!res) return;
 
       if (res.status === "error") {
         toast({
@@ -146,6 +151,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      returnFocusOnClose={false}
       onCloseComplete={() => {
         setSelectedModLoader(defaultModLoaderResourceInfo);
         setSelectedOptifine(undefined);

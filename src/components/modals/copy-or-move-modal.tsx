@@ -119,7 +119,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     },
   ];
 
-  const handleCopyResourceToInstances = useCallback(
+  const handleCopyResourcesToInstances = useCallback(
     (
       srcFilePath: string,
       tgtInstId: string[],
@@ -130,8 +130,9 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
         tgtInstId &&
         tgtDirType !== InstanceSubdirType.Root
       ) {
-        InstanceService.copyResourceToInstances(
-          srcFilePath,
+        InstanceService.copyResourcesToInstances(
+          // TODO: Preserve future multi-file migration capability; backend already supports it.
+          [srcFilePath],
           tgtInstId,
           tgtDirType
         ).then((response) => {
@@ -194,7 +195,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
   const handleCopyOrMove = async () => {
     setIsLoading(true);
     if (operation === "copy") {
-      handleCopyResourceToInstances(
+      handleCopyResourcesToInstances(
         srcFilePath,
         selectedInstances.map((instance) => instance.id),
         _tgtDirType
@@ -277,6 +278,7 @@ const CopyOrMoveModal: React.FC<CopyOrMoveModalProps> = ({
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
       scrollBehavior="inside"
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

@@ -1,0 +1,137 @@
+name: Publish Homebrew Cask
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to read assets from. Defaults to v<version>."
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to read assets from"
+        required: true
+        type: string
+    secrets:
+      HOMEBREW_TAP_APP_ID:
+        description: "GitHub App ID with write access to the Homebrew tap repository"
+        required: true
+      HOMEBREW_TAP_APP_PRIVATE_KEY:
+        description: "GitHub App private key with write access to the Homebrew tap repository"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish_homebrew_cask:
+    name: Publish Homebrew cask
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+
+      - name: Read macOS release asset digests
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          get_asset_digest() {
+            local asset_name="$1"
+            gh api "repos/${GH_REPO}/releases/tags/${RELEASE_TAG}" \
+              --jq ".assets[] | select(.name == \"${asset_name}\") | .digest"
+          }
+
+          ARM_DMG_DIGEST=$(get_asset_digest "SJMCL_${VERSION}_macos_aarch64.dmg")
+          INTEL_DMG_DIGEST=$(get_asset_digest "SJMCL_${VERSION}_macos_x86_64.dmg")
+
+          if [[ -z "$ARM_DMG_DIGEST" ]]; then
+            echo "Missing release asset digest: SJMCL_${VERSION}_macos_aarch64.dmg"
+            exit 1
+          fi
+
+          if [[ -z "$INTEL_DMG_DIGEST" ]]; then
+            echo "Missing release asset digest: SJMCL_${VERSION}_macos_x86_64.dmg"
+            exit 1
+          fi
+
+          if [[ "$ARM_DMG_DIGEST" != sha256:* || "$INTEL_DMG_DIGEST" != sha256:* ]]; then
+            echo "Unexpected release asset digest format. Expected sha256:<hex>."
+            exit 1
+          fi
+
+          echo "ARM_DMG_HASH=${ARM_DMG_DIGEST#sha256:}" >> "$GITHUB_ENV"
+          echo "INTEL_DMG_HASH=${INTEL_DMG_DIGEST#sha256:}" >> "$GITHUB_ENV"
+
+      - name: Create GitHub App token for Homebrew tap
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.HOMEBREW_TAP_APP_ID }}
+          private-key: ${{ secrets.HOMEBREW_TAP_APP_PRIVATE_KEY }}
+          owner: SJMC-Dev
+          repositories: homebrew-SJMCL
+
+      - name: Checkout Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: SJMC-Dev/homebrew-SJMCL
+          token: ${{ steps.app-token.outputs.token }}
+          path: homebrew-tap
+
+      - name: Update cask
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          mkdir -p homebrew-tap/Casks
+
+          ruby <<'RUBY'
+          template_path = ".github/homebrew/sjmcl.rb.template"
+          output_path = "homebrew-tap/Casks/sjmcl.rb"
+
+          content = File.read(template_path)
+          replacements = {
+            "__VERSION__" => ENV.fetch("VERSION"),
+            "__ARM_SHA256__" => ENV.fetch("ARM_DMG_HASH"),
+            "__INTEL_SHA256__" => ENV.fetch("INTEL_DMG_HASH")
+          }
+
+          replacements.each do |placeholder, value|
+            content = content.gsub(placeholder, value)
+          end
+
+          File.write(output_path, content)
+          RUBY
+
+          ruby -c homebrew-tap/Casks/sjmcl.rb
+          git -C homebrew-tap diff -- Casks/sjmcl.rb
+
+      - name: Commit and push tap update
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if git -C homebrew-tap diff --quiet -- Casks/sjmcl.rb; then
+            echo "Homebrew cask is already up to date."
+            exit 0
+          fi
+
+          git -C homebrew-tap config user.name "github-actions[bot]"
+          git -C homebrew-tap config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C homebrew-tap add Casks/sjmcl.rb
+          git -C homebrew-tap commit -m "Update SJMCL cask to ${VERSION}"
+          git -C homebrew-tap push

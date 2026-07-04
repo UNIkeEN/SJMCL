@@ -1,4 +1,12 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::storage::Storage;
+use std::path::PathBuf;
+use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
+use tauri::{AppHandle, Manager};
+
+use crate::APP_DATA_DIR;
 use crate::instance::constants::{TRANSLATION_CACHE_EXPIRY_HOURS, TRANSLATION_CACHE_FILE_NAME};
 use crate::instance::models::misc::LocalModInfo;
 use crate::resource::helpers::curseforge::{
@@ -7,13 +15,6 @@ use crate::resource::helpers::curseforge::{
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
 };
-use crate::storage::Storage;
-use crate::APP_DATA_DIR;
-use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
-use std::sync::Mutex;
-use std::time::{SystemTime, UNIX_EPOCH};
-use tauri::{AppHandle, Manager};
 
 // Cache structure for local mod translations
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -65,19 +66,19 @@ pub async fn add_local_mod_translations(
 ) -> SJMCLResult<()> {
   let cache = {
     let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
-    let cache = translation_cache_state.lock()?.clone();
-    cache
+
+    translation_cache_state.lock()?.clone()
   };
   let file_path = mod_info.file_path.to_string_lossy().to_string();
   let file_name = mod_info.file_name.clone();
 
-  if let Some(entry) = cache.translations.get(&file_name) {
-    if !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS) {
-      log::info!("Using cached translation for mod: {}", file_name);
-      mod_info.translated_name = entry.translated_name.clone();
-      mod_info.translated_description = entry.translated_description.clone();
-      return Ok(());
-    }
+  if let Some(entry) = cache.translations.get(&file_name)
+    && !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS)
+  {
+    log::info!("Using cached translation for mod: {}", file_name);
+    mod_info.translated_name = entry.translated_name.clone();
+    mod_info.translated_description = entry.translated_description.clone();
+    return Ok(());
   }
 
   // Try both services concurrently and use the fastest successful response

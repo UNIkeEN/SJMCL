@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "謝 LittleSkin 與 @tnqzh123 助其登入流程之設。"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "供模組資訊之簡化字譯"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "謝 SCL 諸君與我輩長相切磋。"
@@ -112,12 +116,6 @@
         "title": "引伺服端",
         "description": "引諸版之官式伺服端案。"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "導入改囊集",
-      "desc": "將改囊集案 {{fileName}} 導入 SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "介面書體",
           "default": "本"
         },
+        "logFontFamily": {
+          "title": "日誌書體"
+        },
         "fontSize": {
           "title": "書體之巨細",
           "small": "小",
@@ -448,6 +449,12 @@
       "content": "誠欲刪鑒權伺服器「{{name}}」乎？既刪，將不復列於君之伺服器表。"
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "刪友",
+      "content": "其刪好友「{{name}}」乎？"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "刪戲伺服器",
     "content": "誠欲刪戲伺服器「{{name}}」（{{addr}}）乎？刪則永失！"
@@ -587,18 +594,11 @@
     },
     "proxy": {
       "title": "代",
+      "headExtra": "以下置設復啟而效",
       "settings": {
         "enabled": {
-          "title": "啟代"
-        },
-        "type": {
-          "title": "代型別"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "埠"
+          "title": "為下載之務啟代",
+          "description": "閉則自用系統之代以載資源"
         }
       }
     }
@@ -614,6 +614,13 @@
       "alpha": "內試版",
       "beta": "公試版",
       "release": "當版"
+    },
+    "button": {
+      "cancel": "消",
+      "download": "引",
+      "installToInstance": "裝入例",
+      "installToCurrentInstance": "裝入今例",
+      "install": "裝"
     }
   },
   "DownloadTasksPage": {
@@ -642,6 +649,7 @@
       "resourcepack": "資囊",
       "shader": "光影",
       "modpack": "改囊集",
+      "modpack-wo-install": "改囊集",
       "datapack": "錄囊",
       "patch-files": "修補戲案 {{param}}",
       "mod-update": "迭更改囊",
@@ -773,7 +781,7 @@
       "includedFiles": "所納之案",
       "exportOptions": "錄出之選",
       "packWithLauncher": "納啟者於包",
-      "minMemory": "至低憶（MB）",
+      "minMemory": "至低憶（MiB）",
       "noCreateRemoteFiles": "弗用遠案",
       "skipCurseForgeRemoteFiles": "略 CurseForge 遠案"
     },
@@ -859,6 +867,9 @@
     "title": "迭更擴充套件",
     "body": "擴充套件 {{identifier}} 已自 {{src}} 得新版本 {{version}}，然否確認安之？"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} 等（凡 {{count}} 個）"
+  },
   "GameAdvancedSettingsPage": {
     "title": "戲之進階置設",
     "topWarning": "戲之進階置設僅提供給專業戲者使用。改以下之選或致戲不能啟。除非您充分了解其中的意義，否則請不要改這些之選！",
@@ -900,13 +911,22 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
-          "placeholder": "單位 MB"
+          "placeholder": "單位 MiB"
         },
         "environmentVariable": {
           "title": "環境易量"
         },
         "args": {
           "title": "餘 JVM 通弦"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "為戲程啟代理",
+          "description": "若閉，則戲自用系統代理"
         }
       }
     },
@@ -918,7 +938,10 @@
           "title": "戲案完整性驗策略",
           "disable": "不驗",
           "normal": "凡驗",
-          "full": "增強驗"
+          "full": "增強驗",
+          "disableDesc": "",
+          "normalDesc": "驗有無，闕則補之",
+          "fullDesc": "驗 SHA1 無闕，闕則補之（費時較久）"
         },
         "dontCheckJvmValidity": {
           "title": "不驗 JVM 與戲的相容性"
@@ -930,11 +953,18 @@
           "title": "啟 LWJGL Unsafe Agent",
           "description": "在受影響的 礦藝 版使用來自 HMCL 的 <hmcl>LWJGL Unsafe Agent</hmcl> 修復效能問題"
         },
+        "useCustomAuthlibInjector": {
+          "title": "使用自訂 Authlib Injector",
+          "description": {
+            "notSet": "未設自訂路徑，將用內置版"
+          },
+          "select": "更改"
+        },
         "useNativeGlfw": {
-          "title": "使用械網 GLFW（僅 Linux）"
+          "title": "啟械網 GLFW（僅 Linux）"
         },
         "useNativeOpenal": {
-          "title": "使用械網 OpenAL（僅 Linux）"
+          "title": "啟械網 OpenAL（僅 Linux）"
         }
       }
     }
@@ -952,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "爪哇版"
     },
+    "button": {
+      "exportGameInfo": "錄出戲潰報告",
+      "gameLogs": "戲誌",
+      "help": "助"
+    },
+    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "潰資訊",
       "OPENJ9": "今例不能在 OpenJ9 JVM 上行，請用 HotSpot JVM。",
@@ -1019,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "今例以 Vics Modern Warfare 改囊謬，不能續行。請試迭更或刪該改囊。",
       "FORGE_LITELOADER_CONFLICT": "今例以 Forge 與 LiteLoader 衝突，不能續行。請試刪 LiteLoader 或更換 Forge 版。",
       "UNKNOWN": "暫時不能分析該謬，請覽戲誌或錄出謬潰報告。"
-    },
-    "button": {
-      "exportGameInfo": "錄出戲潰報告",
-      "gameLogs": "戲誌",
-      "help": "助"
-    },
-    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影"
+    }
   },
   "GameLogPage": {
     "placeholder": "書關鍵字以篩",
@@ -1102,9 +1133,10 @@
     "version": {
       "dev": "開發版",
       "nightly": "夜間構建版",
-      "beta": "測試版"
+      "beta": "測試版",
+      "test-build": "測試構建版"
     },
-    "viewOnWiki": "在 礦藝 Wiki 中覽"
+    "viewOnWiki": "在 礦藝大典 中覽"
   },
   "GeneralSettingsPage": {
     "language": {
@@ -1124,7 +1156,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "自調置設例文",
-          "description": "啟後，新建例的文將自調置設為簡體中文，這將同時跳過輔功用置設"
+          "description": "啟後，新建例之文將隨啟動器，並略過輔功用置設"
         }
       }
     },
@@ -1133,7 +1165,7 @@
       "settings": {
         "discoverPage": {
           "title": "發見頁",
-          "description": "於發見頁便覽 Minecraft 與社群聞，尋而引戲資源",
+          "description": "於發見頁便覽礦藝與社群聞，尋而引戲資源",
           "on": "啟",
           "search-only": "惟顯尋",
           "off": "匿"
@@ -1222,14 +1254,16 @@
       "settings": {
         "resolution": {
           "title": "戲解析度",
-          "switch": "全幕"
+          "preset": "預定之度",
+          "switch": "全幕",
+          "warning": "此度或逾示器之極"
         },
         "customTitle": {
           "title": "自定匡標題"
         },
         "customInfo": {
           "title": "自定資訊",
-          "description": "將顯在戲主介面左下角與 F3 除錯頁左上角"
+          "description": "將顯在戲主介面左下角與 F3 除錯頁左上角（惟礦藝 26.1 前之本有效）"
         }
       }
     },
@@ -1244,7 +1278,7 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體{{usedMemory}}GB；戲分配{{allocatedMemory}}GB；總記憶體{{totalMemory}}GB"
+          "description": "已用記憶體{{usedMemory}}GiB；戲分配{{allocatedMemory}}GiB；總記憶體{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "程序優先順序",
@@ -1300,7 +1334,7 @@
       "content": "在此處覽 礦藝 與社群聞，發見並引各類相關資源，如改囊、生界、改囊集等。<br/>另外，您也可透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>F</key> 快速開啟 “聚合尋”。"
     },
     "step4": {
-      "title": "Minecraft，啟！",
+      "title": "礦藝，啟！",
       "content": "選中例與戲者、調整好相關置設後，點選啟鈕享受戲吧 🥳"
     }
   },
@@ -1333,9 +1367,9 @@
       "title": "礦藝",
       "settings": {
         "mcWiki": {
-          "title": "中文 礦藝 Wiki",
+          "title": "礦藝大典",
           "description": "最詳細的 礦藝 百科全書",
-          "url": "https://zh.minecraft.wiki/"
+          "url": "https://lzh.minecraft.wiki/"
         },
         "mcMod": {
           "title": "MCMod",
@@ -1344,6 +1378,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "尋探生界上最大的 礦藝 改囊儲存庫"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "開源而今式之礦藝資源平臺"
         }
       }
     },
@@ -1373,8 +1411,14 @@
     "header": {
       "title": "自他啟者匯入戶簿資訊"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello 礦藝! Launcher",
+      "LegacyHMCL": "Hello 礦藝! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1620,6 +1664,17 @@
       "description": "誠欲移除此版爪哇乎？（SJMCL 將不能用此爪哇啟戲，然不刪硬碟上之案。）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英吉利語",
+      "es": "西班牙語",
+      "fr": "方司語",
+      "ja": "日本語",
+      "lzh": "",
+      "zh-Hans": "",
+      "zh-Hant": ""
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次行異常退出",
@@ -1667,6 +1722,12 @@
     "notCompatibleWith": "與 {{item}} 不相容",
     "noVersionSelected": "未選擇版"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "導入改囊集",
+      "desc": "將改囊集案 {{fileName}} 導入 SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "今頁由擴充套件 {{name}} 提供"
   },
@@ -1675,7 +1736,7 @@
     "default": "本",
     "steve": "史迪武",
     "alex": "艾麗思",
-    "upload": "案頭上傳",
+    "upload": "擇本機外觀",
     "skin": "外觀",
     "cape": "蓑衣",
     "model": {
@@ -1702,7 +1763,7 @@
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "方使用",
       "maxAllocation": "為 礦藝 分配的最大值"
@@ -1710,6 +1771,41 @@
   },
   "MenuSelector": {
     "selectedCount": "已選 {{count}} 項"
+  },
+  "MicrosoftFriendsModal": {
+    "title": "微軟帳戶 {{name}} 之礦藝友人",
+    "placeholder": {
+      "playerName": "輸玩家名以增友"
+    },
+    "group": {
+      "requests": "請求",
+      "friends": "友人"
+    },
+    "request": {
+      "incoming": "所受友請",
+      "outgoing": "所發友請"
+    },
+    "button": {
+      "add": "新增",
+      "accept": "接受",
+      "decline": "拒絕",
+      "revoke": "撤銷",
+      "remove": "刪友",
+      "xboxSettings": "XBOX 設定"
+    },
+    "empty": {
+      "requests": "暫無請求",
+      "friends": "暫無友人"
+    },
+    "status": {
+      "INVITED": "邀汝入其世界",
+      "ONLINE": "在線",
+      "PLAYING_OFFLINE": "獨戲中",
+      "PLAYING_REALMS": "遊 Realms 中",
+      "PLAYING_SERVER": "在伺服中",
+      "PLAYING_HOSTED_SERVER": "開區網",
+      "OFFLINE": "離線"
+    }
   },
   "NoSuitableJavaDialog": {
     "title": "未找到合宜爪哇行時",
@@ -1744,6 +1840,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "友人",
       "manageSkin": "司外觀",
       "viewSkin": "覽外觀",
       "delete": "刪此戲者",
@@ -1752,6 +1849,17 @@
     "toast": {
       "refreshing": "方重整戲者資訊",
       "deleting": "方刪戲者"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理式"
+    },
+    "host": {
+      "title": "主機"
+    },
+    "port": {
+      "title": "埠"
     }
   },
   "ReLoginPlayerModal": {
@@ -2056,7 +2164,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "啟者迭更",
     "body": "新版已畢引，復啟 SJMCL 以畢迭更",
-    "bodyMSI": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
+    "bodyWinInstaller": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
     "button": {
       "restart": "復啟",
       "install": "置",
@@ -2229,11 +2337,11 @@
             "CANCELLED": "已罷",
             "INVALID": "無效的鑒權伺服器址",
             "NO_MINECRAFT_PROFILE": "未找到戲者，請確認然否已買 礦藝 並建立戲者",
-            "XSTS_BANNED": "此戶簿已遭 Xbox 封禁",
+            "XSTS_BANNED": "此戶簿已遭 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "此戶簿受親長管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 Xbox 戶簿，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "需接受 Xbox 服务條款方能繼行",
-            "XSTS_REGION_BANNED": "所在國度不支持 Xbox Live",
+            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 XBOX 戶簿，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "需接受 XBOX 服务條款方能繼行",
+            "XSTS_REGION_BANNED": "所在國度不支持 XBOX Live",
             "XSTS_CHILD_ACCOUNT": "此戶簿為未成年，請前往 family.microsoft.com 以親長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 鑒權時發生未知謬誤"
           }
@@ -2251,11 +2359,11 @@
             "INVALID": "不支援離線戲者重整",
             "CANCELLED": "已罷",
             "NO_MINECRAFT_PROFILE": "未找到戲者，請確認然否已買 礦藝 並建立戲者",
-            "XSTS_BANNED": "此戶簿已遭 Xbox 封禁",
+            "XSTS_BANNED": "此戶簿已遭 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "此戶簿受親長管控限制",
-            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 Xbox 戶簿，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "需接受 Xbox 服務條款方能繼行",
-            "XSTS_REGION_BANNED": "所在國度不支持 Xbox Live",
+            "XSTS_NO_XBOX_ACCOUNT": "微軟戶簿未連 XBOX 戶簿，請前往 minecraft.net 建立",
+            "XSTS_TERMS_NOT_ACCEPTED": "需接受 XBOX 服務條款方能繼行",
+            "XSTS_REGION_BANNED": "所在國度不支持 XBOX Live",
             "XSTS_CHILD_ACCOUNT": "此戶簿為未成年，請前往 family.microsoft.com 以親長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 鑒權時發生未知謬誤"
           }
@@ -2343,6 +2451,41 @@
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "不能連線至鑒權伺服器",
             "INVALID": "不支援離線戲者重整"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "取友列成",
+        "error": {
+          "title": "取微軟友列敗",
+          "description": {
+            "NOT_FOUND": "戲者無",
+            "INVALID": "今戲者非微軟帳戶",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連 礦藝 服務",
+            "FORBIDDEN": "今帳無權用友功",
+            "TOO_MANY_REQUESTS": "請過頻，稍後再試",
+            "SERVICE_UNAVAILABLE": "礦藝 服務暫不可用"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "友事既成",
+        "error": {
+          "title": "微軟友事未成",
+          "description": {
+            "NOT_FOUND": "戲者無",
+            "INVALID": "友事參數無效",
+            "EXPIRED": "令牌已過期，請復登入",
+            "PARSE_ERROR": "伺服器返回資料正規化謬矣",
+            "NETWORK_ERROR": "不能連礦藝服務",
+            "FORBIDDEN": "今不得加友，請審汝與彼帳之相關設置",
+            "TOO_MANY_REQUESTS": "請過頻，稍後再試",
+            "SERVICE_UNAVAILABLE": "礦藝服務暫不可用",
+            "UNKNOWN_PROFILE": "彼玩家無",
+            "CANNOT_ADD_SELF": "不可加己為友",
+            "DUPLICATED_PROFILES": "友事請重複"
           }
         }
       },
@@ -2611,7 +2754,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "資源鈔既成",
         "error": {
           "title": "鈔資源未成",
@@ -2777,6 +2920,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部置的版，不能解除安裝或更換"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "改 OptiFine 未成"
         }
       },
       "retrieveModpackMetaInfo": {
