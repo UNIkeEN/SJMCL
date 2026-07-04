@@ -40,6 +40,11 @@ static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().
 static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
 
+fn open_modpack_deeplink(handle: &tauri::AppHandle, path: &str) {
+  let deep_link = format!("sjmcl://import-modpack?path={}", urlencoding::encode(path));
+  let _ = handle.opener().open_url(&deep_link, None::<&str>);
+}
+
 pub async fn run() {
   let exit_code = {
     let builder = tauri::Builder::default()
@@ -60,8 +65,7 @@ pub async fn run() {
         // .mrpack file association (warm start)
         for arg in &args {
           if arg.ends_with(".mrpack") {
-            let deep_link = format!("sjmcl://import-modpack?path={}", urlencoding::encode(arg));
-            let _ = app.opener().open_url(&deep_link, None::<&str>);
+            open_modpack_deeplink(app, arg);
           }
         }
       }))
@@ -365,9 +369,7 @@ pub async fn run() {
             {
               for arg in std::env::args() {
                 if arg.ends_with(".mrpack") {
-                  let deep_link =
-                    format!("sjmcl://import-modpack?path={}", urlencoding::encode(&arg));
-                  let _ = app_handle.opener().open_url(&deep_link, None::<&str>);
+                  open_modpack_deeplink(app_handle, &arg);
                   break;
                 }
               }
@@ -378,13 +380,10 @@ pub async fn run() {
             for url in urls {
               if let Ok(path) = url.to_file_path()
                 && path.extension().is_some_and(|ext| ext == "mrpack")
-                  && let Some(path_str) = path.to_str() {
-                    let deep_link = format!(
-                      "sjmcl://import-modpack?path={}",
-                      urlencoding::encode(path_str)
-                    );
-                    let _ = app_handle.opener().open_url(&deep_link, None::<&str>);
-                  }
+                && let Some(path_str) = path.to_str()
+              {
+                open_modpack_deeplink(app_handle, path_str);
+              }
             }
           }
           // set normal exit flag.
