@@ -1,9 +1,7 @@
-import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useSharedModals } from "@/contexts/shared-modal";
-import useDeepLink, { emitDeepLink } from "@/hooks/deep-link";
+import useDeepLink from "@/hooks/deep-link";
 import useKeyboardShortcut from "@/hooks/keyboard-shortcut";
 
 // Handle global keyboard shortcuts, DnD events, etc.
@@ -66,6 +64,11 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   );
   const launchTrigger = useMemo(() => /^launch\/?(?:\?.*)?$/, []);
 
+  const importModpackTrigger = useMemo(
+    () => /^import-modpack\/?(?:\?.*)?$/,
+    []
+  );
+
   const addAuthServerByDeeplink = useCallback(
     (path: string | URL) => {
       const url = new URL(path).searchParams.get("url") || "";
@@ -102,21 +105,6 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
     [isStandAlone, openSharedModal]
   );
 
-  useDeepLink({
-    trigger: addAuthServerTrigger,
-    onCall: addAuthServerByDeeplink,
-  });
-
-  useDeepLink({
-    trigger: launchTrigger,
-    onCall: quickLaunchGame,
-  });
-
-  const importModpackTrigger = useMemo(
-    () => /^import-modpack\/?(?:\?.*)?$/,
-    []
-  );
-
   const importModpackByDeeplink = useCallback(
     (path: string | URL) => {
       const url = new URL(path);
@@ -131,23 +119,19 @@ const GlobalEventHandler: React.FC<{ children: React.ReactNode }> = ({
   );
 
   useDeepLink({
+    trigger: addAuthServerTrigger,
+    onCall: addAuthServerByDeeplink,
+  });
+
+  useDeepLink({
+    trigger: launchTrigger,
+    onCall: quickLaunchGame,
+  });
+
+  useDeepLink({
     trigger: importModpackTrigger,
     onCall: importModpackByDeeplink,
   });
-
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-    (async () => {
-      const pending = await invoke<string | null>("check_cold_start_mrpack");
-      if (pending) emitDeepLink([pending]);
-      unlisten = await listen<string>("sjmcl://import", (event) => {
-        emitDeepLink([event.payload]);
-      });
-    })();
-    return () => {
-      if (unlisten) unlisten();
-    };
-  }, []);
 
   return <>{children}</>;
 };
