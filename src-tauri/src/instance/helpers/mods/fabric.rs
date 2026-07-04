@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::io::{Read, Seek};
 use std::path::Path;
@@ -41,6 +41,23 @@ impl From<FabricModMetadata> for LocalModInfo {
 #[derive(Clone, Copy)]
 pub struct FabricModMetadataParser;
 
+fn parse_fabric_mod_metadata(content: &str) -> SJMCLResult<FabricModMetadata> {
+  Ok(match serde_json::from_str(content) {
+    Ok(meta) => meta,
+    Err(_) => serde_json::from_str(&strip_json_control_chars(content))?,
+  })
+}
+
+// Removes C0 control characters before a fallback parse of invalid Fabric metadata.
+// Some mods ship non-standard metadata with raw control characters, so after
+// strict JSON parsing fails, strips them and tries parsing again.
+fn strip_json_control_chars(input: &str) -> String {
+  input
+    .chars()
+    .filter(|c| !matches!(c, '\u{0000}'..='\u{001F}'))
+    .collect()
+}
+
 #[async_trait]
 impl LocalModMetadataParser for FabricModMetadataParser {
   type Metadata = FabricModMetadata;
@@ -48,26 +65,17 @@ impl LocalModMetadataParser for FabricModMetadataParser {
   fn get_mod_metadata_from_jar<R: Read + Seek>(
     jar: &mut ZipArchive<R>,
   ) -> SJMCLResult<Self::Metadata> {
-    let meta: FabricModMetadata = match jar.by_name("fabric.mod.json") {
-      Ok(val) => match serde_json::from_reader(val) {
-        Ok(val) => val,
-        Err(e) => return Err(SJMCLError::from(e)),
-      },
-      Err(e) => return Err(SJMCLError::from(e)),
-    };
-    Ok(meta)
+    let mut content = String::new();
+    jar
+      .by_name("fabric.mod.json")?
+      .read_to_string(&mut content)?;
+    parse_fabric_mod_metadata(&content)
   }
 
   async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata> {
     let fabric_file_path = dir_path.join("fabric.mod.json");
-    let meta: FabricModMetadata = match tokio::fs::read_to_string(fabric_file_path).await {
-      Ok(val) => match serde_json::from_str(val.as_str()) {
-        Ok(val) => val,
-        Err(e) => return Err(SJMCLError::from(e)),
-      },
-      Err(e) => return Err(SJMCLError::from(e)),
-    };
-    Ok(meta)
+    let content = tokio::fs::read_to_string(fabric_file_path).await?;
+    parse_fabric_mod_metadata(&content)
   }
 
   fn get_icon_from_jar<R: Read + Seek>(
