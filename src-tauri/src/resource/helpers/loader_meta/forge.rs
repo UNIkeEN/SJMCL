@@ -59,6 +59,7 @@ async fn get_forge_meta_by_game_version_official(
   app: &AppHandle,
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+  let _ = (app, game_version);
   Err(ResourceError::NoDownloadApi.into()) // TODO
 }
 
