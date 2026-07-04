@@ -64,7 +64,7 @@ pub async fn run() {
 
         // .mrpack file association (warm start)
         for arg in &args {
-          if arg.ends_with(".mrpack") {
+          if arg.ends_with(".mrpack") && !arg.starts_with("sjmcl://") {
             open_modpack_deeplink(app, arg);
           }
         }
@@ -368,7 +368,7 @@ pub async fn run() {
             #[cfg(not(target_os = "macos"))]
             {
               for arg in std::env::args() {
-                if arg.ends_with(".mrpack") {
+                if arg.ends_with(".mrpack") && !arg.starts_with("sjmcl://") {
                   open_modpack_deeplink(app_handle, &arg);
                   break;
                 }
