@@ -60,18 +60,6 @@ export class LaunchService {
   }
 
   /**
-   * RETRIEVE renderers supported by the current platform for a graphics API.
-   * @param api Graphics API: default, opengl, or vulkan.
-   * @returns {Promise<InvokeResponse<string[]>>}
-   */
-  @responseHandler("launch")
-  static async retrieveSupportedGraphicsRenderers(
-    api: string
-  ): Promise<InvokeResponse<string[]>> {
-    return await invoke("retrieve_supported_graphics_renderers", { api });
-  }
-
-  /**
    * CANCEL the launching process.
    * @returns {Promise<InvokeResponse<void>>}
    */

@@ -22,23 +22,20 @@ use crate::launch::helpers::command_generator::{
   LaunchCommand, export_full_launch_command, generate_launch_command,
 };
 use crate::launch::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files,
-  get_invalid_windows_mesa_loader_file, prepare_legacy_assets,
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
+};
+use crate::launch::helpers::graphics_handler::{
+  build_graphics_environment_variables, parse_environment_variables,
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
-use crate::launch::helpers::misc::{
-  build_graphics_environment_variables, get_separator, parse_environment_variables,
-  supported_graphics_renderers,
-};
+use crate::launch::helpers::misc::get_separator;
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
 };
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
-use crate::launcher_config::models::{
-  FileValidatePolicy, GraphicsApi, LauncherConfig, LauncherVisiablity,
-};
+use crate::launcher_config::models::{FileValidatePolicy, LauncherConfig, LauncherVisiablity};
 use crate::resource::helpers::misc::get_source_priority_list;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
@@ -46,6 +43,8 @@ use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
 
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::file_validator::get_invalid_windows_mesa_loader_file;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
@@ -165,42 +164,37 @@ pub async fn validate_game_files(
 
   // validate game files
   let incomplete_files = match workaround.game_file_validate_policy {
-    FileValidatePolicy::Disable => {
-      get_invalid_windows_mesa_loader_file(
-        &app,
-        priority_list[0],
-        libraries_dir,
-        &game_config,
-        false,
-      )
-      .await?
-    }
+    FileValidatePolicy::Disable => Vec::new(),
     FileValidatePolicy::Normal => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
-      get_invalid_windows_mesa_loader_file(
-        &app,
-        priority_list[0],
-        libraries_dir,
-        &game_config,
-        false,
-      )
-      .await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, false).await?,
     ]
     .concat(),
     FileValidatePolicy::Full => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, true).await?,
+      get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, true).await?,
+    ]
+    .concat(),
+  };
+
+  #[cfg(target_os = "windows")]
+  let incomplete_files = {
+    let check_hash = matches!(
+      workaround.game_file_validate_policy,
+      FileValidatePolicy::Full
+    );
+    let mut files = incomplete_files;
+    files.extend(
       get_invalid_windows_mesa_loader_file(
         &app,
         priority_list[0],
         libraries_dir,
         &game_config,
-        true,
+        check_hash,
       )
       .await?,
-      get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, true).await?,
-    ]
-    .concat(),
+    );
+    files
   };
 
   if incomplete_files.is_empty() {
@@ -290,17 +284,19 @@ pub async fn launch_game(
   };
 
   let instance_id = instance.id.clone();
-  let work_dir = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
-    .ok_or(InstanceError::InstanceNotFoundByID)?
-    .first()
-    .ok_or(InstanceError::InstanceNotFoundByID)?
-    .clone();
-  let natives_dir =
-    get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::NativeLibraries])
-      .ok_or(InstanceError::InstanceNotFoundByID)?
-      .first()
-      .ok_or(InstanceError::InstanceNotFoundByID)?
-      .clone();
+  let subdirs = get_instance_subdir_paths(
+    &app,
+    &instance,
+    &[
+      &InstanceSubdirType::Root,
+      &InstanceSubdirType::NativeLibraries,
+    ],
+  )
+  .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [work_dir, natives_dir] = subdirs.as_slice() else {
+    return Err(InstanceError::InstanceNotFoundByID.into());
+  };
+  let (work_dir, natives_dir) = (work_dir.clone(), natives_dir.clone());
 
   // generate launch command
   let LaunchCommand {
@@ -395,17 +391,6 @@ pub async fn launch_game(
   }
 
   Ok(())
-}
-
-#[tauri::command]
-pub fn retrieve_supported_graphics_renderers(api: String) -> SJMCLResult<Vec<String>> {
-  let api = match api.trim().to_ascii_lowercase().as_str() {
-    "opengl" => GraphicsApi::Opengl,
-    "vulkan" => GraphicsApi::Vulkan,
-    _ => GraphicsApi::Default,
-  };
-
-  Ok(supported_graphics_renderers(&api))
 }
 
 #[tauri::command]

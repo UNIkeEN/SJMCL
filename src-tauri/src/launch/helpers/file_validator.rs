@@ -6,8 +6,7 @@ use sjmcl_types::storage::load_json_async;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
 
@@ -15,17 +14,22 @@ use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
-  load_native_libraries_replace_map,
 };
 use crate::instance::models::misc::InstanceError;
-use crate::launch::helpers::misc::{get_natives_string, mesa_driver_name};
+use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
-use crate::launcher_config::models::{GameConfig, LauncherConfig};
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
+
+#[cfg(target_os = "windows")]
+use crate::instance::helpers::client_json::load_native_libraries_replace_map;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::helpers::graphics::mesa_driver_name;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::models::{GameConfig, LauncherConfig};
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
@@ -120,11 +124,8 @@ pub async fn get_invalid_library_files(
   Ok(params)
 }
 
+#[cfg(target_os = "windows")]
 pub fn get_windows_mesa_loader_library(app: &AppHandle) -> SJMCLResult<Option<LibrariesValue>> {
-  if !cfg!(target_os = "windows") {
-    return Ok(None);
-  }
-
   let all_replace_map = load_native_libraries_replace_map(app)?;
   let (os, arch) = {
     let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -154,6 +155,7 @@ pub fn get_windows_mesa_loader_path(
   }))
 }
 
+#[cfg(target_os = "windows")]
 pub async fn get_invalid_windows_mesa_loader_file(
   app: &AppHandle,
   source: SourceType,

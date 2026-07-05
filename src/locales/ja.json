@@ -903,67 +903,6 @@
         }
       }
     },
-    "graphics": {
-      "title": "グラフィック",
-      "settings": {
-        "api": {
-          "title": "グラフィック API",
-          "default": {
-            "label": "デフォルト",
-            "desc": "Minecraft とドライバーのデフォルト設定を使用します。"
-          },
-          "opengl": {
-            "label": "OpenGL",
-            "desc": "OpenGL レンダラーと任意の Mesa ドライバー上書きを使用します。"
-          },
-          "vulkan": {
-            "label": "Vulkan",
-            "desc": "Vulkan レンダラーと任意の ICD ドライバー選択を使用します。"
-          }
-        },
-        "renderer": {
-          "title": "レンダラー / ドライバー",
-          "default": {
-            "label": "デフォルト",
-            "desc": "レンダラー固有の環境変数を設定しません。"
-          },
-          "llvmpipe": {
-            "label": "LLVMpipe",
-            "desc": "Mesa のソフトウェア OpenGL レンダラー。"
-          },
-          "zink": {
-            "label": "Zink",
-            "desc": "Mesa により Vulkan 上で OpenGL を実行します。"
-          },
-          "d3d12": {
-            "label": "D3D12",
-            "desc": "DirectX 12 ベースの Mesa OpenGL ドライバー。"
-          },
-          "lavapipe": {
-            "label": "Lavapipe",
-            "desc": "Mesa のソフトウェア Vulkan ドライバー。"
-          },
-          "dozen": {
-            "label": "Dozen",
-            "desc": "DirectX 12 ベースの Mesa Vulkan ドライバー。"
-          },
-          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
-          "nvidia_nvk": { "label": "NVK" },
-          "amdvlk": { "label": "AMDVLK" },
-          "amd_radv": { "label": "RADV" },
-          "intel_vulkan": { "label": "Intel Vulkan" },
-          "intel_anv": { "label": "ANV" },
-          "intel_hasvk": { "label": "HASVK" },
-          "qualcomm": { "label": "Qualcomm Vulkan" },
-          "turnip": { "label": "Turnip" },
-          "moltenvk": { "label": "MoltenVK" },
-          "kosmickrisp": { "label": "KosmicKrisp" },
-          "powervr": { "label": "PowerVR" },
-          "panvk": { "label": "PanVK" },
-          "v3dv": { "label": "V3DV" }
-        }
-      }
-    },
     "jvm": {
       "title": "Java 仮想マシン設定",
       "settings": {
@@ -988,6 +927,49 @@
         },
         "args": {
           "title": "JVM パラメーター"
+        }
+      }
+    },
+    "graphics": {
+      "title": "グラフィック",
+      "settings": {
+        "api": {
+          "title": "グラフィック API",
+          "default": {
+            "label": "デフォルト",
+            "desc": "Minecraftとドライバーのデフォルト設定に従います。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "OpenGLレンダリングを使用します。"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Vulkanレンダリングを使用します。"
+          }
+        },
+        "renderer": {
+          "title": "レンダラー / ドライバー",
+          "default": "デフォルト",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
         }
       }
     },

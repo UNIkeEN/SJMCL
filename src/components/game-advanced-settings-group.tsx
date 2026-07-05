@@ -23,7 +23,7 @@ import {
 import { Section } from "@/components/common/section";
 import { GameSettingsGroupsProps } from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
-import { LaunchService } from "@/services/launch";
+import { ConfigService } from "@/services/config";
 
 const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   gameConfig,
@@ -77,33 +77,21 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   );
 
   useEffect(() => {
-    let cancelled = false;
-
-    setSupportedRenderers(null);
-    LaunchService.retrieveSupportedGraphicsRenderers(
-      gameConfig.advanced.graphics.api
-    ).then((res) => {
-      if (cancelled) return;
-      setSupportedRenderers(
-        res.status === "success" && res.data.length > 0 ? res.data : ["default"]
+    const fetchRenderers = async () => {
+      const res = await ConfigService.retrieveSupportedGraphicsRenderers(
+        gameConfig.advanced.graphics.api
       );
-    });
-
-    return () => {
-      cancelled = true;
+      const renderers =
+        res.status === "success" && res.data.length > 0
+          ? res.data
+          : ["default"];
+      setSupportedRenderers(renderers);
+      if (!renderers.includes(gameConfig.advanced.graphics.renderer)) {
+        updateGameAdvancedConfig("graphics.renderer", "default");
+      }
     };
-  }, [gameConfig.advanced.graphics.api]);
-
-  useEffect(() => {
-    if (supportedRenderers === null) return;
-    if (!supportedRenderers.includes(gameConfig.advanced.graphics.renderer)) {
-      updateGameAdvancedConfig("graphics.renderer", "default");
-    }
-  }, [
-    supportedRenderers,
-    gameConfig.advanced.graphics.renderer,
-    updateGameAdvancedConfig,
-  ]);
+    fetchRenderers();
+  }, [gameConfig.advanced.graphics, updateGameAdvancedConfig]);
 
   const handleSelectAuthlibJar = async () => {
     const selected = await open({
@@ -220,59 +208,6 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       ],
     },
     {
-      title: t("GameAdvancedSettingsPage.graphics.title"),
-      items: [
-        {
-          title: t("GameAdvancedSettingsPage.graphics.settings.api.title"),
-          description: t(
-            `GameAdvancedSettingsPage.graphics.settings.api.${gameConfig.advanced.graphics.api}.desc`
-          ),
-          children: (
-            <MenuSelector
-              options={graphicsApis.map((value) => ({
-                value,
-                label: t(
-                  `GameAdvancedSettingsPage.graphics.settings.api.${value}.label`
-                ),
-              }))}
-              value={gameConfig.advanced.graphics.api}
-              onSelect={(val) => {
-                updateGameAdvancedConfig("graphics.api", val);
-                updateGameAdvancedConfig("graphics.renderer", "default");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("GameAdvancedSettingsPage.graphics.settings.renderer.title"),
-          description: t(
-            `GameAdvancedSettingsPage.graphics.settings.renderer.${gameConfig.advanced.graphics.renderer}.desc`,
-            { defaultValue: "" }
-          ),
-          children: (
-            <MenuSelector
-              disabled={gameConfig.advanced.graphics.api === "default"}
-              options={rendererOptions.map((value) => ({
-                value,
-                label: t(
-                  `GameAdvancedSettingsPage.graphics.settings.renderer.${value}.label`
-                ),
-              }))}
-              value={
-                rendererOptions.includes(gameConfig.advanced.graphics.renderer)
-                  ? gameConfig.advanced.graphics.renderer
-                  : "default"
-              }
-              onSelect={(val) => {
-                updateGameAdvancedConfig("graphics.renderer", val);
-              }}
-              menuListProps={{ maxH: 72, overflowY: "auto" }}
-            />
-          ),
-        },
-      ],
-    },
-    {
       title: t("GameAdvancedSettingsPage.jvm.title"),
       items: [
         {
@@ -357,6 +292,64 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             />
           ),
         },
+      ],
+    },
+    {
+      title: t("GameAdvancedSettingsPage.graphics.title"),
+      items: [
+        {
+          title: t("GameAdvancedSettingsPage.graphics.settings.api.title"),
+          children: (
+            <MenuSelector
+              options={graphicsApis.map((value) => ({
+                value,
+                label: {
+                  title: t(
+                    `GameAdvancedSettingsPage.graphics.settings.api.${value}.label`
+                  ),
+                  desc: t(
+                    `GameAdvancedSettingsPage.graphics.settings.api.${value}.desc`
+                  ),
+                },
+              }))}
+              value={gameConfig.advanced.graphics.api}
+              onSelect={(val) => {
+                updateGameAdvancedConfig("graphics.api", val);
+                updateGameAdvancedConfig("graphics.renderer", "default");
+              }}
+            />
+          ),
+        },
+        ...(gameConfig.advanced.graphics.api !== "default"
+          ? [
+              {
+                title: t(
+                  "GameAdvancedSettingsPage.graphics.settings.renderer.title"
+                ),
+                children: (
+                  <MenuSelector
+                    options={rendererOptions.map((value) => ({
+                      value,
+                      label: t(
+                        `GameAdvancedSettingsPage.graphics.settings.renderer.${value}`
+                      ),
+                    }))}
+                    value={
+                      rendererOptions.includes(
+                        gameConfig.advanced.graphics.renderer
+                      )
+                        ? gameConfig.advanced.graphics.renderer
+                        : "default"
+                    }
+                    onSelect={(val) => {
+                      updateGameAdvancedConfig("graphics.renderer", val);
+                    }}
+                    menuListProps={{ maxH: 72, overflowY: "auto" }}
+                  />
+                ),
+              },
+            ]
+          : []),
       ],
     },
     {

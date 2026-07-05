@@ -5,7 +5,6 @@ use serde_json::Value;
 use shlex::try_quote;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::borrow::Cow;
-use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -18,17 +17,18 @@ use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
-#[cfg(target_os = "windows")]
-use crate::launch::helpers::file_validator::get_windows_mesa_loader_path;
-#[cfg(target_os = "windows")]
-use crate::launch::helpers::misc::mesa_driver_name;
-#[cfg(target_os = "macos")]
-use crate::launch::helpers::misc::{find_macos_libvulkan, find_vulkan_icd_file};
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
+
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::file_validator::get_windows_mesa_loader_path;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::helpers::graphics::mesa_driver_name;
+#[cfg(target_os = "macos")]
+use crate::launcher_config::helpers::graphics::{find_macos_libvulkan, find_vulkan_icd_file};
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {
@@ -472,9 +472,11 @@ pub async fn generate_launch_command(
     cmd.push("--fullscreen".to_string());
   }
 
+  // in-game graphics backend settings (for 26.2+)
   if game_config.advanced.graphics.api != GraphicsApi::Default
-    && compare_game_versions(app, &selected_instance.version, "26.2-snapshot-2", false).await
-      >= Ordering::Equal
+    && compare_game_versions(app, &selected_instance.version, "26.2-snapshot-2", false)
+      .await
+      .is_ge()
   {
     cmd.push("--graphicsBackend".to_string());
     cmd.push(

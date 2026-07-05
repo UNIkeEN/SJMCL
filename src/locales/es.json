@@ -903,67 +903,6 @@
         }
       }
     },
-    "graphics": {
-      "title": "Gráficos",
-      "settings": {
-        "api": {
-          "title": "API de gráficos",
-          "default": {
-            "label": "Predeterminado",
-            "desc": "Usar la configuración predeterminada de Minecraft y del controlador."
-          },
-          "opengl": {
-            "label": "OpenGL",
-            "desc": "Usar el renderizador OpenGL y anulaciones opcionales del controlador Mesa."
-          },
-          "vulkan": {
-            "label": "Vulkan",
-            "desc": "Usar el renderizador Vulkan y selección opcional del controlador ICD."
-          }
-        },
-        "renderer": {
-          "title": "Renderizador / Controlador",
-          "default": {
-            "label": "Predeterminado",
-            "desc": "No establecer variables de entorno específicas del renderizador."
-          },
-          "llvmpipe": {
-            "label": "LLVMpipe",
-            "desc": "Renderizador OpenGL por software de Mesa."
-          },
-          "zink": {
-            "label": "Zink",
-            "desc": "Ejecutar OpenGL sobre Vulkan mediante Mesa."
-          },
-          "d3d12": {
-            "label": "D3D12",
-            "desc": "Controlador OpenGL de Mesa basado en DirectX 12."
-          },
-          "lavapipe": {
-            "label": "Lavapipe",
-            "desc": "Controlador Vulkan por software de Mesa."
-          },
-          "dozen": {
-            "label": "Dozen",
-            "desc": "Controlador Vulkan de Mesa basado en DirectX 12."
-          },
-          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
-          "nvidia_nvk": { "label": "NVK" },
-          "amdvlk": { "label": "AMDVLK" },
-          "amd_radv": { "label": "RADV" },
-          "intel_vulkan": { "label": "Intel Vulkan" },
-          "intel_anv": { "label": "ANV" },
-          "intel_hasvk": { "label": "HASVK" },
-          "qualcomm": { "label": "Qualcomm Vulkan" },
-          "turnip": { "label": "Turnip" },
-          "moltenvk": { "label": "MoltenVK" },
-          "kosmickrisp": { "label": "KosmicKrisp" },
-          "powervr": { "label": "PowerVR" },
-          "panvk": { "label": "PanVK" },
-          "v3dv": { "label": "V3DV" }
-        }
-      }
-    },
     "jvm": {
       "title": "Opciones de la Máquina Virtual Java",
       "settings": {
@@ -988,6 +927,49 @@
         },
         "args": {
           "title": "Otros Argumentos JVM"
+        }
+      }
+    },
+    "graphics": {
+      "title": "Gráficos",
+      "settings": {
+        "api": {
+          "title": "API de gráficos",
+          "default": {
+            "label": "Predeterminado",
+            "desc": "Usar la configuración predeterminada de Minecraft y del controlador."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Usar renderizado OpenGL."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Usar renderizado Vulkan."
+          }
+        },
+        "renderer": {
+          "title": "Renderizador / Controlador",
+          "default": "Predeterminado",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
         }
       }
     },

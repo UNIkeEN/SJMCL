@@ -903,67 +903,6 @@
         }
       }
     },
-    "graphics": {
-      "title": "圖形",
-      "settings": {
-        "api": {
-          "title": "圖形 API",
-          "default": {
-            "label": "預設",
-            "desc": "使用 Minecraft 與驅動程式的預設設定。"
-          },
-          "opengl": {
-            "label": "OpenGL",
-            "desc": "使用 OpenGL 算繪器與可選的 Mesa 驅動程式覆寫。"
-          },
-          "vulkan": {
-            "label": "Vulkan",
-            "desc": "使用 Vulkan 算繪器與可選的 ICD 驅動程式選擇。"
-          }
-        },
-        "renderer": {
-          "title": "算繪器 / 驅動程式",
-          "default": {
-            "label": "預設",
-            "desc": "不設定算繪器專用的環境變數。"
-          },
-          "llvmpipe": {
-            "label": "LLVMpipe",
-            "desc": "Mesa 軟體 OpenGL 算繪器。"
-          },
-          "zink": {
-            "label": "Zink",
-            "desc": "透過 Mesa 在 Vulkan 之上執行 OpenGL。"
-          },
-          "d3d12": {
-            "label": "D3D12",
-            "desc": "基於 DirectX 12 的 Mesa OpenGL 驅動程式。"
-          },
-          "lavapipe": {
-            "label": "Lavapipe",
-            "desc": "Mesa 軟體 Vulkan 驅動程式。"
-          },
-          "dozen": {
-            "label": "Dozen",
-            "desc": "基於 DirectX 12 的 Mesa Vulkan 驅動程式。"
-          },
-          "nvidia_vulkan": { "label": "NVIDIA Vulkan" },
-          "nvidia_nvk": { "label": "NVK" },
-          "amdvlk": { "label": "AMDVLK" },
-          "amd_radv": { "label": "RADV" },
-          "intel_vulkan": { "label": "Intel Vulkan" },
-          "intel_anv": { "label": "ANV" },
-          "intel_hasvk": { "label": "HASVK" },
-          "qualcomm": { "label": "Qualcomm Vulkan" },
-          "turnip": { "label": "Turnip" },
-          "moltenvk": { "label": "MoltenVK" },
-          "kosmickrisp": { "label": "KosmicKrisp" },
-          "powervr": { "label": "PowerVR" },
-          "panvk": { "label": "PanVK" },
-          "v3dv": { "label": "V3DV" }
-        }
-      }
-    },
     "jvm": {
       "title": "Java 虛擬機器設定",
       "settings": {
@@ -988,6 +927,49 @@
         },
         "args": {
           "title": "Java 虛擬機器引數"
+        }
+      }
+    },
+    "graphics": {
+      "title": "圖形",
+      "settings": {
+        "api": {
+          "title": "圖形 API",
+          "default": {
+            "label": "預設",
+            "desc": "遵循 Minecraft 與顯示卡驅動程式的預設設定。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "使用 OpenGL 渲染"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "使用 Vulkan 渲染"
+          }
+        },
+        "renderer": {
+          "title": "算繪器 / 驅動程式",
+          "default": "預設",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
         }
       }
     },
