@@ -13,6 +13,7 @@ use zip::ZipArchive;
 use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
+use crate::utils::string::deserialize_lenient_json;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -41,23 +42,6 @@ impl From<FabricModMetadata> for LocalModInfo {
 #[derive(Clone, Copy)]
 pub struct FabricModMetadataParser;
 
-fn parse_fabric_mod_metadata(content: &str) -> SJMCLResult<FabricModMetadata> {
-  Ok(match serde_json::from_str(content) {
-    Ok(meta) => meta,
-    Err(_) => serde_json::from_str(&strip_json_control_chars(content))?,
-  })
-}
-
-// Removes C0 control characters before a fallback parse of invalid Fabric metadata.
-// Some mods ship non-standard metadata with raw control characters, so after
-// strict JSON parsing fails, strips them and tries parsing again.
-fn strip_json_control_chars(input: &str) -> String {
-  input
-    .chars()
-    .filter(|c| !matches!(c, '\u{0000}'..='\u{001F}'))
-    .collect()
-}
-
 #[async_trait]
 impl LocalModMetadataParser for FabricModMetadataParser {
   type Metadata = FabricModMetadata;
@@ -69,13 +53,13 @@ impl LocalModMetadataParser for FabricModMetadataParser {
     jar
       .by_name("fabric.mod.json")?
       .read_to_string(&mut content)?;
-    parse_fabric_mod_metadata(&content)
+    Ok(deserialize_lenient_json(&content)?)
   }
 
   async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata> {
     let fabric_file_path = dir_path.join("fabric.mod.json");
     let content = tokio::fs::read_to_string(fabric_file_path).await?;
-    parse_fabric_mod_metadata(&content)
+    Ok(deserialize_lenient_json(&content)?)
   }
 
   fn get_icon_from_jar<R: Read + Seek>(
