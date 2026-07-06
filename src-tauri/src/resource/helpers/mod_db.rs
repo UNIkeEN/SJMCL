@@ -139,6 +139,7 @@ pub struct MCModRecord {
   pub abbr: Option<String>,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 impl MCModRecord {
   pub fn get_display_name(&self) -> String {
     let mut builder = String::new();

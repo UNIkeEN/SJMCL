@@ -76,11 +76,13 @@ pub struct Version {
   pub snapshot: bool,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct EnderItemsEntry {
   pub id: String,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GameRules {

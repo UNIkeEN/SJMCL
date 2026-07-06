@@ -13,6 +13,7 @@ use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_ic
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Debug, Serialize, Deserialize, Default, Clone)]
 #[serde(default)]
 pub struct QuiltModMetadata {
