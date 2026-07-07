@@ -2185,12 +2185,12 @@
     }
   },
   "RestoreConfigConfirmDialog": {
-    "title": "Restaurar configuración del lanzador",
-    "body": "Esta acción restaurará todas las configuraciones del lanzador a sus valores predeterminados. ¿Estás seguro de que deseas continuar?"
+    "title": "Restablecer configuración del lanzador",
+    "body": "Esta acción restablecerá todas las configuraciones del lanzador a sus valores predeterminados. ¿Estás seguro de que deseas continuar?"
   },
   "RestoreInstanceConfigConfirmDialog": {
-    "title": "Restaurar configuración de instancia",
-    "body": "Esta acción restaurará la configuración específica del juego de esta instancia a la configuración global actual. ¿Estás seguro de que deseas continuar?"
+    "title": "Restablecer configuración de instancia",
+    "body": "Esta acción restablecerá la configuración específica del juego de esta instancia a la configuración global actual. ¿Estás seguro de que deseas continuar?"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "Ten cuidado al editar el archivo de configuración sin procesar del lanzador. Un formato incorrecto puede provocar la pérdida de la configuración original o impedir que el lanzador funcione correctamente."
@@ -2226,9 +2226,9 @@
         }
       },
       "restoreLauncherConfig": {
-        "success": "Configuración del lanzador restaurada exitosamente",
+        "success": "Configuración del lanzador restablecido exitosamente",
         "error": {
-          "title": "Error al restaurar la configuración del lanzador"
+          "title": "Error al restablecer la configuración del lanzador"
         }
       },
       "exportLauncherConfig": {

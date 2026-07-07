@@ -1214,9 +1214,9 @@
           "description": "Nettoyage automatique des fichiers journaux du lanceur datant de 30 jours ou plus"
         },
         "restoreAll": {
-          "title": "Restaurer tous les paramètres",
-          "description": "Restaurer tous les paramètres du lanceur à leur valeur par défaut",
-          "restore": "Restaurer"
+          "title": "Réinitialiser tous les paramètres",
+          "description": "Réinitialiser tous les paramètres du lanceur à leur valeur par défaut",
+          "restore": "Réinitialiser"
         }
       }
     }
@@ -2185,12 +2185,12 @@
     }
   },
   "RestoreConfigConfirmDialog": {
-    "title": "Restaurer les paramètres du lanceur",
-    "body": "Cette opération restaurera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
+    "title": "Réinitialiser les paramètres du lanceur",
+    "body": "Cette opération réinitialisera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
   },
   "RestoreInstanceConfigConfirmDialog": {
-    "title": "Restaurer les paramètres de l'instance",
-    "body": "Cette action restaurera les paramètres spécifiques de cette instance vers les paramètres globaux actuels. Voulez-vous continuer ?"
+    "title": "Réinitialiser les paramètres de l'instance",
+    "body": "Cette action réinitialisera les paramètres spécifiques de cette instance vers les paramètres globaux actuels. Voulez-vous continuer ?"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "Veuillez éditer le fichier de configuration original du lanceur avec précaution. Un format incorrect peut entraîner la perte des paramètres existants ou un dysfonctionnement du lanceur"

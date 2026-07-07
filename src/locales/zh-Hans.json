@@ -1214,9 +1214,9 @@
           "description": "自动清理 30 天及以前的启动器日志文件"
         },
         "restoreAll": {
-          "title": "还原所有设置",
-          "description": "将所有启动器设置还原为默认值",
-          "restore": "还原"
+          "title": "重置所有设置",
+          "description": "将所有启动器设置重置为默认值",
+          "restore": "重置"
         }
       }
     }
@@ -2185,8 +2185,8 @@
     }
   },
   "RestoreConfigConfirmDialog": {
-    "title": "还原启动器设置",
-    "body": "此操作将会还原启动器的所有设置为默认值，您确定要继续吗？"
+    "title": "重置启动器设置",
+    "body": "此操作将会重置启动器的所有设置为默认值，您确定要继续吗？"
   },
   "RestoreInstanceConfigConfirmDialog": {
     "title": "重置实例设置",
@@ -2226,9 +2226,9 @@
         }
       },
       "restoreLauncherConfig": {
-        "success": "设置已成功还原",
+        "success": "设置已成功重置",
         "error": {
-          "title": "还原设置失败，请重试"
+          "title": "重置设置失败，请重试"
         }
       },
       "exportLauncherConfig": {

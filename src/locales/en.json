@@ -1214,9 +1214,9 @@
           "description": "Automatically purge launcher log files older than 30 days"
         },
         "restoreAll": {
-          "title": "Restore All Settings",
-          "description": "Restore all launcher settings to their default values",
-          "restore": "Restore"
+          "title": "Reset All Settings",
+          "description": "Reset all launcher settings to their default values",
+          "restore": "Reset"
         }
       }
     }
@@ -1536,9 +1536,9 @@
     "colorTag": "Color Tag",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Restore specific settings",
-    "restoreSettingsDesc": "Restore the following specific settings to the global game settings.",
-    "restore": "Restore",
+    "restoreSettings": "Reset specific settings",
+    "restoreSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "restore": "Reset",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
       "error-2": "Instance name is invalid",
@@ -2185,12 +2185,12 @@
     }
   },
   "RestoreConfigConfirmDialog": {
-    "title": "Restore Launcher Settings",
-    "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
+    "title": "Reset Launcher Settings",
+    "body": "This action will reset all launcher settings to their default values. Are you sure you want to proceed?"
   },
   "RestoreInstanceConfigConfirmDialog": {
-    "title": "Restore Instance Settings",
-    "body": "This action will restore this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
+    "title": "Reset Instance Settings",
+    "body": "This action will reset this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
@@ -2226,9 +2226,9 @@
         }
       },
       "restoreLauncherConfig": {
-        "success": "Successfully restored launcher settings",
+        "success": "Successfully reset launcher settings",
         "error": {
-          "title": "Failed to restore launcher settings"
+          "title": "Failed to reset launcher settings"
         }
       },
       "exportLauncherConfig": {
@@ -2729,9 +2729,9 @@
         }
       },
       "restoreInstanceGameConfig": {
-        "success": "Successfully restored instance game settings",
+        "success": "Successfully reset instance game settings",
         "error": {
-          "title": "Failed to restore instance game settings",
+          "title": "Failed to reset instance game settings",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
