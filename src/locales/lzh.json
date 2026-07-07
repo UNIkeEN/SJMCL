@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "同時置 Fabric API 改囊",
       "installQFAPI": "同時置 QFAPI / QSL 改囊（若可用）",
-      "reinstall": "復置"
+      "reinstall": "復置",
+      "removeCurrentInstallation": "移除安裝"
     }
   },
   "CheckModUpdateModal": {
@@ -1920,6 +1921,18 @@
       "login": "登入"
     }
   },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "移除模組載入器",
+      "content": "確認要移除為 {{instanceName}} 已安裝的模組載入器 {{type}} {{version}} 嗎？您的模組可能將無法使用。"
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "移除 OptiFine",
+      "content": "確認要移除為 {{instanceName}} 已安裝的 OptiFine {{version}} 嗎？您的光影可能將無法使用。"
+    }
+  },
   "ResourceDownloader": {
     "label": {
       "source": "引源",
@@ -2968,6 +2981,26 @@
       "changeOptiFine": {
         "error": {
           "title": "改 OptiFine 未成"
+        }
+      },
+      "removeModLoader": {
+        "success": "模組載入器移除成功",
+        "error": {
+          "title": "模組載入器移除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_CREATION_FAILED": "實例配置文件保存失敗"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine 移除成功",
+        "error": {
+          "title": "OptiFine 移除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_CREATION_FAILED": "實例配置文件保存失敗"
+          }
         }
       },
       "retrieveModpackMetaInfo": {

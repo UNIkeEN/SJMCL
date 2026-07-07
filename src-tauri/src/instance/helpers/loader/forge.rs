@@ -11,7 +11,9 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::instance::helpers::client_json::{LaunchArgumentTemplate, LibrariesValue, McClientInfo};
+use crate::instance::helpers::client_json::{
+  LibrariesValue, McClientInfo, reset_fields_from_patches,
+};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
@@ -322,21 +324,13 @@ pub async fn download_forge_libraries(
       }));
     }
 
-    let (arguments, minecraft_arguments) = if let Some(v_args) = &client_info.arguments {
-      let nf_args = forge_info
-        .arguments
-        .ok_or(InstanceError::ModLoaderVersionParseError)?;
-
-      let new_args = LaunchArgumentTemplate {
-        game: [v_args.game.clone(), nf_args.game.clone()].concat(),
-        jvm: [v_args.jvm.clone(), nf_args.jvm.clone()].concat(),
-      };
-      (Some(new_args), None)
+    let arguments = forge_info.arguments.clone();
+    let minecraft_arguments = if arguments.is_some() {
+      None
     } else {
-      (None, forge_info.minecraft_arguments)
+      forge_info.minecraft_arguments.clone()
     };
-    client_info.arguments = arguments.clone();
-    client_info.minecraft_arguments = minecraft_arguments.clone();
+
     client_info.patches.push(McClientInfo {
       id: "forge".to_string(),
       version: Some(forge_info.id.clone()),
@@ -452,6 +446,8 @@ pub async fn download_forge_libraries(
     }
     client_info.patches.push(new_patch);
   }
+
+  reset_fields_from_patches(client_info);
 
   let mut seen = std::collections::HashSet::new();
   task_params.retain(|param| match param {

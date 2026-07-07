@@ -7,7 +7,7 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::instance::helpers::client_json::{LaunchArgumentTemplate, McClientInfo};
+use crate::instance::helpers::client_json::{McClientInfo, reset_fields_from_patches};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
@@ -293,23 +293,16 @@ pub async fn download_neoforge_libraries(
 
   let nf_args = neoforge_info
     .arguments
-    .ok_or(InstanceError::ModLoaderVersionParseError)?;
-  let v_args = client_info
-    .arguments
     .clone()
-    .ok_or(InstanceError::ClientJsonParseError)?;
-  let new_args = LaunchArgumentTemplate {
-    game: [v_args.game, nf_args.game].concat(),
-    jvm: [v_args.jvm, nf_args.jvm].concat(),
-  };
-  client_info.arguments = Some(new_args.clone());
+    .ok_or(InstanceError::ModLoaderVersionParseError)?;
+
   client_info.patches.push(McClientInfo {
     id: "neoforge".to_string(),
     version: Some(neoforge_info.id.clone()),
     priority: Some(30000),
     inherits_from: neoforge_info.inherits_from.clone(),
     main_class: neoforge_info.main_class.clone(),
-    arguments: Some(new_args.clone()),
+    arguments: Some(nf_args),
     libraries: loader_libraries,
     ..Default::default()
   });
@@ -339,6 +332,8 @@ pub async fn download_neoforge_libraries(
       sha1: None,
     }));
   }
+
+  reset_fields_from_patches(client_info);
 
   let mut seen = std::collections::HashSet::new();
   task_params.retain(|param| match param {

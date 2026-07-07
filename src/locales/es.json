@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "Instalar Mod Fabric API",
       "installQFAPI": "Instalar Mod QFAPI / QSL (si está disponible)",
-      "reinstall": "Reinstalar"
+      "reinstall": "Reinstalar",
+      "removeCurrentInstallation": "Eliminar instalación"
     }
   },
   "CheckModUpdateModal": {
@@ -1920,6 +1921,18 @@
       "login": "Iniciar sesión"
     }
   },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Eliminar cargador de mods",
+      "content": "¿Está seguro de que desea eliminar {{type}} {{version}} instalado para {{instanceName}}? Es posible que sus mods dejen de funcionar."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Eliminar OptiFine",
+      "content": "¿Está seguro de que desea eliminar OptiFine {{version}} instalado para {{instanceName}}? Es posible que sus shader packs dejen de funcionar."
+    }
+  },
   "ResourceDownloader": {
     "label": {
       "source": "Fuente",
@@ -2968,6 +2981,26 @@
       "changeOptiFine": {
         "error": {
           "title": "Error al cambiar OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Cargador de mods eliminado correctamente",
+        "error": {
+          "title": "Error al eliminar el cargador de mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de la instancia no existe",
+            "FILE_CREATION_FAILED": "Error al guardar la configuración de la instancia"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine eliminado correctamente",
+        "error": {
+          "title": "Error al eliminar OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de la instancia no existe",
+            "FILE_CREATION_FAILED": "Error al guardar la configuración de la instancia"
+          }
         }
       },
       "retrieveModpackMetaInfo": {
