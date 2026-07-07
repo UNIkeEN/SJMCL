@@ -1312,6 +1312,10 @@
           "button": "編輯高階設定"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "目前實例「{{instance}}」已勾選「啟用特定遊戲設定」，因此本頁面選項不會套用至該實例。點擊連結前往該實例的「設定」頁。",
+      "editInstanceSettings": "編輯實例專屬遊戲設定"
     }
   },
   "GuidedTourProvider": {

@@ -224,7 +224,7 @@ const GlobalGameSettingsPage = () => {
   return (
     <>
       {selectedInstance?.useSpecGameConfig && (
-        <Alert status="warning" fontSize="xs-sm" borderRadius="md">
+        <Alert status="info" fontSize="xs-sm" borderRadius="md">
           <AlertIcon />
           <Text>
             {t("GlobalGameSettingsPage.topWarning.specGameConfigWarning", {

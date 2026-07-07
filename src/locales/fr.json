@@ -1312,6 +1312,10 @@
           "button": "Modifier les paramètres avancés"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "L'instance actuelle « {{instance}} » a activé l'option « Utiliser des paramètres de jeu spécifiques », les options de cette page ne s'appliquent donc pas à cette instance. Cliquez sur le lien pour accéder à la page « Paramètres » de cette instance.",
+      "editInstanceSettings": "Modifier les paramètres de jeu spécifiques de l'instance"
     }
   },
   "GuidedTourProvider": {
