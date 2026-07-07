@@ -30,17 +30,20 @@ use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
+use tauri_plugin_opener::OpenerExt;
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
 
 static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
-
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
-
 static IS_PORTABLE: LazyLock<bool> = LazyLock::new(|| is_portable().unwrap_or(false));
-
 static APP_DATA_DIR: OnceLock<PathBuf> = OnceLock::new();
+
+fn open_modpack_deeplink(handle: &tauri::AppHandle, path: &str) {
+  let deep_link = format!("sjmcl://import-modpack?path={}", urlencoding::encode(path));
+  let _ = handle.opener().open_url(&deep_link, None::<&str>);
+}
 
 pub async fn run() {
   let exit_code = {
@@ -53,11 +56,18 @@ pub async fn run() {
       .plugin(tauri_plugin_opener::init())
       .plugin(tauri_plugin_os::init())
       .plugin(tauri_plugin_process::init())
-      .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+      .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
         let _ = main_window.show(); // may hide by launcher_visibility settings
         // FIXME: this show() seems no use in macOS build mode (ref: https://github.com/tauri-apps/tauri/issues/13400#issuecomment-2866462355).
         let _ = main_window.set_focus();
+
+        // .mrpack file association (warm start)
+        for arg in &args {
+          if arg.ends_with(".mrpack") && !arg.starts_with("sjmcl://") {
+            open_modpack_deeplink(app, arg);
+          }
+        }
       }))
       .plugin(
         tauri_plugin_window_state::Builder::new()
@@ -142,6 +152,7 @@ pub async fn run() {
         instance::commands::finish_optifine_loader_install,
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
+        instance::commands::change_optifine,
         instance::commands::retrieve_modpack_meta_info,
         instance::commands::add_custom_instance_icon,
         instance::commands::retrieve_exportable_file_list,
@@ -351,13 +362,40 @@ pub async fn run() {
           .ok();
         std::process::exit(1);
       })
-      .run_return(|_, event| {
-        if let tauri::RunEvent::Exit = event {
-          log::info!("Launcher exited normally.");
-          let _ = LauncherConfig::load().map(|mut config| {
-            config.last_run_exited_normally = true;
-            let _ = config.save();
-          });
+      .run_return(|app_handle, event| {
+        match event {
+          // .mrpack file association (cold start, reopen with deeplink)
+          tauri::RunEvent::Ready => {
+            #[cfg(not(target_os = "macos"))]
+            {
+              for arg in std::env::args() {
+                if arg.ends_with(".mrpack") && !arg.starts_with("sjmcl://") {
+                  open_modpack_deeplink(app_handle, &arg);
+                  break;
+                }
+              }
+            }
+          }
+          #[cfg(target_os = "macos")]
+          tauri::RunEvent::Opened { urls } => {
+            for url in urls {
+              if let Ok(path) = url.to_file_path()
+                && path.extension().is_some_and(|ext| ext == "mrpack")
+                && let Some(path_str) = path.to_str()
+              {
+                open_modpack_deeplink(app_handle, path_str);
+              }
+            }
+          }
+          // set normal exit flag.
+          tauri::RunEvent::Exit => {
+            log::info!("Launcher exited normally.");
+            let _ = LauncherConfig::load().map(|mut config| {
+              config.last_run_exited_normally = true;
+              let _ = config.save();
+            });
+          }
+          _ => {}
         }
       })
   };

@@ -405,7 +405,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                     >
                       <NumberInputField pr={0} />
                     </NumberInput>
-                    <Text fontSize="xs">MB</Text>
+                    <Text fontSize="xs">MiB</Text>
                   </HStack>
                 ),
               },

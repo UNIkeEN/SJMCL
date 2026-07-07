@@ -597,17 +597,8 @@
       "headExtra": "Restart Required",
       "settings": {
         "enabled": {
-          "title": "Enable Proxy",
-          "description": "When disabled, the launcher will use the system proxy automatically"
-        },
-        "type": {
-          "title": "Proxy Type"
-        },
-        "host": {
-          "title": "Host"
-        },
-        "port": {
-          "title": "Port"
+          "title": "Enable Proxy for Downloads",
+          "description": "When disabled, the launcher will use the system proxy to download resources automatically"
         }
       }
     }
@@ -790,7 +781,7 @@
       "includedFiles": "Included Files",
       "exportOptions": "Export Options",
       "packWithLauncher": "Pack With Launcher",
-      "minMemory": "Minimum Memory (MB)",
+      "minMemory": "Minimum Memory (MiB)",
       "noCreateRemoteFiles": "Disable Remote Files",
       "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
     },
@@ -920,7 +911,7 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "PermGen Space",
-          "placeholder": "in MB"
+          "placeholder": "in MiB"
         },
         "environmentVariable": {
           "title": "Environment Variables"
@@ -970,6 +961,15 @@
           "powervr": "PowerVR",
           "panvk": "PanVK",
           "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Enable Proxy for Game Process",
+          "description": "When disabled, the game will use the system proxy automatically"
         }
       }
     },
@@ -1025,6 +1025,13 @@
     "javaInfo": {
       "javaVersion": "Java Version"
     },
+    "button": {
+      "exportGameInfo": "Export Crash Report",
+      "gameLogs": "Game Logs",
+      "help": "Help"
+    },
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Crash Details",
       "OPENJ9": "OpenJ9 JVM is not supported. Please use HotSpot JVM.",
@@ -1092,13 +1099,7 @@
       "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
       "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
-    },
-    "button": {
-      "exportGameInfo": "Export Crash Report",
-      "gameLogs": "Game Logs",
-      "help": "Help"
-    },
-    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -1175,7 +1176,8 @@
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
-      "beta": "beta version"
+      "beta": "beta version",
+      "test-build": "test build"
     },
     "viewOnWiki": "View on Minecraft Wiki"
   },
@@ -1319,7 +1321,7 @@
         },
         "memoryUsage": {
           "title": "Memory Usage",
-          "description": "Used memory {{usedMemory}}GB; Game allocated {{allocatedMemory}}GB; Total memory {{totalMemory}}GB"
+          "description": "Used memory {{usedMemory}}GiB; Game allocated {{allocatedMemory}}GiB; Total memory {{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "Process Priority",
@@ -1804,7 +1806,7 @@
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
-    "info": "{{used}} / {{total}} GB used",
+    "info": "{{used}} / {{total}} GiB used",
     "label": {
       "now": "In use",
       "maxAllocation": "Maximum allocated for Minecraft"
@@ -1890,6 +1892,17 @@
     "toast": {
       "refreshing": "Refreshing player info",
       "deleting": "Deleting player"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Proxy Type"
+    },
+    "host": {
+      "title": "Host"
+    },
+    "port": {
+      "title": "Port"
     }
   },
   "ReLoginPlayerModal": {
@@ -2194,7 +2207,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "Launcher Update",
     "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
-    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "bodyWinInstaller": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
     "button": {
       "restart": "Restart",
       "install": "Install",
@@ -2950,6 +2963,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "Failed to Change OptiFine"
         }
       },
       "retrieveModpackMetaInfo": {

@@ -597,17 +597,8 @@
       "headExtra": "以下置設復啟而效",
       "settings": {
         "enabled": {
-          "title": "啟代",
-          "description": "閉則自用系統之代"
-        },
-        "type": {
-          "title": "代型別"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "埠"
+          "title": "為下載之務啟代",
+          "description": "閉則自用系統之代以載資源"
         }
       }
     }
@@ -790,7 +781,7 @@
       "includedFiles": "所納之案",
       "exportOptions": "錄出之選",
       "packWithLauncher": "納啟者於包",
-      "minMemory": "至低憶（MB）",
+      "minMemory": "至低憶（MiB）",
       "noCreateRemoteFiles": "弗用遠案",
       "skipCurseForgeRemoteFiles": "略 CurseForge 遠案"
     },
@@ -920,7 +911,7 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
-          "placeholder": "單位 MB"
+          "placeholder": "單位 MiB"
         },
         "environmentVariable": {
           "title": "環境易量"
@@ -970,6 +961,15 @@
           "powervr": "PowerVR",
           "panvk": "PanVK",
           "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "為戲程啟代理",
+          "description": "若閉，則戲自用系統代理"
         }
       }
     },
@@ -1025,6 +1025,13 @@
     "javaInfo": {
       "javaVersion": "爪哇版"
     },
+    "button": {
+      "exportGameInfo": "錄出戲潰報告",
+      "gameLogs": "戲誌",
+      "help": "助"
+    },
+    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "潰資訊",
       "OPENJ9": "今例不能在 OpenJ9 JVM 上行，請用 HotSpot JVM。",
@@ -1092,13 +1099,7 @@
       "VICS_MODERN_WARFARE_ERROR": "今例以 Vics Modern Warfare 改囊謬，不能續行。請試迭更或刪該改囊。",
       "FORGE_LITELOADER_CONFLICT": "今例以 Forge 與 LiteLoader 衝突，不能續行。請試刪 LiteLoader 或更換 Forge 版。",
       "UNKNOWN": "暫時不能分析該謬，請覽戲誌或錄出謬潰報告。"
-    },
-    "button": {
-      "exportGameInfo": "錄出戲潰報告",
-      "gameLogs": "戲誌",
-      "help": "助"
-    },
-    "bottomAlert": "如需尋求他人助，請錄出並傳送潰報告，而非這個匡的截影"
+    }
   },
   "GameLogPage": {
     "placeholder": "書關鍵字以篩",
@@ -1175,7 +1176,8 @@
     "version": {
       "dev": "開發版",
       "nightly": "夜間構建版",
-      "beta": "測試版"
+      "beta": "測試版",
+      "test-build": "測試構建版"
     },
     "viewOnWiki": "在 礦藝大典 中覽"
   },
@@ -1319,7 +1321,7 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體{{usedMemory}}GB；戲分配{{allocatedMemory}}GB；總記憶體{{totalMemory}}GB"
+          "description": "已用記憶體{{usedMemory}}GiB；戲分配{{allocatedMemory}}GiB；總記憶體{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "程序優先順序",
@@ -1804,7 +1806,7 @@
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "方使用",
       "maxAllocation": "為 礦藝 分配的最大值"
@@ -1890,6 +1892,17 @@
     "toast": {
       "refreshing": "方重整戲者資訊",
       "deleting": "方刪戲者"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理式"
+    },
+    "host": {
+      "title": "主機"
+    },
+    "port": {
+      "title": "埠"
     }
   },
   "ReLoginPlayerModal": {
@@ -2194,7 +2207,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "啟者迭更",
     "body": "新版已畢引，復啟 SJMCL 以畢迭更",
-    "bodyMSI": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
+    "bodyWinInstaller": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
     "button": {
       "restart": "復啟",
       "install": "置",
@@ -2950,6 +2963,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部置的版，不能解除安裝或更換"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "改 OptiFine 未成"
         }
       },
       "retrieveModpackMetaInfo": {

@@ -14,6 +14,43 @@
         </array>
       </dict>
     </array>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleTypeName</key>
+        <string>Modrinth Modpack</string>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>LSHandlerRank</key>
+        <string>Default</string>
+        <key>LSItemContentTypes</key>
+        <array>
+          <string>com.modrinth.mrpack</string>
+        </array>
+      </dict>
+    </array>
+    <key>UTExportedTypeDeclarations</key>
+    <array>
+      <dict>
+        <key>UTTypeIdentifier</key>
+        <string>com.modrinth.mrpack</string>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+          <key>public.filename-extension</key>
+          <array>
+            <string>mrpack</string>
+          </array>
+          <key>public.mime-type</key>
+          <string>application/zip</string>
+        </dict>
+        <key>UTTypeDescription</key>
+        <string>Modrinth Modpack</string>
+        <key>UTTypeConformsTo</key>
+        <array>
+          <string>public.zip-archive</string>
+        </array>
+      </dict>
+    </array>
     <key>CFBundleLocalizations</key>
     <array>
       <string>en</string>

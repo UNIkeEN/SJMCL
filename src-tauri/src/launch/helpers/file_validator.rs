@@ -6,7 +6,11 @@ use sjmcl_types::storage::load_json_async;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
+#[cfg(target_os = "windows")]
+use std::sync::Mutex;
 use tauri::AppHandle;
+#[cfg(target_os = "windows")]
+use tauri::Manager;
 use tokio::fs;
 use zip::ZipArchive;
 
@@ -341,8 +345,8 @@ pub fn get_nonnative_library_paths(
 pub fn get_native_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
-  use_native_glfw: bool,
-  use_native_openal: bool,
+  #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_glfw: bool,
+  #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_openal: bool,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut result = Vec::new();
   let feature = FeaturesInfo::default();

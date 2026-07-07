@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { save } from "@tauri-apps/plugin-dialog";
-import { openPath, revealItemInDir } from "@tauri-apps/plugin-opener";
+import { openPath, openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
@@ -254,7 +254,11 @@ const GameErrorPage: React.FC = () => {
         >
           {t("GameErrorPage.button.gameLogs")}
         </Button>
-        <Button colorScheme={primaryColor} variant="solid">
+        <Button
+          colorScheme={primaryColor}
+          variant="solid"
+          onClick={() => openUrl(t("GameErrorPage.helpUrl"))}
+        >
           {t("GameErrorPage.button.help")}
         </Button>
         {getExtensionSlotItems(ExtensionUISlotKey.GameErrorWindowOperations, {

@@ -28,9 +28,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
       
       - name: Check version consistency
-        run: npm run version check
+        run: pnpm run version check
 
       - name: Check Tag Version
         id: check-tag

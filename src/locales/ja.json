@@ -597,17 +597,8 @@
       "headExtra": "再起動が必要",
       "settings": {
         "enabled": {
-          "title": "プロキシ有効化",
-          "description": "無効時、システムプロキシを自動的に使用します"
-        },
-        "type": {
-          "title": "プロキシタイプ"
-        },
-        "host": {
-          "title": "サーバー"
-        },
-        "port": {
-          "title": "ポート"
+          "title": "ダウンロードタスクのプロキシを有効化",
+          "description": "無効時、起動器はシステムプロキシで自動的にリソースをダウンロードします"
         }
       }
     }
@@ -790,7 +781,7 @@
       "includedFiles": "含めるファイル",
       "exportOptions": "エクスポートオプション",
       "packWithLauncher": "ランチャーを同梱",
-      "minMemory": "最小メモリ (MB)",
+      "minMemory": "最小メモリ (MiB)",
       "noCreateRemoteFiles": "リモートファイルを無効化",
       "skipCurseForgeRemoteFiles": "CurseForge のリモートファイルをスキップ"
     },
@@ -919,8 +910,8 @@
           }
         },
         "javaPermanentGenerationSpace": {
-          "title": "メモリ永続保存領域(MB)",
-          "placeholder": "MB"
+          "title": "メモリ永続保存領域(MiB)",
+          "placeholder": "MiB"
         },
         "environmentVariable": {
           "title": "環境変数"
@@ -970,6 +961,15 @@
           "powervr": "PowerVR",
           "panvk": "PanVK",
           "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "プロキシ",
+      "settings": {
+        "enabled": {
+          "title": "ゲームプロセスにプロキシを有効化",
+          "description": "無効にすると、ゲームはシステムプロキシを自動的に使用します"
         }
       }
     },
@@ -1025,6 +1025,13 @@
     "javaInfo": {
       "javaVersion": "Java バージョン"
     },
+    "button": {
+      "exportGameInfo": "クラッシュレポートをエクスポート",
+      "gameLogs": "ゲームログ",
+      "help": "サポート"
+    },
+    "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "クラッシュ情報",
       "OPENJ9": "OpenJ9 JVM で実行できません。HotSpot JVM を使用してください。",
@@ -1092,13 +1099,7 @@
       "VICS_MODERN_WARFARE_ERROR": "Vics Modern Warfare モッドのエラーにより実行できません。このモッドを更新または削除してみてください。",
       "FORGE_LITELOADER_CONFLICT": "Forge と LiteLoader が競合しているため実行できません。LiteLoader を削除するか、Forge バージョンを変更してみてください。",
       "UNKNOWN": "このエラーを一時的に分析できません。ゲームログを確認するか、エラークラッシュレポートをエクスポートしてください。"
-    },
-    "button": {
-      "exportGameInfo": "クラッシュレポートをエクスポート",
-      "gameLogs": "ゲームログ",
-      "help": "サポート"
-    },
-    "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。"
+    }
   },
   "GameLogPage": {
     "placeholder": "キーワードを入力して検索",
@@ -1175,7 +1176,8 @@
     "version": {
       "dev": "開発版",
       "nightly": "ナイトリービルド版",
-      "beta": "ベータ版"
+      "beta": "ベータ版",
+      "test-build": "テストビルド版"
     },
     "viewOnWiki": "Minecraft Wiki へ"
   },
@@ -1319,7 +1321,7 @@
         },
         "memoryUsage": {
           "title": "メモリ使用状況",
-          "description": "使用済メモリ{{usedMemory}}GB・ゲーム割当メモリ{{allocatedMemory}}GB・総メモリ{{totalMemory}}GB"
+          "description": "使用済メモリ{{usedMemory}}GiB・ゲーム割当メモリ{{allocatedMemory}}GiB・総メモリ{{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "プロセス優先度",
@@ -1804,7 +1806,7 @@
   },
   "MemoryStatusProgress": {
     "title": "メモリ状況",
-    "info": "使用済メモリ {{used}} / {{total}} GB",
+    "info": "使用済メモリ {{used}} / {{total}} GiB",
     "label": {
       "now": "使用済",
       "maxAllocation": "Minecraft の最大割当量"
@@ -1890,6 +1892,17 @@
     "toast": {
       "refreshing": "キャラクター情報を更新中",
       "deleting": "キャラクターを削除中"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "プロキシタイプ"
+    },
+    "host": {
+      "title": "ホスト"
+    },
+    "port": {
+      "title": "ポート"
     }
   },
   "ReLoginPlayerModal": {
@@ -2194,7 +2207,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "ランチャー更新",
     "body": "新しいバージョンのダウンロードが完了しました。SJMCL を再起動して更新を完了してください",
-    "bodyMSI": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
+    "bodyWinInstaller": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
     "button": {
       "restart": "再起動",
       "install": "インストール",
@@ -2950,6 +2963,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "外部からインストールされたバージョンのため、アンインストールまたは変更できません"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "OptiFine の変更に失敗"
         }
       },
       "retrieveModpackMetaInfo": {

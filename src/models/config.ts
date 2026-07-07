@@ -1,3 +1,4 @@
+import { BuildType } from "@/enums/misc";
 import type { HomeWidgetStateTuple } from "@/models/extension";
 
 export interface GameConfig {
@@ -40,6 +41,12 @@ export interface GameConfig {
       wrapperLauncher: string;
       postExitCommand: string;
     };
+    proxy: {
+      enabled: boolean;
+      selectedType: string;
+      host: string;
+      port: number;
+    };
     jvm: {
       garbageCollector: string;
       javaPermanentGenerationSpace: number;
@@ -79,6 +86,9 @@ export interface LauncherConfig {
     isExePathAvailable: boolean;
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
+    // Build metadata, sourced from compile-time constants injected by build.rs.
+    buildType: BuildType;
+    buildCommitSha: string;
   };
   mocked: boolean;
   runCount: number;
@@ -229,6 +239,12 @@ export const defaultGameConfig: GameConfig = {
       wrapperLauncher: "",
       postExitCommand: "",
     },
+    proxy: {
+      enabled: false,
+      selectedType: "http",
+      host: "",
+      port: 80,
+    },
     jvm: {
       garbageCollector: "auto",
       javaPermanentGenerationSpace: 0,
@@ -263,6 +279,8 @@ export const defaultConfig: LauncherConfig = {
     isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
+    buildType: BuildType.Dev,
+    buildCommitSha: "",
   },
   mocked: true,
   runCount: -1,

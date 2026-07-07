@@ -165,6 +165,7 @@ pub async fn fetch_resource_version_packs_curseforge(
     resource_id,
     mod_loader,
     game_versions,
+    ..
   } = query;
 
   loop {

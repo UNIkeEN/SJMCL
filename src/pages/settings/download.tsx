@@ -3,7 +3,6 @@ import {
   Button,
   HStack,
   Icon,
-  Input,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
@@ -28,7 +27,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
-import SegmentedControl from "@/components/common/segmented";
+import { useProxySettingsItems } from "@/components/common/proxy-settings-group";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
@@ -64,26 +63,10 @@ const DownloadSettingsPage = () => {
   const [speedLimitValue, setSpeedLimitValue] = useState<number>(
     downloadConfigs.transmission.speedLimitValue
   );
-  const [proxyPort, setProxyPort] = useState<number>(
-    downloadConfigs.proxy.port
-  );
-  const [proxyHost, setProxyHost] = useState<string>(
-    downloadConfigs.proxy.host
-  );
   const [isClearingDownloadCache, setIsClearingDownloadCache] =
     useState<boolean>(false);
 
   const sourceStrategyTypes = ["auto", "official", "mirror"];
-  const proxyTypeOptions = [
-    {
-      label: "HTTP",
-      value: "http",
-    },
-    {
-      label: "Socks",
-      value: "socks",
-    },
-  ];
 
   const handleSelectDirectory = async () => {
     const selectedDirectory = await open({
@@ -296,7 +279,7 @@ const DownloadSettingsPage = () => {
                       {/* no stepper NumberInput, use pr={0} */}
                       <NumberInputField pr={0} />
                     </NumberInput>
-                    <Text fontSize="xs">KB/s</Text>
+                    <Text fontSize="xs">KiB/s</Text>
                   </HStack>
                 ),
               },
@@ -382,84 +365,11 @@ const DownloadSettingsPage = () => {
           </Text>
         </Box>
       ),
-      items: [
-        {
-          title: t("DownloadSettingPage.proxy.settings.enabled.title"),
-          description: !downloadConfigs.proxy.enabled
-            ? t("DownloadSettingPage.proxy.settings.enabled.description")
-            : undefined,
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={downloadConfigs.proxy.enabled}
-              onChange={(event) => {
-                update("download.proxy.enabled", event.target.checked);
-              }}
-            />
-          ),
-        },
-        ...(downloadConfigs.proxy.enabled
-          ? [
-              {
-                title: t("DownloadSettingPage.proxy.settings.type.title"),
-                children: (
-                  <HStack>
-                    <SegmentedControl
-                      selected={downloadConfigs.proxy.selectedType}
-                      onSelectItem={(s) => {
-                        update("download.proxy.selectedType", s as string);
-                      }}
-                      size="xs"
-                      items={proxyTypeOptions}
-                    />
-                  </HStack>
-                ),
-              },
-              {
-                title: t("DownloadSettingPage.proxy.settings.host.title"),
-                children: (
-                  <Input
-                    size="xs"
-                    w="107px" // align with the segmented-control above
-                    focusBorderColor={`${primaryColor}.500`}
-                    value={proxyHost}
-                    onChange={(event) => {
-                      setProxyHost(event.target.value);
-                    }}
-                    onBlur={() => {
-                      update("download.proxy.host", proxyHost);
-                    }}
-                  />
-                ),
-              },
-              {
-                title: t("DownloadSettingPage.proxy.settings.port.title"),
-                children: (
-                  <NumberInput
-                    size="xs"
-                    maxW={16}
-                    min={0}
-                    max={65535}
-                    focusBorderColor={`${primaryColor}.500`}
-                    value={proxyPort || 80}
-                    onChange={(value) => {
-                      if (!/^\d*$/.test(value)) return;
-                      setProxyPort(Number(value));
-                    }}
-                    onBlur={() => {
-                      update(
-                        "download.proxy.port",
-                        Math.max(0, Math.min(proxyPort || 80, 65535))
-                      );
-                    }}
-                  >
-                    <NumberInputField pr={0} />
-                  </NumberInput>
-                ),
-              },
-            ]
-          : []),
-      ],
+      items: useProxySettingsItems(
+        "DownloadSettingPage.proxy",
+        downloadConfigs.proxy,
+        (key, value) => update(`download.proxy.${key}`, value)
+      ),
     },
   ];
 
