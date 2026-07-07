@@ -597,17 +597,8 @@
       "headExtra": "需要重新啟動",
       "settings": {
         "enabled": {
-          "title": "啟用 Proxy",
-          "description": "此項關閉時，啟動器將自動使用系統代理"
-        },
-        "type": {
-          "title": "Proxy 類型"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "埠"
+          "title": "為下載任務啟用代理",
+          "description": "此項關閉時，啟動器將自動使用系統代理下載資源"
         }
       }
     }
@@ -790,7 +781,7 @@
       "includedFiles": "包含檔案",
       "exportOptions": "匯出選項",
       "packWithLauncher": "打包啟動器",
-      "minMemory": "最低記憶體 (MB)",
+      "minMemory": "最低記憶體 (MiB)",
       "noCreateRemoteFiles": "停用遠端檔案",
       "skipCurseForgeRemoteFiles": "略過 CurseForge 遠端檔案"
     },
@@ -920,13 +911,22 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
-          "placeholder": "單位 MB"
+          "placeholder": "單位 MiB"
         },
         "environmentVariable": {
           "title": "環境變數"
         },
         "args": {
           "title": "Java 虛擬機器引數"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "為遊戲處理程序啟用代理",
+          "description": "此項關閉時，遊戲將自動使用系統代理"
         }
       }
     },
@@ -982,6 +982,13 @@
     "javaInfo": {
       "javaVersion": "Java 版本"
     },
+    "button": {
+      "exportGameInfo": "匯出遊戲崩潰報告",
+      "gameLogs": "遊戲日誌",
+      "help": "幫助"
+    },
+    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "崩潰資訊",
       "OPENJ9": "目前實例無法在 OpenJ9 JVM 上執行，請使用 HotSpot JVM。",
@@ -1049,13 +1056,7 @@
       "VICS_MODERN_WARFARE_ERROR": "目前實例由於 Vics Modern Warfare 模組錯誤，無法繼續執行。請嘗試更新或刪除該模組。",
       "FORGE_LITELOADER_CONFLICT": "目前實例由於 Forge 與 LiteLoader 衝突，無法繼續執行。請嘗試刪除 LiteLoader 或更換 Forge 版本。",
       "UNKNOWN": "暫時無法分析該錯誤，請檢視遊戲日誌或匯出錯誤崩潰報告。"
-    },
-    "button": {
-      "exportGameInfo": "匯出遊戲崩潰報告",
-      "gameLogs": "遊戲日誌",
-      "help": "幫助"
-    },
-    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖"
+    }
   },
   "GameLogPage": {
     "placeholder": "輸入關鍵字篩選",
@@ -1132,7 +1133,8 @@
     "version": {
       "dev": "開發版本",
       "nightly": "夜間構建版本",
-      "beta": "測試版本"
+      "beta": "測試版本",
+      "test-build": "測試構建版本"
     },
     "viewOnWiki": "在 Minecraft Wiki 中檢視"
   },
@@ -1276,7 +1278,7 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體 {{usedMemory}} GB；遊戲分配 {{allocatedMemory}} GB；總記憶體 {{totalMemory}} GB"
+          "description": "已用記憶體 {{usedMemory}} GiB；遊戲分配 {{allocatedMemory}} GiB；總記憶體 {{totalMemory}} GiB"
         },
         "processPriority": {
           "title": "處理程式優先度",
@@ -1761,7 +1763,7 @@
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "正在使用",
       "maxAllocation": "為 Minecraft 分配的最大值"
@@ -1847,6 +1849,17 @@
     "toast": {
       "refreshing": "正在重新整理角色資訊",
       "deleting": "正在刪除角色"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理類型"
+    },
+    "host": {
+      "title": "伺服器"
+    },
+    "port": {
+      "title": "連接埠"
     }
   },
   "ReLoginPlayerModal": {
@@ -2151,7 +2164,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "啟動器更新",
     "body": "新版本已完成下載，重新開啟 SJMCL 以完成更新",
-    "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
+    "bodyWinInstaller": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
     "button": {
       "restart": "重新啟動",
       "install": "安裝",
@@ -2907,6 +2920,11 @@
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "由第三者安裝的版本，無法解除安裝或更換"
           }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "修改 OptiFine 失敗"
         }
       },
       "retrieveModpackMetaInfo": {

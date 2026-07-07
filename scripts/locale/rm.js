@@ -4,10 +4,10 @@
  * Supports removing single keys or entire subtrees using dot notation.
  *
  * Usage:
- *   npm run locale rm <key_path> [locales]
+ *   pnpm locale rm <key_path> [locales]
  *   e.g.
- *     npm run locale rm common.save zh-Hans      # Remove from specific locale
- *     npm run locale rm component.button         # Remove from all locales
+ *     pnpm locale rm common.save zh-Hans      # Remove from specific locale
+ *     pnpm locale rm component.button         # Remove from all locales
  *
  * Parameters:
  *   key_path : str (required) - Dot-separated path to the key/subtree to remove
@@ -21,7 +21,7 @@ const chalk = require("chalk");
 const keyPath = process.argv[3];
 if (!keyPath) {
   console.error(chalk.red("Error: Missing key path argument"));
-  console.log("Usage: npm run locale rm <key_path> [locales]");
+  console.log("Usage: pnpm locale rm <key_path> [locales]");
   process.exit(1);
 }
 

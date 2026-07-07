@@ -124,6 +124,8 @@ pub struct OtherResourceVersionPackQuery {
   pub resource_id: String,
   pub mod_loader: String,
   pub game_versions: Vec<String>,
+  #[serde(default)]
+  pub resource_type: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

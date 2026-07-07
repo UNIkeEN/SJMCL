@@ -71,10 +71,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - run: npm install
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
+      - run: pnpm install --frozen-lockfile
       
       - name: Lint JavaScript/TypeScript Frontend
-        run: npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0 
+        run: pnpm eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
       
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -108,7 +112,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - run: npm install
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
+      - run: pnpm install --frozen-lockfile
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -118,12 +126,15 @@ jobs:
           key: ${{ matrix.platform }}
 
       - name: Bump version for test build
-        run: npm run version bump 0.0.1
+        run: pnpm run version bump 0.0.1
 
       - name: Test Build
-        run: npm run tauri build -- --features devtools --no-bundle -- --profile test-build
+        run: pnpm tauri build --features devtools --no-bundle -- --profile test-build
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+          # Exposed to Rust as compile-time constants by build.rs (all SJMCL_* env vars).
+          SJMCL_BUILD_TYPE: test-build
+          SJMCL_COMMIT_SHA: ${{ github.sha }}
 
       - name: Build portable artifact
         id: portable

@@ -21,6 +21,7 @@ import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";
 import { useGuidedTour } from "@/components/special/guided-tour-provider";
 import { useLauncherConfig } from "@/contexts/config";
+import { BuildType } from "@/enums/misc";
 
 const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
@@ -36,12 +37,15 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
     startGuidedTour();
   };
 
-  const unstableVersionLabels = ["dev", "nightly", "beta"];
-  const launcherVersion = config.basicInfo.launcherVersion;
-
-  const matchedVersionLabel =
-    unstableVersionLabels.find((k) => launcherVersion.includes(k)) ||
-    (launcherVersion.startsWith("0.") ? "beta" : undefined);
+  // For non-release builds, use the build type as the version label for the warning alert.
+  // release builds get no warning; the rest reuse General.version.<label>.
+  const matchedUnstableVersionLabel =
+    config.basicInfo.buildType !== BuildType.Release
+      ? config.basicInfo.buildType
+      : config.basicInfo.launcherVersion.startsWith("0.") ||
+          config.basicInfo.launcherVersion.includes("beta")
+        ? BuildType.Beta
+        : undefined;
 
   const isWinArm64 =
     config.basicInfo.platform === "windows" &&
@@ -82,11 +86,13 @@ const WelcomeAndTermsModal: React.FC<Omit<ModalProps, "children">> = ({
               }}
             />
           </Text>
-          {matchedVersionLabel && (
+          {matchedUnstableVersionLabel && (
             <Alert status="warning" mt={3} fontSize="xs-sm" borderRadius="md">
               <AlertIcon />
               {t("WelcomeAndTermsModal.warning.unstableVersion", {
-                versionLabel: t(`General.version.${matchedVersionLabel}`),
+                versionLabel: t(
+                  `General.version.${matchedUnstableVersionLabel}`
+                ),
               })}
             </Alert>
           )}

@@ -119,13 +119,13 @@ winget install SJMC.SJMCL
 
 ```bash
 git clone git@github.com:UNIkeEN/SJMCL.git
-npm install
+pnpm install
 ```
 
 使用開發模式執行：
 
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 我們熱烈歡迎每一位開發者的貢獻。

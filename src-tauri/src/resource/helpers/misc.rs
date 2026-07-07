@@ -176,6 +176,7 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
   }
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 pub fn convert_url_source_type(
   url: &Url,
   resource_type: &ResourceType,

@@ -18,7 +18,8 @@ import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { isValidSemanticVersion } from "@/utils/string";
+import { BuildType } from "@/enums/misc";
+import { displayLauncherVersion, isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
@@ -77,29 +78,32 @@ const AboutSettingsPage = () => {
           children: (
             <HStack>
               <Text fontSize="xs-sm" className="secondary-text">
-                {`${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`}
+                {displayLauncherVersion(basicInfo)}
               </Text>
-              {isValidSemanticVersion(basicInfo.launcherVersion) && (
-                <Button
-                  variant="subtle"
-                  colorScheme={newerVersion.version ? primaryColor : "gray"}
-                  size="xs"
-                  onClick={
-                    newerVersion.version
-                      ? () => {
-                          openSharedModal("notify-new-version", {
-                            newVersion: newerVersion,
-                          });
-                        }
-                      : checkUpdate
-                  }
-                  isLoading={checkingUpdate}
-                >
-                  {newerVersion.version
-                    ? t("AboutSettingsPage.about.settings.version.foundNew")
-                    : t("AboutSettingsPage.about.settings.version.checkUpdate")}
-                </Button>
-              )}
+              {basicInfo.buildType === BuildType.Release &&
+                isValidSemanticVersion(basicInfo.launcherVersion) && (
+                  <Button
+                    variant="subtle"
+                    colorScheme={newerVersion.version ? primaryColor : "gray"}
+                    size="xs"
+                    onClick={
+                      newerVersion.version
+                        ? () => {
+                            openSharedModal("notify-new-version", {
+                              newVersion: newerVersion,
+                            });
+                          }
+                        : checkUpdate
+                    }
+                    isLoading={checkingUpdate}
+                  >
+                    {newerVersion.version
+                      ? t("AboutSettingsPage.about.settings.version.foundNew")
+                      : t(
+                          "AboutSettingsPage.about.settings.version.checkUpdate"
+                        )}
+                  </Button>
+                )}
             </HStack>
           ),
         },

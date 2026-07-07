@@ -102,6 +102,7 @@ pub async fn fetch_resource_version_packs_modrinth(
     resource_id,
     mod_loader,
     game_versions,
+    resource_type,
   } = query;
 
   let url = get_modrinth_api(OtherResourceApiEndpoint::VersionPack, Some(resource_id))?;
@@ -137,7 +138,7 @@ pub async fn fetch_resource_version_packs_modrinth(
   )
   .await?;
 
-  Ok(map_modrinth_file_to_version_pack(results))
+  Ok(map_modrinth_file_to_version_pack(results, resource_type))
 }
 
 pub async fn fetch_remote_resource_by_local_modrinth(
@@ -223,6 +224,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
     resource_id: mod_id.to_string(),
     mod_loader: mod_loader.to_string(),
     game_versions: vec![game_version.to_string()],
+    resource_type: String::new(),
   };
 
   let version_packs = fetch_resource_version_packs_modrinth(app, &query).await?;

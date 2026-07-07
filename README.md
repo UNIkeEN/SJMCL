@@ -119,13 +119,13 @@ To get started, clone the repository and install the required dependencies:
 
 ```bash
 git clone git@github.com:UNIkeEN/SJMCL.git
-npm install
+pnpm install
 ```
 
 To run the project in development mode:
 
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 We warmly invite contributions from everyone. 

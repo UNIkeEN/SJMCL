@@ -20,6 +20,7 @@ import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import { useProxySettingsItems } from "@/components/common/proxy-settings-group";
 import { Section } from "@/components/common/section";
 import { GameSettingsGroupsProps } from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
@@ -266,6 +267,14 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           ),
         },
       ],
+    },
+    {
+      title: t("GameAdvancedSettingsPage.proxy.title"),
+      items: useProxySettingsItems(
+        "GameAdvancedSettingsPage.proxy",
+        gameConfig.advanced.proxy,
+        (key, value) => updateGameAdvancedConfig(`proxy.${key}`, value)
+      ),
     },
     {
       title: t("GameAdvancedSettingsPage.workaround.title"),

@@ -17,6 +17,7 @@ struct NeoforgeMetaItem {
   pub mcversion: String,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 struct NeoforgeVersions {

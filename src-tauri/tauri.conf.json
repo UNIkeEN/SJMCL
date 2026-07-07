@@ -6,8 +6,8 @@
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
   },
   "app": {
     "security": {
@@ -43,6 +43,16 @@
     ],
     "licenseFile": "../LICENSE",
     "license": "GPLv3",
+    "fileAssociations": [
+      {
+        "ext": ["mrpack"],
+        "name": "Modrinth Modpack",
+        "description": "Modrinth Modpack File",
+        "role": "Editor",
+        "mimeType": "application/zip",
+        "rank": "Default"
+      }
+    ],
     "resources": {
       "assets/skins/*": "assets/skins/",
       "assets/game/*": "assets/game/",
