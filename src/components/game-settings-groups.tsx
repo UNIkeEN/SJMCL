@@ -211,7 +211,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 }}
                 options={resolutionPresets.map((p, i) => ({
                   value: String(i),
-                  label: `${p.width} x ${p.height}`,
+                  label: `${p.width} × ${p.height}`,
                   disabled:
                     resolutionUpbound != null &&
                     (p.width > resolutionUpbound.width ||
