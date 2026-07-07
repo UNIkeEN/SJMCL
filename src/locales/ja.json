@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "同時に Fabric API モッドをインストール",
       "installQFAPI": "QFAPI / QSL モッドもインストール（利用可能な場合）",
-      "reinstall": "再インストール"
+      "reinstall": "再インストール",
+      "removeCurrentInstallation": "インストールを削除"
     }
   },
   "CheckModUpdateModal": {
@@ -1877,6 +1878,18 @@
       "login": "ログイン"
     }
   },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Modローダーを削除",
+      "content": "{{instanceName}} にインストールされた {{type}} {{version}} を削除してもよろしいですか？Modが動作しなくなる可能性があります。"
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "OptiFineを削除",
+      "content": "{{instanceName}} にインストールされた OptiFine {{version}} を削除してもよろしいですか？シェーダーパックが動作しなくなる可能性があります。"
+    }
+  },
   "ResourceDownloader": {
     "label": {
       "source": "ダウンロードソース",
@@ -2925,6 +2938,26 @@
       "changeOptiFine": {
         "error": {
           "title": "OptiFine の変更に失敗"
+        }
+      },
+      "removeModLoader": {
+        "success": "Modローダーが正常に削除されました",
+        "error": {
+          "title": "Modローダーの削除に失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンスIDが存在しません",
+            "FILE_CREATION_FAILED": "インスタンス設定の保存に失敗"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFineが正常に削除されました",
+        "error": {
+          "title": "OptiFineの削除に失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンスIDが存在しません",
+            "FILE_CREATION_FAILED": "インスタンス設定の保存に失敗"
+          }
         }
       },
       "retrieveModpackMetaInfo": {
