@@ -1,6 +1,9 @@
 import {
+  Alert,
+  AlertIcon,
   HStack,
   Icon,
+  Link,
   Switch,
   Text,
   VStack,
@@ -8,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { exists } from "@tauri-apps/plugin-fs";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuFolder, LuFolderX } from "react-icons/lu";
@@ -27,11 +31,12 @@ import { GameDirectory } from "@/models/config";
 import { getGameDirName, isSpecialGameDir } from "@/utils/instance";
 
 const GlobalGameSettingsPage = () => {
+  const router = useRouter();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const globalGameConfigs = config.globalGameConfig;
-  const { getInstanceList } = useGlobalData();
+  const { getInstanceList, selectedInstance } = useGlobalData();
   const { removeHistory } = useRoutingHistory();
   const { closeSharedModal, openGenericConfirmDialog } = useSharedModals();
 
@@ -218,6 +223,29 @@ const GlobalGameSettingsPage = () => {
 
   return (
     <>
+      {selectedInstance?.useSpecGameConfig && (
+        <Alert status="warning" fontSize="xs-sm" borderRadius="md">
+          <AlertIcon />
+          <Text>
+            {t("GlobalGameSettingsPage.topWarning.specGameConfigWarning", {
+              instance: selectedInstance.name,
+            })}
+            <Link
+              color={`${primaryColor}.500`}
+              onClick={() => {
+                router.push({
+                  pathname: "/instances/details/[id]/settings",
+                  query: {
+                    id: selectedInstance.id,
+                  },
+                });
+              }}
+            >
+              {t("GlobalGameSettingsPage.topWarning.editInstanceSettings")}
+            </Link>
+          </Text>
+        </Alert>
+      )}
       {/* Game directory list */}
       {globalSpecSettingsGroups.map((group, index) => (
         <OptionItemGroup {...group} key={index} />

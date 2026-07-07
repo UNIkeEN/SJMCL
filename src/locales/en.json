@@ -1312,6 +1312,10 @@
           "button": "Edit Advanced Options"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "Current instance \"{{instance}}\" has enabled the\"Apply the following specific settings\".All options on this page will NOT affect that instance. Click here to edit its own settings.",
+      "editInstanceSettings": "Edit Current Instance Settings"
     }
   },
   "GuidedTourProvider": {
