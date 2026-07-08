@@ -11,6 +11,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager, State};
 
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
@@ -45,8 +48,6 @@ use crate::utils::window::create_webview_window;
 
 #[cfg(target_os = "windows")]
 use crate::launch::helpers::file_validator::get_invalid_windows_mesa_loader_file;
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
 
 // Step 1: select suitable java runtime environment.
 #[tauri::command]
@@ -164,7 +165,7 @@ pub async fn validate_game_files(
 
   // validate game files
   let incomplete_files = match workaround.game_file_validate_policy {
-    FileValidatePolicy::Disable => Vec::new(),
+    FileValidatePolicy::Disable => Vec::new(), // skip
     FileValidatePolicy::Normal => [
       get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, false).await?,

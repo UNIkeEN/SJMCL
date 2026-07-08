@@ -6,13 +6,14 @@ use sjmcl_types::storage::load_json_async;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
-#[cfg(target_os = "windows")]
-use std::sync::Mutex;
 use tauri::AppHandle;
-#[cfg(target_os = "windows")]
-use tauri::Manager;
 use tokio::fs;
 use zip::ZipArchive;
+
+#[cfg(target_os = "windows")]
+use std::sync::Mutex;
+#[cfg(target_os = "windows")]
+use tauri::Manager;
 
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
