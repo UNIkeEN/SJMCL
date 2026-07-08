@@ -1314,7 +1314,7 @@
       }
     },
     "topWarning": {
-      "specGameConfigWarning": "Current instance \"{{instance}}\" has enabled the \"Apply the following specific settings\" .All options on this page will NOT affect that instance.  edit its own settings.",
+      "specGameConfigWarning": "Current instance \"{{instance}}\" has enabled the \"Apply the following specific settings\" .All options on this page will NOT affect that instance. edit its own settings.",
       "editInstanceSettings": "Click here to edit Current Instance Settings"
     }
   },
