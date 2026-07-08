@@ -1314,8 +1314,8 @@
       }
     },
     "topWarning": {
-      "specGameConfigWarning": "当前实例“{{instance}}”启用了“实例特定游戏设置”，因此本页面选项不对该实例生效。点击链接前往该实例的“设置”页。",
-      "editInstanceSettings": "编辑实例特定游戏设置"
+      "specGameConfigWarning": "当前实例“{{instance}}”启用了“实例特定游戏设置”，因此本页面选项不对该实例生效。点击链接的“设置”页。",
+      "editInstanceSettings": "前往编辑该实例特定游戏设置"
     }
   },
   "GuidedTourProvider": {
