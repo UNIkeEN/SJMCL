@@ -922,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "圖形",
+      "settings": {
+        "api": {
+          "title": "圖形 API",
+          "default": {
+            "label": "本",
+            "desc": "循Minecraft與驅動之預設。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "以OpenGL渲染"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "以Vulkan渲染"
+          }
+        },
+        "renderer": {
+          "title": "繪器 / 驅動",
+          "default": "本",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "代理",
       "settings": {

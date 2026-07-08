@@ -922,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "圖形",
+      "settings": {
+        "api": {
+          "title": "圖形 API",
+          "default": {
+            "label": "預設",
+            "desc": "遵循 Minecraft 與顯示卡驅動程式的預設設定。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "使用 OpenGL 渲染"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "使用 Vulkan 渲染"
+          }
+        },
+        "renderer": {
+          "title": "算繪器 / 驅動程式",
+          "default": "預設",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "代理",
       "settings": {

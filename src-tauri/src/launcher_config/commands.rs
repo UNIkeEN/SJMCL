@@ -12,6 +12,7 @@ use tauri_plugin_http::reqwest;
 use tauri_plugin_opener::reveal_item_in_dir;
 
 use crate::instance::helpers::misc::refresh_instances;
+use crate::launcher_config::helpers::graphics::supported_graphics_renderers;
 use crate::launcher_config::helpers::java::{
   build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
   refresh_and_update_javas,
@@ -20,7 +21,8 @@ use crate::launcher_config::helpers::updater::{
   self, download_target_version, fetch_latest_version,
 };
 use crate::launcher_config::models::{
-  BuildType, GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
+  BuildType, GameDirectory, GraphicsApi, JavaInfo, LauncherConfig, LauncherConfigError,
+  VersionMetaInfo,
 };
 use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
@@ -400,4 +402,15 @@ pub async fn install_launcher_update(
   {
     Ok(()) // No supported
   }
+}
+
+#[tauri::command]
+pub fn retrieve_supported_graphics_renderers(api: String) -> SJMCLResult<Vec<String>> {
+  let api = match api.trim().to_ascii_lowercase().as_str() {
+    "opengl" => GraphicsApi::Opengl,
+    "vulkan" => GraphicsApi::Vulkan,
+    _ => GraphicsApi::Default,
+  };
+
+  Ok(supported_graphics_renderers(&api))
 }

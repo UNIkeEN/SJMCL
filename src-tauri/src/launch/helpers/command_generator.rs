@@ -23,6 +23,13 @@ use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
 
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::file_validator::get_windows_mesa_loader_path;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::helpers::graphics::mesa_driver_name;
+#[cfg(target_os = "macos")]
+use crate::launcher_config::helpers::graphics::{find_macos_libvulkan, find_vulkan_icd_file};
+
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {
   // basic game params
@@ -296,6 +303,36 @@ pub async fn generate_launch_command(
   cmd.push("-Dcom.sun.jndi.rmi.object.trustURLCodebase=false".to_string());
   cmd.push("-Dcom.sun.jndi.cosnaming.object.trustURLCodebase=false".to_string());
 
+  #[cfg(target_os = "windows")]
+  if let Some(driver_name) = mesa_driver_name(
+    &game_config.advanced.graphics.api,
+    &game_config.advanced.graphics.renderer,
+  ) {
+    if let Some(mesa_loader_path) = get_windows_mesa_loader_path(app, libraries_dir)? {
+      cmd.push(format!(
+        "-javaagent:{}={}",
+        mesa_loader_path.to_string_lossy(),
+        driver_name
+      ));
+      cmd.push(format!(
+        "-Dorg.glavo.mesa.loader.nativeDir={}",
+        natives_dir.join("mesa-loader").to_string_lossy()
+      ));
+    }
+  }
+
+  #[cfg(target_os = "macos")]
+  if game_config.advanced.graphics.api == GraphicsApi::Vulkan
+    && game_config.advanced.graphics.renderer != "moltenvk"
+    && find_vulkan_icd_file(&game_config.advanced.graphics.renderer).is_some()
+    && let Some(libvulkan_path) = find_macos_libvulkan()
+  {
+    cmd.push(format!(
+      "-Dorg.lwjgl.vulkan.libname={}",
+      libvulkan_path.to_string_lossy()
+    ));
+  }
+
   if !game_config.advanced.workaround.no_jvm_args {
     cmd.push(format!("-Dminecraft.client.jar={}", client_jar_path));
 
@@ -465,6 +502,23 @@ pub async fn generate_launch_command(
   // fullscreen
   if game_config.game_window.resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
+  }
+
+  // in-game graphics backend settings (for 26.2+)
+  if game_config.advanced.graphics.api != GraphicsApi::Default
+    && compare_game_versions(app, &selected_instance.version, "26.2-snapshot-2", false)
+      .await
+      .is_ge()
+  {
+    cmd.push("--graphicsBackend".to_string());
+    cmd.push(
+      match game_config.advanced.graphics.api {
+        GraphicsApi::Opengl => "opengl",
+        GraphicsApi::Vulkan => "vulkan",
+        GraphicsApi::Default => unreachable!(),
+      }
+      .to_string(),
+    );
   }
 
   if !game_config

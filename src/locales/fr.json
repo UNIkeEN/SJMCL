@@ -922,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "Graphismes",
+      "settings": {
+        "api": {
+          "title": "API graphique",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Utiliser les paramètres par défaut de Minecraft et du pilote."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Utiliser le rendu OpenGL."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Utiliser le rendu Vulkan."
+          }
+        },
+        "renderer": {
+          "title": "Moteur de rendu / pilote",
+          "default": "Par défaut",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "Proxy",
       "settings": {
