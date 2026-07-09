@@ -15,16 +15,17 @@ use std::collections::HashMap;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-use crate::resource::helpers::misc::{
-  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
-  levenshtein_distance, sort_localized_search_results,
-};
+use crate::resource::helpers::misc::{levenshtein_distance, sort_localized_search_results};
 use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
+use crate::resource::helpers::translation::{
+  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
+};
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
+use crate::utils::string::contains_chinese;
 
 const MINECRAFT_GAME_ID: &str = "432";
 const ALL_FILTER: &str = "All";
@@ -54,15 +55,12 @@ pub async fn fetch_resource_list_by_name_curseforge(
     .await
     .unwrap_or_else(|_| HandledSearchQuery {
       query: search_query.clone(),
-      is_chinese: false,
+      is_chinese: contains_chinese(search_query),
     });
 
   let class_id = cvt_type_to_class_id(resource_type);
-  let sort_field = if handled_search_query.is_chinese {
-    cvt_sort_by_to_id("Popularity")
-  } else {
-    cvt_sort_by_to_id(sort_by)
-  };
+  let is_default_sort = sort_by == "Popularity";
+  let sort_field = cvt_sort_by_to_id(sort_by);
   let sort_order = match sort_field {
     4 => "asc",
     _ => "desc",
@@ -101,8 +99,9 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
   let has_search_filter = !handled_search_query.query.trim().is_empty();
   // Empty search is browsing by the selected API sort; avoid re-ranking by title length.
+  // When the user selects a non-default sort, keep the API order instead of applying relevance.
   let should_rerank_by_search_filter =
-    !handled_search_query.is_chinese && sort_by == "Popularity" && has_search_filter;
+    !handled_search_query.is_chinese && is_default_sort && has_search_filter;
 
   if should_rerank_by_search_filter {
     let lower_case_search_filter = handled_search_query.query.to_lowercase();
@@ -144,7 +143,7 @@ pub async fn fetch_resource_list_by_name_curseforge(
 
   apply_other_resource_enhancements_concurrently(app, &mut search_result.list).await;
 
-  if handled_search_query.is_chinese {
+  if handled_search_query.is_chinese && is_default_sort {
     sort_localized_search_results(&mut search_result.list, search_query);
   }
 

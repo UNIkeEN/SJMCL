@@ -25,3 +25,7 @@ pub fn camel_to_snake_case(camel: &str) -> String {
   }
   snake
 }
+
+pub fn contains_chinese(text: &str) -> bool {
+  text.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}'))
+}

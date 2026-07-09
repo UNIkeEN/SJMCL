@@ -1,83 +1,13 @@
-use crate::APP_DATA_DIR;
 use sjmcl_types::error::SJMCLResult;
-use sjmcl_types::storage::Storage;
 use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::path::PathBuf;
-use std::sync::Mutex;
-use std::time::{SystemTime, UNIX_EPOCH};
 use strum::IntoEnumIterator;
-use tauri::{AppHandle, Manager};
 use url::Url;
 
 use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
-use crate::resource::helpers::mod_db::ModDataBase;
-use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
 use crate::resource::models::{
-  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
-  SourceType,
+  OtherResourceInfo, OtherResourceVersionPack, ResourceError, ResourceType, SourceType,
 };
-use futures::StreamExt;
-use serde::{Deserialize, Serialize};
-
-const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME: &str =
-  "resource_description_translations.json";
-const RESOURCE_DESCRIPTION_TRANSLATION_CACHE_EXPIRY_HOURS: u64 = 24 * 30;
-
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct ResourceDescriptionTranslationsCache {
-  #[serde(flatten)]
-  pub translations: HashMap<String, ResourceDescriptionTranslationEntry>,
-}
-
-impl ResourceDescriptionTranslationsCache {
-  fn cache_key(source: &OtherResourceSource, resource_id: &str) -> String {
-    let source = match source {
-      OtherResourceSource::CurseForge => "curseforge",
-      OtherResourceSource::Modrinth => "modrinth",
-      OtherResourceSource::MultiMc => "multimc",
-      OtherResourceSource::Unknown => "unknown",
-    };
-
-    format!("{}:{}", source, resource_id)
-  }
-}
-
-impl Storage for ResourceDescriptionTranslationsCache {
-  fn file_path() -> PathBuf {
-    APP_DATA_DIR
-      .get()
-      .unwrap()
-      .join(RESOURCE_DESCRIPTION_TRANSLATION_CACHE_FILE_NAME)
-  }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ResourceDescriptionTranslationEntry {
-  pub translated_description: String,
-  pub timestamp: u64,
-}
-
-impl ResourceDescriptionTranslationEntry {
-  fn new(translated_description: String) -> Self {
-    Self {
-      translated_description,
-      timestamp: SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs(),
-    }
-  }
-
-  fn is_expired(&self, max_age_hours: u64) -> bool {
-    let current_time = SystemTime::now()
-      .duration_since(UNIX_EPOCH)
-      .unwrap_or_default()
-      .as_secs();
-    current_time > self.timestamp + (max_age_hours * 60 * 60)
-  }
-}
+use crate::utils::string::contains_chinese;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
@@ -319,7 +249,7 @@ pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_q
     if resource
       .translated_name
       .as_deref()
-      .is_some_and(|name| name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')))
+      .is_some_and(contains_chinese)
     {
       translated_results.push(resource);
     } else {
@@ -342,108 +272,4 @@ pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_q
 
   list.extend(translated_results);
   list.extend(untranslated_results);
-}
-
-pub async fn apply_other_resource_enhancements(
-  app: &AppHandle,
-  resource_info: &mut OtherResourceInfo,
-) -> SJMCLResult<()> {
-  // Extract data from cache in a limited scope to avoid holding lock across await
-  let (translated_name, mcmod_id) = {
-    if let Ok(cache) = app.state::<Mutex<ModDataBase>>().lock() {
-      let translated_name = if resource_info._type == "mod" {
-        cache.get_translated_name(&resource_info.slug, &resource_info.source)
-      } else {
-        None
-      };
-      let mcmod_id = cache.get_mcmod_id(&resource_info.slug, &resource_info.source);
-      (translated_name, mcmod_id)
-    } else {
-      (None, None)
-    }
-  };
-
-  if let Some(name) = translated_name
-    && name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}'))
-  {
-    resource_info.translated_name = Some(name);
-  }
-  if let Some(id) = mcmod_id {
-    resource_info.mcmod_id = id;
-  }
-
-  let should_translate_resource_description = app
-    .state::<Mutex<LauncherConfig>>()
-    .lock()
-    .map(|config| {
-      config.general.general.language == "zh-Hans"
-        && config.general.functionality.resource_translation
-    })
-    .unwrap_or(false);
-
-  if !should_translate_resource_description {
-    return Ok(());
-  }
-
-  let translation_cache_key =
-    ResourceDescriptionTranslationsCache::cache_key(&resource_info.source, &resource_info.id);
-  if let Ok(cache) = app
-    .state::<Mutex<ResourceDescriptionTranslationsCache>>()
-    .lock()
-  {
-    if let Some(entry) = cache.translations.get(&translation_cache_key)
-      && !entry.is_expired(RESOURCE_DESCRIPTION_TRANSLATION_CACHE_EXPIRY_HOURS)
-    {
-      resource_info.translated_description = Some(entry.translated_description.clone());
-      return Ok(());
-    }
-  }
-
-  let translated_desc = match resource_info.source {
-    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
-    OtherResourceSource::CurseForge => {
-      translate_description_curseforge(app, &resource_info.id).await?
-    }
-    _ => None,
-  };
-
-  if let Some(desc) = translated_desc {
-    if let Ok(mut cache) = app
-      .state::<Mutex<ResourceDescriptionTranslationsCache>>()
-      .lock()
-    {
-      cache.translations.insert(
-        translation_cache_key,
-        ResourceDescriptionTranslationEntry::new(desc.clone()),
-      );
-      let _ = cache.save();
-    }
-    resource_info.translated_description = Some(desc);
-  }
-
-  Ok(())
-}
-
-pub async fn apply_other_resource_enhancements_concurrently(
-  app: &AppHandle,
-  list: &mut Vec<OtherResourceInfo>,
-) {
-  let concurrency = std::thread::available_parallelism()
-    .map(usize::from)
-    .unwrap_or(4);
-
-  let mut enhanced = futures::stream::iter(std::mem::take(list).into_iter().enumerate())
-    .map(|(index, mut resource_info)| async move {
-      let _ = apply_other_resource_enhancements(app, &mut resource_info).await;
-      (index, resource_info)
-    })
-    .buffer_unordered(concurrency)
-    .collect::<Vec<_>>()
-    .await;
-
-  enhanced.sort_by_key(|(index, _)| *index);
-  *list = enhanced
-    .into_iter()
-    .map(|(_, resource_info)| resource_info)
-    .collect();
 }

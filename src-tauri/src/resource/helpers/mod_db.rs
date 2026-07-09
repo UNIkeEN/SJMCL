@@ -5,6 +5,7 @@ use tauri::{AppHandle, Manager};
 
 use crate::resource::models::{OtherResourceSource, ResourceError};
 use crate::utils::fs::get_app_resource_filepath;
+use crate::utils::string::contains_chinese;
 
 fn clean_keyword(word: &str) -> Option<String> {
   const STOP_WORDS: &[&str] = &["a", "of", "the", "for", "mod", "with", "and", "ftb"];
@@ -373,7 +374,7 @@ pub async fn handle_localized_search_query(
 ) -> SJMCLResult<HandledSearchQuery> {
   let query = query.split_whitespace().collect::<Vec<_>>().join(" ");
 
-  if !query.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}')) {
+  if !contains_chinese(&query) {
     return Ok(HandledSearchQuery {
       query,
       is_chinese: false,

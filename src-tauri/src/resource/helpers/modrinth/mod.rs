@@ -14,17 +14,18 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 
 use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::{
-  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
-  sort_localized_search_results,
-};
+use crate::resource::helpers::misc::sort_localized_search_results;
 use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
+use crate::resource::helpers::translation::{
+  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
+};
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
 use crate::tasks::download::DownloadParam;
+use crate::utils::string::contains_chinese;
 
 const ALL_FILTER: &str = "All";
 
@@ -48,8 +49,9 @@ pub async fn fetch_resource_list_by_name_modrinth(
     .await
     .unwrap_or_else(|_| HandledSearchQuery {
       query: search_query.clone(),
-      is_chinese: false,
+      is_chinese: contains_chinese(search_query),
     });
+  let is_default_sort = sort_by == "relevance";
 
   let mut facets = vec![vec![format!("project_type:{}", resource_type)]];
   if !game_version.is_empty() && game_version != ALL_FILTER {
@@ -67,14 +69,7 @@ pub async fn fetch_resource_list_by_name_modrinth(
   );
   params.insert("offset".to_string(), (page * page_size).to_string());
   params.insert("limit".to_string(), page_size.to_string());
-  params.insert(
-    "index".to_string(),
-    if handled_search_query.is_chinese {
-      "relevance".to_string()
-    } else {
-      sort_by.to_string()
-    },
-  );
+  params.insert("index".to_string(), sort_by.to_string());
 
   let client = app.state::<reqwest::Client>();
   let results = make_modrinth_request::<ModrinthSearchRes, ()>(
@@ -87,7 +82,7 @@ pub async fn fetch_resource_list_by_name_modrinth(
   let mut search_result: OtherResourceSearchRes = results.into();
   apply_other_resource_enhancements_concurrently(app, &mut search_result.list).await;
 
-  if handled_search_query.is_chinese {
+  if handled_search_query.is_chinese && is_default_sort {
     sort_localized_search_results(&mut search_result.list, search_query);
   }
 
