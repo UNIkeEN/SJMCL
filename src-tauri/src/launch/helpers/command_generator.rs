@@ -1,6 +1,17 @@
+use base64::Engine;
+use base64::engine::general_purpose;
+use serde::{self, Deserialize, Serialize};
+use serde_json::Value;
+use shlex::try_quote;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::borrow::Cow;
+use std::collections::{HashMap, HashSet};
+use std::path::PathBuf;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+
 use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_injector_jar_path;
 use crate::account::models::{AccountError, PlayerType};
-use crate::error::{SJMCLError, SJMCLResult};
 use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
@@ -11,16 +22,13 @@ use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
-use base64::Engine;
-use base64::engine::general_purpose;
-use serde::{self, Deserialize, Serialize};
-use serde_json::Value;
-use shlex::try_quote;
-use std::borrow::Cow;
-use std::collections::{HashMap, HashSet};
-use std::path::PathBuf;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::file_validator::get_windows_mesa_loader_path;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::helpers::graphics::mesa_driver_name;
+#[cfg(target_os = "macos")]
+use crate::launcher_config::helpers::graphics::{find_macos_libvulkan, find_vulkan_icd_file};
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct LaunchArguments {
@@ -169,6 +177,9 @@ pub async fn generate_launch_command(
     _ => String::new(),
   };
 
+  let custom_info = game_config.game_window.custom_info.trim();
+  let custom_info = (!custom_info.is_empty()).then(|| custom_info.to_string());
+
   let arguments_value = LaunchArguments {
     game_assets: assets_dir
       .join("virtual/legacy")
@@ -180,13 +191,11 @@ pub async fn generate_launch_command(
 
     version_name: selected_instance.name.clone(),
     primary_jar_name: format!("{}.jar", selected_instance.name.clone()),
-    version_type: if !game_config.game_window.custom_info.is_empty() {
-      game_config.game_window.custom_info.clone()
-    } else {
-      format!("SJMCL {}", basic_info.launcher_version)
-    },
+    version_type: custom_info
+      .clone()
+      .unwrap_or_else(|| client_info.type_.clone()),
     natives_directory: natives_dir.to_string_lossy().to_string(),
-    launcher_name: format!("SJMCL {}", basic_info.launcher_version),
+    launcher_name: "SJMC Launcher".to_string(),
     launcher_version: basic_info.launcher_version,
     library_directory: libraries_dir.to_string_lossy().to_string(),
     classpath_separator: get_separator().to_string(),
@@ -223,6 +232,7 @@ pub async fn generate_launch_command(
     }
   ));
 
+  // advanced JVM options
   let jvm = &game_config.advanced.jvm;
   {
     if jvm.java_permanent_generation_space != 0 {
@@ -253,6 +263,32 @@ pub async fn generate_launch_command(
     }
   }
 
+  // custom proxy settings for game process (separate from system and launcher proxy)
+  let game_proxy = &game_config.advanced.proxy;
+  {
+    if !game_proxy.enabled {
+      cmd.push("-Djava.net.useSystemProxies=true".to_string());
+    } else {
+      let host = game_proxy.host.trim();
+      if host.is_empty() || game_proxy.port == 0 {
+        log::warn!("Skipped game proxy JVM arguments because proxy host or port is empty");
+      } else {
+        match &game_proxy.selected_type {
+          ProxyType::Http => {
+            cmd.push(format!("-Dhttp.proxyHost={}", host));
+            cmd.push(format!("-Dhttp.proxyPort={}", game_proxy.port));
+            cmd.push(format!("-Dhttps.proxyHost={}", host));
+            cmd.push(format!("-Dhttps.proxyPort={}", game_proxy.port));
+          }
+          ProxyType::Socks => {
+            cmd.push(format!("-DsocksProxyHost={}", host));
+            cmd.push(format!("-DsocksProxyPort={}", game_proxy.port));
+          }
+        }
+      }
+    }
+  }
+
   let encoding = "UTF-8"; // TODO: get from system
   cmd.push(format!("-Dfile.encoding={}", encoding));
   if selected_java.major_version < 19 {
@@ -266,6 +302,36 @@ pub async fn generate_launch_command(
   cmd.push("-Djava.rmi.server.useCodebaseOnly=true".to_string());
   cmd.push("-Dcom.sun.jndi.rmi.object.trustURLCodebase=false".to_string());
   cmd.push("-Dcom.sun.jndi.cosnaming.object.trustURLCodebase=false".to_string());
+
+  #[cfg(target_os = "windows")]
+  if let Some(driver_name) = mesa_driver_name(
+    &game_config.advanced.graphics.api,
+    &game_config.advanced.graphics.renderer,
+  ) {
+    if let Some(mesa_loader_path) = get_windows_mesa_loader_path(app, libraries_dir)? {
+      cmd.push(format!(
+        "-javaagent:{}={}",
+        mesa_loader_path.to_string_lossy(),
+        driver_name
+      ));
+      cmd.push(format!(
+        "-Dorg.glavo.mesa.loader.nativeDir={}",
+        natives_dir.join("mesa-loader").to_string_lossy()
+      ));
+    }
+  }
+
+  #[cfg(target_os = "macos")]
+  if game_config.advanced.graphics.api == GraphicsApi::Vulkan
+    && game_config.advanced.graphics.renderer != "moltenvk"
+    && find_vulkan_icd_file(&game_config.advanced.graphics.renderer).is_some()
+    && let Some(libvulkan_path) = find_macos_libvulkan()
+  {
+    cmd.push(format!(
+      "-Dorg.lwjgl.vulkan.libname={}",
+      libvulkan_path.to_string_lossy()
+    ));
+  }
 
   if !game_config.advanced.workaround.no_jvm_args {
     cmd.push(format!("-Dminecraft.client.jar={}", client_jar_path));
@@ -343,7 +409,11 @@ pub async fn generate_launch_command(
   // -----------------------------------------
   // Part 3: Replace JVM and game arguments
   // -----------------------------------------
-  let map = arguments_value.into_hashmap()?;
+  let jvm_map = arguments_value.into_hashmap()?;
+  let mut game_map = jvm_map.clone();
+  if let Some(custom_info) = custom_info {
+    game_map.insert("version_name".to_string(), custom_info);
+  }
 
   // some feature rules defined in client json, add to jvm/game arg templates
   let has_quickplay_single = quick_play_singleplayer
@@ -370,7 +440,7 @@ pub async fn generate_launch_command(
       client_jvm_args.remove(classpath_pos);
       client_jvm_args.remove(classpath_pos);
     }
-    cmd.extend(replace_arguments(client_jvm_args, &map));
+    cmd.extend(replace_arguments(client_jvm_args, &jvm_map));
   } else {
     // ref: https://github.com/HMCL-dev/HMCL/blob/e8ff42c4b29d0b0a5a417c9d470390311c6d9a72/HMCLCore/src/main/java/org/jackhuang/hmcl/game/Arguments.java#L112
     let mut client_jvm_args = vec![];
@@ -394,7 +464,7 @@ pub async fn generate_launch_command(
       "-Dminecraft.launcher.brand=${launcher_name}".to_string(),
       "-Dminecraft.launcher.version=${launcher_version}".to_string(),
     ]);
-    cmd.extend(replace_arguments(client_jvm_args, &map));
+    cmd.extend(replace_arguments(client_jvm_args, &jvm_map));
   }
 
   // main class (after replace jvm args)
@@ -407,10 +477,10 @@ pub async fn generate_launch_command(
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;
-    cmd.extend(replace_arguments(client_game_args, &map));
+    cmd.extend(replace_arguments(client_game_args, &game_map));
   } else if let Some(client_args_str) = client_info.minecraft_arguments {
     let client_game_args = client_args_str.split(' ').map(|s| s.to_string()).collect();
-    cmd.extend(replace_arguments(client_game_args, &map));
+    cmd.extend(replace_arguments(client_game_args, &game_map));
   } else {
     return Err(InstanceError::ClientJsonParseError.into());
   }
@@ -432,6 +502,23 @@ pub async fn generate_launch_command(
   // fullscreen
   if game_config.game_window.resolution.fullscreen {
     cmd.push("--fullscreen".to_string());
+  }
+
+  // in-game graphics backend settings (for 26.2+)
+  if game_config.advanced.graphics.api != GraphicsApi::Default
+    && compare_game_versions(app, &selected_instance.version, "26.2-snapshot-2", false)
+      .await
+      .is_ge()
+  {
+    cmd.push("--graphicsBackend".to_string());
+    cmd.push(
+      match game_config.advanced.graphics.api {
+        GraphicsApi::Opengl => "opengl",
+        GraphicsApi::Vulkan => "vulkan",
+        GraphicsApi::Default => unreachable!(),
+      }
+      .to_string(),
+    );
   }
 
   if !game_config

@@ -20,7 +20,7 @@ type OptionLabel = React.ReactNode | { title: string; desc: string };
 
 type MenuSelectorOption =
   | OptionValue
-  | { value: OptionValue; label: OptionLabel };
+  | { value: OptionValue; label: OptionLabel; disabled?: boolean };
 
 export interface MenuSelectorProps extends Omit<MenuProps, "children"> {
   options: MenuSelectorOption[];
@@ -108,6 +108,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
         variant="outline"
         textAlign="left"
         w="auto"
+        flexShrink={0}
         {...buttonProps}
       >
         {renderButtonLabel()}
@@ -125,9 +126,14 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
           }}
         >
           {options.map((opt, i) => {
-            const { value: v, label } = buildOptions(opt);
+            const { value: v, label, disabled } = buildOptions(opt);
             return (
-              <MenuItemOption key={i} value={v} fontSize={fontSize}>
+              <MenuItemOption
+                key={i}
+                value={v}
+                fontSize={fontSize}
+                isDisabled={disabled}
+              >
                 {renderLabel(label)}
               </MenuItemOption>
             );

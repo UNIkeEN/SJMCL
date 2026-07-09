@@ -1,13 +1,14 @@
-use crate::discover::helpers::mc_news::{MC_NEWS_ENDPOINT, fetch_mc_news_page};
-use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
-use crate::error::SJMCLResult;
-use crate::launcher_config::models::LauncherConfig;
-use crate::utils::web::with_retry;
 use futures::future;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::discover::helpers::mc_news::{MC_NEWS_ENDPOINT, fetch_mc_news_page};
+use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
+use crate::launcher_config::models::LauncherConfig;
+use crate::utils::web::with_retry;
 
 #[tauri::command]
 pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSourceInfo>> {

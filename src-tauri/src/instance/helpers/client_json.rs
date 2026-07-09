@@ -1,20 +1,21 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::models::misc::{Instance, ModLoaderType};
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::models::OptiFineResourceInfo;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::RegexBuilder;
 use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use serde_with::formats::PreferMany;
 use serde_with::{OneOrMany, serde_as};
-use serialize_skip_none_derive::serialize_skip_none;
+use sjmcl_macros::serialize_skip_none;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::cmp::Ordering;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::str::FromStr;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+
+use crate::instance::models::misc::{Instance, ModLoaderType};
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::models::OptiFineResourceInfo;
+use crate::utils::fs::get_app_resource_filepath;
 
 #[serialize_skip_none]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -336,6 +337,144 @@ pub fn patches_to_info(
     }
   }
   (game_version, loader_version, loader_type, optifine_info)
+}
+
+pub fn remove_mod_loader_from_client_info(
+  client_info: &mut McClientInfo,
+  loader_type: ModLoaderType,
+) {
+  if loader_type == ModLoaderType::Unknown {
+    return;
+  }
+
+  let is_target_loader_patch = |patch: &McClientInfo| {
+    ModLoaderType::from_str(&patch.id)
+      .map(|patch_loader_type| match loader_type {
+        ModLoaderType::Forge | ModLoaderType::LegacyForge => {
+          matches!(
+            patch_loader_type,
+            ModLoaderType::Forge | ModLoaderType::LegacyForge
+          )
+        }
+        _ => patch_loader_type == loader_type,
+      })
+      .unwrap_or(false)
+  };
+
+  client_info
+    .patches
+    .retain(|patch| !is_target_loader_patch(patch));
+
+  reset_fields_from_patches(client_info);
+}
+
+pub fn remove_optifine_from_client_info(client_info: &mut McClientInfo) {
+  client_info.patches.retain(|patch| patch.id != "optifine");
+  reset_fields_from_patches(client_info);
+}
+
+pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
+  let patches = client_info.patches.clone();
+  let Some(base) = patches.first() else {
+    return;
+  };
+  let has_forge_patch = patches
+    .iter()
+    .any(|patch| matches!(patch.id.as_str(), "forge" | "legacyforge"));
+
+  client_info.libraries.clear();
+  let mut library_names = HashSet::new();
+  for patch in &patches {
+    for library in &patch.libraries {
+      if library_names.insert(library.name.clone()) {
+        client_info.libraries.push(library.clone());
+      }
+    }
+  }
+
+  client_info.main_class = base.main_class.clone();
+  client_info.arguments = base.arguments.clone();
+  client_info.minecraft_arguments = base.minecraft_arguments.clone();
+
+  let mut patch_refs = patches.iter().skip(1).collect::<Vec<_>>();
+  patch_refs.sort_by_key(|patch| patch.priority.unwrap_or(i64::MIN));
+
+  for patch in patch_refs {
+    if let Some(main_class) = &patch.main_class {
+      client_info.main_class = Some(main_class.clone());
+    }
+
+    let mut patch_arguments = patch.arguments.clone();
+    if patch.id == "optifine" {
+      if let Some(arguments) = &mut patch_arguments {
+        normalize_optifine_tweaker(arguments, has_forge_patch);
+      }
+    }
+
+    if let Some(arguments) = patch_arguments {
+      if let Some(base_arguments) = &mut client_info.arguments {
+        base_arguments.game.extend(arguments.game.clone());
+        base_arguments.jvm.extend(arguments.jvm.clone());
+      } else {
+        client_info.arguments = Some(arguments.clone());
+      }
+      client_info.minecraft_arguments = None;
+    }
+
+    let mut patch_minecraft_arguments = patch.minecraft_arguments.clone();
+    if patch.id == "optifine"
+      && let Some(minecraft_arguments) = &mut patch_minecraft_arguments
+    {
+      normalize_optifine_tweaker_str(minecraft_arguments, has_forge_patch);
+    }
+
+    if let Some(minecraft_arguments) = &patch_minecraft_arguments {
+      if minecraft_arguments.is_empty() {
+        continue;
+      }
+      match &mut client_info.minecraft_arguments {
+        Some(base_arguments) if !base_arguments.is_empty() => {
+          if !base_arguments.ends_with(' ') {
+            base_arguments.push(' ');
+          }
+          base_arguments.push_str(minecraft_arguments);
+        }
+        Some(base_arguments) => base_arguments.push_str(minecraft_arguments),
+        None => client_info.minecraft_arguments = Some(minecraft_arguments.clone()),
+      }
+    }
+  }
+}
+
+fn normalize_optifine_tweaker(arguments: &mut LaunchArgumentTemplate, has_forge_patch: bool) {
+  let tweaker = if has_forge_patch {
+    "optifine.OptiFineForgeTweaker"
+  } else {
+    "optifine.OptiFineTweaker"
+  };
+
+  for item in &mut arguments.game {
+    for value in &mut item.value {
+      if matches!(
+        value.as_str(),
+        "optifine.OptiFineTweaker" | "optifine.OptiFineForgeTweaker"
+      ) {
+        *value = tweaker.to_string();
+      }
+    }
+  }
+}
+
+fn normalize_optifine_tweaker_str(arguments: &mut String, has_forge_patch: bool) {
+  let tweaker = if has_forge_patch {
+    "optifine.OptiFineForgeTweaker"
+  } else {
+    "optifine.OptiFineTweaker"
+  };
+
+  *arguments = arguments
+    .replace("optifine.OptiFineForgeTweaker", tweaker)
+    .replace("optifine.OptiFineTweaker", tweaker);
 }
 
 pub async fn libraries_to_info(

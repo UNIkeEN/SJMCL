@@ -79,6 +79,9 @@ makepkg -si
 sudo snap install sjmcl
 ```
 
+> [!WARNING]
+> 使用 Snap 安裝時，遊戲資料可能會預設存放在沙盒目錄內。解除安裝啟動器前，請及時備份存檔、資源包、模組等重要資料。
+
 </details>
 
 <details>
@@ -101,6 +104,9 @@ brew install --cask SJMC-Dev/SJMCL/sjmcl
 winget install SJMC.SJMCL
 ```
 
+> [!WARNING]
+> Winget 的索引倉庫是公開協作維護的。安裝前建議執行 `winget show SJMC.SJMCL` 檢視安裝器位址，並確認下載來源來自 `github.com/UNIkeEN/SJMCL` 或 `sjmcl.club`。
+
 </details>
 
 更多安裝方式與平臺注意事項，請參閱 [使用者文件](https://mc.sjtu.cn/sjmcl/docs/install)。
@@ -113,13 +119,13 @@ winget install SJMC.SJMCL
 
 ```bash
 git clone git@github.com:UNIkeEN/SJMCL.git
-npm install
+pnpm install
 ```
 
 使用開發模式執行：
 
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 我們熱烈歡迎每一位開發者的貢獻。

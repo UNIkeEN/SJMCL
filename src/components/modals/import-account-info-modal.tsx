@@ -81,6 +81,9 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
     [ImportLauncherType.HMCL]: {
       showParentDirHint: false,
     },
+    [ImportLauncherType.LegacyHMCL]: {
+      showParentDirHint: false,
+    },
     ...(config.basicInfo.osType === "windows"
       ? {
           [ImportLauncherType.MultiMC]: {
@@ -256,9 +259,13 @@ const ImportAccountInfoModal: React.FC<ImportAccountInfoModalProps> = ({
               {importLauncherTypeEntries.map(([type]) => (
                 <SelectableCard
                   key={type}
-                  title={type}
+                  title={t(`ImportAccountInfoModal.launcherName.${type}`)}
                   description={t(`ImportAccountInfoModal.launcherDesc.${type}`)}
-                  iconSrc={`/images/icons/external/${type}.png`}
+                  iconSrc={`/images/icons/external/${
+                    type === ImportLauncherType.LegacyHMCL
+                      ? ImportLauncherType.HMCL
+                      : type
+                  }.png`}
                   displayMode="selector"
                   isSelected={selectedType === type}
                   onSelect={() => {

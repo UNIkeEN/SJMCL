@@ -1,9 +1,10 @@
-use crate::error::SJMCLResult;
-use crate::resource::models::{OtherResourceSource, ResourceError};
-use crate::utils::fs::get_app_resource_filepath;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+
+use crate::resource::models::{OtherResourceSource, ResourceError};
+use crate::utils::fs::get_app_resource_filepath;
 
 fn clean_keyword(word: &str) -> Option<String> {
   const STOP_WORDS: &[&str] = &["a", "of", "the", "for", "mod", "with", "and", "ftb"];
@@ -138,6 +139,7 @@ pub struct MCModRecord {
   pub abbr: Option<String>,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 impl MCModRecord {
   pub fn get_display_name(&self) -> String {
     let mut builder = String::new();

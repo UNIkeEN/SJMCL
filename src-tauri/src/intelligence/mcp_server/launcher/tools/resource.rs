@@ -1,3 +1,10 @@
+use rmcp::handler::server::tool::ToolRoute;
+use serde::Deserialize;
+use std::path::PathBuf;
+use std::str::FromStr;
+use tauri::{Manager, State};
+use tauri_plugin_http::reqwest;
+
 use crate::instance::models::misc::ModLoaderType;
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::intelligence::mcp_server::model::MCPError;
@@ -7,12 +14,6 @@ use crate::resource::commands::{
   fetch_mod_loader_version_list, fetch_optifine_version_list, fetch_resource_list_by_name,
 };
 use crate::resource::models::{OtherResourceSearchQuery, OtherResourceSource, ResourceError};
-use rmcp::handler::server::tool::ToolRoute;
-use serde::Deserialize;
-use std::path::PathBuf;
-use std::str::FromStr;
-use tauri::{Manager, State};
-use tauri_plugin_http::reqwest;
 
 #[derive(Deserialize, schemars::JsonSchema)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]

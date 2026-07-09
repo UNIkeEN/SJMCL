@@ -1,6 +1,7 @@
-use crate::tasks::monitor::TaskMonitor;
 use std::pin::Pin;
 use tauri::{AppHandle, Manager};
+
+use crate::tasks::monitor::TaskMonitor;
 
 pub async fn monitor_background_process(app: AppHandle) {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();

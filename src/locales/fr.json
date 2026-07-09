@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Merci à LittleSkin et @tnqzh123 pour l'aide sur la conception du processus de connexion"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Fournit des traductions en chinois simplifié des informations des mods"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Merci aux développeurs de SCL pour la communication continue et l'inspiration mutuelle avec nous"
@@ -112,12 +116,6 @@
         "title": "Télécharger le serveur",
         "description": "Télécharger les fichiers serveur de toutes les versions officielles du jeu"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Importer un modpack",
-      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "Polices d'interface",
           "default": "Par défaut"
         },
+        "logFontFamily": {
+          "title": "Police du journal"
+        },
         "fontSize": {
           "title": "Taille de la police",
           "small": "Petit",
@@ -367,7 +368,8 @@
     "footer": {
       "installFabricApi": "Installer également le mod Fabric API",
       "installQFAPI": "Installer aussi le mod QFAPI / QSL (si disponible)",
-      "reinstall": "Réinstaller"
+      "reinstall": "Réinstaller",
+      "removeCurrentInstallation": "Supprimer l'installation"
     }
   },
   "CheckModUpdateModal": {
@@ -596,16 +598,8 @@
       "headExtra": "Redémarrage requis",
       "settings": {
         "enabled": {
-          "title": "Activer le proxy"
-        },
-        "type": {
-          "title": "Type de proxy"
-        },
-        "host": {
-          "title": "Serveur"
-        },
-        "port": {
-          "title": "Port"
+          "title": "Activer le proxy pour les téléchargements",
+          "description": "Lorsqu'il est désactivé, le lanceur utilise automatiquement le proxy système pour télécharger les ressources"
         }
       }
     }
@@ -788,7 +782,7 @@
       "includedFiles": "Fichiers inclus",
       "exportOptions": "Options d'exportation",
       "packWithLauncher": "Inclure le lanceur",
-      "minMemory": "Mémoire minimale (MB)",
+      "minMemory": "Mémoire minimale (Mio)",
       "noCreateRemoteFiles": "Désactiver les fichiers distants",
       "skipCurseForgeRemoteFiles": "Ignorer les fichiers distants CurseForge"
     },
@@ -918,13 +912,65 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "Espace de génération permanente",
-          "placeholder": "Unités en MB"
+          "placeholder": "Unités en Mio"
         },
         "environmentVariable": {
           "title": "Variable d'environnement"
         },
         "args": {
           "title": "Arguments JVM"
+        }
+      }
+    },
+    "graphics": {
+      "title": "Graphismes",
+      "settings": {
+        "api": {
+          "title": "API graphique",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Utiliser les paramètres par défaut de Minecraft et du pilote."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Utiliser le rendu OpenGL."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Utiliser le rendu Vulkan."
+          }
+        },
+        "renderer": {
+          "title": "Moteur de rendu / pilote",
+          "default": "Par défaut",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Activer le proxy pour le processus de jeu",
+          "description": "Lorsqu'il est désactivé, le jeu utilisera automatiquement le proxy système"
         }
       }
     },
@@ -980,6 +1026,13 @@
     "javaInfo": {
       "javaVersion": "Version Java"
     },
+    "button": {
+      "exportGameInfo": "Exporter le rapport de crash du jeu",
+      "gameLogs": "Journaux du jeu",
+      "help": "Aide"
+    },
+    "bottomAlert": "Pour obtenir de l'aide, veuillez exporter et envoyer le rapport de crash, et non une capture d'écran de cette fenêtre.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Détails du crash",
       "OPENJ9": "Cette instance ne peut pas s'exécuter sur une JVM OpenJ9. Veuillez utiliser une JVM HotSpot.",
@@ -1047,13 +1100,7 @@
       "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare Cette instance ne peut pas continuer à s'exécuter en raison d'une erreur avec le mod Vics Modern Warfare. Essayez de mettre à jour ou de supprimer ce mod.",
       "FORGE_LITELOADER_CONFLICT": "Cette instance ne peut pas continuer à s'exécuter en raison d'un conflit entre Forge et LiteLoader. Essayez de supprimer LiteLoader ou de changer la version de Forge.",
       "UNKNOWN": "Impossible d'analyser cette erreur pour le moment. Veuillez consulter les journaux du jeu ou exporter un rapport de plantage."
-    },
-    "button": {
-      "exportGameInfo": "Exporter le rapport de crash du jeu",
-      "gameLogs": "Journaux du jeu",
-      "help": "Aide"
-    },
-    "bottomAlert": "Pour obtenir de l'aide, veuillez exporter et envoyer le rapport de crash, et non une capture d'écran de cette fenêtre."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filtrer par mot-clé",
@@ -1130,7 +1177,8 @@
     "version": {
       "dev": "Version de développement",
       "nightly": "Version de construction nocturne",
-      "beta": "Version de test"
+      "beta": "Version de test",
+      "test-build": "Version de construction de test"
     },
     "viewOnWiki": "Voir sur Minecraft Wiki"
   },
@@ -1152,7 +1200,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "Définir automatiquement la langue de l'instance",
-          "description": "%only available in zh-Hans"
+          "description": "Lorsque cette option est activée, les nouvelles instances utiliseront la langue du launcher et ignoreront l'écran de configuration d'accessibilité du jeu."
         }
       }
     },
@@ -1250,14 +1298,16 @@
       "settings": {
         "resolution": {
           "title": "Résolution du jeu",
-          "switch": "Plein écran"
+          "preset": "Préréglage",
+          "switch": "Plein écran",
+          "warning": "La résolution peut dépasser la limite du moniteur"
         },
         "customTitle": {
           "title": "Titre de la fenêtre personnalisée"
         },
         "customInfo": {
           "title": "Informations personnalisées",
-          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3"
+          "description": "S'affichera en bas à gauche de l'écran principal du jeu et en haut à gauche de la page de débogage F3 (uniquement pour les versions de Minecraft antérieures à 26.1)."
         }
       }
     },
@@ -1272,7 +1322,7 @@
         },
         "memoryUsage": {
           "title": "Utilisation de la mémoire",
-          "description": "Mémoire utilisée {{usedMemory}}GB ; allouée au jeu {{allocatedMemory}}GB ; totale {{totalMemory}}GB"
+          "description": "Mémoire utilisée {{usedMemory}}Gio ; allouée au jeu {{allocatedMemory}}Gio ; totale {{totalMemory}}Gio"
         },
         "processPriority": {
           "title": "Priorité du processus",
@@ -1376,6 +1426,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Explorez le plus grand dépôt de mods Minecraft au monde"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "Une plateforme de ressources Minecraft moderne et open source"
         }
       }
     },
@@ -1405,8 +1459,14 @@
     "header": {
       "title": "Importer des comptes depuis d'autres launchers"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1652,6 +1712,17 @@
       "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (SJMCL ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "Anglais",
+      "es": "Espagnol",
+      "fr": "",
+      "ja": "Japonais",
+      "lzh": "Chinois littéraire",
+      "zh-Hans": "Chinois simplifié",
+      "zh-Hant": "Chinois traditionnel"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La dernière exécution s'est terminée anormalement",
@@ -1699,6 +1770,12 @@
     "notCompatibleWith": "Incompatible avec {{item}}",
     "noVersionSelected": "Version non sélectionnée"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Importer un modpack",
+      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "Cette page est fournie par l'extension {{name}}"
   },
@@ -1707,7 +1784,7 @@
     "default": "Par défaut",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "Téléchargement local",
+    "upload": "Choisir un skin local",
     "skin": "Skin",
     "cape": "Cape",
     "model": {
@@ -1734,7 +1811,7 @@
   },
   "MemoryStatusProgress": {
     "title": "État de la mémoire",
-    "info": "{{used}} / {{total}} Go utilisés",
+    "info": "{{used}} / {{total}} Gio utilisés",
     "label": {
       "now": "En cours d'utilisation",
       "maxAllocation": "Maximum alloué à Minecraft"
@@ -1822,6 +1899,17 @@
       "deleting": "Suppression du personnage en cours"
     }
   },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Type de proxy"
+    },
+    "host": {
+      "title": "Hôte"
+    },
+    "port": {
+      "title": "Port"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "Se reconnecter"
@@ -1835,6 +1923,18 @@
     },
     "button": {
       "login": "Connexion"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Supprimer le chargeur de mods",
+      "content": "Êtes-vous sûr de vouloir supprimer {{type}} {{version}} installé pour {{instanceName}} ? Vos mods pourraient ne plus fonctionner."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Supprimer OptiFine",
+      "content": "Êtes-vous sûr de vouloir supprimer OptiFine {{version}} installé pour {{instanceName}} ? Vos shader packs pourraient ne plus fonctionner."
     }
   },
   "ResourceDownloader": {
@@ -2124,7 +2224,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "Mise à jour du lanceur",
     "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
-    "bodyMSI": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
+    "bodyWinInstaller": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
     "button": {
       "restart": "Redémarrer",
       "install": "Installer",
@@ -2879,6 +2979,31 @@
           "title": "Échec de la modification du chargeur de mods",
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "Version installée par un processus externe, impossible de la désinstaller ou de la remplacer"
+          }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "Échec de la modification d'OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Chargeur de mods supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du chargeur de mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
+            "FILE_CREATION_FAILED": "Échec de la sauvegarde de la configuration de l'instance"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression d'OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
+            "FILE_CREATION_FAILED": "Échec de la sauvegarde de la configuration de l'instance"
           }
         }
       },

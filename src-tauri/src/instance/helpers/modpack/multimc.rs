@@ -1,4 +1,14 @@
-use crate::error::SJMCLResult;
+use async_trait::async_trait;
+use config::Config;
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use tauri::AppHandle;
+use zip::ZipArchive;
+
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
@@ -6,15 +16,6 @@ use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
-use async_trait::async_trait;
-use config::Config;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::Read;
-use std::path::{Path, PathBuf};
-use tauri::AppHandle;
-use zip::ZipArchive;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]

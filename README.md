@@ -79,6 +79,9 @@ Install from Snap Store:
 sudo snap install sjmcl
 ```
 
+> [!WARNING]
+> When installing via Snap, game data may be stored in a sandboxed directory by default. Before uninstalling the launcher, please back up important data such as saves, resource packs, and mods in a timely manner.
+
 </details>
 
 <details>
@@ -101,6 +104,9 @@ Install with Winget:
 winget install SJMC.SJMCL
 ```
 
+> [!WARNING]
+> The Winget index is publicly maintained. Before installing, consider running `winget show SJMC.SJMCL` to inspect the installer URL, and make sure the download source is from `github.com/UNIkeEN/SJMCL` or `sjmcl.club`.
+
 </details>
 
 For more installation options and platform notes, see the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs/install).
@@ -113,13 +119,13 @@ To get started, clone the repository and install the required dependencies:
 
 ```bash
 git clone git@github.com:UNIkeEN/SJMCL.git
-npm install
+pnpm install
 ```
 
 To run the project in development mode:
 
 ```bash
-npm run tauri dev
+pnpm tauri dev
 ```
 
 We warmly invite contributions from everyone. 

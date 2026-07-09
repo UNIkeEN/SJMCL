@@ -1,33 +1,5 @@
-use crate::account::helpers::misc::get_selected_player_info;
-use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
-use crate::account::helpers::{authlib_injector, microsoft};
-use crate::account::models::PlayerType;
-use crate::error::SJMCLResult;
-use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
-use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
-use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
-use crate::launch::helpers::command_generator::{
-  LaunchCommand, export_full_launch_command, generate_launch_command,
-};
-use crate::launch::helpers::file_validator::{
-  extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
-};
-use crate::launch::helpers::jre_selector::select_java_runtime;
-use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
-use crate::launch::helpers::misc::get_separator;
-use crate::launch::helpers::process_monitor::{
-  kill_process, monitor_process, set_process_priority,
-};
-use crate::launch::models::{LaunchError, LaunchingState};
-use crate::launcher_config::helpers::java::refresh_and_update_javas;
-use crate::launcher_config::models::{FileValidatePolicy, LauncherConfig, LauncherVisiablity};
-use crate::resource::helpers::misc::get_source_priority_list;
-use crate::storage::load_json_async;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::utils::fs::create_zip_from_dirs;
-use crate::utils::logging::get_launcher_log_path;
-use crate::utils::shell::{execute_command_line, split_command_line};
-use crate::utils::window::create_webview_window;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::load_json_async;
 use std::collections::HashMap;
 use std::fs;
 use std::io::BufReader;
@@ -41,6 +13,41 @@ use tauri::{AppHandle, Manager, State};
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+
+use crate::account::helpers::misc::get_selected_player_info;
+use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
+use crate::account::helpers::{authlib_injector, microsoft};
+use crate::account::models::PlayerType;
+use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
+use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
+use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
+use crate::launch::helpers::command_generator::{
+  LaunchCommand, export_full_launch_command, generate_launch_command,
+};
+use crate::launch::helpers::file_validator::{
+  extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
+};
+use crate::launch::helpers::graphics_handler::{
+  build_graphics_environment_variables, parse_environment_variables,
+};
+use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
+use crate::launch::helpers::misc::get_separator;
+use crate::launch::helpers::process_monitor::{
+  kill_process, monitor_process, set_process_priority,
+};
+use crate::launch::models::{LaunchError, LaunchingState};
+use crate::launcher_config::helpers::java::refresh_and_update_javas;
+use crate::launcher_config::models::{FileValidatePolicy, LauncherConfig, LauncherVisiablity};
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::tasks::commands::schedule_progressive_task_group;
+use crate::utils::fs::create_zip_from_dirs;
+use crate::utils::logging::get_launcher_log_path;
+use crate::utils::shell::{execute_command_line, split_command_line};
+use crate::utils::window::create_webview_window;
+
+#[cfg(target_os = "windows")]
+use crate::launch::helpers::file_validator::get_invalid_windows_mesa_loader_file;
 
 // Step 1: select suitable java runtime environment.
 #[tauri::command]
@@ -96,7 +103,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, mut client_info, workaround) = {
+  let (instance, mut client_info, game_config) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -105,9 +112,10 @@ pub async fn validate_game_files(
     (
       launching.selected_instance.clone(),
       launching.client_info.clone(),
-      launching.game_config.advanced.workaround.clone(),
+      launching.game_config.clone(),
     )
   };
+  let workaround = game_config.advanced.workaround.clone();
 
   if instance.mod_loader.status != ModLoaderStatus::Installed {
     return Err(LaunchError::ModLoaderNotInstalled.into());
@@ -168,6 +176,26 @@ pub async fn validate_game_files(
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, true).await?,
     ]
     .concat(),
+  };
+
+  #[cfg(target_os = "windows")]
+  let incomplete_files = {
+    let check_hash = matches!(
+      workaround.game_file_validate_policy,
+      FileValidatePolicy::Full
+    );
+    let mut files = incomplete_files;
+    files.extend(
+      get_invalid_windows_mesa_loader_file(
+        &app,
+        priority_list[0],
+        libraries_dir,
+        &game_config,
+        check_hash,
+      )
+      .await?,
+    );
+    files
   };
 
   if incomplete_files.is_empty() {
@@ -257,11 +285,19 @@ pub async fn launch_game(
   };
 
   let instance_id = instance.id.clone();
-  let work_dir = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
-    .ok_or(InstanceError::InstanceNotFoundByID)?
-    .first()
-    .ok_or(InstanceError::InstanceNotFoundByID)?
-    .clone();
+  let subdirs = get_instance_subdir_paths(
+    &app,
+    &instance,
+    &[
+      &InstanceSubdirType::Root,
+      &InstanceSubdirType::NativeLibraries,
+    ],
+  )
+  .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [work_dir, natives_dir] = subdirs.as_slice() else {
+    return Err(InstanceError::InstanceNotFoundByID.into());
+  };
+  let (work_dir, natives_dir) = (work_dir.clone(), natives_dir.clone());
 
   // generate launch command
   let LaunchCommand {
@@ -290,6 +326,15 @@ pub async fn launch_game(
     let _ = execute_command_line(&precall_cmd);
   }
 
+  let mut graphics_env_var = build_graphics_environment_variables(
+    &game_config.advanced.graphics.api,
+    &game_config.advanced.graphics.renderer,
+    Some(&natives_dir.join("mesa-loader")),
+  );
+  graphics_env_var.extend(parse_environment_variables(
+    &game_config.advanced.jvm.environment_variable,
+  ));
+
   // execute launch command
   #[cfg(target_os = "windows")]
   cmd_base.creation_flags(0x08000000);
@@ -297,6 +342,7 @@ pub async fn launch_game(
   let child = cmd_base
     .current_dir(&work_dir)
     .env("CLASSPATH", class_paths.join(get_separator()))
+    .envs(graphics_env_var)
     .args(cmd_args)
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())

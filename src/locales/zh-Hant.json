@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "感謝 LittleSkin 和 @tnqzh123 對登入流程設計的幫助"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "提供模組資訊的簡體中文翻譯"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "感謝 SCL 開發團隊與我們的持續交流與相互啟發"
@@ -95,7 +99,7 @@
       },
       "modpack": {
         "title": "匯入模組包",
-        "description": "從本機檔案或網際網路匯入模組包（CurseForge, Modrinth 或 MultiMC 格式）"
+        "description": "從本機檔案或網際網路匯入模組包（CurseForge、Modrinth 或 MultiMC 格式）"
       },
       "manageDirs": {
         "title": "管理遊戲目錄",
@@ -112,12 +116,6 @@
         "title": "下載服務端",
         "description": "下載各版本原版遊戲服務端檔案"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "匯入模組包",
-      "desc": "將模組包檔案 {{fileName}} 匯入到 SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "介面字型",
           "default": "預設"
         },
+        "logFontFamily": {
+          "title": "日誌字型"
+        },
         "fontSize": {
           "title": "字型大小",
           "small": "小",
@@ -367,7 +368,8 @@
     "footer": {
       "installFabricApi": "同時安裝 Fabric API 模組",
       "installQFAPI": "同時安裝 QFAPI / QSL 模組（如果可用）",
-      "reinstall": "重新安裝"
+      "reinstall": "重新安裝",
+      "removeCurrentInstallation": "移除安裝"
     }
   },
   "CheckModUpdateModal": {
@@ -451,7 +453,7 @@
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "刪除好友",
-      "content": "確定要刪除好友 “{{name}}” 嗎？"
+      "content": "確定要刪除好友「{{name}}」嗎？"
     }
   },
   "DeleteGameServerAlertDialog": {
@@ -492,7 +494,7 @@
   "DiscoverHomePage": {
     "minecraft-news": "Minecraft 新聞",
     "community-news": "社群新聞",
-    "hotModpacks": "來自 {{source}} 的熱門整合包"
+    "hotModpacks": "來自 {{source}} 的熱門模組包"
   },
   "DiscoverLayout": {
     "discoverDomainList": {
@@ -500,7 +502,7 @@
       "home": "首頁",
       "community-news": "社群",
       "minecraft-news": "Minecraft 新聞",
-      "modpack": "整合包",
+      "modpack": "模組包",
       "mod": "模組",
       "world": "世界",
       "resourcepack": "資源包",
@@ -596,16 +598,8 @@
       "headExtra": "需要重新啟動",
       "settings": {
         "enabled": {
-          "title": "啟用 Proxy"
-        },
-        "type": {
-          "title": "Proxy 類型"
-        },
-        "host": {
-          "title": "伺服器"
-        },
-        "port": {
-          "title": "埠"
+          "title": "為下載任務啟用代理",
+          "description": "此項關閉時，啟動器將自動使用系統代理下載資源"
         }
       }
     }
@@ -626,7 +620,7 @@
       "cancel": "取消",
       "download": "下載",
       "installToInstance": "安裝到實例",
-      "installToCurrentInstance": "安裝到當前實例",
+      "installToCurrentInstance": "安裝到目前實例",
       "install": "安裝"
     }
   },
@@ -788,7 +782,7 @@
       "includedFiles": "包含檔案",
       "exportOptions": "匯出選項",
       "packWithLauncher": "打包啟動器",
-      "minMemory": "最低記憶體 (MB)",
+      "minMemory": "最低記憶體 (MiB)",
       "noCreateRemoteFiles": "停用遠端檔案",
       "skipCurseForgeRemoteFiles": "略過 CurseForge 遠端檔案"
     },
@@ -798,7 +792,7 @@
     "error": {
       "invalidName": "請輸入有效的模組包名稱",
       "invalidVersion": "請輸入有效的版本號",
-      "noFileSelected": "請至少選擇一個要包含的檔案或資料夾"
+      "noFileSelected": "請至少選擇一個要包含的檔案或目錄"
     },
     "errorMessage": {
       "error-1": "名稱不能為空",
@@ -821,7 +815,7 @@
     }
   },
   "ExtensionContributionWrapper": {
-    "failedToRender": "擴充套件內容渲染失敗。"
+    "failedToRender": "擴充套件內容繪製失敗。"
   },
   "ExtensionHostContextProvider": {
     "extensionProvidedDialog": "目前對話框由擴充套件 {{name}} 提供",
@@ -918,13 +912,65 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "記憶體永久儲存區域",
-          "placeholder": "單位 MB"
+          "placeholder": "單位 MiB"
         },
         "environmentVariable": {
           "title": "環境變數"
         },
         "args": {
           "title": "Java 虛擬機器引數"
+        }
+      }
+    },
+    "graphics": {
+      "title": "圖形",
+      "settings": {
+        "api": {
+          "title": "圖形 API",
+          "default": {
+            "label": "預設",
+            "desc": "遵循 Minecraft 與顯示卡驅動程式的預設設定。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "使用 OpenGL 渲染"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "使用 Vulkan 渲染"
+          }
+        },
+        "renderer": {
+          "title": "算繪器 / 驅動程式",
+          "default": "預設",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "代理",
+      "settings": {
+        "enabled": {
+          "title": "為遊戲處理程序啟用代理",
+          "description": "此項關閉時，遊戲將自動使用系統代理"
         }
       }
     },
@@ -980,6 +1026,13 @@
     "javaInfo": {
       "javaVersion": "Java 版本"
     },
+    "button": {
+      "exportGameInfo": "匯出遊戲崩潰報告",
+      "gameLogs": "遊戲日誌",
+      "help": "幫助"
+    },
+    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
       "title": "崩潰資訊",
       "OPENJ9": "目前實例無法在 OpenJ9 JVM 上執行，請使用 HotSpot JVM。",
@@ -1047,13 +1100,7 @@
       "VICS_MODERN_WARFARE_ERROR": "目前實例由於 Vics Modern Warfare 模組錯誤，無法繼續執行。請嘗試更新或刪除該模組。",
       "FORGE_LITELOADER_CONFLICT": "目前實例由於 Forge 與 LiteLoader 衝突，無法繼續執行。請嘗試刪除 LiteLoader 或更換 Forge 版本。",
       "UNKNOWN": "暫時無法分析該錯誤，請檢視遊戲日誌或匯出錯誤崩潰報告。"
-    },
-    "button": {
-      "exportGameInfo": "匯出遊戲崩潰報告",
-      "gameLogs": "遊戲日誌",
-      "help": "幫助"
-    },
-    "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖"
+    }
   },
   "GameLogPage": {
     "placeholder": "輸入關鍵字篩選",
@@ -1130,7 +1177,8 @@
     "version": {
       "dev": "開發版本",
       "nightly": "夜間構建版本",
-      "beta": "測試版本"
+      "beta": "測試版本",
+      "test-build": "測試構建版本"
     },
     "viewOnWiki": "在 Minecraft Wiki 中檢視"
   },
@@ -1152,7 +1200,7 @@
         },
         "skipFirstScreenOptions": {
           "title": "自動設定實例語言",
-          "description": "啟用後，建立實例的語言將自動設定為簡體中文，這將同時跳過無障礙功能設定"
+          "description": "啟用後，建立實例的語言將自動設定為啟動器語言，這將同時跳過遊戲內無障礙功能設定"
         }
       }
     },
@@ -1180,7 +1228,7 @@
         },
         "autoDownloadJava": {
           "title": "自動下載可用版本 Java 執行時",
-          "description": "啟用後，新建實例時若不存在可用版本的 Java 執行時，將自動安裝至特定目錄"
+          "description": "啟用後，建立實例時若不存在可用版本的 Java 執行時，將自動安裝至特定目錄"
         }
       }
     },
@@ -1250,14 +1298,16 @@
       "settings": {
         "resolution": {
           "title": "遊戲解析度",
-          "switch": "全螢幕"
+          "preset": "預設",
+          "switch": "全螢幕",
+          "warning": "解析度可能超出顯示器上限"
         },
         "customTitle": {
           "title": "自訂視窗標題"
         },
         "customInfo": {
           "title": "自訂資訊",
-          "description": "將顯示在遊戲主介面左下角與 F3 除錯頁面左上角"
+          "description": "將顯示在遊戲主介面左下角與 F3 除錯頁面左上角（僅在 Minecraft 26.1 之前的版本生效）"
         }
       }
     },
@@ -1272,7 +1322,7 @@
         },
         "memoryUsage": {
           "title": "記憶體佔用情況",
-          "description": "已用記憶體 {{usedMemory}} GB；遊戲分配 {{allocatedMemory}} GB；總記憶體 {{totalMemory}} GB"
+          "description": "已用記憶體 {{usedMemory}} GiB；遊戲分配 {{allocatedMemory}} GiB；總記憶體 {{totalMemory}} GiB"
         },
         "processPriority": {
           "title": "處理程式優先度",
@@ -1329,7 +1379,7 @@
     },
     "step3": {
       "title": "發現頁",
-      "content": "在此處瀏覽 Minecraft 與社群新聞，發現並下載各類相關資源，如模組、地圖、整合包等。<br/>另外，您也可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>F</key> 快速開啟「聚合搜尋」。"
+      "content": "在此處瀏覽 Minecraft 與社群新聞，發現並下載各類相關資源，如模組、地圖、模組包等。<br/>另外，您也可以透過鍵盤快捷鍵 <key>{{keyname}}</key> + <key>F</key> 快速開啟「聚合搜尋」。"
     },
     "step4": {
       "title": "啟動 Minecraft！",
@@ -1376,6 +1426,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "探索世界上最大的 Minecraft 模組儲存庫"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "開源、現代的 Minecraft 資源平台"
         }
       }
     },
@@ -1405,8 +1459,14 @@
     "header": {
       "title": "從其他啟動器匯入帳戶資訊"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1652,6 +1712,17 @@
       "description": "確認要移除此版本 Java 嗎？（SJMCL 將無法使用此 Java 啟動遊戲，但不會刪除硬碟上的檔案）"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "英語",
+      "es": "西班牙語",
+      "fr": "法語",
+      "ja": "日語",
+      "lzh": "",
+      "zh-Hans": "",
+      "zh-Hant": ""
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次執行異常退出",
@@ -1699,6 +1770,12 @@
     "notCompatibleWith": "與 {{item}} 不相容",
     "noVersionSelected": "未選擇版本"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "匯入模組包",
+      "desc": "將模組包檔案 {{fileName}} 匯入到 SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "此頁面由擴充套件 {{name}} 提供"
   },
@@ -1707,7 +1784,7 @@
     "default": "預設",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "本機上傳",
+    "upload": "選擇本機外觀",
     "skin": "外觀",
     "cape": "披風",
     "model": {
@@ -1734,7 +1811,7 @@
   },
   "MemoryStatusProgress": {
     "title": "記憶體狀態",
-    "info": "{{used}} / {{total}} GB 已使用",
+    "info": "{{used}} / {{total}} GiB 已使用",
     "label": {
       "now": "正在使用",
       "maxAllocation": "為 Minecraft 分配的最大值"
@@ -1770,7 +1847,7 @@
     },
     "status": {
       "INVITED": "邀請你加入其世界",
-      "ONLINE": "在線",
+      "ONLINE": "上線",
       "PLAYING_OFFLINE": "單人遊戲中",
       "PLAYING_REALMS": "正在玩 Realms",
       "PLAYING_SERVER": "正在伺服器中",
@@ -1822,6 +1899,17 @@
       "deleting": "正在刪除角色"
     }
   },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "代理類型"
+    },
+    "host": {
+      "title": "伺服器"
+    },
+    "port": {
+      "title": "連接埠"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "重新登入"
@@ -1835,6 +1923,18 @@
     },
     "button": {
       "login": "登入"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "移除模組載入器",
+      "content": "確認要移除為 {{instanceName}} 已安裝的模組載入器 {{type}} {{version}} 嗎？您的模組可能將無法使用。"
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "移除 OptiFine",
+      "content": "確認要移除為 {{instanceName}} 已安裝的 OptiFine {{version}} 嗎？您的光影可能將無法使用。"
     }
   },
   "ResourceDownloader": {
@@ -2124,7 +2224,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "啟動器更新",
     "body": "新版本已完成下載，重新開啟 SJMCL 以完成更新",
-    "bodyMSI": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
+    "bodyWinInstaller": "新版本已完成下載，點選安裝將關閉 SJMCL 並執行安裝程式",
     "button": {
       "restart": "重新啟動",
       "install": "安裝",
@@ -2275,7 +2375,7 @@
       },
       "fetchOAuthCode": {
         "error": {
-          "title": "獲取認證代碼失敗",
+          "title": "獲取認證程式碼失敗",
           "description": {
             "NETWORK_ERROR": "無法連線至認證伺服器",
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
@@ -2300,7 +2400,7 @@
             "XSTS_BANNED": "您的帳號已被 XBOX 封禁",
             "XSTS_PARENTAL_RESTRICTION": "您的帳號受到家長管控限制",
             "XSTS_NO_XBOX_ACCOUNT": "您的微軟帳號未關聯 XBOX 帳號，請前往 minecraft.net 建立",
-            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 XBOX 服务条款才能繼續",
+            "XSTS_TERMS_NOT_ACCEPTED": "您需要接受 XBOX 服務條款才能繼續",
             "XSTS_REGION_BANNED": "您所在的國家或地區不受 XBOX Live 支援",
             "XSTS_CHILD_ACCOUNT": "您的帳號為未成年帳號，請前往 family.microsoft.com 進行家長授權",
             "XSTS_UNKNOWN_ERROR": "XSTS 驗證時發生未知錯誤"
@@ -2842,7 +2942,7 @@
           "title": "模組載入器安裝失敗",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
-            "INSTALLATION_DUPLICATED": "檢測到另一個程式已在安裝中",
+            "INSTALLATION_DUPLICATED": "偵測到另一個程式已在安裝中",
             "MAIN_CLASS_NOT_FOUND": "主類未找到",
             "PROCESSOR_EXECUTION_FAILED": "安裝任務執行失敗",
             "LOADER_INSTALLER_NOT_FOUND": "載入器安裝程式不存在"
@@ -2856,7 +2956,7 @@
           "title": "OptiFine 安裝失敗",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
-            "INSTALLATION_DUPLICATED": "偵測到另一個程序已在安裝中",
+            "INSTALLATION_DUPLICATED": "偵測到另一個程式已在安裝中",
             "PROCESSOR_EXECUTION_FAILED": "安裝工作執行失敗",
             "LOADER_INSTALLER_NOT_FOUND": "找不到 OptiFine 安裝程式",
             "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版本資訊解析失敗",
@@ -2879,6 +2979,31 @@
           "title": "修改模組載入器失敗",
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "由第三者安裝的版本，無法解除安裝或更換"
+          }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "修改 OptiFine 失敗"
+        }
+      },
+      "removeModLoader": {
+        "success": "模組載入器移除成功",
+        "error": {
+          "title": "模組載入器移除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_CREATION_FAILED": "實例配置檔案儲存失敗"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine 移除成功",
+        "error": {
+          "title": "OptiFine 移除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_CREATION_FAILED": "實例配置檔案儲存失敗"
           }
         }
       },

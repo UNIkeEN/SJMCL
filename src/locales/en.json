@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Provides Simplified Chinese translations for mod information"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"
@@ -112,12 +116,6 @@
         "title": "Download Game Server",
         "description": "Download game server files for different versions"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Import Modpack",
-      "desc": "Import modpack file {{fileName}} to SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "Font Family",
           "default": "Default"
         },
+        "logFontFamily": {
+          "title": "Log Font"
+        },
         "fontSize": {
           "title": "Font Size",
           "small": "T",
@@ -367,7 +368,8 @@
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
       "installQFAPI": "Install QFAPI / QSL Mod (if available)",
-      "reinstall": "Reinstall"
+      "reinstall": "Reinstall",
+      "removeCurrentInstallation": "Remove Installation"
     }
   },
   "CheckModUpdateModal": {
@@ -463,8 +465,8 @@
       "title": "Delete Game Instance",
       "content": "Confirm delete the game instance \"{{instanceName}}\" ? It will be lost forever! (A long time!)",
       "warning": {
-        "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
-        "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+        "withVerIso": "Please note that since instance isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if instance isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
       }
     }
   },
@@ -596,16 +598,8 @@
       "headExtra": "Restart Required",
       "settings": {
         "enabled": {
-          "title": "Enable Proxy"
-        },
-        "type": {
-          "title": "Proxy Type"
-        },
-        "host": {
-          "title": "Host"
-        },
-        "port": {
-          "title": "Port"
+          "title": "Enable Proxy for Downloads",
+          "description": "When disabled, the launcher will use the system proxy to download resources automatically"
         }
       }
     }
@@ -788,7 +782,7 @@
       "includedFiles": "Included Files",
       "exportOptions": "Export Options",
       "packWithLauncher": "Pack With Launcher",
-      "minMemory": "Minimum Memory (MB)",
+      "minMemory": "Minimum Memory (MiB)",
       "noCreateRemoteFiles": "Disable Remote Files",
       "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
     },
@@ -918,13 +912,65 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "PermGen Space",
-          "placeholder": "in MB"
+          "placeholder": "in MiB"
         },
         "environmentVariable": {
           "title": "Environment Variables"
         },
         "args": {
           "title": "Other JVM Arguments"
+        }
+      }
+    },
+    "graphics": {
+      "title": "Graphics",
+      "settings": {
+        "api": {
+          "title": "Graphics API",
+          "default": {
+            "label": "Default",
+            "desc": "Use Minecraft and the driver default."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Use OpenGL rendering."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Use Vulkan rendering."
+          }
+        },
+        "renderer": {
+          "title": "Renderer / Driver",
+          "default": "Default",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Enable Proxy for Game Process",
+          "description": "When disabled, the game will use the system proxy automatically"
         }
       }
     },
@@ -980,6 +1026,13 @@
     "javaInfo": {
       "javaVersion": "Java Version"
     },
+    "button": {
+      "exportGameInfo": "Export Crash Report",
+      "gameLogs": "Game Logs",
+      "help": "Help"
+    },
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Crash Details",
       "OPENJ9": "OpenJ9 JVM is not supported. Please use HotSpot JVM.",
@@ -1047,13 +1100,7 @@
       "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
       "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
-    },
-    "button": {
-      "exportGameInfo": "Export Crash Report",
-      "gameLogs": "Game Logs",
-      "help": "Help"
-    },
-    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -1130,7 +1177,8 @@
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
-      "beta": "beta version"
+      "beta": "beta version",
+      "test-build": "test build"
     },
     "viewOnWiki": "View on Minecraft Wiki"
   },
@@ -1151,8 +1199,8 @@
           "description": "%only available in zh-Hans"
         },
         "skipFirstScreenOptions": {
-          "title": "Skip First Launch Screen Options",
-          "description": "%only available in zh-Hans"
+          "title": "Automatically Set Instance Language",
+          "description": "When enabled, new instances will follow the launcher language and skip the in-game accessibility setup screen."
         }
       }
     },
@@ -1250,14 +1298,16 @@
       "settings": {
         "resolution": {
           "title": "Game Resolution",
-          "switch": "Fullscreen"
+          "preset": "Preset",
+          "switch": "Fullscreen",
+          "warning": "Resolution may exceed monitor limit"
         },
         "customTitle": {
           "title": "Custom Window Title"
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page (only effective for Minecraft versions before 26.1)."
         }
       }
     },
@@ -1272,7 +1322,7 @@
         },
         "memoryUsage": {
           "title": "Memory Usage",
-          "description": "Used memory {{usedMemory}}GB; Game allocated {{allocatedMemory}}GB; Total memory {{totalMemory}}GB"
+          "description": "Used memory {{usedMemory}}GiB; Game allocated {{allocatedMemory}}GiB; Total memory {{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "Process Priority",
@@ -1286,7 +1336,7 @@
     },
     "versionIsolation": {
       "settings": {
-        "title": "Enable Version Isolation"
+        "title": "Enable Instance Isolation"
       }
     },
     "moreOptions": {
@@ -1376,6 +1426,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Discover the world's largest Minecraft mod repository"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "An open-source, modern Minecraft resource platform"
         }
       }
     },
@@ -1405,8 +1459,14 @@
     "header": {
       "title": "Import Players and Auth Servers"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1652,6 +1712,17 @@
       "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "",
+      "es": "Spanish",
+      "fr": "French",
+      "ja": "Japanese",
+      "lzh": "Literary Chinese",
+      "zh-Hans": "Simplified Chinese",
+      "zh-Hant": "Traditional Chinese"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "Previous Run Exited Abnormally",
@@ -1699,6 +1770,12 @@
     "notCompatibleWith": "Not compatible with {{item}}",
     "noVersionSelected": "No version selected"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Import Modpack",
+      "desc": "Import modpack file {{fileName}} to SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "This page is provided by extension {{name}}"
   },
@@ -1707,7 +1784,7 @@
     "default": "Default",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "Upload",
+    "upload": "Choose Local Skin",
     "skin": "Skin",
     "cape": "Cape",
     "model": {
@@ -1734,7 +1811,7 @@
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
-    "info": "{{used}} / {{total}} GB used",
+    "info": "{{used}} / {{total}} GiB used",
     "label": {
       "now": "In use",
       "maxAllocation": "Maximum allocated for Minecraft"
@@ -1822,6 +1899,17 @@
       "deleting": "Deleting player"
     }
   },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Proxy Type"
+    },
+    "host": {
+      "title": "Host"
+    },
+    "port": {
+      "title": "Port"
+    }
+  },
   "ReLoginPlayerModal": {
     "modal": {
       "title": "Re-login"
@@ -1835,6 +1923,18 @@
     },
     "button": {
       "login": "Login"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Remove Mod Loader",
+      "content": "Are you sure you want to remove {{type}} {{version}} installed for {{instanceName}}? Your mods may stop working."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Remove OptiFine",
+      "content": "Are you sure you want to remove OptiFine {{version}} installed for {{instanceName}}? Your shader packs may stop working."
     }
   },
   "ResourceDownloader": {
@@ -2124,7 +2224,7 @@
   "RestartForUpdateConfirmDialog": {
     "title": "Launcher Update",
     "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
-    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "bodyWinInstaller": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
     "button": {
       "restart": "Restart",
       "install": "Install",
@@ -2879,6 +2979,31 @@
           "title": "Failed to Change Mod Loader",
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
+          }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "Failed to Change OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Mod loader removed successfully",
+        "error": {
+          "title": "Failed to remove mod loader",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine removed successfully",
+        "error": {
+          "title": "Failed to remove OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
           }
         }
       },

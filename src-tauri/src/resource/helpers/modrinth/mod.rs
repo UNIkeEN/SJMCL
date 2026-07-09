@@ -1,6 +1,18 @@
 pub mod misc;
 
-use crate::error::SJMCLResult;
+use hex;
+use misc::{
+  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
+  map_modrinth_file_to_version_pack,
+};
+use sha1::{Digest, Sha1};
+use sjmcl_types::error::SJMCLResult;
+use std::collections::HashMap;
+use std::path::PathBuf;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use url::Url;
+
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::apply_other_resource_enhancements;
 use crate::resource::helpers::mod_db::handle_search_query;
@@ -10,17 +22,6 @@ use crate::resource::models::{
   OtherResourceVersionPackQuery, ResourceError,
 };
 use crate::tasks::download::DownloadParam;
-use hex;
-use misc::{
-  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
-  map_modrinth_file_to_version_pack,
-};
-use sha1::{Digest, Sha1};
-use std::collections::HashMap;
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use url::Url;
 
 const ALL_FILTER: &str = "All";
 
@@ -86,6 +87,7 @@ pub async fn fetch_resource_version_packs_modrinth(
     resource_id,
     mod_loader,
     game_versions,
+    resource_type,
   } = query;
 
   let url = get_modrinth_api(OtherResourceApiEndpoint::VersionPack, Some(resource_id))?;
@@ -121,7 +123,7 @@ pub async fn fetch_resource_version_packs_modrinth(
   )
   .await?;
 
-  Ok(map_modrinth_file_to_version_pack(results))
+  Ok(map_modrinth_file_to_version_pack(results, resource_type))
 }
 
 pub async fn fetch_remote_resource_by_local_modrinth(
@@ -207,6 +209,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
     resource_id: mod_id.to_string(),
     mod_loader: mod_loader.to_string(),
     game_versions: vec![game_version.to_string()],
+    resource_type: String::new(),
   };
 
   let version_packs = fetch_resource_version_packs_modrinth(app, &query).await?;

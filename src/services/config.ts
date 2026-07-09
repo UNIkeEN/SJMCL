@@ -146,6 +146,18 @@ export class ConfigService {
   }
 
   /**
+   * RETRIEVE renderers supported by the current platform for a graphics API.
+   * @param api Graphics API: default, opengl, or vulkan.
+   * @returns {Promise<InvokeResponse<string[]>>}
+   */
+  @responseHandler("config")
+  static async retrieveSupportedGraphicsRenderers(
+    api: string
+  ): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_supported_graphics_renderers", { api });
+  }
+
+  /**
    * CHECK whether the game directory is valid.
    * @param {string} dir The game directory to check.
    * @returns {Promise<InvokeResponse<string>>} The sub directory if a sub game directory is valid.

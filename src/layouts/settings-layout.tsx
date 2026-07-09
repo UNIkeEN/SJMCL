@@ -77,6 +77,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
                   </HStack>
                 ),
                 value: `/settings/${item.key}`,
+                tooltip: t(`SettingsLayout.settingsDomainList.${item.key}`),
               }))}
             />
           ))}

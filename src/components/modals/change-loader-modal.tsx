@@ -23,7 +23,9 @@ import { LuArrowRight } from "react-icons/lu";
 import { OptionItem } from "@/components/common/option-item";
 import { LoaderSelector } from "@/components/loader-selector";
 import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
 import { useInstanceSharedData } from "@/contexts/instance";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import {
@@ -48,8 +50,10 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
+  const { getInstanceList } = useGlobalData();
   const { summary } = useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
+  const { openGenericConfirmDialog } = useSharedModals();
   const toast = useToast();
   const router = useRouter();
 
@@ -95,7 +99,6 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
       loaderType: summary.modLoader.loaderType,
       version: summary.modLoader.version || "",
       description: "",
-      stable: true,
     };
   }, [summary]);
 
@@ -104,14 +107,19 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
     setIsLoading(true);
 
     try {
-      const res = await InstanceService.changeModLoader(
-        summary.id,
-        mode === "modloader" ? selectedModLoader : null,
-        mode === "optifine" ? selectedOptifine : null,
-        isInstallFabricApi,
-        isInstallQfApi
-      );
+      const res =
+        mode === "modloader"
+          ? await InstanceService.changeModLoader(
+              summary.id,
+              selectedModLoader,
+              isInstallFabricApi,
+              isInstallQfApi
+            )
+          : selectedOptifine
+            ? await InstanceService.changeOptiFine(summary.id, selectedOptifine)
+            : null;
 
+      if (!res) return;
       if (res.status === "error") {
         toast({
           title: res.message,
@@ -127,7 +135,53 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
     }
   };
 
-  const isUnselected =
+  const handleRemoveCurrentInstallation = () => {
+    if (!summary?.id) return;
+
+    const tKey =
+      mode === "modloader" ? "RemoveModLoaderDialog" : "RemoveOptifineDialog";
+
+    const dialogBody =
+      mode === "modloader"
+        ? t(`${tKey}.dialog.content`, {
+            instanceName: summary.name,
+            type: currentModLoader.loaderType,
+            version: parseModLoaderVersion(currentModLoader.version),
+          })
+        : t(`${tKey}.dialog.content`, {
+            instanceName: summary.name,
+            version: summary?.optifine?.version || "",
+          });
+
+    openGenericConfirmDialog({
+      title: t(`${tKey}.dialog.title`),
+      body: dialogBody,
+      btnOK: t("General.delete"),
+      isAlert: true,
+      onOKCallback: async () => {
+        const res =
+          mode === "modloader"
+            ? await InstanceService.removeModLoader(summary.id!)
+            : await InstanceService.removeOptifine(summary.id!);
+        if (res.status === "error") {
+          toast({
+            title: res.message,
+            description: res.details,
+            status: "error",
+          });
+        } else {
+          toast({
+            title: res.message,
+            status: "success",
+          });
+          modalProps.onClose?.();
+          getInstanceList(true); // refresh instance info
+        }
+      },
+    });
+  };
+
+  const isNewLoaderUnselected =
     !selectedModLoader.version ||
     selectedModLoader.loaderType === ModLoaderType.Unknown;
 
@@ -141,7 +195,9 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
         summary.optifine.version ===
           `${selectedOptifine.type}_${selectedOptifine.patch}`;
 
-  const isDisabled = mode === "modloader" ? isUnselected : !selectedOptifine;
+  const isDisabled =
+    mode === "modloader" ? isNewLoaderUnselected : !selectedOptifine;
+
   return (
     <Modal
       scrollBehavior="inside"
@@ -198,7 +254,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
               <LuArrowRight size={18} />
             </Box>
             <Flex flex="1" justify="flex-start" pl={8}>
-              {isUnselected ? (
+              {isNewLoaderUnselected ? (
                 <OptionItem
                   prefixElement={<Skeleton boxSize="36px" borderRadius="md" />}
                   title={
@@ -370,6 +426,18 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
             <Button variant="ghost" onClick={modalProps.onClose}>
               {t("General.cancel")}
             </Button>
+
+            {isDisabled &&
+              (mode === "modloader"
+                ? currentModLoader.loaderType !== "Unknown"
+                : !!summary?.optifine) && (
+                <Button
+                  variant="ghost"
+                  onClick={handleRemoveCurrentInstallation}
+                >
+                  {t("ChangeLoaderModal.footer.removeCurrentInstallation")}
+                </Button>
+              )}
 
             <Button
               colorScheme={primaryColor}

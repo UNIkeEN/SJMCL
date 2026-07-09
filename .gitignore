@@ -9,7 +9,6 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-pnpm-lock.yaml
 bun.lock
 
 # testing
@@ -47,7 +46,7 @@ lerna-debug.log*
 next-env.d.ts
 
 # lock
-# package-lock.json
+package-lock.json
 
 # IDE
 .vscode/*
@@ -64,6 +63,7 @@ next-env.d.ts
 
 # AI Agents & Coding Assistants
 .codex/
-.claude/
+.claude/*
+!.claude/skills
 .gemini/
 .cursor/

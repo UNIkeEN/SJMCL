@@ -104,6 +104,39 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const [resolutionUpbound, setResolutionUpbound] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  const handleRetrieveResolutionUpbound = async () => {
+    const res = await UtilsService.retrieveResolutionUpbound();
+    if (res.status === "success") {
+      setResolutionUpbound({
+        width: res.data[0],
+        height: res.data[1],
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleRetrieveResolutionUpbound();
+  }, []);
+
+  const resolutionPresets = [
+    { width: 854, height: 480 },
+    { width: 960, height: 540 },
+    { width: 1024, height: 576 },
+    { width: 1280, height: 720 },
+    { width: 1366, height: 768 },
+    { width: 1600, height: 900 },
+    { width: 1920, height: 1080 },
+    { width: 2048, height: 1152 },
+    { width: 2560, height: 1440 },
+    { width: 3200, height: 1800 },
+    { width: 3840, height: 2160 },
+  ];
+
   const settingGroups: OptionItemGroupProps[] = [
     {
       title: t("GlobalGameSettingsPage.gameJava.title"),
@@ -151,12 +184,49 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
           title: t(
             "GlobalGameSettingsPage.gameWindow.settings.resolution.title"
           ),
+          description:
+            resolutionUpbound &&
+            (gameWindowWidth > resolutionUpbound.width ||
+              gameWindowHeight > resolutionUpbound.height) ? (
+              <Text fontSize="xs" className="warning-text">
+                {t(
+                  "GlobalGameSettingsPage.gameWindow.settings.resolution.warning"
+                )}
+              </Text>
+            ) : undefined,
           children: (
-            <HStack>
+            <HStack flexShrink={0}>
+              <MenuSelector
+                value=""
+                onSelect={(val) => {
+                  if (val == null) return;
+                  const preset = resolutionPresets[Number(val)];
+                  setGameWindowWidth(preset.width);
+                  setGameWindowHeight(preset.height);
+                  updateGameConfig("gameWindow.resolution.width", preset.width);
+                  updateGameConfig(
+                    "gameWindow.resolution.height",
+                    preset.height
+                  );
+                }}
+                options={resolutionPresets.map((p, i) => ({
+                  value: String(i),
+                  label: `${p.width} × ${p.height}`,
+                  disabled:
+                    resolutionUpbound != null &&
+                    (p.width > resolutionUpbound.width ||
+                      p.height > resolutionUpbound.height),
+                }))}
+                placeholder={t(
+                  "GlobalGameSettingsPage.gameWindow.settings.resolution.preset"
+                )}
+                buttonProps={{ variant: "subtle", rightIcon: undefined }}
+                menuListProps={{ maxH: "40vh", overflowY: "auto" }}
+              />
               <NumberInput
                 min={400}
                 size="xs"
-                maxW={16}
+                maxW={12}
                 focusBorderColor={`${primaryColor}.500`}
                 value={gameWindowWidth}
                 onChange={(value) => {
@@ -179,7 +249,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               <NumberInput
                 min={300}
                 size="xs"
-                maxW={16}
+                maxW={12}
                 focusBorderColor={`${primaryColor}.500`}
                 value={gameWindowHeight}
                 onChange={(value) => {
@@ -335,7 +405,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                     >
                       <NumberInputField pr={0} />
                     </NumberInput>
-                    <Text fontSize="xs">MB</Text>
+                    <Text fontSize="xs">MiB</Text>
                   </HStack>
                 ),
               },
@@ -468,7 +538,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
 
   return (
     <>
-      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+      <VStack align="stretch" spacing={4} flex="1">
         {settingGroups.map((group, index) => (
           <OptionItemGroup
             title={group.title}

@@ -1,6 +1,7 @@
-use crate::instance::models::world::player::PlayerData;
 use serde::{self, Deserialize, Serialize};
 use std::collections::HashMap;
+
+use crate::instance::models::world::player::PlayerData;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Level {
@@ -75,11 +76,13 @@ pub struct Version {
   pub snapshot: bool,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Debug, Serialize, Deserialize, Default)]
 pub struct EnderItemsEntry {
   pub id: String,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GameRules {

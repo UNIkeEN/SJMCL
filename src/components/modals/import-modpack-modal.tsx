@@ -127,7 +127,6 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
               version: modpack.modLoader.version,
               branch: modpack.modLoader.branch,
               description: "",
-              stable: true,
             } as ModLoaderResourceInfo)
           : defaultModLoaderResourceInfo,
         undefined,

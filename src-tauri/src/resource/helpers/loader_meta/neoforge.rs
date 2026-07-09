@@ -1,12 +1,13 @@
-use crate::error::SJMCLResult;
-use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::get_download_api;
-use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use lazy_static::lazy_static;
 use regex::{Regex, RegexBuilder};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::instance::models::misc::ModLoaderType;
+use crate::resource::helpers::misc::get_download_api;
+use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -16,6 +17,7 @@ struct NeoforgeMetaItem {
   pub mcversion: String,
 }
 
+#[expect(dead_code, reason = "reserved for future use")]
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 struct NeoforgeVersions {
@@ -82,9 +84,11 @@ async fn get_neoforge_meta_by_game_version_official(
             loader_type: ModLoaderType::NeoForge,
             version: version.to_string(),
             description: String::new(),
-            stable: versions
-              .get("is_snapshot")
-              .is_none_or(|v| !v.as_bool().unwrap_or(false)),
+            stable: Some(
+              versions
+                .get("is_snapshot")
+                .is_none_or(|v| !v.as_bool().unwrap_or(false)),
+            ),
             branch: None,
           },
         ));
@@ -113,7 +117,7 @@ async fn get_neoforge_meta_by_game_version_official(
     return Err(ResourceError::ParseError.into());
   };
 
-  let mut results: Vec<(i32, ModLoaderResourceInfo)> = Vec::new();
+  let mut results: Vec<(Vec<i32>, ModLoaderResourceInfo)> = Vec::new();
 
   for version_value in version_list {
     if let Some(version) = version_value.as_str() {
@@ -156,12 +160,20 @@ async fn get_neoforge_meta_by_game_version_official(
         };
 
         if matches_game_version {
-          let sort_key: i32 = if is_april_fools {
-            cap[2].parse()?
-          } else if let Some(m) = cap.get(6) {
-            m.as_str().parse()?
+          let sort_key: Vec<i32> = if is_april_fools {
+            vec![cap[2].parse()?]
           } else {
-            cap[3].parse()?
+            let patch: i32 = cap[3].parse()?;
+            let build: i32 = cap.get(4).map_or(Ok(0), |m| m.as_str().parse::<i32>())?;
+            let release_rank = match cap.get(5).map(|m| m.as_str()) {
+              None => 3,
+              Some("rc") => 2,
+              Some("beta") => 1,
+              Some("alpha") => 0,
+              Some(_) => 0,
+            };
+            let prerelease: i32 = cap.get(6).map_or(Ok(0), |m| m.as_str().parse::<i32>())?;
+            vec![patch, build, release_rank, prerelease]
           };
 
           let stable = if is_april_fools {
@@ -176,7 +188,7 @@ async fn get_neoforge_meta_by_game_version_official(
               loader_type: ModLoaderType::NeoForge,
               version: version.to_string(),
               description: String::new(),
-              stable,
+              stable: Some(stable),
               branch: None,
             },
           ));
@@ -185,7 +197,7 @@ async fn get_neoforge_meta_by_game_version_official(
     }
   }
 
-  results.sort_by_key(|b| std::cmp::Reverse(b.0));
+  results.sort_by(|a, b| b.0.cmp(&a.0));
   Ok(results.into_iter().map(|r| r.1).collect())
 }
 
@@ -230,7 +242,7 @@ async fn get_neoforge_meta_by_game_version_bmcl(
                   loader_type: ModLoaderType::NeoForge,
                   version,
                   description: String::new(),
-                  stable,
+                  stable: Some(stable),
                   branch: None,
                 }
               })

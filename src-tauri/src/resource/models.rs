@@ -1,8 +1,9 @@
-use crate::instance::models::misc::ModLoaderType;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::str::FromStr;
 use strum_macros::{Display, EnumIter};
+
+use crate::instance::models::misc::ModLoaderType;
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
 pub enum ResourceType {
@@ -123,6 +124,8 @@ pub struct OtherResourceVersionPackQuery {
   pub resource_id: String,
   pub mod_loader: String,
   pub game_versions: Vec<String>,
+  #[serde(default)]
+  pub resource_type: String,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -179,7 +182,7 @@ pub struct ModLoaderResourceInfo {
   pub loader_type: ModLoaderType,
   pub version: String,
   pub description: String,
-  pub stable: bool,
+  pub stable: Option<bool>,
   pub branch: Option<String>,
 }
 
