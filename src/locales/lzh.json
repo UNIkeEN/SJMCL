@@ -1362,6 +1362,10 @@
           "button": "改進階置設"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "今實例「{{instance}}」已啟「啟特定戲置設」，故此頁諸選，不施於此實例。",
+      "editInstanceSettings": "修實例「特定戲置設」"
     }
   },
   "GuidedTourProvider": {

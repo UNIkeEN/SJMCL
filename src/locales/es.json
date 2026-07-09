@@ -1362,6 +1362,10 @@
           "button": "Editar Opciones Avanzadas"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "La instancia actual «{{instance}}» tiene activada la «Configuración específica de la instancia», por lo que las opciones de esta página no afectarán a esta instancia. ",
+      "editInstanceSettings": "Editar su configuración específica"
     }
   },
   "GuidedTourProvider": {

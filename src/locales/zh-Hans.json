@@ -1362,6 +1362,10 @@
           "button": "编辑高级设置"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "当前实例“{{instance}}”启用了“实例特定游戏设置”，因此本页面选项不对该实例生效。",
+      "editInstanceSettings": "前往编辑该实例特定游戏设置"
     }
   },
   "GuidedTourProvider": {

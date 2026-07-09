@@ -1362,6 +1362,10 @@
           "button": "設定編集"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "現在のインスタンス「{{instance}}」で「インスタンス限定設定を有効化」が選択されているため、このページのオプションは当該インスタンスに適用されません。",
+      "editInstanceSettings": "インスタンス固有のゲーム設定を編集"
     }
   },
   "GuidedTourProvider": {
