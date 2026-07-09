@@ -1437,7 +1437,7 @@
         },
         "UserGroup": {
           "title": "使用者社群",
-          "description": "歡迎加入 QQ 群或 Discord 伺服器，回報問題、請求功能或取得協助",
+          "description": "歡迎加入 QQ 群或 GitHub Discussions，回報問題、請求功能或取得協助",
           "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }

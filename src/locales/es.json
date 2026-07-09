@@ -1437,7 +1437,7 @@
         },
         "UserGroup": {
           "title": "Comunidad de Usuarios",
-          "description": "Únete al grupo de QQ o al servidor de Discord para reportar problemas, solicitar funciones u obtener ayuda",
+          "description": "Únete al grupo de QQ o a GitHub Discussions para reportar problemas, solicitar funciones u obtener ayuda",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
