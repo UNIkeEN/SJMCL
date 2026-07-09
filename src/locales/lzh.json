@@ -1213,10 +1213,10 @@
           "title": "自調除快取啟者誌",
           "description": "自調除快取 30 天及以前的啟者誌案"
         },
-        "restoreAll": {
-          "title": "復原諸置設",
-          "description": "將諸啟者置設復原為本值",
-          "restore": "復原"
+        "resetAll": {
+          "title": "重置諸置設",
+          "description": "將諸啟者置設重置為本值",
+          "reset": "重置"
         }
       }
     }
@@ -1536,9 +1536,9 @@
     "colorTag": "色籤",
     "icon": "例圖示",
     "applySettings": "啟特定戲置設",
-    "restoreSettings": "重置以下特定置設",
-    "restoreSettingsDesc": "將以下特定置設重置為全例戲置設",
-    "restore": "復初",
+    "resetSettings": "重置以下特定置設",
+    "resetSettingsDesc": "將以下特定置設重置為全例戲置設",
+    "reset": "重置",
     "errorMessage": {
       "error-1": "例名不可空",
       "error-2": "例名不合法",
@@ -1890,6 +1890,14 @@
       "content": "確認要移除為 {{instanceName}} 已安裝的 OptiFine {{version}} 嗎？您的光影可能將無法使用。"
     }
   },
+  "ResetConfigConfirmDialog": {
+    "title": "重置啟者置設",
+    "body": "此操作將會重置啟者諸置設為本值，您誠欲續乎？"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "重置例置設",
+    "body": "此操作將會重置本例的戲置設為今全例戲置設，您誠欲續乎？"
+  },
   "ResourceDownloader": {
     "label": {
       "source": "引源",
@@ -2184,14 +2192,6 @@
       "later": "稍後"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "復原啟者置設",
-    "body": "此操作將會復原啟者的諸置設為本值，您誠欲續乎？"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "復初例置設",
-    "body": "此操作將會重置本例的戲置設為今全例戲置設，您誠欲續乎？"
-  },
   "RevealConfigJsonConfirmDialog": {
     "body": "請謹慎改啟者原始置設案，謬的格式或致原有置設丟失或啟者不能正常工作"
   },
@@ -2225,10 +2225,10 @@
           "title": "迭更啟者置設未成"
         }
       },
-      "restoreLauncherConfig": {
-        "success": "置設已既成復原",
+      "resetLauncherConfig": {
+        "success": "置設已重置",
         "error": {
-          "title": "復原置設未成，請復試"
+          "title": "重置置設未成，請復試"
         }
       },
       "exportLauncherConfig": {
@@ -2728,7 +2728,7 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
+      "resetInstanceGameConfig": {
         "success": "例戲置設已重置",
         "error": {
           "title": "例戲置設重置未成",

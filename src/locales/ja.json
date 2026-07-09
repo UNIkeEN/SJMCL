@@ -1213,10 +1213,10 @@
           "title": "起動ログの自動クリーンアップ",
           "description": "30日以上前の起動ログファイルを自動削除"
         },
-        "restoreAll": {
-          "title": "すべての設定を復元",
-          "description": "すべてのランチャー設定をデフォルトに復元",
-          "restore": "復元"
+        "resetAll": {
+          "title": "すべての設定をリセット",
+          "description": "すべてのランチャー設定をデフォルト値にリセット",
+          "reset": "リセット"
         }
       }
     }
@@ -1536,9 +1536,9 @@
     "colorTag": "カラータグ",
     "icon": "インスタンスアイコン",
     "applySettings": "インスタンス限定設定を有効化",
-    "restoreSettings": "限定設定をリセット",
-    "restoreSettingsDesc": "以下の設定をグローバル設定にリセット",
-    "restore": "リセット",
+    "resetSettings": "限定設定をリセット",
+    "resetSettingsDesc": "以下の設定をグローバル設定にリセット",
+    "reset": "リセット",
     "errorMessage": {
       "error-1": "インスタンス名称が必須",
       "error-2": "インスタンス名が無効",
@@ -1890,6 +1890,14 @@
       "content": "{{instanceName}} にインストールされた OptiFine {{version}} を削除してもよろしいですか？シェーダーパックが動作しなくなる可能性があります。"
     }
   },
+  "ResetConfigConfirmDialog": {
+    "title": "ランチャー設定をリセット",
+    "body": "この操作により、すべてのランチャー設定がデフォルト値にリセットされます。続行しますか？"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "インスタンス設定をリセット",
+    "body": "この操作により、このインスタンスの個別ゲーム設定が現在のグローバル設定にリセットされます。続行しますか？"
+  },
   "ResourceDownloader": {
     "label": {
       "source": "ダウンロードソース",
@@ -2184,14 +2192,6 @@
       "later": "後で"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "ランチャー設定復元",
-    "body": "ランチャーの設定をデフォルトに復元しますか。"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "インスタンス設定を復元",
-    "body": "この操作により、このインスタンスの個別ゲーム設定は現在のグローバル設定に復元されます。続行しますか？"
-  },
   "RevealConfigJsonConfirmDialog": {
     "body": "原始設定ファイルの編集には注意してください。誤った形式は既存の設定が失われたり、ランチャーが正常に動作しなくなる可能性があります"
   },
@@ -2225,10 +2225,10 @@
           "title": "ランチャーの設定の更新に失敗"
         }
       },
-      "restoreLauncherConfig": {
-        "success": "設定を復元した",
+      "resetLauncherConfig": {
+        "success": "設定をリセットしました",
         "error": {
-          "title": "設定の復元に失敗、再試行してください。"
+          "title": "設定のリセットに失敗しました。再試行してください。"
         }
       },
       "exportLauncherConfig": {
@@ -2728,7 +2728,7 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
+      "resetInstanceGameConfig": {
         "success": "インスタンスゲーム設定をリセットした",
         "error": {
           "title": "インスタンスゲーム設定のリセットに失敗",

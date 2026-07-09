@@ -44,7 +44,7 @@ pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -
 }
 
 #[tauri::command]
-pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
+pub fn reset_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
   let mut default_config = LauncherConfig::default();
   default_config.setup_with_app(&app)?;
 

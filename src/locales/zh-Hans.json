@@ -1213,10 +1213,10 @@
           "title": "自动清理启动器日志",
           "description": "自动清理 30 天及以前的启动器日志文件"
         },
-        "restoreAll": {
+        "resetAll": {
           "title": "重置所有设置",
           "description": "将所有启动器设置重置为默认值",
-          "restore": "重置"
+          "reset": "重置"
         }
       }
     }
@@ -1536,9 +1536,9 @@
     "colorTag": "颜色标签",
     "icon": "实例图标",
     "applySettings": "启用特定游戏设置",
-    "restoreSettings": "重置以下特定设置",
-    "restoreSettingsDesc": "将以下特定设置重置为全局游戏设置",
-    "restore": "重置",
+    "resetSettings": "重置以下特定设置",
+    "resetSettingsDesc": "将以下特定设置重置为全局游戏设置",
+    "reset": "重置",
     "errorMessage": {
       "error-1": "实例名称不能为空",
       "error-2": "实例名称不合法",
@@ -1890,6 +1890,14 @@
       "content": "确认要移除为 {{instanceName}} 已安装的 OptiFine {{version}} 吗？您的光影可能将无法使用。"
     }
   },
+  "ResetConfigConfirmDialog": {
+    "title": "重置启动器设置",
+    "body": "此操作将会重置启动器的所有设置为默认值，您确定要继续吗？"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "重置实例设置",
+    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
+  },
   "ResourceDownloader": {
     "label": {
       "source": "下载源",
@@ -2184,14 +2192,6 @@
       "later": "稍后"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "重置启动器设置",
-    "body": "此操作将会重置启动器的所有设置为默认值，您确定要继续吗？"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "重置实例设置",
-    "body": "此操作将会重置本实例的游戏设置为当前全局游戏设置，您确定要继续吗？"
-  },
   "RevealConfigJsonConfirmDialog": {
     "body": "请谨慎编辑启动器原始设置文件，错误的格式可能导致原有设置丢失或启动器无法正常工作"
   },
@@ -2225,7 +2225,7 @@
           "title": "更新启动器设置失败"
         }
       },
-      "restoreLauncherConfig": {
+      "resetLauncherConfig": {
         "success": "设置已成功重置",
         "error": {
           "title": "重置设置失败，请重试"
@@ -2728,7 +2728,7 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
+      "resetInstanceGameConfig": {
         "success": "实例游戏设置已重置",
         "error": {
           "title": "实例游戏设置重置失败",

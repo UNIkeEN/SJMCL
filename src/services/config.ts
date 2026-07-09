@@ -40,14 +40,12 @@ export class ConfigService {
   }
 
   /**
-   * RESTORE the launcher configs to their default state and returns the new configuration.
+   * RESET the launcher configs to their default state and returns the new configuration.
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
   @responseHandler("config")
-  static async restoreLauncherConfig(): Promise<
-    InvokeResponse<LauncherConfig>
-  > {
-    return await invoke("restore_launcher_config");
+  static async resetLauncherConfig(): Promise<InvokeResponse<LauncherConfig>> {
+    return await invoke("reset_launcher_config");
   }
 
   /**

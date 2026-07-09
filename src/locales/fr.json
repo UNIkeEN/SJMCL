@@ -1213,10 +1213,10 @@
           "title": "Nettoyage automatique des journaux du lanceur",
           "description": "Nettoyage automatique des fichiers journaux du lanceur datant de 30 jours ou plus"
         },
-        "restoreAll": {
+        "resetAll": {
           "title": "Réinitialiser tous les paramètres",
           "description": "Réinitialiser tous les paramètres du lanceur à leur valeur par défaut",
-          "restore": "Réinitialiser"
+          "reset": "Réinitialiser"
         }
       }
     }
@@ -1536,9 +1536,9 @@
     "colorTag": "Étiquette de couleur",
     "icon": "Icône de l'instance",
     "applySettings": "Utiliser des paramètres de jeu spécifiques",
-    "restoreSettings": "Réinitialiser les paramètres spécifiques ci-dessous",
-    "restoreSettingsDesc": "Réinitialiser les paramètres spécifiques ci-dessous aux paramètres globaux du jeu",
-    "restore": "Réinitialiser",
+    "resetSettings": "Réinitialiser les paramètres spécifiques ci-dessous",
+    "resetSettingsDesc": "Réinitialiser les paramètres spécifiques ci-dessous aux paramètres globaux du jeu",
+    "reset": "Réinitialiser",
     "errorMessage": {
       "error-1": "Le nom de l'instance ne peut pas être vide",
       "error-2": "Le nom de l'instance contient des caractères illégaux",
@@ -1890,6 +1890,14 @@
       "content": "Êtes-vous sûr de vouloir supprimer OptiFine {{version}} installé pour {{instanceName}} ? Vos shader packs pourraient ne plus fonctionner."
     }
   },
+  "ResetConfigConfirmDialog": {
+    "title": "Réinitialiser les paramètres du lanceur",
+    "body": "Cette opération réinitialisera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "Réinitialiser les paramètres de l'instance",
+    "body": "Cette action réinitialisera les paramètres spécifiques de cette instance vers les paramètres globaux actuels. Voulez-vous continuer ?"
+  },
   "ResourceDownloader": {
     "label": {
       "source": "Source",
@@ -2184,14 +2192,6 @@
       "later": "Plus tard"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "Réinitialiser les paramètres du lanceur",
-    "body": "Cette opération réinitialisera tous les paramètres du lanceur à leur valeur par défaut. Voulez-vous continuer ?"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "Réinitialiser les paramètres de l'instance",
-    "body": "Cette action réinitialisera les paramètres spécifiques de cette instance vers les paramètres globaux actuels. Voulez-vous continuer ?"
-  },
   "RevealConfigJsonConfirmDialog": {
     "body": "Veuillez éditer le fichier de configuration original du lanceur avec précaution. Un format incorrect peut entraîner la perte des paramètres existants ou un dysfonctionnement du lanceur"
   },
@@ -2225,7 +2225,7 @@
           "title": "Échec de la mise à jour des paramètres du lanceur"
         }
       },
-      "restoreLauncherConfig": {
+      "resetLauncherConfig": {
         "success": "Paramètres restaurés avec succès",
         "error": {
           "title": "Échec de la restauration des paramètres, veuillez réessayer"
@@ -2728,7 +2728,7 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
+      "resetInstanceGameConfig": {
         "success": "Paramètres du jeu de l'instance réinitialisés",
         "error": {
           "title": "Échec de la réinitialisation des paramètres du jeu de l'instance",

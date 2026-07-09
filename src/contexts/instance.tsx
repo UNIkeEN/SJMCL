@@ -77,7 +77,7 @@ export interface InstanceContextType {
   ) => Promise<string | null>;
   handleImportResources: (options: ImportResourcesOptions) => void;
   handleUpdateInstanceConfig: (path: string, value: any) => void;
-  handleRestoreInstanceGameConfig: () => void;
+  handleResetInstanceGameConfig: () => void;
 }
 
 export const InstanceContext = createContext<InstanceContextType | undefined>(
@@ -501,9 +501,9 @@ export const InstanceContextProvider: React.FC<{
     ]
   );
 
-  const handleRestoreInstanceGameConfig = useCallback(() => {
+  const handleResetInstanceGameConfig = useCallback(() => {
     if (instanceId !== undefined) {
-      InstanceService.restoreInstanceGameConfig(instanceId).then((response) => {
+      InstanceService.resetInstanceGameConfig(instanceId).then((response) => {
         if (response.status === "success") {
           toast({
             title: response.message,
@@ -628,7 +628,7 @@ export const InstanceContextProvider: React.FC<{
         handleRetrieveInstanceSubdirPath,
         handleImportResources,
         handleUpdateInstanceConfig,
-        handleRestoreInstanceGameConfig,
+        handleResetInstanceGameConfig,
       }}
     >
       {children}
