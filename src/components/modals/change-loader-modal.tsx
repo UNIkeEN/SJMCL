@@ -51,7 +51,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const { getInstanceList } = useGlobalData();
-  const { summary } = useInstanceSharedData();
+  const { summary, getLocalModList } = useInstanceSharedData();
   const primaryColor = config.appearance.theme.primaryColor;
   const { openGenericConfirmDialog } = useSharedModals();
   const toast = useToast();
@@ -176,6 +176,7 @@ export const ChangeLoaderModal: React.FC<ChangeLoaderModalProps> = ({
           });
           modalProps.onClose?.();
           getInstanceList(true); // refresh instance info
+          getLocalModList(true); // refresh local mod list
         }
       },
     });
