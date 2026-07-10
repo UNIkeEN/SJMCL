@@ -2226,9 +2226,9 @@
         }
       },
       "resetLauncherConfig": {
-        "success": "Paramètres restaurés avec succès",
+        "success": "Paramètres du lanceur réinitialisés",
         "error": {
-          "title": "Échec de la restauration des paramètres, veuillez réessayer"
+          "title": "Échec de la réinitialisation des paramètres, veuillez réessayer"
         }
       },
       "exportLauncherConfig": {

@@ -2729,9 +2729,9 @@
         }
       },
       "resetInstanceGameConfig": {
-        "success": "Configuración del juego de la instancia restaurada exitosamente",
+        "success": "Configuración del juego de la instancia restablecida exitosamente",
         "error": {
-          "title": "Error al restaurar la configuración del juego de la instancia",
+          "title": "Error al restablecer la configuración del juego de la instancia",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
             "SAVE_ERROR": "Error al guardar la configuración de la instancia"
