@@ -238,7 +238,12 @@ pub(crate) fn levenshtein_distance(a: &str, b: &str) -> usize {
 pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_query: &str) {
   const CONTAIN_CHINESE_WEIGHT: i64 = 10;
 
-  if search_query.trim().is_empty() {
+  let search_query = search_query
+    .split_whitespace()
+    .collect::<Vec<_>>()
+    .join(" ");
+
+  if search_query.is_empty() {
     return;
   }
 
@@ -246,11 +251,12 @@ pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_q
   let mut untranslated_results = Vec::new();
 
   for resource in list.drain(..) {
-    if resource
+    let contains_chinese_title = resource
       .translated_name
       .as_deref()
-      .is_some_and(contains_chinese)
-    {
+      .map_or_else(|| contains_chinese(&resource.name), contains_chinese);
+
+    if contains_chinese_title {
       translated_results.push(resource);
     } else {
       untranslated_results.push(resource);
@@ -258,11 +264,14 @@ pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_q
   }
 
   translated_results.sort_by_key(|resource| {
-    let translated_name = resource.translated_name.as_deref().unwrap_or_default();
+    let display_name = resource
+      .translated_name
+      .as_deref()
+      .unwrap_or(resource.name.as_str());
 
-    let mut diff = levenshtein_distance(search_query, translated_name) as i64;
+    let mut diff = levenshtein_distance(&search_query, display_name) as i64;
     for ch in search_query.chars() {
-      if translated_name.contains(ch) {
+      if display_name.contains(ch) {
         diff -= CONTAIN_CHINESE_WEIGHT;
       }
     }

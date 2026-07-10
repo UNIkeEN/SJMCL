@@ -31,17 +31,21 @@ pub async fn add_local_mod_translations(
   app: &AppHandle,
   mod_info: &mut LocalModInfo,
 ) -> SJMCLResult<()> {
-  let cache = {
-    let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
-
-    translation_cache_state.lock()?.clone()
-  };
   let file_path = mod_info.file_path.to_string_lossy().to_string();
   let file_name = mod_info.file_name.clone();
 
-  if let Some(entry) = cache.translations.get(&file_name)
-    && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
-  {
+  let cached_entry = {
+    let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
+    let cache = translation_cache_state.lock()?;
+
+    cache
+      .translations
+      .get(&file_name)
+      .filter(|entry| !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS))
+      .cloned()
+  };
+
+  if let Some(entry) = cached_entry {
     log::info!("Using cached translation for mod: {}", file_name);
     mod_info.translated_name = entry.translated_name.clone();
     mod_info.translated_description = entry.translated_description.clone();
@@ -140,6 +144,9 @@ pub async fn apply_other_resource_enhancements(
   }
 
   let translated_desc = translate_resource_description(app, resource_info).await?;
+  let description_translated = translated_desc
+    .as_deref()
+    .is_some_and(|desc| !desc.trim().is_empty());
 
   if let Ok(mut cache) = app.state::<Mutex<ResourceTranslationsCache>>().lock() {
     cache.translations.insert(
@@ -147,7 +154,7 @@ pub async fn apply_other_resource_enhancements(
       ResourceTranslationEntry::new(
         resource_info.translated_name.clone(),
         translated_desc.clone(),
-        true,
+        description_translated,
       ),
     );
     let _ = cache.save();
@@ -166,7 +173,8 @@ pub async fn apply_other_resource_enhancements_concurrently(
 ) {
   let concurrency = std::thread::available_parallelism()
     .map(usize::from)
-    .unwrap_or(4);
+    .unwrap_or(4)
+    .min(8);
 
   let mut enhanced = futures::stream::iter(std::mem::take(list).into_iter().enumerate())
     .map(|(index, mut resource_info)| async move {
