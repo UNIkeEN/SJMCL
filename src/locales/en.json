@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
       "installQFAPI": "Install QFAPI / QSL Mod (if available)",
-      "reinstall": "Reinstall"
+      "reinstall": "Reinstall",
+      "removeCurrentInstallation": "Remove Installation"
     }
   },
   "CheckModUpdateModal": {
@@ -921,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "Graphics",
+      "settings": {
+        "api": {
+          "title": "Graphics API",
+          "default": {
+            "label": "Default",
+            "desc": "Use Minecraft and the driver default."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Use OpenGL rendering."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Use Vulkan rendering."
+          }
+        },
+        "renderer": {
+          "title": "Renderer / Driver",
+          "default": "Default",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "Proxy",
       "settings": {
@@ -1318,6 +1362,10 @@
           "button": "Edit Advanced Options"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "The current instance \"{{instance}}\" has specific game Settings enabled, so the options on this page will not affect this instance. ",
+      "editInstanceSettings": "Edit instance specific game settings"
     }
   },
   "GuidedTourProvider": {
@@ -1393,7 +1441,7 @@
         },
         "UserGroup": {
           "title": "User Community",
-          "description": "Join the QQ group or Discord server to report issues, request features, or get help",
+          "description": "Join the QQ group or GitHub Discussions to report issues, request features, or get help",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
@@ -1875,6 +1923,18 @@
     },
     "button": {
       "login": "Login"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Remove Mod Loader",
+      "content": "Are you sure you want to remove {{type}} {{version}} installed for {{instanceName}}? Your mods may stop working."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Remove OptiFine",
+      "content": "Are you sure you want to remove OptiFine {{version}} installed for {{instanceName}}? Your shader packs may stop working."
     }
   },
   "ResourceDownloader": {
@@ -2925,6 +2985,26 @@
       "changeOptiFine": {
         "error": {
           "title": "Failed to Change OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Mod loader removed successfully",
+        "error": {
+          "title": "Failed to remove mod loader",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine removed successfully",
+        "error": {
+          "title": "Failed to remove OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
         }
       },
       "retrieveModpackMetaInfo": {

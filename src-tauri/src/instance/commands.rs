@@ -16,9 +16,9 @@ use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
-use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{
-  McClientInfo, remove_mod_loader_from_client_info, replace_native_libraries,
+  McClientInfo, remove_mod_loader_from_client_info, remove_optifine_from_client_info,
+  replace_native_libraries,
 };
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
 use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
@@ -40,9 +40,6 @@ use crate::instance::helpers::modpack::import::{
 };
 use crate::instance::helpers::mods::common::{
   compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
-};
-use crate::instance::helpers::mods::translation::{
-  LocalModTranslationEntry, LocalModTranslationsCache, add_local_mod_translations,
 };
 use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
@@ -67,6 +64,10 @@ use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::translation::{
+  LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS, LocalModTranslationEntry, LocalModTranslationsCache,
+  add_local_mod_translations,
+};
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
 };
@@ -701,7 +702,7 @@ pub async fn retrieve_local_mod_list(
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
     if let Some(entry) = cache.translations.get(&info.file_name)
-      && !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS)
+      && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
     {
       continue;
     }
@@ -1519,6 +1520,53 @@ pub async fn change_mod_loader(
 }
 
 #[tauri::command]
+pub async fn remove_mod_loader(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+  let mut instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  let version_isolation = get_instance_game_config(&app, &instance).version_isolation;
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  let mut version_info: McClientInfo = load_json_async(&json_path).await?;
+
+  let subdirs = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Mods])
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [mods_dir] = subdirs.as_slice() else {
+    return Err(InstanceError::InstanceNotFoundByID.into());
+  };
+
+  if matches!(
+    instance.mod_loader.loader_type,
+    ModLoaderType::Fabric | ModLoaderType::Quilt
+  ) && version_isolation
+  {
+    remove_fabric_api_mods(mods_dir).await?;
+  }
+
+  remove_mod_loader_from_client_info(&mut version_info, instance.mod_loader.loader_type);
+  instance.mod_loader = ModLoader {
+    loader_type: ModLoaderType::Unknown,
+    version: String::new(),
+    status: ModLoaderStatus::Installed,
+    branch: None,
+  };
+
+  save_json_async(&version_info, &json_path).await?;
+  instance
+    .save_json_cfg()
+    .await
+    .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  Ok(())
+}
+
+#[tauri::command]
 pub async fn change_optifine(
   app: AppHandle,
   instance_id: String,
@@ -1565,6 +1613,33 @@ pub async fn change_optifine(
     .await?;
   }
 
+  instance
+    .save_json_cfg()
+    .await
+    .map_err(|_| InstanceError::FileCreationFailed)?;
+
+  Ok(())
+}
+
+#[tauri::command]
+pub async fn remove_optifine(app: AppHandle, instance_id: String) -> SJMCLResult<()> {
+  let mut instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  let mut version_info: McClientInfo = load_json_async(&json_path).await?;
+
+  remove_optifine_from_client_info(&mut version_info);
+  instance.optifine = None;
+
+  save_json_async(&version_info, &json_path).await?;
   instance
     .save_json_cfg()
     .await

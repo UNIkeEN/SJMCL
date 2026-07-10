@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "同时安装 Fabric API 模组",
       "installQFAPI": "同时安装 QFAPI / QSL 模组（如果可用）",
-      "reinstall": "重新安装"
+      "reinstall": "重新安装",
+      "removeCurrentInstallation": "移除安装"
     }
   },
   "CheckModUpdateModal": {
@@ -921,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "图形",
+      "settings": {
+        "api": {
+          "title": "图形 API",
+          "default": {
+            "label": "默认",
+            "desc": "遵循 Minecraft 和显卡驱动的默认设置。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "使用 OpenGL 渲染"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "使用 Vulkan 渲染"
+          }
+        },
+        "renderer": {
+          "title": "渲染器 / 驱动",
+          "default": "默认",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "代理",
       "settings": {
@@ -1318,6 +1362,10 @@
           "button": "编辑高级设置"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "当前实例“{{instance}}”启用了“实例特定游戏设置”，因此本页面选项不对该实例生效。",
+      "editInstanceSettings": "前往编辑该实例特定游戏设置"
     }
   },
   "GuidedTourProvider": {
@@ -1393,7 +1441,7 @@
         },
         "UserGroup": {
           "title": "用户社群",
-          "description": "欢迎加入 QQ 群或 Discord 服务器，报告问题、请求功能或获取帮助",
+          "description": "欢迎加入 QQ 群或 GitHub Discussions，报告问题、请求功能或获取帮助",
           "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
@@ -1875,6 +1923,18 @@
     },
     "button": {
       "login": "登录"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "移除模组加载器",
+      "content": "确认要移除为 {{instanceName}} 已安装的模组加载器 {{type}} {{version}} 吗？您的模组可能将无法使用。"
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "移除 OptiFine",
+      "content": "确认要移除为 {{instanceName}} 已安装的 OptiFine {{version}} 吗？您的光影可能将无法使用。"
     }
   },
   "ResourceDownloader": {
@@ -2925,6 +2985,26 @@
       "changeOptiFine": {
         "error": {
           "title": "修改 OptiFine 失败"
+        }
+      },
+      "removeModLoader": {
+        "success": "模组加载器移除成功",
+        "error": {
+          "title": "模组加载器移除失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "FILE_CREATION_FAILED": "实例配置文件保存失败"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine 移除成功",
+        "error": {
+          "title": "OptiFine 移除失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
+            "FILE_CREATION_FAILED": "实例配置文件保存失败"
+          }
         }
       },
       "retrieveModpackMetaInfo": {

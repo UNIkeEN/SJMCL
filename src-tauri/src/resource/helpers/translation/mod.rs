@@ -4,17 +4,90 @@ use cache::{
   RESOURCE_TRANSLATION_CACHE_EXPIRY_HOURS, ResourceTranslationEntry, ResourceTranslationsCache,
 };
 use futures::StreamExt;
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::Storage;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 
+use crate::instance::models::misc::LocalModInfo;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
+use crate::resource::helpers::curseforge::{
+  fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge,
+};
 use crate::resource::helpers::mod_db::ModDataBase;
 use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
+use crate::resource::helpers::modrinth::{
+  fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
+};
 use crate::resource::models::{OtherResourceInfo, OtherResourceSource};
 use crate::utils::string::contains_chinese;
+
+pub use cache::{
+  LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS, LocalModTranslationEntry, LocalModTranslationsCache,
+};
+
+pub async fn add_local_mod_translations(
+  app: &AppHandle,
+  mod_info: &mut LocalModInfo,
+) -> SJMCLResult<()> {
+  let cache = {
+    let translation_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
+
+    translation_cache_state.lock()?.clone()
+  };
+  let file_path = mod_info.file_path.to_string_lossy().to_string();
+  let file_name = mod_info.file_name.clone();
+
+  if let Some(entry) = cache.translations.get(&file_name)
+    && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
+  {
+    log::info!("Using cached translation for mod: {}", file_name);
+    mod_info.translated_name = entry.translated_name.clone();
+    mod_info.translated_description = entry.translated_description.clone();
+    return Ok(());
+  }
+
+  // Try both services concurrently and use the fastest successful response
+  let modrinth_result = {
+    let app_clone = app.clone();
+    let file_path_clone = file_path.clone();
+    tokio::spawn(async move {
+      let file_info = fetch_remote_resource_by_local_modrinth(&app_clone, &file_path_clone).await?;
+      let resource_info =
+        fetch_remote_resource_by_id_modrinth(&app_clone, &file_info.resource_id).await?;
+      Ok::<_, SJMCLError>(resource_info)
+    })
+  };
+
+  let curseforge_result = {
+    let app_clone = app.clone();
+    let file_path_clone = file_path.clone();
+    tokio::spawn(async move {
+      let file_info =
+        fetch_remote_resource_by_local_curseforge(&app_clone, &file_path_clone).await?;
+      let resource_info =
+        fetch_remote_resource_by_id_curseforge(&app_clone, &file_info.resource_id).await?;
+      Ok::<_, SJMCLError>(resource_info)
+    })
+  };
+
+  let (modrinth_res, curseforge_res) = tokio::join!(modrinth_result, curseforge_result);
+
+  // Prefer Modrinth result if both are successful
+  let final_result = match (modrinth_res, curseforge_res) {
+    (Ok(Ok(modrinth_data)), _) => Some(modrinth_data),
+    (_, Ok(Ok(curseforge_data))) => Some(curseforge_data),
+    _ => None,
+  };
+
+  if let Some(resource_info) = final_result {
+    log::info!("Fetched translation for mod: {}", file_name);
+    mod_info.translated_name = resource_info.translated_name.clone();
+    mod_info.translated_description = resource_info.translated_description.clone();
+  }
+  Ok(())
+}
 
 pub async fn apply_other_resource_enhancements(
   app: &AppHandle,

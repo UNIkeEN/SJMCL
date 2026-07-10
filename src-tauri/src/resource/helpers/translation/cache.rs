@@ -8,6 +8,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 const RESOURCE_TRANSLATION_CACHE_FILE_NAME: &str = "resource_description_translations.json";
 pub const RESOURCE_TRANSLATION_CACHE_EXPIRY_HOURS: u64 = 24 * 30;
+const LOCAL_MOD_TRANSLATION_CACHE_FILE_NAME: &str = "local_mod_translations.json";
+pub const LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS: u64 = 24 * 30;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ResourceTranslationsCache {
@@ -57,6 +59,49 @@ impl ResourceTranslationEntry {
       translated_name,
       translated_description,
       description_translated,
+      timestamp: SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs(),
+    }
+  }
+
+  pub fn is_expired(&self, max_age_hours: u64) -> bool {
+    let current_time = SystemTime::now()
+      .duration_since(UNIX_EPOCH)
+      .unwrap_or_default()
+      .as_secs();
+    current_time > self.timestamp + (max_age_hours * 60 * 60)
+  }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct LocalModTranslationsCache {
+  #[serde(flatten)]
+  pub translations: HashMap<String, LocalModTranslationEntry>,
+}
+
+impl Storage for LocalModTranslationsCache {
+  fn file_path() -> PathBuf {
+    APP_DATA_DIR
+      .get()
+      .unwrap()
+      .join(LOCAL_MOD_TRANSLATION_CACHE_FILE_NAME)
+  }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LocalModTranslationEntry {
+  pub translated_name: Option<String>,
+  pub translated_description: Option<String>,
+  pub timestamp: u64,
+}
+
+impl LocalModTranslationEntry {
+  pub fn new(translated_name: Option<String>, translated_description: Option<String>) -> Self {
+    Self {
+      translated_name,
+      translated_description,
       timestamp: SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()

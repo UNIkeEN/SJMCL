@@ -10,6 +10,11 @@ use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
 
+#[cfg(target_os = "windows")]
+use std::sync::Mutex;
+#[cfg(target_os = "windows")]
+use tauri::Manager;
+
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
@@ -23,6 +28,13 @@ use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
+
+#[cfg(target_os = "windows")]
+use crate::instance::helpers::client_json::load_native_libraries_replace_map;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::helpers::graphics::mesa_driver_name;
+#[cfg(target_os = "windows")]
+use crate::launcher_config::models::{GameConfig, LauncherConfig};
 
 pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
@@ -115,6 +127,80 @@ pub async fn get_invalid_library_files(
   }
 
   Ok(params)
+}
+
+#[cfg(target_os = "windows")]
+pub fn get_windows_mesa_loader_library(app: &AppHandle) -> SJMCLResult<Option<LibrariesValue>> {
+  let all_replace_map = load_native_libraries_replace_map(app)?;
+  let (os, arch) = {
+    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+    let cfg = launcher_config_state.lock().unwrap();
+    (cfg.basic_info.os_type.clone(), cfg.basic_info.arch.clone())
+  };
+  let platform_key = format!("{}-{}", os.to_lowercase(), arch.to_lowercase());
+  Ok(
+    all_replace_map
+      .get(platform_key.as_str())
+      .and_then(|platform_map| platform_map.get("mesa-loader"))
+      .cloned()
+      .flatten(),
+  )
+}
+
+#[cfg(target_os = "windows")]
+pub fn get_windows_mesa_loader_path(
+  app: &AppHandle,
+  library_path: &Path,
+) -> SJMCLResult<Option<PathBuf>> {
+  Ok(get_windows_mesa_loader_library(app)?.and_then(|lib| {
+    lib
+      .downloads
+      .and_then(|downloads| downloads.artifact)
+      .map(|artifact| library_path.join(artifact.path))
+  }))
+}
+
+#[cfg(target_os = "windows")]
+pub async fn get_invalid_windows_mesa_loader_file(
+  app: &AppHandle,
+  source: SourceType,
+  library_path: &Path,
+  game_config: &GameConfig,
+  check_hash: bool,
+) -> SJMCLResult<Vec<PTaskParam>> {
+  if mesa_driver_name(
+    &game_config.advanced.graphics.api,
+    &game_config.advanced.graphics.renderer,
+  )
+  .is_none()
+  {
+    return Ok(Vec::new());
+  }
+
+  let Some(lib) = get_windows_mesa_loader_library(app)? else {
+    return Ok(Vec::new());
+  };
+  let Some(artifact) = lib.downloads.and_then(|downloads| downloads.artifact) else {
+    return Ok(Vec::new());
+  };
+
+  let file_path = library_path.join(&artifact.path);
+  let exists = fs::try_exists(&file_path).await?;
+  if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
+    return Ok(Vec::new());
+  }
+
+  let src = convert_url_to_target_source(
+    &url::Url::parse(&artifact.url)?,
+    &[ResourceType::Libraries],
+    &source,
+  )?;
+  Ok(vec![PTaskParam::Download(DownloadParam {
+    src,
+    dest: file_path,
+    filename: None,
+    sha1: Some(artifact.sha1),
+  })])
 }
 
 pub struct LibraryParts {

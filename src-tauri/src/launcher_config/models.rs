@@ -83,6 +83,15 @@ pub enum GarbageCollector {
   Auto,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum GraphicsApi {
+  Opengl,
+  Vulkan,
+  #[serde(other)]
+  Default,
+}
+
 // see java.net.proxy
 // https://github.com/HMCL-dev/HMCL/blob/d9e3816b8edf9e7275e4349d4fc67a5ef2e3c6cf/HMCLCore/src/main/java/org/jackhuang/hmcl/launch/DefaultLauncher.java#L114
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
@@ -156,6 +165,12 @@ structstruck::strike! {
       pub enabled: bool,
     },
     pub advanced: struct {
+      pub graphics: struct {
+        #[default(GraphicsApi::Default)]
+        pub api: GraphicsApi,
+        #[default = "default"]
+        pub renderer: String,
+      },
       pub custom_commands: struct {
         pub minecraft_argument: String,
         pub precall_command: String,

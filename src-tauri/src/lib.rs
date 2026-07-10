@@ -13,12 +13,12 @@ use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
 use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
-use instance::helpers::mods::translation::LocalModTranslationsCache;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
+use resource::helpers::translation::LocalModTranslationsCache;
 use resource::helpers::translation::cache::ResourceTranslationsCache;
 use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
@@ -98,6 +98,7 @@ pub async fn run() {
         launcher_config::commands::retrieve_java_list,
         launcher_config::commands::validate_java,
         launcher_config::commands::download_mojang_java,
+        launcher_config::commands::retrieve_supported_graphics_renderers,
         launcher_config::commands::check_game_directory,
         launcher_config::commands::clear_download_cache,
         launcher_config::commands::check_launcher_update,
@@ -153,6 +154,8 @@ pub async fn run() {
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
         instance::commands::change_optifine,
+        instance::commands::remove_mod_loader,
+        instance::commands::remove_optifine,
         instance::commands::retrieve_modpack_meta_info,
         instance::commands::add_custom_instance_icon,
         instance::commands::retrieve_exportable_file_list,

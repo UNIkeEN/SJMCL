@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "同時置 Fabric API 改囊",
       "installQFAPI": "同時置 QFAPI / QSL 改囊（若可用）",
-      "reinstall": "復置"
+      "reinstall": "復置",
+      "removeCurrentInstallation": "移除安裝"
     }
   },
   "CheckModUpdateModal": {
@@ -921,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "圖形",
+      "settings": {
+        "api": {
+          "title": "圖形 API",
+          "default": {
+            "label": "本",
+            "desc": "循Minecraft與驅動之預設。"
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "以OpenGL渲染"
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "以Vulkan渲染"
+          }
+        },
+        "renderer": {
+          "title": "繪器 / 驅動",
+          "default": "本",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "代理",
       "settings": {
@@ -1318,6 +1362,10 @@
           "button": "改進階置設"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "今實例「{{instance}}」已啟「啟特定戲置設」，故此頁諸選，不施於此實例。",
+      "editInstanceSettings": "修實例「特定戲置設」"
     }
   },
   "GuidedTourProvider": {
@@ -1393,7 +1441,7 @@
         },
         "UserGroup": {
           "title": "使用者社群",
-          "description": "歡迎加入 QQ 群或 Discord 伺服器，報告問題、請求功用或獲取助",
+          "description": "歡迎加入 QQ 群或于群碼之匯清談，擧陳疏漏，請益功用，以求襄助",
           "url": "https://mc.sjtu.cn/sjmcl/docs/user-group"
         }
       }
@@ -1875,6 +1923,18 @@
     },
     "button": {
       "login": "登入"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "移除模組載入器",
+      "content": "確認要移除為 {{instanceName}} 已安裝的模組載入器 {{type}} {{version}} 嗎？您的模組可能將無法使用。"
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "移除 OptiFine",
+      "content": "確認要移除為 {{instanceName}} 已安裝的 OptiFine {{version}} 嗎？您的光影可能將無法使用。"
     }
   },
   "ResourceDownloader": {
@@ -2925,6 +2985,26 @@
       "changeOptiFine": {
         "error": {
           "title": "改 OptiFine 未成"
+        }
+      },
+      "removeModLoader": {
+        "success": "模組載入器移除成功",
+        "error": {
+          "title": "模組載入器移除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_CREATION_FAILED": "實例配置文件保存失敗"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine 移除成功",
+        "error": {
+          "title": "OptiFine 移除失敗",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
+            "FILE_CREATION_FAILED": "實例配置文件保存失敗"
+          }
         }
       },
       "retrieveModpackMetaInfo": {

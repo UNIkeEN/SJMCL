@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "Installer également le mod Fabric API",
       "installQFAPI": "Installer aussi le mod QFAPI / QSL (si disponible)",
-      "reinstall": "Réinstaller"
+      "reinstall": "Réinstaller",
+      "removeCurrentInstallation": "Supprimer l'installation"
     }
   },
   "CheckModUpdateModal": {
@@ -921,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "Graphismes",
+      "settings": {
+        "api": {
+          "title": "API graphique",
+          "default": {
+            "label": "Par défaut",
+            "desc": "Utiliser les paramètres par défaut de Minecraft et du pilote."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Utiliser le rendu OpenGL."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Utiliser le rendu Vulkan."
+          }
+        },
+        "renderer": {
+          "title": "Moteur de rendu / pilote",
+          "default": "Par défaut",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "Proxy",
       "settings": {
@@ -1318,6 +1362,10 @@
           "button": "Modifier les paramètres avancés"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "L'instance actuelle « {{instance}} » a activé l'option « Utiliser des paramètres de jeu spécifiques », les options de cette page ne s'appliquent donc pas à cette instance. ",
+      "editInstanceSettings": "Modifier les paramètres de jeu spécifiques de l'instance"
     }
   },
   "GuidedTourProvider": {
@@ -1393,7 +1441,7 @@
         },
         "UserGroup": {
           "title": "Communauté des utilisateurs",
-          "description": "Rejoignez le groupe QQ ou le serveur Discord pour signaler des problèmes, demander des fonctionnalités ou obtenir de l'aide",
+          "description": "Rejoignez le groupe QQ ou GitHub Discussions pour signaler des problèmes, demander des fonctionnalités ou obtenir de l'aide",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
@@ -1875,6 +1923,18 @@
     },
     "button": {
       "login": "Connexion"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Supprimer le chargeur de mods",
+      "content": "Êtes-vous sûr de vouloir supprimer {{type}} {{version}} installé pour {{instanceName}} ? Vos mods pourraient ne plus fonctionner."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Supprimer OptiFine",
+      "content": "Êtes-vous sûr de vouloir supprimer OptiFine {{version}} installé pour {{instanceName}} ? Vos shader packs pourraient ne plus fonctionner."
     }
   },
   "ResourceDownloader": {
@@ -2925,6 +2985,26 @@
       "changeOptiFine": {
         "error": {
           "title": "Échec de la modification d'OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Chargeur de mods supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression du chargeur de mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
+            "FILE_CREATION_FAILED": "Échec de la sauvegarde de la configuration de l'instance"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine supprimé avec succès",
+        "error": {
+          "title": "Échec de la suppression d'OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
+            "FILE_CREATION_FAILED": "Échec de la sauvegarde de la configuration de l'instance"
+          }
         }
       },
       "retrieveModpackMetaInfo": {

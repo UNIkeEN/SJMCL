@@ -513,6 +513,20 @@ export class InstanceService {
   }
 
   /**
+   * REMOVE the mod loader from a given instance.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async removeModLoader(
+    instanceId: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("remove_mod_loader", {
+      instanceId,
+    });
+  }
+
+  /**
    * CHANGE the OptiFine version for a given instance.
    * @param {string} instanceId - The ID of the instance to update.
    * @param {OptiFineResourceInfo} newOptifine - The new OptiFine information.
@@ -526,6 +540,20 @@ export class InstanceService {
     return await invoke("change_optifine", {
       instanceId,
       newOptifine,
+    });
+  }
+
+  /**
+   * REMOVE the OptiFine from a given instance.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async removeOptifine(
+    instanceId: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("remove_optifine", {
+      instanceId,
     });
   }
 

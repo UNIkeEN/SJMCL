@@ -368,7 +368,8 @@
     "footer": {
       "installFabricApi": "Instalar Mod Fabric API",
       "installQFAPI": "Instalar Mod QFAPI / QSL (si está disponible)",
-      "reinstall": "Reinstalar"
+      "reinstall": "Reinstalar",
+      "removeCurrentInstallation": "Eliminar instalación"
     }
   },
   "CheckModUpdateModal": {
@@ -921,6 +922,49 @@
         }
       }
     },
+    "graphics": {
+      "title": "Gráficos",
+      "settings": {
+        "api": {
+          "title": "API de gráficos",
+          "default": {
+            "label": "Predeterminado",
+            "desc": "Usar la configuración predeterminada de Minecraft y del controlador."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Usar renderizado OpenGL."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Usar renderizado Vulkan."
+          }
+        },
+        "renderer": {
+          "title": "Renderizador / Controlador",
+          "default": "Predeterminado",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
     "proxy": {
       "title": "Proxy",
       "settings": {
@@ -1318,6 +1362,10 @@
           "button": "Editar Opciones Avanzadas"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "La instancia actual «{{instance}}» tiene activada la «Configuración específica de la instancia», por lo que las opciones de esta página no afectarán a esta instancia. ",
+      "editInstanceSettings": "Editar su configuración específica"
     }
   },
   "GuidedTourProvider": {
@@ -1393,7 +1441,7 @@
         },
         "UserGroup": {
           "title": "Comunidad de Usuarios",
-          "description": "Únete al grupo de QQ o al servidor de Discord para reportar problemas, solicitar funciones u obtener ayuda",
+          "description": "Únete al grupo de QQ o a GitHub Discussions para reportar problemas, solicitar funciones u obtener ayuda",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
@@ -1875,6 +1923,18 @@
     },
     "button": {
       "login": "Iniciar sesión"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Eliminar cargador de mods",
+      "content": "¿Está seguro de que desea eliminar {{type}} {{version}} instalado para {{instanceName}}? Es posible que sus mods dejen de funcionar."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Eliminar OptiFine",
+      "content": "¿Está seguro de que desea eliminar OptiFine {{version}} instalado para {{instanceName}}? Es posible que sus shader packs dejen de funcionar."
     }
   },
   "ResourceDownloader": {
@@ -2919,6 +2979,31 @@
           "title": "Error al cambiar el cargador de mods",
           "description": {
             "NOT_SUPPORT_CHANGE_MOD_LOADER": "Instalado por un proceso externo, no se puede configurar"
+          }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "Error al cambiar OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Cargador de mods eliminado correctamente",
+        "error": {
+          "title": "Error al eliminar el cargador de mods",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de la instancia no existe",
+            "FILE_CREATION_FAILED": "Error al guardar la configuración de la instancia"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine eliminado correctamente",
+        "error": {
+          "title": "Error al eliminar OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de la instancia no existe",
+            "FILE_CREATION_FAILED": "Error al guardar la configuración de la instancia"
           }
         }
       },

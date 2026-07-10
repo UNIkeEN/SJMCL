@@ -3,7 +3,7 @@
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::io::{Read, Seek};
 use std::path::Path;
@@ -13,6 +13,7 @@ use zip::ZipArchive;
 use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
+use crate::utils::string::deserialize_lenient_json;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -48,26 +49,17 @@ impl LocalModMetadataParser for FabricModMetadataParser {
   fn get_mod_metadata_from_jar<R: Read + Seek>(
     jar: &mut ZipArchive<R>,
   ) -> SJMCLResult<Self::Metadata> {
-    let meta: FabricModMetadata = match jar.by_name("fabric.mod.json") {
-      Ok(val) => match serde_json::from_reader(val) {
-        Ok(val) => val,
-        Err(e) => return Err(SJMCLError::from(e)),
-      },
-      Err(e) => return Err(SJMCLError::from(e)),
-    };
-    Ok(meta)
+    let mut content = String::new();
+    jar
+      .by_name("fabric.mod.json")?
+      .read_to_string(&mut content)?;
+    Ok(deserialize_lenient_json(&content)?)
   }
 
   async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata> {
     let fabric_file_path = dir_path.join("fabric.mod.json");
-    let meta: FabricModMetadata = match tokio::fs::read_to_string(fabric_file_path).await {
-      Ok(val) => match serde_json::from_str(val.as_str()) {
-        Ok(val) => val,
-        Err(e) => return Err(SJMCLError::from(e)),
-      },
-      Err(e) => return Err(SJMCLError::from(e)),
-    };
-    Ok(meta)
+    let content = tokio::fs::read_to_string(fabric_file_path).await?;
+    Ok(deserialize_lenient_json(&content)?)
   }
 
   fn get_icon_from_jar<R: Read + Seek>(
