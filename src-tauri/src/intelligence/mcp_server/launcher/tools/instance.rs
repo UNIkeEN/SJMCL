@@ -244,9 +244,9 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       }
     ),
     mcp_tool!(
-      "restore_instance_game_config",
-      restore_instance_game_config,
-      "Restore a Minecraft instance's dedicated game configuration to the current global game configuration.",
+      "reset_instance_game_config",
+      reset_instance_game_config,
+      "Reset a Minecraft instance's dedicated game configuration to the current global game configuration.",
       #[serde(deny_unknown_fields)]
       {
         #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]

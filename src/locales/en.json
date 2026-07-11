@@ -1256,10 +1256,10 @@
           "title": "Auto Purge Launcher Logs",
           "description": "Automatically purge launcher log files older than 30 days"
         },
-        "restoreAll": {
-          "title": "Restore All Settings",
-          "description": "Restore all launcher settings to their default values",
-          "restore": "Restore"
+        "resetAll": {
+          "title": "Reset All Settings",
+          "description": "Reset all launcher settings to their default values",
+          "reset": "Reset"
         }
       }
     }
@@ -1583,9 +1583,9 @@
     "colorTag": "Color Tag",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Restore specific settings",
-    "restoreSettingsDesc": "Restore the following specific settings to the global game settings.",
-    "restore": "Restore",
+    "resetSettings": "Reset specific settings",
+    "resetSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "reset": "Reset",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
       "error-2": "Instance name is invalid",
@@ -1937,6 +1937,14 @@
       "content": "Are you sure you want to remove OptiFine {{version}} installed for {{instanceName}}? Your shader packs may stop working."
     }
   },
+  "ResetConfigConfirmDialog": {
+    "title": "Reset Launcher Settings",
+    "body": "This action will reset all launcher settings to their default values. Are you sure you want to proceed?"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "Reset Instance Settings",
+    "body": "This action will reset this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
+  },
   "ResourceDownloader": {
     "label": {
       "source": "Source",
@@ -2231,14 +2239,6 @@
       "later": "Later"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "Restore Launcher Settings",
-    "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "Restore Instance Settings",
-    "body": "This action will restore this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
-  },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
   },
@@ -2272,10 +2272,10 @@
           "title": "Failed to update launcher settings"
         }
       },
-      "restoreLauncherConfig": {
-        "success": "Successfully restored launcher settings",
+      "resetLauncherConfig": {
+        "success": "Successfully reset launcher settings",
         "error": {
-          "title": "Failed to restore launcher settings"
+          "title": "Failed to reset launcher settings"
         }
       },
       "exportLauncherConfig": {
@@ -2775,10 +2775,10 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
-        "success": "Successfully restored instance game settings",
+      "resetInstanceGameConfig": {
+        "success": "Successfully reset instance game settings",
         "error": {
-          "title": "Failed to restore instance game settings",
+          "title": "Failed to reset instance game settings",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"

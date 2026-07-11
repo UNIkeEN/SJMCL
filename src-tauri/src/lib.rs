@@ -87,7 +87,7 @@ pub async fn run() {
       .invoke_handler(tauri::generate_handler![
         launcher_config::commands::retrieve_launcher_config,
         launcher_config::commands::update_launcher_config,
-        launcher_config::commands::restore_launcher_config,
+        launcher_config::commands::reset_launcher_config,
         launcher_config::commands::export_launcher_config,
         launcher_config::commands::import_launcher_config,
         launcher_config::commands::reveal_launcher_config,
@@ -128,7 +128,7 @@ pub async fn run() {
         instance::commands::create_instance,
         instance::commands::update_instance_config,
         instance::commands::retrieve_instance_game_config,
-        instance::commands::restore_instance_game_config,
+        instance::commands::reset_instance_game_config,
         instance::commands::retrieve_instance_subdir_path,
         instance::commands::read_instance_file,
         instance::commands::delete_instance,

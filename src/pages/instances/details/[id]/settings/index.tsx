@@ -43,7 +43,7 @@ const InstanceSettingsPage = () => {
     updateSummaryInContext,
     gameConfig: instanceGameConfig,
     handleUpdateInstanceConfig,
-    handleRestoreInstanceGameConfig,
+    handleResetInstanceGameConfig,
   } = useInstanceSharedData();
   const useSpecGameConfig = summary?.useSpecGameConfig || false;
 
@@ -193,8 +193,8 @@ const InstanceSettingsPage = () => {
         ...(useSpecGameConfig && instanceGameConfig
           ? [
               {
-                title: t("InstanceSettingsPage.restoreSettings"),
-                description: t("InstanceSettingsPage.restoreSettingsDesc"),
+                title: t("InstanceSettingsPage.resetSettings"),
+                description: t("InstanceSettingsPage.resetSettingsDesc"),
                 children: (
                   <Button
                     colorScheme="red"
@@ -202,16 +202,16 @@ const InstanceSettingsPage = () => {
                     size="xs"
                     onClick={() => {
                       openGenericConfirmDialog({
-                        title: t("RestoreInstanceConfigConfirmDialog.title"),
-                        body: t("RestoreInstanceConfigConfirmDialog.body"),
+                        title: t("ResetInstanceConfigConfirmDialog.title"),
+                        body: t("ResetInstanceConfigConfirmDialog.body"),
                         isAlert: true,
-                        onOKCallback: handleRestoreInstanceGameConfig,
+                        onOKCallback: handleResetInstanceGameConfig,
                         showSuppressBtn: true,
-                        suppressKey: "restoreInstanceSpecConfig",
+                        suppressKey: "resetInstanceSpecConfig",
                       });
                     }}
                   >
-                    {t("InstanceSettingsPage.restore")}
+                    {t("InstanceSettingsPage.reset")}
                   </Button>
                 ),
               },

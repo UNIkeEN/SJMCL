@@ -1256,10 +1256,10 @@
           "title": "Purgar Automáticamente los Registros del Lanzador",
           "description": "Purgar automáticamente los archivos de registro del lanzador con más de 30 días de antigüedad"
         },
-        "restoreAll": {
+        "resetAll": {
           "title": "Restablecer Todas las Configuraciones",
           "description": "Restablecer todas las configuraciones del lanzador a sus valores predeterminados",
-          "restore": "Restablecer"
+          "reset": "Restablecer"
         }
       }
     }
@@ -1583,9 +1583,9 @@
     "colorTag": "Etiqueta de Color",
     "icon": "Icono de la Instancia",
     "applySettings": "Aplicar la siguiente configuración específica",
-    "restoreSettings": "Restablecer configuración específica",
-    "restoreSettingsDesc": "Restablecer la siguiente configuración específica a la configuración global del juego.",
-    "restore": "Restablecer",
+    "resetSettings": "Restablecer configuración específica",
+    "resetSettingsDesc": "Restablecer la siguiente configuración específica a la configuración global del juego.",
+    "reset": "Restablecer",
     "errorMessage": {
       "error-1": "El nombre de la instancia no puede estar vacío",
       "error-2": "El nombre de la instancia es inválido",
@@ -1937,6 +1937,14 @@
       "content": "¿Está seguro de que desea eliminar OptiFine {{version}} instalado para {{instanceName}}? Es posible que sus shader packs dejen de funcionar."
     }
   },
+  "ResetConfigConfirmDialog": {
+    "title": "Restablecer configuración del lanzador",
+    "body": "Esta acción restablecerá todas las configuraciones del lanzador a sus valores predeterminados. ¿Estás seguro de que deseas continuar?"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "Restablecer configuración de instancia",
+    "body": "Esta acción restablecerá la configuración específica del juego de esta instancia a la configuración global actual. ¿Estás seguro de que deseas continuar?"
+  },
   "ResourceDownloader": {
     "label": {
       "source": "Fuente",
@@ -2231,14 +2239,6 @@
       "later": "Más tarde"
     }
   },
-  "RestoreConfigConfirmDialog": {
-    "title": "Restaurar configuración del lanzador",
-    "body": "Esta acción restaurará todas las configuraciones del lanzador a sus valores predeterminados. ¿Estás seguro de que deseas continuar?"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "Restaurar configuración de instancia",
-    "body": "Esta acción restaurará la configuración específica del juego de esta instancia a la configuración global actual. ¿Estás seguro de que deseas continuar?"
-  },
   "RevealConfigJsonConfirmDialog": {
     "body": "Ten cuidado al editar el archivo de configuración sin procesar del lanzador. Un formato incorrecto puede provocar la pérdida de la configuración original o impedir que el lanzador funcione correctamente."
   },
@@ -2272,10 +2272,10 @@
           "title": "Error al actualizar la configuración del lanzador"
         }
       },
-      "restoreLauncherConfig": {
-        "success": "Configuración del lanzador restaurada exitosamente",
+      "resetLauncherConfig": {
+        "success": "Configuración del lanzador restablecido exitosamente",
         "error": {
-          "title": "Error al restaurar la configuración del lanzador"
+          "title": "Error al restablecer la configuración del lanzador"
         }
       },
       "exportLauncherConfig": {
@@ -2775,10 +2775,10 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
-        "success": "Configuración del juego de la instancia restaurada exitosamente",
+      "resetInstanceGameConfig": {
+        "success": "Configuración del juego de la instancia restablecida exitosamente",
         "error": {
-          "title": "Error al restaurar la configuración del juego de la instancia",
+          "title": "Error al restablecer la configuración del juego de la instancia",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
             "SAVE_ERROR": "Error al guardar la configuración de la instancia"

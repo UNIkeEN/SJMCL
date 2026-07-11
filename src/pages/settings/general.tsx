@@ -43,8 +43,8 @@ const GeneralSettingsPage = () => {
   const instancesNavTypes = ["instance", "directory", "tag", "hidden"];
   const discoverPageModes = ["on", "search-only", "off"];
 
-  const handleRestoreLauncherConfig = useCallback(async () => {
-    ConfigService.restoreLauncherConfig().then((response) => {
+  const handleResetLauncherConfig = useCallback(async () => {
+    ConfigService.resetLauncherConfig().then((response) => {
       if (response.status === "success") {
         setConfig(response.data);
         toast({
@@ -352,9 +352,9 @@ const GeneralSettingsPage = () => {
           ),
         },
         {
-          title: t("GeneralSettingsPage.advanced.settings.restoreAll.title"),
+          title: t("GeneralSettingsPage.advanced.settings.resetAll.title"),
           description: t(
-            "GeneralSettingsPage.advanced.settings.restoreAll.description"
+            "GeneralSettingsPage.advanced.settings.resetAll.description"
           ),
           children: (
             <Button
@@ -363,14 +363,14 @@ const GeneralSettingsPage = () => {
               size="xs"
               onClick={() => {
                 openGenericConfirmDialog({
-                  title: t("RestoreConfigConfirmDialog.title"),
-                  body: t("RestoreConfigConfirmDialog.body"),
+                  title: t("ResetConfigConfirmDialog.title"),
+                  body: t("ResetConfigConfirmDialog.body"),
                   isAlert: true,
-                  onOKCallback: handleRestoreLauncherConfig,
+                  onOKCallback: handleResetLauncherConfig,
                 });
               }}
             >
-              {t("GeneralSettingsPage.advanced.settings.restoreAll.restore")}
+              {t("GeneralSettingsPage.advanced.settings.resetAll.reset")}
             </Button>
           ),
         },
