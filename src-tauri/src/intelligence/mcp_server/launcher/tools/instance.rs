@@ -104,8 +104,34 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       "Primary tool for listing local Minecraft instances. Returns instance IDs and metadata for selecting an instance."
     ),
     mcp_tool!(
+      "retrieve_instance_icon_options",
+      "Retrieve supported instance icon sources for `create_instance.icon_src`, including all built-in icon paths and the `custom` option.",
+      |_app, _params: rmcp::model::JsonObject| async move {
+        Ok(serde_json::json!({
+          "builtinIconPaths": [
+            "/images/icons/JEIcon_Release.png",
+            "/images/icons/JEIcon_Snapshot.png",
+            "/images/icons/CommandBlock.png",
+            "/images/icons/CraftingTable.png",
+            "/images/icons/GrassBlock.png",
+            "/images/icons/StoneOldBeta.png",
+            "/images/icons/YellowGlazedTerracotta.png",
+            "/images/icons/Anvil.png",
+            "/images/icons/Forge.png",
+            "/images/icons/Fabric.png",
+            "/images/icons/NeoForge.png",
+            "/images/icons/Quilt.png",
+            "/images/icons/OptiFine.png",
+          ],
+          "customIconSrc": "custom",
+          "customIconDescription": "`custom` displays the custom icon file from the instance root.",
+          "automaticDefaultDescription": "When `create_instance.icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
+        }))
+      }
+    ),
+    mcp_tool!(
       "create_instance",
-      "Create a Minecraft instance and schedule required client/mod-loader downloads. Resolves game and loader metadata from version IDs.",
+      "Create a Minecraft instance and schedule required client/mod-loader downloads. Resolves game and loader metadata from version IDs. Use `retrieve_instance_icon_options` when choosing a manual `icon_src`. If `icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
       |app, params|
       #[serde(deny_unknown_fields)]
       {
@@ -117,11 +143,11 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         name: String,
         #[schemars(description = "Optional instance description. Defaults to an empty string.")]
         description: Option<String>,
-        #[schemars(description = "Optional instance icon source. Defaults to the selected OptiFine/mod loader icon, or the standard icon for the selected game version type.")]
+        #[schemars(description = "Optional instance icon source. Omit to let SJMCL pick automatically: OptiFine uses `/images/icons/OptiFine.png`; Fabric, Forge/LegacyForge, NeoForge, LiteLoader, and Quilt use their matching `/images/icons/*.png`; otherwise snapshots use `/images/icons/JEIcon_Snapshot.png`, old beta uses `/images/icons/StoneOldBeta.png`, April Fools versions use `/images/icons/YellowGlazedTerracotta.png`, and releases use `/images/icons/JEIcon_Release.png`. Supported built-in icon paths are `/images/icons/JEIcon_Release.png`, `/images/icons/JEIcon_Snapshot.png`, `/images/icons/CommandBlock.png`, `/images/icons/CraftingTable.png`, `/images/icons/GrassBlock.png`, `/images/icons/StoneOldBeta.png`, `/images/icons/YellowGlazedTerracotta.png`, `/images/icons/Anvil.png`, `/images/icons/Forge.png`, `/images/icons/Fabric.png`, `/images/icons/NeoForge.png`, `/images/icons/Quilt.png`, and `/images/icons/OptiFine.png`. Pass `custom` only when the instance root already has a custom icon file to display.")]
         icon_src: Option<String>,
         #[schemars(description = "Minecraft game version ID, for example `1.21.5`.")]
         game_version: String,
-        #[schemars(description = "Optional mod loader type: `unknown`, `fabric`, `forge`, `legacyforge`, `neoforge`, or `quilt`. Defaults to `unknown`.")]
+        #[schemars(description = "Optional mod loader type: `unknown`, `fabric`, `forge`, `legacyforge`, `neoforge`, `liteloader`, or `quilt`. Defaults to `unknown`.")]
         mod_loader_type: Option<String>,
         #[schemars(description = "Optional exact mod loader version. If omitted, the first stable loader version is used.")]
         mod_loader_version: Option<String>,
