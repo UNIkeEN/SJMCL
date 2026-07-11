@@ -49,3 +49,7 @@ pub fn strip_json_control_chars(input: &str) -> String {
     .filter(|c| !matches!(c, '\u{0000}'..='\u{001F}'))
     .collect()
 }
+
+pub fn contains_chinese(text: &str) -> bool {
+  text.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}'))
+}

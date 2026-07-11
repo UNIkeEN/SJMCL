@@ -1,18 +1,13 @@
 use sjmcl_types::error::SJMCLResult;
 use std::cmp::Ordering;
-use std::sync::Mutex;
 use strum::IntoEnumIterator;
-use tauri::{AppHandle, Manager};
 use url::Url;
 
 use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::curseforge::misc::translate_description_curseforge;
-use crate::resource::helpers::mod_db::ModDataBase;
-use crate::resource::helpers::modrinth::misc::translate_description_modrinth;
 use crate::resource::models::{
-  OtherResourceInfo, OtherResourceSource, OtherResourceVersionPack, ResourceError, ResourceType,
-  SourceType,
+  OtherResourceInfo, OtherResourceVersionPack, ResourceError, ResourceType, SourceType,
 };
+use crate::utils::string::contains_chinese;
 
 pub fn get_source_priority_list(launcher_config: &LauncherConfig) -> Vec<SourceType> {
   match launcher_config.download.source.strategy.as_str() {
@@ -218,46 +213,72 @@ pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionP
   compare_versions_with_suffix(&version_a, &suffix_a, &version_b, &suffix_b).reverse()
 }
 
-pub async fn apply_other_resource_enhancements(
-  app: &AppHandle,
-  resource_info: &mut OtherResourceInfo,
-) -> SJMCLResult<()> {
-  // Extract data from cache in a limited scope to avoid holding lock across await
-  let (translated_name, mcmod_id) = {
-    if let Ok(cache) = app.state::<Mutex<ModDataBase>>().lock() {
-      let translated_name = if resource_info._type == "mod" {
-        cache.get_translated_name(&resource_info.slug, &resource_info.source)
-      } else {
-        None
-      };
-      let mcmod_id = cache.get_mcmod_id(&resource_info.slug, &resource_info.source);
-      (translated_name, mcmod_id)
+pub(crate) fn levenshtein_distance(a: &str, b: &str) -> usize {
+  let b_chars: Vec<char> = b.chars().collect();
+  let mut prev: Vec<usize> = (0..=b_chars.len()).collect();
+
+  for (i, a_ch) in a.chars().enumerate() {
+    let mut current = Vec::with_capacity(b_chars.len() + 1);
+    current.push(i + 1);
+
+    for (j, b_ch) in b_chars.iter().enumerate() {
+      let cost = if a_ch == *b_ch { 0 } else { 1 };
+      let insertion = current[j] + 1;
+      let deletion = prev[j + 1] + 1;
+      let substitution = prev[j] + cost;
+      current.push(insertion.min(deletion).min(substitution));
+    }
+
+    prev = current;
+  }
+
+  *prev.last().unwrap_or(&0)
+}
+
+pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_query: &str) {
+  const CONTAIN_CHINESE_WEIGHT: i64 = 10;
+
+  let search_query = search_query
+    .split_whitespace()
+    .collect::<Vec<_>>()
+    .join(" ");
+
+  if search_query.is_empty() {
+    return;
+  }
+
+  let mut translated_results = Vec::new();
+  let mut untranslated_results = Vec::new();
+
+  for resource in list.drain(..) {
+    let contains_chinese_title = resource
+      .translated_name
+      .as_deref()
+      .map_or_else(|| contains_chinese(&resource.name), contains_chinese);
+
+    if contains_chinese_title {
+      translated_results.push(resource);
     } else {
-      (None, None)
+      untranslated_results.push(resource);
     }
-  };
-
-  if let Some(name) = translated_name
-    && name.chars().any(|c| matches!(c, '\u{4e00}'..='\u{9fbb}'))
-  {
-    resource_info.translated_name = Some(name);
-  }
-  if let Some(id) = mcmod_id {
-    resource_info.mcmod_id = id;
   }
 
-  // Get translated description
-  let translated_desc = match resource_info.source {
-    OtherResourceSource::Modrinth => translate_description_modrinth(app, &resource_info.id).await?,
-    OtherResourceSource::CurseForge => {
-      translate_description_curseforge(app, &resource_info.id).await?
+  translated_results.sort_by_key(|resource| {
+    let display_name = resource
+      .translated_name
+      .as_deref()
+      .unwrap_or(resource.name.as_str());
+
+    let mut diff = levenshtein_distance(&search_query, display_name) as i64;
+    for ch in search_query.chars() {
+      if display_name.contains(ch) {
+        diff -= CONTAIN_CHINESE_WEIGHT;
+      }
     }
-    _ => None,
-  };
 
-  if let Some(desc) = translated_desc {
-    resource_info.translated_description = Some(desc);
-  }
+    diff
+  });
 
-  Ok(())
+  list.extend(translated_results);
+  list.extend(untranslated_results);
 }

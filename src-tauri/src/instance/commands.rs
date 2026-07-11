@@ -16,7 +16,6 @@ use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
-use crate::instance::constants::TRANSLATION_CACHE_EXPIRY_HOURS;
 use crate::instance::helpers::client_json::{
   McClientInfo, remove_mod_loader_from_client_info, remove_optifine_from_client_info,
   replace_native_libraries,
@@ -42,9 +41,6 @@ use crate::instance::helpers::modpack::import::{
 use crate::instance::helpers::mods::common::{
   compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
 };
-use crate::instance::helpers::mods::translation::{
-  LocalModTranslationEntry, LocalModTranslationsCache, add_local_mod_translations,
-};
 use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
   load_resourcepack_from_dir, load_resourcepack_from_zip,
@@ -68,6 +64,10 @@ use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::translation::{
+  LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS, LocalModTranslationEntry, LocalModTranslationsCache,
+  add_local_mod_translations,
+};
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
 };
@@ -702,7 +702,7 @@ pub async fn retrieve_local_mod_list(
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
     if let Some(entry) = cache.translations.get(&info.file_name)
-      && !entry.is_expired(TRANSLATION_CACHE_EXPIRY_HOURS)
+      && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
     {
       continue;
     }
