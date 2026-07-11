@@ -138,9 +138,9 @@ We warmly invite contributions from everyone.
 
 If you want to develop extensions for SJMCL, check out the [Extension Documentation](https://mc.sjtu.cn/sjmcl/en/dev/extension/). It includes an introduction to the extension system and API references. We also provide a scaffold to help you quickly create a template project and get started.
 
-### Repo Activity
+### Contributors
 
-![Repo Activity](https://repobeats.axiom.co/api/embed/ee2f4be0fbc708179a6b40c83cd8ce80702fe6fe.svg "Repobeats analytics image")
+![Contributors](https://contrib.rocks/image?repo=UNIkeEN/SJMCL "Contributors")
 
 ## Copyright
 

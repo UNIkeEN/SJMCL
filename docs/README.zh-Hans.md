@@ -138,9 +138,9 @@ pnpm tauri dev
 
 如果您希望为 SJMCL 开发扩展，欢迎查看 [扩展文档](https://mc.sjtu.cn/sjmcl/dev/extension/)。内含扩展系统的介绍、API 参考。我们还提供了脚手架，便于快速创建模板项目并上手。
 
-### 仓库活动
+### 贡献者
 
-![仓库活动](https://repobeats.axiom.co/api/embed/ee2f4be0fbc708179a6b40c83cd8ce80702fe6fe.svg "Repobeats analytics image")
+![贡献者](https://contrib.rocks/image?repo=UNIkeEN/SJMCL "贡献者")
 
 ## 版权声明
 
