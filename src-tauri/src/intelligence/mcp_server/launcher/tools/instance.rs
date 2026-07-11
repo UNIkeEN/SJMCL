@@ -73,8 +73,20 @@ async fn resolve_optifine(
     .ok_or_else(|| ResourceError::ParseError.into())
 }
 
-// In the user-facing workflow, the default icon mapping lives in the frontend create-instance modal.
-fn default_icon_for_game_type(game_type: &str) -> String {
+// Keep MCP-created instances consistent with the frontend create-instance modal.
+fn default_icon_for_instance(
+  game_type: &str,
+  mod_loader_type: ModLoaderType,
+  has_optifine: bool,
+) -> String {
+  if has_optifine {
+    return "/images/icons/OptiFine.png".to_string();
+  }
+
+  if mod_loader_type != ModLoaderType::Unknown {
+    return mod_loader_type.to_icon_path().to_string();
+  }
+
   match game_type {
     "snapshot" => "/images/icons/JEIcon_Snapshot.png",
     "old_beta" => "/images/icons/StoneOldBeta.png",
@@ -105,7 +117,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         name: String,
         #[schemars(description = "Optional instance description. Defaults to an empty string.")]
         description: Option<String>,
-        #[schemars(description = "Optional instance icon source. Defaults to the standard icon for the selected game version type.")]
+        #[schemars(description = "Optional instance icon source. Defaults to the selected OptiFine/mod loader icon, or the standard icon for the selected game version type.")]
         icon_src: Option<String>,
         #[schemars(description = "Minecraft game version ID, for example `1.21.5`.")]
         game_version: String,
@@ -143,7 +155,13 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         let icon_src = params
           .icon_src
           .filter(|icon_src| !icon_src.trim().is_empty())
-          .unwrap_or_else(|| default_icon_for_game_type(&game.game_type));
+          .unwrap_or_else(|| {
+            default_icon_for_instance(
+              &game.game_type,
+              mod_loader.loader_type,
+              optifine.is_some(),
+            )
+          });
 
         create_instance(
           app,
