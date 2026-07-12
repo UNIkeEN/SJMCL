@@ -447,23 +447,23 @@
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "Eliminar Servidor de Autenticación",
-      "content": "¿Confirmar eliminar el servidor de autenticación \"{{name}}\"? Esto lo eliminará de su lista de servidores."
+      "content": "¿Confirmar eliminar el servidor de autenticación «{{name}}»? Esto lo eliminará de su lista de servidores."
     }
   },
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "Eliminar Amigo",
-      "content": "¿Confirmar eliminar al amigo \"{{name}}\"?"
+      "content": "¿Confirmar eliminar al amigo «{{name}}»?"
     }
   },
   "DeleteGameServerAlertDialog": {
     "title": "Eliminar Servidor de Juego",
-    "content": "¿Confirmar eliminar el servidor de juego \"{{name}}\" ({{addr}})? ¡Se perderá para siempre! (¡Un largo tiempo!)"
+    "content": "¿Confirmar eliminar el servidor de juego «{{name}}» ({{addr}})? ¡Se perderá para siempre! (¡Un largo tiempo!)"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Eliminar Instancia del Juego",
-      "content": "¿Confirmar eliminar la instancia del juego \"{{instanceName}}\"? ¡Se perderá para siempre! (¡Un largo tiempo!)",
+      "content": "¿Confirmar eliminar la instancia del juego «{{instanceName}}»? ¡Se perderá para siempre! (¡Un largo tiempo!)",
       "warning": {
         "withVerIso": "Por favor tenga en cuenta que, dado que el aislamiento de versión está habilitado para esta instancia, eliminarla también eliminará los guardados y otros archivos asociados. Si desea conservar estos datos, por favor migrelos primero.",
         "woVerIso": "Por favor tenga en cuenta que si el aislamiento de versión estaba habilitado previamente para esta instancia, los guardados no migrados y otros archivos también serán eliminados."
@@ -473,13 +473,13 @@
   "DeleteModAlertDialog": {
     "dialog": {
       "title": "Eliminar Mod",
-      "content": "¿Confirmar eliminar el mod \"{{modName}}\" en la instancia del juego \"{{instanceName}}\"?"
+      "content": "¿Confirmar eliminar el mod «{{modName}}» en la instancia del juego «{{instanceName}}»?"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Eliminar Jugador",
-      "content": "¿Confirmar eliminar al jugador \"{{name}}\"? ¡Esto no se puede deshacer!"
+      "content": "¿Confirmar eliminar al jugador «{{name}}»? ¡Esto no se puede deshacer!"
     }
   },
   "DevToolbar": {
@@ -887,7 +887,7 @@
         },
         "wrapperLauncher": {
           "title": "Comando Wrapper",
-          "placeholder": "Permite iniciar usando un programa wrapper adicional como \"optirun\" en Linux"
+          "placeholder": "Permite iniciar usando un programa wrapper adicional como «optirun» en Linux"
         },
         "postExitCommand": {
           "title": "Comando Post-salida",
@@ -1379,7 +1379,7 @@
     },
     "step3": {
       "title": "Página de Descubrimiento",
-      "content": "Aquí puedes explorar Minecraft y noticias de la comunidad, descubrir y descargar varios recursos relacionados como mods, mapas y modpacks.<br/>También puedes abrir rápidamente \"Búsqueda Global\" con el atajo de teclado <key>{{keyname}}</key> + <key>F</key>."
+      "content": "Aquí puedes explorar Minecraft y noticias de la comunidad, descubrir y descargar varios recursos relacionados como mods, mapas y modpacks.<br/>También puedes abrir rápidamente «Búsqueda Global» con el atajo de teclado <key>{{keyname}}</key> + <key>F</key>."
     },
     "step4": {
       "title": "¡Inicia Minecraft!",
@@ -1857,7 +1857,7 @@
   },
   "NoSuitableJavaDialog": {
     "title": "No se encontró un entorno de ejecución Java adecuado para esta instancia",
-    "body": "No hay un entorno de ejecución Java adecuado disponible para esta instancia. Haz clic en \"Confirmar\" para abrir la página de gestión de Java y agregar o descargar Java manualmente."
+    "body": "No hay un entorno de ejecución Java adecuado disponible para esta instancia. Haz clic en «Confirmar» para abrir la página de gestión de Java y agregar o descargar Java manualmente."
   },
   "NotFoundPage": {
     "text": "Página no encontrada, redirigiendo a la página de inicio en {{seconds}} segundos..."

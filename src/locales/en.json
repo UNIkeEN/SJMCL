@@ -281,7 +281,7 @@
         },
         "useLiquidGlassDesign": {
           "title": "Liquid Glass Effect",
-          "description": "When enabled, parts of the interface will use the 'Liquid Glass' effect, which may impact performance."
+          "description": "When enabled, parts of the interface will use the Liquid Glass effect, which may impact performance."
         },
         "headNavStyle": {
           "title": "Navigation Bar Style",
@@ -447,23 +447,23 @@
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "Delete Authentication Server",
-      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
+      "content": "Confirm delete the authentication server “{{name}}”? This will remove it from your server list."
     }
   },
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "Remove Friend",
-      "content": "Confirm remove friend \"{{name}}\"?"
+      "content": "Confirm remove friend “{{name}}”?"
     }
   },
   "DeleteGameServerAlertDialog": {
     "title": "Delete Game Server",
-    "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
+    "content": "Confirm delete the game server “{{name}}” ({{addr}}) ? It will be lost forever! (A long time!)"
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "Delete Game Instance",
-      "content": "Confirm delete the game instance \"{{instanceName}}\" ? It will be lost forever! (A long time!)",
+      "content": "Confirm delete the game instance “{{instanceName}}” ? It will be lost forever! (A long time!)",
       "warning": {
         "withVerIso": "Please note that since instance isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
         "woVerIso": "Please note that if instance isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
@@ -473,13 +473,13 @@
   "DeleteModAlertDialog": {
     "dialog": {
       "title": "Delete Mod",
-      "content": "Confirm delete the mod \"{{modName}}\" in the game instance \"{{instanceName}}\" ?"
+      "content": "Confirm delete the mod “{{modName}}” in the game instance “{{instanceName}}” ?"
     }
   },
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "Delete Player",
-      "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
+      "content": "Confirm delete the player “{{name}}” ? This cannot be undone!"
     }
   },
   "DevToolbar": {
@@ -887,7 +887,7 @@
         },
         "wrapperLauncher": {
           "title": "Wrapper Command",
-          "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
+          "placeholder": "Allows launching using an extra wrapper program like “optirun” on Linux"
         },
         "postExitCommand": {
           "title": "Post-exit Command",
@@ -1364,7 +1364,7 @@
       }
     },
     "topWarning": {
-      "specGameConfigWarning": "The current instance \"{{instance}}\" has specific game Settings enabled, so the options on this page will not affect this instance. ",
+      "specGameConfigWarning": "The current instance “{{instance}}” has specific game Settings enabled, so the options on this page will not affect this instance. ",
       "editInstanceSettings": "Edit instance specific game settings"
     }
   },
@@ -1379,7 +1379,7 @@
     },
     "step3": {
       "title": "Discover Page",
-      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open \"Global Search\" with the keyboard shortcut <key>{{keyname}}</key> + <key>F</key>."
+      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open “Global Search” with the keyboard shortcut <key>{{keyname}}</key> + <key>F</key>."
     },
     "step4": {
       "title": "Launch Minecraft!",
@@ -1857,7 +1857,7 @@
   },
   "NoSuitableJavaDialog": {
     "title": "No suitable Java runtime found for this instance",
-    "body": "No suitable Java runtime is available for this instance. Click \"Confirm\" to open Java Management page and add or download Java manually."
+    "body": "No suitable Java runtime is available for this instance. Click “Confirm” to open Java Management page and add or download Java manually."
   },
   "NotFoundPage": {
     "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
