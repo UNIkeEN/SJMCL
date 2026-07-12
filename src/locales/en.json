@@ -81,6 +81,7 @@
       "add3rdPartyServer": "Add auth server",
       "sourceHomepage": "View Homepage",
       "deleteServer": "Delete Auth Server",
+      "editServerName": "Edit Server Name",
       "importFromOtherLaunchers": "Import"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "Name",
+      "nameRequired": "Name cannot be empty",
       "serverUrl": "Server URL"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "Edit Server Name"
+    },
+    "placeholder": {
+      "name": "Server Name"
+    },
+    "error": {
+      "nameRequired": "Name cannot be empty"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {

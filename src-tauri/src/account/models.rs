@@ -255,15 +255,19 @@ pub struct AuthServerInfo {
   pub client_id: Option<String>,
   pub metadata: Value,
   pub timestamp: u64,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub custom_name: Option<String>,
 }
 
 impl From<AuthServerInfo> for AuthServer {
   fn from(info: AuthServerInfo) -> Self {
     AuthServer {
-      name: info.metadata["meta"]["serverName"]
-        .as_str()
-        .unwrap_or_default()
-        .to_string(),
+      name: info.custom_name.clone().unwrap_or_else(|| {
+        info.metadata["meta"]["serverName"]
+          .as_str()
+          .unwrap_or_default()
+          .to_string()
+      }),
       auth_url: info.auth_url,
       homepage_url: info.metadata["meta"]["links"]["homepage"]
         .as_str()
@@ -306,6 +310,7 @@ impl Default for AccountInfo {
           client_id: None,
           metadata: Value::Null,
           timestamp: 0,
+          custom_name: None,
         })
         .collect(),
       is_oauth_processing: false,

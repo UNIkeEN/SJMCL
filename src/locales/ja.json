@@ -81,6 +81,7 @@
       "add3rdPartyServer": "認証サーバー追加",
       "sourceHomepage": "ホームページへ",
       "deleteServer": "サーバー削除",
+      "editServerName": "名前を編集",
       "importFromOtherLaunchers": "他のランチャーからインポート"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "サーバー名称",
+      "nameRequired": "名前は必須です",
       "serverUrl": "サーバーアドレス"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "編集",
     "save": "保存",
     "cancel": "キャンセル"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "サーバー名を編集"
+    },
+    "placeholder": {
+      "name": "サーバー名"
+    },
+    "error": {
+      "nameRequired": "名前は必須です"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {

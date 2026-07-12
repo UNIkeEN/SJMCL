@@ -50,8 +50,11 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [isServerUrlTouched, setIsServerUrlTouched] = useState(false);
+  const [isServerNameTouched, setIsServerNameTouched] = useState(false);
   const trimmedServerUrl = serverUrl.trim();
   const isServerUrlInvalid = isServerUrlTouched && !trimmedServerUrl;
+  const trimmedServerName = serverName.trim();
+  const isServerNameInvalid = isServerNameTouched && !trimmedServerName;
 
   useEffect(() => {
     if (isOpen) {
@@ -59,6 +62,7 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
       setIsNextStep(false);
       setServerUrl(presetUrl);
       setIsServerUrlTouched(false);
+      setIsServerNameTouched(false);
     }
   }, [isOpen, presetUrl]);
 
@@ -97,9 +101,12 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
   }, [isOpen, presetUrl, serverUrl, handleNextStep]);
 
   const handleFinish = () => {
+    setIsServerNameTouched(true);
+    if (!trimmedServerName) return;
+
     setIsLoading(true);
     // save the server info to the storage
-    AccountService.addAuthServer(trimmedServerUrl)
+    AccountService.addAuthServer(trimmedServerUrl, trimmedServerName)
       .then((response) => {
         if (response.status === "success") {
           getAuthServerList(true);
@@ -171,12 +178,25 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
             </FormControl>
           ) : (
             <VStack spacing={3.5} align="flex-start">
-              <HStack spacing={2}>
-                <Text fontWeight={500}>
+              <FormControl isInvalid={isServerNameInvalid} isRequired>
+                <FormLabel htmlFor="serverName">
                   {t("AddAuthServerModal.page2.name")}
-                </Text>
-                <Text>{serverName}</Text>
-              </HStack>
+                </FormLabel>
+                <Input
+                  id="serverName"
+                  value={serverName}
+                  placeholder={t("AddAuthServerModal.page2.name")}
+                  onChange={(e) => setServerName(e.target.value)}
+                  onBlur={() => setIsServerNameTouched(true)}
+                  ref={initialRef}
+                  focusBorderColor={`${primaryColor}.500`}
+                />
+                {isServerNameInvalid && (
+                  <FormErrorMessage>
+                    {t("AddAuthServerModal.page2.nameRequired")}
+                  </FormErrorMessage>
+                )}
+              </FormControl>
               <HStack spacing={2}>
                 <Text fontWeight={500}>
                   {t("AddAuthServerModal.page2.serverUrl")}
@@ -197,7 +217,9 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
                 {t("General.previous")}
               </Button>
               <Button
-                disabled={!config.basicInfo.allowFullLoginFeature}
+                disabled={
+                  !config.basicInfo.allowFullLoginFeature || !trimmedServerName
+                }
                 colorScheme={primaryColor}
                 onClick={handleFinish}
                 isLoading={isLoading}

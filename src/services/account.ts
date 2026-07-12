@@ -275,11 +275,18 @@ export class AccountService {
   /**
    * ADD the new authentication server to the storage.
    * @param {string} authUrl - The authentication server URL (already formatted by backend).
+   * @param {string} [customName] - (Optional) Custom name for the auth server.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("account")
-  static async addAuthServer(authUrl: string): Promise<InvokeResponse<void>> {
-    return await invoke("add_auth_server", { authUrl });
+  static async addAuthServer(
+    authUrl: string,
+    customName?: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("add_auth_server", {
+      authUrl,
+      customName: customName || null,
+    });
   }
 
   /**
@@ -290,6 +297,20 @@ export class AccountService {
   @responseHandler("account")
   static async deleteAuthServer(url: string): Promise<InvokeResponse<void>> {
     return await invoke("delete_auth_server", { url });
+  }
+
+  /**
+   * UPDATE the custom name of an authentication server.
+   * @param {string} authUrl - The authentication server URL.
+   * @param {string} customName - The new custom name for the server.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async updateAuthServerName(
+    authUrl: string,
+    customName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("update_auth_server_name", { authUrl, customName });
   }
 
   /**

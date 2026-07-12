@@ -81,6 +81,7 @@
       "add3rdPartyServer": "Ajouter un serveur d'authentification",
       "sourceHomepage": "Visiter la page d'accueil",
       "deleteServer": "Supprimer ce serveur",
+      "editServerName": "Modifier le nom",
       "importFromOtherLaunchers": "Importer depuis d'autres launchers"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "Nom",
+      "nameRequired": "Le nom ne peut pas être vide",
       "serverUrl": "Adresse du serveur"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "Éditer",
     "save": "Enregistrer",
     "cancel": "Annuler"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "Modifier le Nom du Serveur"
+    },
+    "placeholder": {
+      "name": "Nom du Serveur"
+    },
+    "error": {
+      "nameRequired": "Le nom ne peut pas être vide"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {

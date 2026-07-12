@@ -5,6 +5,7 @@ import CopyOrMoveModal from "@/components/modals/copy-or-move-modal";
 import DeleteInstanceDialog from "@/components/modals/delete-instance-alert-dialog";
 import DownloadModpackModal from "@/components/modals/download-modpack-modal";
 import DownloadResourceModal from "@/components/modals/download-resource-modal";
+import EditAuthServerNameModal from "@/components/modals/edit-auth-server-name-modal";
 import ExtensionInfoModal from "@/components/modals/extension-info-modal";
 import GenericConfirmDialog from "@/components/modals/generic-confirm-dialog";
 import ImportModpackModal from "@/components/modals/import-modpack-modal";
@@ -32,6 +33,7 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
 
   const modals: Record<string, React.FC<any>> = {
     "add-auth-server": AddAuthServerModal,
+    "edit-auth-server-name": EditAuthServerNameModal,
     "alert-resource-dependency": AlertResourceDependencyModal,
     "copy-or-move": CopyOrMoveModal,
     "delete-instance-alert": DeleteInstanceDialog,

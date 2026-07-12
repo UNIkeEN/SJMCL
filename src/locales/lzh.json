@@ -81,6 +81,7 @@
       "add3rdPartyServer": "增鑒權伺服器",
       "sourceHomepage": "詣主葉",
       "deleteServer": "刪此伺服器",
+      "editServerName": "編輯名稱",
       "importFromOtherLaunchers": "自他啟者導入"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "名",
+      "nameRequired": "名不可為空",
       "serverUrl": "伺服器之址"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "改",
     "save": "存",
     "cancel": "罷"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "改伺服器名"
+    },
+    "placeholder": {
+      "name": "伺服器名"
+    },
+    "error": {
+      "nameRequired": "名不可為空"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {

@@ -81,6 +81,7 @@
       "add3rdPartyServer": "新增認證伺服器",
       "sourceHomepage": "訪問首頁",
       "deleteServer": "刪除此伺服器",
+      "editServerName": "編輯名稱",
       "importFromOtherLaunchers": "從其他啟動器匯入"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "名稱",
+      "nameRequired": "名稱不能為空",
       "serverUrl": "伺服器地址"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "編輯",
     "save": "儲存",
     "cancel": "取消"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "編輯伺服器名稱"
+    },
+    "placeholder": {
+      "name": "伺服器名稱"
+    },
+    "error": {
+      "nameRequired": "名稱不能為空"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {

@@ -127,7 +127,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         auth_url: String,
       } => async move {
         let auth_server = fetch_auth_server(app.clone(), params.auth_url).await?;
-        add_auth_server(app, auth_server.auth_url).await
+        add_auth_server(app, auth_server.auth_url, None).await
       }
     ),
     mcp_tool!(

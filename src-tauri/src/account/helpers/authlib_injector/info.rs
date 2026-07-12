@@ -43,6 +43,7 @@ pub async fn fetch_auth_server_info(
         client_id,
         metadata: json,
         timestamp: chrono::Utc::now().timestamp_millis() as u64,
+        custom_name: None,
       })
     }
     Err(_) => Err(AccountError::Invalid.into()),
@@ -84,7 +85,8 @@ pub async fn refresh_and_update_auth_servers(app: &AppHandle) -> SJMCLResult<()>
 
   let mut refreshed_auth_server_info_list =
     futures::future::join_all(cloned_account_state.auth_servers.iter().map(|info| async {
-      if let Ok(refreshed_info) = fetch_auth_server_info(app, info.auth_url.clone()).await {
+      if let Ok(mut refreshed_info) = fetch_auth_server_info(app, info.auth_url.clone()).await {
+        refreshed_info.custom_name = info.custom_name.clone();
         refreshed_info
       } else {
         info.clone()

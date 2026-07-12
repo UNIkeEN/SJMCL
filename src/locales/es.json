@@ -81,6 +81,7 @@
       "add3rdPartyServer": "Agregar servidor de autenticación",
       "sourceHomepage": "Ver Página Principal",
       "deleteServer": "Eliminar Servidor de Autenticación",
+      "editServerName": "Editar Nombre",
       "importFromOtherLaunchers": "Importar"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "Nombre",
+      "nameRequired": "El nombre no puede estar vacío",
       "serverUrl": "URL del Servidor"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "Editar",
     "save": "Guardar",
     "cancel": "Cancelar"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "Editar Nombre del Servidor"
+    },
+    "placeholder": {
+      "name": "Nombre del Servidor"
+    },
+    "error": {
+      "nameRequired": "El nombre no puede estar vacío"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {

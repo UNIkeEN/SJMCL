@@ -503,12 +503,23 @@ pub async fn fetch_auth_server(app: AppHandle, url: String) -> SJMCLResult<AuthS
 }
 
 #[tauri::command]
-pub async fn add_auth_server(app: AppHandle, auth_url: String) -> SJMCLResult<()> {
+pub async fn add_auth_server(
+  app: AppHandle,
+  auth_url: String,
+  custom_name: Option<String>,
+) -> SJMCLResult<()> {
   if get_auth_server_info_by_url(&app, auth_url.clone()).is_ok() {
     return Err(AccountError::Duplicate.into());
   }
 
-  let server = fetch_auth_server_info(&app, auth_url).await?;
+  let mut server = fetch_auth_server_info(&app, auth_url).await?;
+
+  if let Some(name) = custom_name {
+    let trimmed = name.trim().to_string();
+    if !trimmed.is_empty() {
+      server.custom_name = Some(trimmed);
+    }
+  }
 
   let binding = app.state::<Mutex<AccountInfo>>();
   let mut state = binding.lock()?;
@@ -564,6 +575,31 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
 
   account_state.save()?;
   config_state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub fn update_auth_server_name(
+  app: AppHandle,
+  auth_url: String,
+  custom_name: String,
+) -> SJMCLResult<()> {
+  let trimmed = custom_name.trim().to_string();
+  if trimmed.is_empty() {
+    return Err(AccountError::Invalid.into());
+  }
+
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  let server = account_state
+    .auth_servers
+    .iter_mut()
+    .find(|server| server.auth_url == auth_url)
+    .ok_or(AccountError::NotFound)?;
+
+  server.custom_name = Some(trimmed);
+  account_state.save()?;
   Ok(())
 }
 

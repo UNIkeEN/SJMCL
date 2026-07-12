@@ -23,6 +23,7 @@ import {
   LuLayoutGrid,
   LuLayoutList,
   LuLink2Off,
+  LuPencil,
   LuPlus,
   LuServer,
   LuServerOff,
@@ -240,6 +241,28 @@ const AccountsPage = () => {
             }
             headExtra={
               <HStack spacing={2} alignItems="flex-start">
+                {!["all", "offline", "microsoft"].includes(
+                  selectedPlayerType
+                ) && (
+                  <Tooltip label={t("AccountsPage.button.editServerName")}>
+                    <IconButton
+                      aria-label="edit-name"
+                      size="xs"
+                      fontSize="sm"
+                      variant="ghost"
+                      icon={<LuPencil />}
+                      onClick={() => {
+                        const server = authServerList.find(
+                          (s) => s.authUrl === selectedPlayerType
+                        );
+                        openSharedModal("edit-auth-server-name", {
+                          authUrl: server?.authUrl || "",
+                          currentName: server?.name || "",
+                        });
+                      }}
+                    />
+                  </Tooltip>
+                )}
                 {!["all", "offline", "microsoft"].includes(
                   selectedPlayerType
                 ) && (

@@ -81,6 +81,7 @@
       "add3rdPartyServer": "添加认证服务器",
       "sourceHomepage": "访问主页",
       "deleteServer": "删除此服务器",
+      "editServerName": "编辑名称",
       "importFromOtherLaunchers": "从其他启动器导入"
     },
     "playerTypeList": {
@@ -131,6 +132,7 @@
     },
     "page2": {
       "name": "名称",
+      "nameRequired": "名称不能为空",
       "serverUrl": "服务器地址"
     }
   },
@@ -667,6 +669,17 @@
     "edit": "编辑",
     "save": "保存",
     "cancel": "取消"
+  },
+  "EditAuthServerNameModal": {
+    "header": {
+      "title": "编辑服务器名称"
+    },
+    "placeholder": {
+      "name": "服务器名称"
+    },
+    "error": {
+      "nameRequired": "名称不能为空"
+    }
   },
   "EditGameDirectoryModal": {
     "header": {
