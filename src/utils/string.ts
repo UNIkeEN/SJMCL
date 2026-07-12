@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { BuildType } from "@/enums/misc";
 
 export const base64ImgSrc = (base64: string): string => {
@@ -24,13 +25,13 @@ export const removeFileExt = (filename: string): string => {
 
 export const formatByteSize = (bytes: number) => {
   bytes = Math.max(0, bytes);
-  const sizes = ["B", "KiB", "MiB", "GiB"];
+  const units = ["b", "kib", "mib", "gib"];
 
   if (bytes >= 1024) {
     let i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), 3);
-    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${t(`Utils.byteSize.${units[i]}`)}`;
   } else {
-    return `${bytes} B`;
+    return `${bytes} ${t(`Utils.byteSize.${units[0]}`)}`;
   }
 };
 
