@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
@@ -51,10 +51,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
     ],
   ];
 
-  const selectedKey = useMemo(() => {
-    const segments = router.asPath.split("/");
-    return `/${segments[1]}/${segments[2]}`;
-  }, [router.asPath]);
+  const selectedKey = router.pathname.split("/").slice(0, 3).join("/") || "/";
 
   return (
     <Grid templateColumns="1fr 3fr" gap={4} h="100%">
