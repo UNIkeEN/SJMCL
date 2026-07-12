@@ -3189,6 +3189,12 @@
     }
   },
   "Utils": {
+    "byteSize": {
+      "b": "o",
+      "kib": "Kio",
+      "mib": "Mio",
+      "gib": "Gio"
+    },
     "datetime": {
       "formatRelativeTime": {
         "now": "Maintenant",

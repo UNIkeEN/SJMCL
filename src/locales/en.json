@@ -3189,6 +3189,12 @@
     }
   },
   "Utils": {
+    "byteSize": {
+      "b": "B",
+      "kib": "KiB",
+      "mib": "MiB",
+      "gib": "GiB"
+    },
     "datetime": {
       "formatRelativeTime": {
         "now": "now",
