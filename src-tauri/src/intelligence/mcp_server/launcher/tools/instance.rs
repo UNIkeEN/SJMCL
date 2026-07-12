@@ -143,11 +143,11 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         name: String,
         #[schemars(description = "Optional instance description. Defaults to an empty string.")]
         description: Option<String>,
-        #[schemars(description = "Optional instance icon source. Omit to let SJMCL pick automatically: OptiFine uses `/images/icons/OptiFine.png`; Fabric, Forge/LegacyForge, NeoForge, LiteLoader, and Quilt use their matching `/images/icons/*.png`; otherwise snapshots use `/images/icons/JEIcon_Snapshot.png`, old beta uses `/images/icons/StoneOldBeta.png`, April Fools versions use `/images/icons/YellowGlazedTerracotta.png`, and releases use `/images/icons/JEIcon_Release.png`. Supported built-in icon paths are `/images/icons/JEIcon_Release.png`, `/images/icons/JEIcon_Snapshot.png`, `/images/icons/CommandBlock.png`, `/images/icons/CraftingTable.png`, `/images/icons/GrassBlock.png`, `/images/icons/StoneOldBeta.png`, `/images/icons/YellowGlazedTerracotta.png`, `/images/icons/Anvil.png`, `/images/icons/Forge.png`, `/images/icons/Fabric.png`, `/images/icons/NeoForge.png`, `/images/icons/Quilt.png`, and `/images/icons/OptiFine.png`. Pass `custom` only when the instance root already has a custom icon file to display.")]
+        #[schemars(description = "Optional instance icon source. Omit to let SJMCL pick automatically: OptiFine uses its icon; Fabric, Forge/LegacyForge, NeoForge, and Quilt use their matching icons; otherwise snapshots, old beta, April Fools versions, and releases use their game version type icons. To choose a built-in icon manually, call `retrieve_instance_icon_options` and use one item from `builtinIconPaths`. Pass `custom` only when the instance root already has a custom icon file to display.")]
         icon_src: Option<String>,
         #[schemars(description = "Minecraft game version ID, for example `1.21.5`.")]
         game_version: String,
-        #[schemars(description = "Optional mod loader type: `unknown`, `fabric`, `forge`, `legacyforge`, `neoforge`, `liteloader`, or `quilt`. Defaults to `unknown`.")]
+        #[schemars(description = "Optional mod loader type: `unknown`, `fabric`, `forge`, `legacyforge`, `neoforge`, or `quilt`. Defaults to `unknown`.")]
         mod_loader_type: Option<String>,
         #[schemars(description = "Optional exact mod loader version. If omitted, the first stable loader version is used.")]
         mod_loader_version: Option<String>,
