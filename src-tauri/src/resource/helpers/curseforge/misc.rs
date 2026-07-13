@@ -492,6 +492,7 @@ pub fn cvt_mod_loader_to_id(mod_loader: &str) -> u32 {
 // https://api.curseforge.com/v1/minecraft/version
 pub fn cvt_version_to_type_id(version: &str) -> u32 {
   match version {
+    "26.2" => 86297,
     "26.1" => 83806,
     "1.21" => 77784,
     "1.20" => 75125,
