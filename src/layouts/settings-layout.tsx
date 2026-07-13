@@ -51,7 +51,11 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
     ],
   ];
 
-  const selectedKey = router.pathname.split("/").slice(0, 3).join("/") || "/";
+  const settingsPaths = settingsDomainList
+    .flat()
+    .map((item) => `/settings/${item.key}`);
+  const selectedKey =
+    settingsPaths.find((path) => router.pathname.startsWith(path)) || "";
 
   return (
     <Grid templateColumns="1fr 3fr" gap={4} h="100%">

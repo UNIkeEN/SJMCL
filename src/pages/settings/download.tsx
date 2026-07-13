@@ -120,7 +120,7 @@ const DownloadSettingsPage = () => {
           title: t("PingTestPage.PingServerList.title"),
           children: <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />,
           isFullClickZone: true,
-          onClick: () => router.push("/settings/ping-test"),
+          onClick: () => router.push("/settings/download/ping-test"),
         },
       ],
     },

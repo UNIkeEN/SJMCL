@@ -12,8 +12,8 @@ const SettingsPage = () => {
       "/settings/general";
 
     const replacements: [string, string][] = [
-      ["/advanced", "/"],
-      ["/ping-test", "/download"],
+      ["/global-game/advanced", "/global-game"],
+      ["/download/ping-test", "/download"],
     ];
     replacements.forEach(([suffix, replacement]) => {
       if (lastRecord.endsWith(suffix)) {
