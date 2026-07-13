@@ -51,6 +51,12 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
     ],
   ];
 
+  const settingsPaths = settingsDomainList
+    .flat()
+    .map((item) => `/settings/${item.key}`);
+  const selectedKey =
+    settingsPaths.find((path) => router.pathname.startsWith(path)) || "";
+
   return (
     <Grid templateColumns="1fr 3fr" gap={4} h="100%">
       <GridItem className="content-full-y">
@@ -58,7 +64,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
           {settingsDomainList.map((group, index) => (
             <NavMenu
               key={index}
-              selectedKeys={[router.asPath]}
+              selectedKeys={[selectedKey]}
               onClick={(value) => {
                 router.push(value);
               }}
