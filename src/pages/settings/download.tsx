@@ -189,11 +189,8 @@ const DownloadSettingsPage = () => {
                         setSliderConcurrentCount(value);
                         setConcurrentCount(value);
                       }}
-                      onBlur={() => {
-                        update(
-                          "download.transmission.concurrentCount",
-                          concurrentCount
-                        );
+                      onChangeEnd={(value) => {
+                        update("download.transmission.concurrentCount", value);
                       }}
                     >
                       <SliderTrack>
