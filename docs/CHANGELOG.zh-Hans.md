@@ -2,6 +2,55 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.2.0
+
+`2026-07-13`
+
+- 🌟 支持使用预设组合快速设置游戏分辨率。#1751 #1759 @UNIkeEN @3gf8jv4dv
+- 🌟 支持为新建实例自动设置启动器支持的所有语言。#1755 @HsxMark @3gf8jv4dv
+- 🌟 支持自定义游戏日志窗口的字体。#1770 @UNIkeEN @3gf8jv4dv
+- 🌟 支持从 HMCL 新版本（3.16+）导入角色与认证服务器信息。#1781 @CiiLu
+- 🌟 支持为游戏进程配置网络代理。#1808 @xunying123 @UNIkeEN @3gf8jv4dv
+- 🌟 支持为游戏进程选择不同的图形渲染器。#1809 @xunying123 @UNIkeEN
+- 🌟 支持为实例移除已安装的模组加载器。#1821 #1844 @xunying123 @UNIkeEN @zaixiZaixiSJTU
+- 🌟 支持通过系统右键菜单快速导入 `.mrpack` 格式的整合包。#1824 @zaixiZaixiSJTU @UNIkeEN
+- 🐛 修复更换模组加载器后无法启动游戏的问题。#1670 @xunying123
+- 🐛 修复与优化一系列界面显示问题。#1691 #1723 #1756 #1778 #1801 #1850 @UNIkeEN @renvlers @HsxMark @3gf8jv4dv @zaixiZaixiSJTU
+- 🐛 修复启动参数中启动器元信息格式不规范的问题。#1724 @xunying123
+- 🐛 修复在部分 Linux 发行版下，从移动存储介质运行启动器时错误显示警告的问题。#1727 @xunying123 @UNIkeEN
+- 🐛 修复 NeoForge 与 OptiFine 版本列表的排序与显示问题。#1728 #1813 @xunying123
+- 🐛 修复早期 macOS 平台下启动器白屏的问题。#1799 @UNIkeEN @hans362 @1357310795
+- 🐛 修复 Windows 非便携版本无法自动更新的问题。#1810 @pangbo13
+- 🐛 修复启动参数中自定义信息对 1.13+ 版本游戏无效的问题。#1811 @xunying123
+- 🐛 修复 Modrinth 整合包资源版本显示重复的问题。#1812 @xunying123
+- 🐛 修复部分 Fabric 模组元信息因格式不规范而无法显示的问题。#1823 @pangbo13
+- 🐛 修复通过 MCP 服务创建新实例时，无法修改实例图标的问题。#1846 #1848 @xunying123
+- ⚡️ 优化资源搜索体验。#1589 #1853 @xunying123 @UNIkeEN
+- ⚡️ 提升外观设置页面的加载性能。#1786 @HsxMark @UNIkeEN
+- ⚡️ 提升游戏日志窗口的深色模式显示效果。#1793 @zaixiZaixiSJTU @funkthesky-ops @RobertZhang0901
+- 🛠 调整部分设置项的显示样式与描述。#1694 #1710 #1750 @UNIkeEN @baiyuansjtu @3gf8jv4dv
+- 🛠 调整帮助、关于页面的部分条目与链接。#1717 #1746 @3gf8jv4dv @xunying123 @UNIkeEN
+- 🛠 根据 CurseForge 要求，为指向其的资源下载请求添加 API Key。#1725 @xunying123
+- 🛠 更换内置实例图标中 NeoForge 与 Forge 的图标资源与默认设置。#1748 #1841 @HsxMark @UNIkeEN
+- 🛠 移除 Forge 和 Fabric 版本列表的发行类别显示。#1795 @UNIkeEN @3gf8jv4dv
+- 🛠 当选中实例启用了特定游戏设置时，在全局游戏设置页面进行提示。#1835 @baiyuansjtu
+- 💄 重构部分后端代码以提升构建速度、代码风格与可维护性。#1776 #1777 #1780 #1782 #1822 @ToolmanP @UNIkeEN
+- 🌐 更新启动器界面文本的多语言翻译。#1718 #1719 #1720 #1745 #1768 #1819 #1829 #1837 #1849 @3gf8jv4dv @xunying123 @w1049 @UNIkeEN
+- 🇪🇸 启动器界面支持西班牙语。#1722 #1749 @UNIkeEN @HsxMark
+- 📦 使用 `pnpm` 替换 `npm`。#1700 @pangbo13 @1357310795 @UNIkeEN
+- 📦 为 Windows 平台的非便携版本安装程序更新版权信息。#1721 @3gf8jv4dv
+- 📦 为 Windows 平台的非便携版本安装程序提供多语言支持。#1731 #1760 @3gf8jv4dv
+- 📦 更新多项依赖至补丁版本。#1753 @dependabot[bot] @claude
+- 扩展：
+   - 为扩展提供自定义的 `toast` 方法，与启动器默认样式保持一致。 @UNIkeEN
+   - 新增 `ExtensionUISlotKey.GameErrorWindowOperations` 方法，支持扩展在游戏崩溃窗口提供自定义功能。#1800 @UNIkeEN
+- 工作流：
+   - 版本发布后自动更新仓库中的更新日志文件。#1711 @pangbo13
+   - 支持下载测试工作流中的构建产物。#1715 #1744 #1772 #1820 @pangbo13
+   - 新增 AGENTS.md 与部分仓库级 Skills。#1726 @UNIkeEN @ToolmanP @1357310795
+- 网页与文档：
+   - 更新面向 Snap 与 Winget 安装方式的风险提示。#1729 @pangbo13
+
 ## 1.1.2
 
 `2026-06-04`
