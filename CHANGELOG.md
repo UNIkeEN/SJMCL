@@ -51,6 +51,18 @@ SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 - Web & Docs:
    - Update risk warnings for Snap and Winget installation methods. #1729 @pangbo13
 
+## 1.1.3
+
+`2026-06-11`
+
+- 🌟 Support quickly installing game resources into any instance and quickly installing modpacks, improving the resource download experience. #1659 #1677 @UNIkeEN
+- 🌟 Support launching the game with a custom Authlib Injector. #1664 @UNIkeEN
+- 🐛 Fix an issue where frontend state could not be updated on the instance resource pack page. #1673 @baiyuansjtu
+- 🛠 Adjust the clickable area of collapsible panels in the frontend. #1672 @1357310795 @UNIkeEN
+- 📦 End support for Windows 7. #1680 @3gf8jv4dv @xunying123
+- Workflow:
+   - Fix the Winget release workflow. #1667 #1668 @pangbo13
+
 ## 1.1.2
 
 `2026-06-04`
