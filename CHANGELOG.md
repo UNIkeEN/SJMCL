@@ -2,6 +2,67 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.2.0
+
+`2026-07-13`
+
+- 🌟 Support quickly setting game resolution using presets. #1751 #1759 @UNIkeEN @3gf8jv4dv
+- 🌟 Support automatically setting all languages supported by the launcher for newly created instances. #1755 @HsxMark @3gf8jv4dv
+- 🌟 Support customizing the font of the game log window. #1770 @UNIkeEN @3gf8jv4dv
+- 🌟 Support importing profiles and authentication server information from newer versions of HMCL (3.16+). #1781 @CiiLu
+- 🌟 Support configuring network proxies for game processes. #1808 @xunying123 @UNIkeEN @3gf8jv4dv
+- 🌟 Support selecting different graphics renderers for game processes. #1809 @xunying123 @UNIkeEN
+- 🌟 Support removing installed mod loaders from instances. #1821 #1844 @xunying123 @UNIkeEN @zaixiZaixiSJTU
+- 🌟 Support quickly importing `.mrpack` modpacks through the system context menu. #1824 @zaixiZaixiSJTU @UNIkeEN
+- 🐛 Fix an issue where games could not be launched after changing mod loaders. #1670 @xunying123
+- 🐛 Fix and improve a series of UI display issues. #1691 #1723 #1756 #1778 #1801 #1850 @UNIkeEN @renvlers @HsxMark @3gf8jv4dv @zaixiZaixiSJTU
+- 🐛 Fix an issue where launcher metadata in launch arguments had an invalid format. #1724 @xunying123
+- 🐛 Fix incorrect warning messages when running the launcher from removable storage devices on certain Linux distributions. #1727 @xunying123 @UNIkeEN
+- 🐛 Fix sorting and display issues in NeoForge and OptiFine version lists. #1728 #1813 @xunying123
+- 🐛 Fix a white screen issue on older macOS versions. #1799 @UNIkeEN @hans362 @1357310795
+- 🐛 Fix an issue where non-portable Windows versions could not update automatically. #1810 @pangbo13
+- 🐛 Fix an issue where custom information in launch arguments did not work for Minecraft versions 1.13 and above. #1811 @xunying123
+- 🐛 Fix duplicate version entries displayed for Modrinth modpacks. #1812 @xunying123
+- 🐛 Fix an issue where metadata of some Fabric mods could not be displayed due to invalid formats. #1823 @pangbo13
+- 🐛 Fix an issue where instance icons could not be modified when creating new instances through the MCP service. #1846 #1848 @xunying123
+- ⚡️ Improve the resource search experience. #1589 #1853 @xunying123 @UNIkeEN
+- ⚡️ Improve the loading performance of the appearance settings page. #1786 @HsxMark @UNIkeEN
+- ⚡️ Improve dark mode rendering in the game log window. #1793 @zaixiZaixiSJTU @funkthesky-ops @RobertZhang0901
+- 🛠 Adjust the display style and descriptions of certain settings. #1694 #1710 #1750 @UNIkeEN @baiyuansjtu @3gf8jv4dv
+- 🛠 Adjust certain entries and links in the Help and About pages. #1717 #1746 @3gf8jv4dv @xunying123 @UNIkeEN
+- 🛠 Add an API Key to resource download requests targeting CurseForge as required by CurseForge. #1725 @xunying123
+- 🛠 Replace built-in instance icons and default settings for NeoForge and Forge. #1748 #1841 @HsxMark @UNIkeEN
+- 🛠 Remove release category display from Forge and Fabric version lists. #1795 @UNIkeEN @3gf8jv4dv
+- 🛠 Show a prompt in global game settings when the selected instance has enabled specific game settings. #1835 @baiyuansjtu
+- 💄 Refactor parts of the backend code to improve build speed, code style, and maintainability. #1776 #1777 #1780 #1782 #1822 @ToolmanP @UNIkeEN
+- 🌐 Update multilingual translations for launcher UI text. #1718 #1719 #1720 #1745 #1768 #1819 #1829 #1837 #1849 @3gf8jv4dv @xunying123 @w1049 @UNIkeEN
+- 🇪🇸 Add Spanish language support to the launcher UI. #1722 #1749 @UNIkeEN @HsxMark
+- 📦 Replace `npm` with `pnpm`. #1700 @pangbo13 @1357310795 @UNIkeEN
+- 📦 Update copyright information in the non-portable Windows installer. #1721 @3gf8jv4dv
+- 📦 Add multilingual support to the non-portable Windows installer. #1731 #1760 @3gf8jv4dv
+- 📦 Update multiple dependencies to patch versions. #1753 @dependabot[bot] @claude
+- Extensions:
+   - Provide a custom `toast` method for extensions, matching the launcher's default style. @UNIkeEN
+   - Add the `ExtensionUISlotKey.GameErrorWindowOperations` method, allowing extensions to provide custom features in the game crash window. #1800 @UNIkeEN
+- Workflow:
+   - Automatically update the changelog file in the repository after releases. #1711 @pangbo13
+   - Support downloading build artifacts from test workflows. #1715 #1744 #1772 #1820 @pangbo13
+   - Add `AGENTS.md` and some repository-level Skills. #1726 @UNIkeEN @ToolmanP @1357310795
+- Web & Docs:
+   - Update risk warnings for Snap and Winget installation methods. #1729 @pangbo13
+
+## 1.1.3
+
+`2026-06-11`
+
+- 🌟 Support quickly installing game resources into any instance and quickly installing modpacks, improving the resource download experience. #1659 #1677 @UNIkeEN
+- 🌟 Support launching the game with a custom Authlib Injector. #1664 @UNIkeEN
+- 🐛 Fix an issue where frontend state could not be updated on the instance resource pack page. #1673 @baiyuansjtu
+- 🛠 Adjust the clickable area of collapsible panels in the frontend. #1672 @1357310795 @UNIkeEN
+- 📦 End support for Windows 7. #1680 @3gf8jv4dv @xunying123
+- Workflow:
+   - Fix the Winget release workflow. #1667 #1668 @pangbo13
+
 ## 1.1.2
 
 `2026-06-04`
