@@ -7,21 +7,16 @@ const SettingsPage = () => {
   const { history } = useRoutingHistory();
 
   useEffect(() => {
-    let lastRecord =
+    const lastRecord =
       [...history].reverse().find((route) => route.startsWith("/settings/")) ||
       "/settings/general";
 
-    const replacements: [string, string][] = [
-      ["/global-game/advanced", "/global-game"],
-      ["/download/ping-test", "/download"],
-    ];
-    replacements.forEach(([suffix, replacement]) => {
-      if (lastRecord.endsWith(suffix)) {
-        lastRecord = lastRecord.replace(suffix, replacement);
-      }
-    });
+    // always redirect to top-level settings page (e.g. /settings/download/ping-test → /settings/download)
+    const segments = lastRecord.split("/");
+    const parent =
+      segments.length > 3 ? segments.slice(0, 3).join("/") : lastRecord;
 
-    router.replace(lastRecord);
+    router.replace(parent);
   }, [history, router]);
 
   return null;
