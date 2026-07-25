@@ -170,7 +170,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               handleFetchLatestMod(
                 cfRemoteMod.resourceId,
                 mod.loaderType,
-                [currentSummary?.majorVersion || "All"],
+                [currentSummary?.version || "All"],
                 OtherResourceSource.CurseForge
               )
             );
