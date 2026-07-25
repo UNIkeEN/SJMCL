@@ -279,18 +279,40 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
 }
 
 pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool> {
+  let status = validate_access_token(app, &get_access_token(app, player).await?).await?;
+
+  if status == reqwest::StatusCode::UNAUTHORIZED {
+    let current_player = misc::get_player_by_id(app, &player.id)?.ok_or(AccountError::NotFound)?;
+    let refreshed_player = refresh(app, &current_player).await?;
+    let access_token = refreshed_player
+      .access_token
+      .clone()
+      .ok_or(AccountError::Invalid)?;
+    misc::update_player_by_id(app, &player.id, refreshed_player)?;
+
+    return Ok(
+      validate_access_token(app, &access_token)
+        .await?
+        .is_success(),
+    );
+  }
+
+  Ok(status.is_success())
+}
+
+async fn validate_access_token(
+  app: &AppHandle,
+  access_token: &str,
+) -> SJMCLResult<reqwest::StatusCode> {
   let client = app.state::<reqwest::Client>();
   let response = client
     .get(PROFILE_ENDPOINT)
-    .header(
-      "Authorization",
-      format!("Bearer {}", get_access_token(app, player).await?),
-    )
+    .header("Authorization", format!("Bearer {access_token}"))
     .send()
     .await
     .map_err(|_| AccountError::NetworkError)?;
 
-  Ok(response.status().is_success())
+  Ok(response.status())
 }
 
 /// Returns the access token for the player, refreshing it if necessary.
@@ -306,13 +328,12 @@ pub async fn get_access_token(app: &AppHandle, player: &PlayerInfo) -> SJMCLResu
       .unwrap_or(true);
 
   if need_refresh {
-    let player_id = player.id.as_str();
     let refreshed_player = refresh(app, player).await?;
     let access_token = refreshed_player
       .access_token
       .clone()
       .ok_or(AccountError::Invalid)?;
-    misc::update_player_by_id(app, player_id, refreshed_player)?;
+    misc::update_player_by_id(app, &player.id, refreshed_player)?;
 
     Ok(access_token)
   } else {
