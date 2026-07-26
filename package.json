@@ -51,7 +51,7 @@
     "i18next": "^24.0.0",
     "masonic": "^4.0.1",
     "micromatch": "^4.0.8",
-    "next": "16.2.6",
+    "next": "16.2.11",
     "react": "^18",
     "react-dom": "^18",
     "react-i18next": "^15.1.1",
