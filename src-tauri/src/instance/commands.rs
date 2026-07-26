@@ -39,7 +39,7 @@ use crate::instance::helpers::modpack::import::{
   ModpackMetaInfo, extract_overrides, get_download_params,
 };
 use crate::instance::helpers::mods::common::{
-  compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+  check_potential_incompatibility, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
 };
 use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
@@ -590,18 +590,18 @@ pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
-  let expected_loader_type = {
+  let (installed_loader_type, game_version) = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let state = binding.lock().unwrap();
     let instance = state
       .get(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
 
-    if instance.mod_loader.loader_type != ModLoaderType::Unknown {
-      Some(instance.mod_loader.loader_type)
-    } else {
-      None
-    }
+    let loader_type = instance.mod_loader.loader_type;
+    (
+      (loader_type != ModLoaderType::Unknown).then_some(loader_type),
+      instance.version.clone(),
+    )
   };
 
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
@@ -628,7 +628,7 @@ pub async fn retrieve_local_mod_list(
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
       log::debug!("Load mod info from jar: {}", path.display());
-      let info = get_mod_info_from_jar(&path, expected_loader_type)
+      let info = get_mod_info_from_jar(&path, installed_loader_type)
         .await
         .ok();
       drop(permit);
@@ -648,7 +648,7 @@ pub async fn retrieve_local_mod_list(
         .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
       let task = tokio::spawn(async move {
         log::debug!("Load mod info from dir: {}", path.display());
-        let info = get_mod_info_from_dir(&path, expected_loader_type)
+        let info = get_mod_info_from_dir(&path, installed_loader_type)
           .await
           .ok();
         drop(permit);
@@ -665,13 +665,7 @@ pub async fn retrieve_local_mod_list(
   }
 
   // check potential incompatibility
-  mod_infos.iter_mut().for_each(|mod_info| {
-    if let Some(loader_type) = &expected_loader_type {
-      mod_info.potential_incompatibility = mod_info.loader_type != *loader_type;
-    } else {
-      mod_info.potential_incompatibility = false;
-    }
-  });
+  check_potential_incompatibility(&mut mod_infos, installed_loader_type, &game_version);
 
   // Add translations for mod names and descriptions concurrently
   let mut translation_tasks = Vec::new();
