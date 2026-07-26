@@ -180,23 +180,35 @@ const DownloadSpecificResourceModal: React.FC<
     [toast]
   ); // this is because TaskContext is now inside the SharedModalContext, use a separated function to avoid circular dependency
 
-  const versionLabelToParam = useCallback(
-    (label: string) => {
-      if (label === "All") return ["All"];
-      if (resource.source === OtherResourceSource.Modrinth)
-        return gameVersionList.filter((version) => version.startsWith(label));
-      return [label];
-    },
-    [gameVersionList, resource.source]
-  );
+  const filteredVersionPacks = useMemo(() => {
+    const shouldFilterLoader =
+      resource.type === OtherResourceType.Mod &&
+      !resource.tags.includes("datapack") &&
+      selectedModLoader !== "All";
 
-  const versionPackFilter = (pack: OtherResourceVersionPack): boolean => {
-    const matchesVersion =
-      selectedVersionLabel === "All" ||
-      new RegExp(`^${selectedVersionLabel}(\\.|$)`).test(pack.name);
-
-    return matchesVersion;
-  };
+    return versionPacks
+      .filter(
+        (pack) =>
+          selectedVersionLabel === "All" ||
+          new RegExp(`^${selectedVersionLabel}(\\.|$)`).test(pack.name)
+      )
+      .map((pack) => ({
+        ...pack,
+        items: shouldFilterLoader
+          ? pack.items.filter(
+              (item) =>
+                item.loader?.toLowerCase() === selectedModLoader.toLowerCase()
+            )
+          : pack.items,
+      }))
+      .filter((pack) => pack.items.length > 0);
+  }, [
+    resource.tags,
+    resource.type,
+    selectedModLoader,
+    selectedVersionLabel,
+    versionPacks,
+  ]);
 
   const buildVersionLabelItem = (version: string) => {
     return version !== "All"
@@ -483,22 +495,15 @@ const DownloadSpecificResourceModal: React.FC<
   );
 
   const reFetchVersionPacks = useCallback(() => {
-    if (!resource.id || !resource.source || !selectedVersionLabel) return;
+    if (!resource.id || !resource.source) return;
 
     handleFetchResourceVersionPacks(
       resource.id,
-      selectedModLoader,
-      versionLabelToParam(selectedVersionLabel),
+      "All",
+      ["All"],
       resource.source
     );
-  }, [
-    resource.id,
-    resource.source,
-    selectedModLoader,
-    selectedVersionLabel,
-    handleFetchResourceVersionPacks,
-    versionLabelToParam,
-  ]);
+  }, [resource.id, resource.source, handleFetchResourceVersionPacks]);
 
   const buildModLoaderItem = (modLoader: string) => {
     return modLoader !== "All" ? (
@@ -795,7 +800,7 @@ const DownloadSpecificResourceModal: React.FC<
             </VStack>
           ) : (
             (() => {
-              const normalPacks = versionPacks.filter(versionPackFilter);
+              const normalPacks = filteredVersionPacks;
               const recommendedPacks = shouldShowRecommendedSection()
                 ? [
                     {
