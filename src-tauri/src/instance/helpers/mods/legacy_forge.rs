@@ -31,6 +31,7 @@ pub struct LegacyForgeModMetadata {
 impl From<LegacyForgeModMetadata> for LocalModInfo {
   fn from(meta: LegacyForgeModMetadata) -> Self {
     Self {
+      mod_id: meta.modid,
       name: meta.name.unwrap_or_default(),
       version: meta.version.unwrap_or_default(),
       description: meta.description.unwrap_or_default(),

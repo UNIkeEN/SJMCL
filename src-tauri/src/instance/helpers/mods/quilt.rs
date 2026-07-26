@@ -43,6 +43,7 @@ pub struct QuiltLoaderMetadata {
 impl From<QuiltLoader> for LocalModInfo {
   fn from(meta: QuiltLoader) -> Self {
     Self {
+      mod_id: meta.id,
       name: meta.metadata.name.unwrap_or_default(),
       version: meta.version,
       description: meta.metadata.description.unwrap_or_default(),
