@@ -207,14 +207,7 @@ const AppearanceSettingsPage = () => {
       <MenuSelector
         options={fonts.map((font) => ({
           value: font,
-          label: (
-            <Text
-              fontFamily={font === "%built-in" ? "-apple-system, Sinter" : font}
-              fontSize="xs"
-            >
-              {buildFontName(font)}
-            </Text>
-          ),
+          label: <Text fontSize="xs">{buildFontName(font)}</Text>,
         }))}
         value={value}
         onSelect={(v) => onChange(v as string)}
