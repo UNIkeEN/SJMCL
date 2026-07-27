@@ -1,3 +1,4 @@
+import type { ButtonProps } from "@chakra-ui/react";
 import type { MouseEventHandler } from "react";
 import type { IconType } from "react-icons";
 import { type ExtensionSlotKey, ExtensionUISlotKey } from "@/enums/extension";
@@ -10,6 +11,7 @@ import type {
   ShaderPackInfo,
 } from "@/models/instance/misc";
 import type { WorldInfo } from "@/models/instance/world";
+import type { JavaInfo } from "@/models/system-info";
 import type { ExtensionContributionBase } from "./contribution";
 
 interface ExtensionInstanceSlotContextBase {
@@ -32,6 +34,10 @@ export type ExtensionSlotContextMap = {
   };
   [ExtensionUISlotKey.InstanceShaderPackItemMenuOperations]: ExtensionInstanceSlotContextBase & {
     pack: ShaderPackInfo;
+  };
+  [ExtensionUISlotKey.GameErrorWindowOperations]: ExtensionInstanceSlotContextBase & {
+    launchingId: number;
+    javaInfo: JavaInfo | undefined;
   };
 } & {
   [K in
@@ -57,6 +63,8 @@ export type ExtensionSlotItemMap = {
     | ExtensionUISlotKey.InstanceServerResPackItemMenuOperations
     | ExtensionUISlotKey.InstanceSchematicItemMenuOperations
     | ExtensionUISlotKey.InstanceShaderPackItemMenuOperations]: CommonIconButtonSlotItem;
+} & {
+  [ExtensionUISlotKey.GameErrorWindowOperations]: ButtonProps;
 };
 
 export interface ExtensionSlotDefinition<K extends ExtensionSlotKey> {

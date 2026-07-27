@@ -67,7 +67,7 @@ const InstanceModsPage = () => {
     instanceId,
     summary,
     openInstanceSubdir,
-    handleImportResource,
+    handleImportResources,
     getLocalModList,
     isLocalModListLoading: isLoading,
   } = useInstanceSharedData();
@@ -193,16 +193,18 @@ const InstanceModsPage = () => {
   }, [isSearching]);
 
   useFileDnD({
-    extensions: ["jar"],
+    extensions: ["jar", "disabled"],
+    multiple: true,
     titleKey: "InstanceModsPage.fileDnD.title",
     descKey: "InstanceModsPage.fileDnD.desc",
     icon: LuSquareLibrary,
-    onDrop: async (path) => {
-      handleImportResource({
+    onDrop: async (paths) => {
+      handleImportResources({
         filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
         filterExt: ["jar", "disabled"],
         tgtDirType: InstanceSubdirType.Mods,
-        path,
+        paths,
+        multiple: true,
         onSuccessCallback: () => {
           getLocalModListWrapper(true);
         },
@@ -320,10 +322,11 @@ const InstanceModsPage = () => {
     {
       icon: "add",
       onClick: () => {
-        handleImportResource({
+        handleImportResources({
           filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
           filterExt: ["zip", "jar", "disabled"],
           tgtDirType: InstanceSubdirType.Mods,
+          multiple: true,
           onSuccessCallback: () => {
             getLocalModListWrapper(true);
           },

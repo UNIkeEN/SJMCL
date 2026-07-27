@@ -1,10 +1,11 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
 use image::RgbaImage;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use zip::ZipArchive;
+
+use crate::utils::image::{load_image_from_dir_async, load_image_from_jar};
 
 pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option<RgbaImage>)> {
   let file = match fs::File::open(path) {
@@ -29,13 +30,11 @@ pub fn load_resourcepack_from_zip(path: &PathBuf) -> SJMCLResult<(String, Option
       match serde_json::from_str::<serde_json::Value>(&contents) {
         Ok(json_result) => {
           // Safely extract `description`
-          if let Some(pack_data) = json_result.get("pack") {
-            if let Some(desc) = pack_data.get("description") {
-              // Assume `desc` is a valid JSON object or primitive
-              if let Some(desc_str) = desc.as_str() {
-                description = desc_str.to_string();
-              }
-            }
+          if let Some(pack_data) = json_result.get("pack")
+            && let Some(desc) = pack_data.get("description")
+            && let Some(desc_str) = desc.as_str()
+          {
+            description = desc_str.to_string();
           }
         }
         Err(e) => {
@@ -65,13 +64,11 @@ pub async fn load_resourcepack_from_dir(path: &Path) -> SJMCLResult<(String, Opt
     match serde_json::from_str::<serde_json::Value>(&contents) {
       Ok(json_result) => {
         // Safely extract `description`
-        if let Some(pack_data) = json_result.get("pack") {
-          if let Some(desc) = pack_data.get("description") {
-            // Assume `desc` is a valid JSON object or primitive
-            if let Some(desc_str) = desc.as_str() {
-              description = desc_str.to_string();
-            }
-          }
+        if let Some(pack_data) = json_result.get("pack")
+          && let Some(desc) = pack_data.get("description")
+          && let Some(desc_str) = desc.as_str()
+        {
+          description = desc_str.to_string();
         }
       }
       Err(e) => {

@@ -1,3 +1,4 @@
+import type { ToastId, UseToastOptions } from "@chakra-ui/react";
 import type React from "react";
 import type { Player } from "@/models/account";
 import type { LauncherConfig } from "@/models/config";
@@ -52,6 +53,7 @@ export interface ExtensionAbilityActions {
   openExternalLink: (url: string) => Promise<void>;
   openSharedModal: (key: string, params?: any) => void;
   openCustomModal: (key: string, params?: any) => void;
+  setHomeWidgetTitle: (title: string, key?: string) => void;
   // file system and request
   readFile: (path: string, mode?: "string" | "base64") => Promise<string>;
   writeFile: (
@@ -76,6 +78,7 @@ export interface ExtensionAbilityActions {
     payload?: Record<string, unknown>
   ) => Promise<T>;
   // misc
+  toast: (options: UseToastOptions) => ToastId;
   logger: typeof hostLogger;
   reloadSelf: () => void;
   updateSelf: (src: string, newVersion: string) => Promise<void>;

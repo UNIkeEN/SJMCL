@@ -1,0 +1,217 @@
+name: Post Release Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to publish from, for example v1.2.3"
+        required: true
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.id || github.event.inputs.release_tag || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  Prepare-Release-Assets:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.prepare.outputs.version }}
+      release_tag: ${{ steps.prepare.outputs.release_tag }}
+      is_prerelease: ${{ steps.prepare.outputs.is_prerelease }}
+    steps:
+      - name: Prepare release metadata
+        id: prepare
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.release_tag || github.event.release.tag_name }}
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+          IS_PRERELEASE=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json isPrerelease --jq '.isPrerelease')
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+
+          assets=(
+            "SJMCL_${VERSION}_linux_x86_64.deb"
+            "SJMCL_${VERSION}_linux_aarch64.deb"
+          )
+
+          echo "Checking release assets for ${RELEASE_TAG}"
+          assets_json=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json assets --jq '.assets[].name' 2>/dev/null || true)
+
+          missing=0
+          for asset in "${assets[@]}"; do
+            if ! printf '%s\n' "$assets_json" | grep -Fxq "$asset"; then
+              echo "Missing release asset: $asset"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Required Linux release assets were not found for ${RELEASE_TAG}."
+            exit 1
+          fi
+
+          echo "All required release assets are present."
+
+  Update-Changelog:
+    needs: [Prepare-Release-Assets]
+    if: needs.Prepare-Release-Assets.outputs.is_prerelease == 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Read published release notes
+        id: release-notes
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+        run: |
+          gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json body --jq '.body' > release-notes.md
+
+          PUBLISHED_DATE=$(gh release view "$RELEASE_TAG" --repo "$GH_REPO" --json publishedAt --jq '.publishedAt[0:10]')
+          if [ -z "$PUBLISHED_DATE" ]; then
+            PUBLISHED_DATE=$(date -u +%F)
+          fi
+
+          echo "published_date=$PUBLISHED_DATE" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare changelog branch
+        id: changelog-branch
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          BRANCH_NAME="docs/auto-changelog"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git rev-parse --verify --quiet "refs/remotes/origin/$BRANCH_NAME" >/dev/null; then
+            echo "Existing changelog branch found; rebasing onto $DEFAULT_BRANCH."
+            git checkout -B "$BRANCH_NAME" "origin/$BRANCH_NAME"
+            git rebase --empty=drop "origin/$DEFAULT_BRANCH"
+          else
+            echo "Creating changelog branch from $DEFAULT_BRANCH."
+            git checkout -B "$BRANCH_NAME" "origin/$DEFAULT_BRANCH"
+          fi
+
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Update changelogs
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+          PUBLISHED_DATE: ${{ steps.release-notes.outputs.published_date }}
+        run: |
+          python scripts/release/update_changelog_from_release.py \
+            --release-tag "$RELEASE_TAG" \
+            --published-date "$PUBLISHED_DATE" \
+            --body-file release-notes.md
+
+      - name: Commit changelog changes
+        id: changelog-commit
+        shell: bash
+        env:
+          VERSION: ${{ needs.Prepare-Release-Assets.outputs.version }}
+          BRANCH_NAME: ${{ steps.changelog-branch.outputs.branch_name }}
+        run: |
+          if git diff --quiet -- CHANGELOG.md docs/CHANGELOG.zh-Hans.md; then
+            echo "Changelogs are already up to date."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git add CHANGELOG.md docs/CHANGELOG.zh-Hans.md
+          git commit -m "docs(changelog): update changelog for ${VERSION}"
+          git push --force-with-lease origin "$BRANCH_NAME"
+
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create or reuse changelog PR
+        if: steps.changelog-commit.outputs.has_changes == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+          BRANCH_NAME: ${{ steps.changelog-branch.outputs.branch_name }}
+        run: |
+          EXISTING_PR_URL=$(gh pr list \
+            --state open \
+            --head "${REPOSITORY_OWNER}:$BRANCH_NAME" \
+            --json url \
+            --jq '.[0].url')
+
+          if [ -n "$EXISTING_PR_URL" ]; then
+            echo "Changelog PR already exists: $EXISTING_PR_URL"
+            exit 0
+          fi
+
+          gh pr create \
+            --base "$DEFAULT_BRANCH" \
+            --head "${REPOSITORY_OWNER}:$BRANCH_NAME" \
+            --title "docs(changelog): update changelogs from recent releases" \
+            --body "Updates the English and Simplified Chinese changelogs from published release notes. This branch accumulates changelog entries across releases and is reset against the default branch after each merge."
+
+  Publish-AUR:
+    needs: [Prepare-Release-Assets]
+    uses: ./.github/workflows/publish-aur.yml
+    with:
+      version: ${{ needs.Prepare-Release-Assets.outputs.version }}
+      release_tag: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+    secrets:
+      AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+
+  Publish-Snap:
+    name: Publish Snap (${{ matrix.arch }})
+    needs: [Prepare-Release-Assets]
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+    uses: ./.github/workflows/publish-snap.yml
+    with:
+      version: ${{ needs.Prepare-Release-Assets.outputs.version }}
+      release_tag: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+      arch: ${{ matrix.arch }}
+      channel: stable
+    secrets:
+      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+
+  Publish-Homebrew:
+    needs: [Prepare-Release-Assets]
+    if: needs.Prepare-Release-Assets.outputs.is_prerelease == 'false'
+    uses: ./.github/workflows/publish-homebrew.yml
+    with:
+      version: ${{ needs.Prepare-Release-Assets.outputs.version }}
+      release_tag: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+    secrets:
+      HOMEBREW_TAP_APP_ID: ${{ secrets.HOMEBREW_TAP_APP_ID }}
+      HOMEBREW_TAP_APP_PRIVATE_KEY: ${{ secrets.HOMEBREW_TAP_APP_PRIVATE_KEY }}
+
+  Publish-Winget:
+    needs: [Prepare-Release-Assets]
+    if: needs.Prepare-Release-Assets.outputs.is_prerelease == 'false'
+    uses: ./.github/workflows/publish-winget.yml
+    with:
+      version: ${{ needs.Prepare-Release-Assets.outputs.version }}
+      release_tag: ${{ needs.Prepare-Release-Assets.outputs.release_tag }}
+    secrets:
+      WINGET_BOT_GITHUB_TOKEN: ${{ secrets.WINGET_BOT_GITHUB_TOKEN }}

@@ -1,3 +1,11 @@
+export enum BuildType {
+  Dev = "dev",
+  Nightly = "nightly",
+  TestBuild = "test-build",
+  Beta = "beta",
+  Release = "release",
+}
+
 export const ChakraColorEnums = [
   "red",
   "orange",

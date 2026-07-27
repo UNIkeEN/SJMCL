@@ -54,7 +54,7 @@ export const gameTypesToIcon: Record<string, string> = {
 export const loaderTypesToIcon: Record<string, string> = {
   Unknown: "",
   Fabric: "/images/icons/Fabric.png",
-  Forge: "/images/icons/Anvil.png", // differ from that in mod-loader-selector
+  Forge: "/images/icons/Forge.png",
   NeoForge: "/images/icons/NeoForge.png",
   OptiFine: "/images/icons/OptiFine.png",
   Quilt: "/images/icons/Quilt.png",
@@ -370,6 +370,7 @@ export const CreateInstanceModal: React.FC<Omit<ModalProps, "children">> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

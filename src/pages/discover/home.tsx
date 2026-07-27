@@ -398,7 +398,7 @@ const HotModpackGrid: React.FC<HotModpackGridProps> = ({
     config.general.functionality.resourceTranslation;
 
   const renderItem = (item: OtherResourceInfo) => (
-    <Card className={cardStyles["card-front"]}>
+    <Card key={item.id || item.name} className={cardStyles["card-front"]}>
       <OptionItem
         prefixElement={
           <Avatar

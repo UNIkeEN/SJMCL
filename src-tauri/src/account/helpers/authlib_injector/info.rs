@@ -1,11 +1,12 @@
-use crate::account::helpers::authlib_injector::constants::CLIENT_IDS;
-use crate::account::models::{AccountError, AccountInfo, AuthServerInfo};
-use crate::error::SJMCLResult;
-use crate::utils::web::normalize_url;
+use sjmcl_types::error::SJMCLResult;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
+
+use crate::account::helpers::authlib_injector::constants::CLIENT_IDS;
+use crate::account::models::{AccountError, AccountInfo, AuthServerInfo};
+use crate::utils::web::normalize_url;
 
 pub async fn fetch_auth_server_info(
   app: &AppHandle,

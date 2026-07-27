@@ -83,6 +83,7 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
       autoFocus={false}
       size={{ base: "md", lg: "lg", xl: "xl" }}
       scrollBehavior="inside"
+      returnFocusOnClose={false}
       {...props}
     >
       <ModalOverlay />

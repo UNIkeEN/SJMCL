@@ -1,18 +1,19 @@
-use crate::error::SJMCLResult;
-use crate::extension::helper::{
-  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
-};
-use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
-use crate::launcher_config::models::LauncherConfig;
-use crate::storage::Storage;
-use crate::utils::fs::get_subdirectories;
 use semver::Version;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::AppHandle;
 use tauri::Manager;
 use uuid::Uuid;
+
+use crate::extension::helper::{
+  extract_extension_package, get_extensions_dir, read_extension_info, resolve_extension_root,
+};
+use crate::extension::models::{ExtensionError, ExtensionInfo, ExtensionMetadata};
+use crate::launcher_config::models::{BuildType, LauncherConfig};
+use crate::utils::fs::get_subdirectories;
 
 #[tauri::command]
 pub fn retrieve_extension_list(app: AppHandle) -> SJMCLResult<Vec<ExtensionInfo>> {
@@ -79,17 +80,23 @@ pub fn add_extension(
       }
     }
 
-    // check required minimal launcher version
-    let minimal_launcher_version = Version::parse(
-      info
-        .metadata
-        .minimal_launcher_version
-        .as_deref()
-        .unwrap_or("0.0.0"),
-    )
-    .unwrap();
-    if app.package_info().version < minimal_launcher_version {
-      return Err(ExtensionError::LauncherVersionTooLow.into());
+    // check required minimal launcher version (only for release builds)
+    {
+      let config_binding = app.state::<Mutex<LauncherConfig>>();
+      let config_state = config_binding.lock()?;
+      if config_state.basic_info.build_type == BuildType::Release {
+        let current_version = Version::parse(&config_state.basic_info.launcher_version)
+          .unwrap_or_else(|_| app.package_info().version.clone());
+        let required_version = info
+          .metadata
+          .minimal_launcher_version
+          .as_deref()
+          .and_then(|v| Version::parse(v).ok())
+          .unwrap_or_else(|| Version::new(1, 0, 0));
+        if current_version < required_version {
+          return Err(ExtensionError::LauncherVersionTooLow.into());
+        }
+      }
     }
 
     let extension_dir = extensions_dir.join(&info.metadata.identifier);
@@ -139,14 +146,15 @@ pub fn add_extension(
     Ok(info)
   })();
 
-  if register_result.is_err() && temp_dir.exists() {
-    if let Err(cleanup_error) = fs::remove_dir_all(&temp_dir) {
-      log::warn!(
-        "Failed to cleanup temporary extension directory {:?}: {}",
-        temp_dir,
-        cleanup_error
-      );
-    }
+  if register_result.is_err()
+    && temp_dir.exists()
+    && let Err(cleanup_error) = fs::remove_dir_all(&temp_dir)
+  {
+    log::warn!(
+      "Failed to cleanup temporary extension directory {:?}: {}",
+      temp_dir,
+      cleanup_error
+    );
   }
 
   register_result

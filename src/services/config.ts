@@ -40,14 +40,12 @@ export class ConfigService {
   }
 
   /**
-   * RESTORE the launcher configs to their default state and returns the new configuration.
+   * RESET the launcher configs to their default state and returns the new configuration.
    * @returns {Promise<InvokeResponse<LauncherConfig>>}
    */
   @responseHandler("config")
-  static async restoreLauncherConfig(): Promise<
-    InvokeResponse<LauncherConfig>
-  > {
-    return await invoke("restore_launcher_config");
+  static async resetLauncherConfig(): Promise<InvokeResponse<LauncherConfig>> {
+    return await invoke("reset_launcher_config");
   }
 
   /**
@@ -146,6 +144,18 @@ export class ConfigService {
   }
 
   /**
+   * RETRIEVE renderers supported by the current platform for a graphics API.
+   * @param api Graphics API: default, opengl, or vulkan.
+   * @returns {Promise<InvokeResponse<string[]>>}
+   */
+  @responseHandler("config")
+  static async retrieveSupportedGraphicsRenderers(
+    api: string
+  ): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_supported_graphics_renderers", { api });
+  }
+
+  /**
    * CHECK whether the game directory is valid.
    * @param {string} dir The game directory to check.
    * @returns {Promise<InvokeResponse<string>>} The sub directory if a sub game directory is valid.
@@ -209,18 +219,18 @@ export class ConfigService {
    * Listens for backend-initiated changes to the `config` field.
    * @param callback - Callback function invoked whenever the config is updated by the backend.
    */
-  static onConfigPartialUpdate(
+  static async onConfigPartialUpdate(
     callback: (payload: { path: string; value: any }) => void
   ) {
-    const unlisten = getCurrentWebview().listen<{ path: string; value: any }>(
-      CONFIG_PARTIAL_UPDATE_EVENT,
-      (event) => {
-        callback(event.payload);
-      }
-    );
+    const unlisten = await getCurrentWebview().listen<{
+      path: string;
+      value: any;
+    }>(CONFIG_PARTIAL_UPDATE_EVENT, (event) => {
+      callback(event.payload);
+    });
 
     return () => {
-      unlisten.then((f) => f());
+      unlisten();
     };
   }
 }

@@ -1,4 +1,9 @@
-import { PlayerType, PresetRole, SkinModel } from "@/enums/account";
+import {
+  MicrosoftFriendPresenceStatus,
+  PlayerType,
+  PresetRole,
+  SkinModel,
+} from "@/enums/account";
 
 export interface Texture {
   textureType: string;
@@ -59,4 +64,19 @@ export interface DeviceAuthResponseInfo {
   verificationUri: string;
   interval?: number;
   expiresIn: number;
+}
+
+export interface MicrosoftFriend {
+  profileId: PlayerInfo["uuid"];
+  name: PlayerInfo["name"];
+  avatar: Player["avatar"];
+  status?: MicrosoftFriendPresenceStatus;
+  invited?: boolean;
+  lastUpdated?: string;
+}
+
+export interface MicrosoftFriendList {
+  friends: Array<MicrosoftFriend>;
+  incomingRequests: Array<MicrosoftFriend>;
+  outgoingRequests: Array<MicrosoftFriend>;
 }

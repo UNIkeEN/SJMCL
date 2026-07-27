@@ -1,3 +1,4 @@
+import { BuildType } from "@/enums/misc";
 import type { HomeWidgetStateTuple } from "@/models/extension";
 
 export interface GameConfig {
@@ -30,11 +31,21 @@ export interface GameConfig {
     enabled: boolean;
   };
   advanced: {
+    graphics: {
+      api: string;
+      renderer: string;
+    };
     customCommands: {
       minecraftArgument: string;
       precallCommand: string;
       wrapperLauncher: string;
       postExitCommand: string;
+    };
+    proxy: {
+      enabled: boolean;
+      selectedType: string;
+      host: string;
+      port: number;
     };
     jvm: {
       garbageCollector: string;
@@ -48,6 +59,10 @@ export interface GameConfig {
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useLwjglUnsafeAgent: boolean;
+      useCustomAuthlibInjector: {
+        enabled: boolean;
+        path: string;
+      };
       useNativeGlfw: boolean;
       useNativeOpenal: boolean;
     };
@@ -71,6 +86,9 @@ export interface LauncherConfig {
     isExePathAvailable: boolean;
     isChinaMainlandIp: boolean;
     allowFullLoginFeature: boolean;
+    // Build metadata, sourced from compile-time constants injected by build.rs.
+    buildType: BuildType;
+    buildCommitSha: string;
   };
   mocked: boolean;
   runCount: number;
@@ -84,6 +102,7 @@ export interface LauncherConfig {
     };
     font: {
       fontFamily: string;
+      logFontFamily: string;
       fontSize: number;
     };
     background: {
@@ -210,11 +229,21 @@ export const defaultGameConfig: GameConfig = {
     enabled: false,
   },
   advanced: {
+    graphics: {
+      api: "default",
+      renderer: "default",
+    },
     customCommands: {
       minecraftArgument: "",
       precallCommand: "",
       wrapperLauncher: "",
       postExitCommand: "",
+    },
+    proxy: {
+      enabled: false,
+      selectedType: "http",
+      host: "",
+      port: 80,
     },
     jvm: {
       garbageCollector: "auto",
@@ -228,6 +257,10 @@ export const defaultGameConfig: GameConfig = {
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useLwjglUnsafeAgent: true,
+      useCustomAuthlibInjector: {
+        enabled: false,
+        path: "",
+      },
       useNativeGlfw: false,
       useNativeOpenal: false,
     },
@@ -246,6 +279,8 @@ export const defaultConfig: LauncherConfig = {
     isExePathAvailable: true,
     isChinaMainlandIp: false,
     allowFullLoginFeature: false,
+    buildType: BuildType.Dev,
+    buildCommitSha: "",
   },
   mocked: true,
   runCount: -1,
@@ -260,6 +295,7 @@ export const defaultConfig: LauncherConfig = {
     font: {
       fontFamily: "%built-in",
       fontSize: 100,
+      logFontFamily: "%built-in",
     },
     background: {
       choice: "%built-in:Florwyn",

@@ -17,7 +17,7 @@ const nextConfig = {
   devIndicators: false,
 };
 
-// Now can run `ANALYZE=true npm run build` to analyze frontend bundle size
+// Now can run `ANALYZE=true pnpm build` to analyze frontend bundle size
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });

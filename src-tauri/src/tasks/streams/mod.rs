@@ -3,8 +3,8 @@ mod handle;
 pub mod reporter;
 mod unit;
 
-use futures::stream::FusedStream;
 use futures::Stream;
+use futures::stream::FusedStream;
 use pin_project::pin_project;
 use serde::{Deserialize, Serialize};
 use std::pin::Pin;

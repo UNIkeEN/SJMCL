@@ -170,7 +170,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               handleFetchLatestMod(
                 cfRemoteMod.resourceId,
                 mod.loaderType,
-                [currentSummary?.majorVersion || "All"],
+                [currentSummary?.version || "All"],
                 OtherResourceSource.CurseForge
               )
             );
@@ -308,6 +308,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     <Modal
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

@@ -1,18 +1,19 @@
-use crate::account::helpers::import::misc::{list_launcher_candidate_dirs, ACCESS_TOKEN_EXPIRED};
-use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
-use crate::account::helpers::misc::fetch_image;
-use crate::account::helpers::offline::load_preset_skin;
-use crate::account::models::{
-  AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
-};
-use crate::error::SJMCLResult;
 use serde::Deserialize;
+use sjmcl_types::error::SJMCLResult;
 use std::collections::HashSet;
 use std::fs;
 use std::str::FromStr;
 use tauri::AppHandle;
 use url::Url;
 use uuid::Uuid;
+
+use crate::account::helpers::import::misc::{ACCESS_TOKEN_EXPIRED, list_launcher_candidate_dirs};
+use crate::account::helpers::microsoft::oauth::fetch_minecraft_profile;
+use crate::account::helpers::misc::fetch_image;
+use crate::account::helpers::offline::load_preset_skin;
+use crate::account::models::{
+  AccountError, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
+};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MultiMCMsa {
@@ -34,7 +35,9 @@ pub struct MultiMCYgg {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MultiMCOfficialAccount {
+  #[expect(dead_code, reason = "kept to match MultiMC account JSON schema")]
   pub active: bool,
+  #[expect(dead_code, reason = "kept to match MultiMC account JSON schema")]
   pub r#type: String,
   pub msa: MultiMCMsa,
   pub profile: MultiMCProfile,
@@ -45,6 +48,7 @@ pub struct MultiMCOfficialAccount {
 #[serde(rename_all = "camelCase")]
 pub struct MultiMCAccountEntry {
   pub accounts: Vec<MultiMCOfficialAccount>,
+  #[expect(dead_code, reason = "kept to match MultiMC account JSON schema")]
   pub format_version: u32,
 }
 
@@ -64,6 +68,7 @@ async fn microsoft_to_player(
           player_type: PlayerType::Microsoft,
           auth_account: None,
           access_token: Some(ACCESS_TOKEN_EXPIRED.to_string()),
+          access_token_expires: Some(chrono::Utc::now()),
           refresh_token: Some(acc.msa.refresh_token.clone()),
           textures: load_preset_skin(app, PresetRole::Steve)?,
           auth_server_url: None,
@@ -112,6 +117,9 @@ async fn microsoft_to_player(
       player_type: PlayerType::Microsoft,
       auth_account: Some(profile.name.clone()),
       access_token: Some(acc.msa.token.clone()),
+      access_token_expires: Some(
+        chrono::DateTime::from_timestamp_secs(acc.msa.exp).unwrap_or(chrono::Utc::now()),
+      ),
       refresh_token: Some(acc.msa.refresh_token.clone()),
       textures,
       auth_server_url: None,

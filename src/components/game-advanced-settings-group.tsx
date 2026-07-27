@@ -1,6 +1,7 @@
 import {
   Alert,
   AlertIcon,
+  Button,
   HStack,
   Input,
   Link,
@@ -10,17 +11,20 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { open } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
+import { useProxySettingsItems } from "@/components/common/proxy-settings-group";
 import { Section } from "@/components/common/section";
 import { GameSettingsGroupsProps } from "@/components/game-settings-groups";
 import { useLauncherConfig } from "@/contexts/config";
+import { ConfigService } from "@/services/config";
 
 const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   gameConfig,
@@ -59,9 +63,51 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
     "serial",
   ];
 
+  const graphicsApis = ["default", "opengl", "vulkan"];
+  const [supportedRenderers, setSupportedRenderers] = useState<string[] | null>(
+    null
+  );
+  const rendererOptions = supportedRenderers ?? ["default"];
+
   const gameFileValidatePolicies = ["disable", "normal", "full"];
-  const updateGameAdvancedConfig = (key: string, value: any) => {
-    updateGameConfig(`advanced.${key}`, value);
+  const updateGameAdvancedConfig = useCallback(
+    (key: string, value: any) => {
+      updateGameConfig(`advanced.${key}`, value);
+    },
+    [updateGameConfig]
+  );
+
+  useEffect(() => {
+    const fetchRenderers = async () => {
+      const res = await ConfigService.retrieveSupportedGraphicsRenderers(
+        gameConfig.advanced.graphics.api
+      );
+      const renderers =
+        res.status === "success" && res.data.length > 0
+          ? res.data
+          : ["default"];
+      setSupportedRenderers(renderers);
+      if (!renderers.includes(gameConfig.advanced.graphics.renderer)) {
+        updateGameAdvancedConfig("graphics.renderer", "default");
+      }
+    };
+    fetchRenderers();
+  }, [gameConfig.advanced.graphics, updateGameAdvancedConfig]);
+
+  const handleSelectAuthlibJar = async () => {
+    const selected = await open({
+      multiple: false,
+      filters: [{ name: "JAR", extensions: ["jar"] }],
+      defaultPath:
+        gameConfig.advanced.workaround.useCustomAuthlibInjector.path ||
+        undefined,
+    });
+    if (selected && typeof selected === "string") {
+      updateGameAdvancedConfig(
+        "workaround.useCustomAuthlibInjector.path",
+        selected
+      );
+    }
   };
 
   const settingGroups: OptionItemGroupProps[] = [
@@ -250,6 +296,72 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       ],
     },
     {
+      title: t("GameAdvancedSettingsPage.graphics.title"),
+      items: [
+        {
+          title: t("GameAdvancedSettingsPage.graphics.settings.api.title"),
+          children: (
+            <MenuSelector
+              options={graphicsApis.map((value) => ({
+                value,
+                label: {
+                  title: t(
+                    `GameAdvancedSettingsPage.graphics.settings.api.${value}.label`
+                  ),
+                  desc: t(
+                    `GameAdvancedSettingsPage.graphics.settings.api.${value}.desc`
+                  ),
+                },
+              }))}
+              value={gameConfig.advanced.graphics.api}
+              onSelect={(val) => {
+                updateGameAdvancedConfig("graphics.api", val);
+                updateGameAdvancedConfig("graphics.renderer", "default");
+              }}
+            />
+          ),
+        },
+        ...(gameConfig.advanced.graphics.api !== "default"
+          ? [
+              {
+                title: t(
+                  "GameAdvancedSettingsPage.graphics.settings.renderer.title"
+                ),
+                children: (
+                  <MenuSelector
+                    options={rendererOptions.map((value) => ({
+                      value,
+                      label: t(
+                        `GameAdvancedSettingsPage.graphics.settings.renderer.${value}`
+                      ),
+                    }))}
+                    value={
+                      rendererOptions.includes(
+                        gameConfig.advanced.graphics.renderer
+                      )
+                        ? gameConfig.advanced.graphics.renderer
+                        : "default"
+                    }
+                    onSelect={(val) => {
+                      updateGameAdvancedConfig("graphics.renderer", val);
+                    }}
+                    menuListProps={{ maxH: 72, overflowY: "auto" }}
+                  />
+                ),
+              },
+            ]
+          : []),
+      ],
+    },
+    {
+      title: t("GameAdvancedSettingsPage.proxy.title"),
+      items: useProxySettingsItems(
+        "GameAdvancedSettingsPage.proxy",
+        gameConfig.advanced.proxy,
+        (key, value) => updateGameAdvancedConfig(`proxy.${key}`, value)
+      ),
+    },
+    {
       title: t("GameAdvancedSettingsPage.workaround.title"),
       items: [
         {
@@ -261,9 +373,14 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               <MenuSelector
                 options={gameFileValidatePolicies.map((type) => ({
                   value: type,
-                  label: t(
-                    `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
-                  ),
+                  label: {
+                    title: t(
+                      `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}`
+                    ),
+                    desc: t(
+                      `GameAdvancedSettingsPage.workaround.settings.gameFileValidatePolicy.${type}Desc`
+                    ),
+                  },
                 }))}
                 value={gameConfig.advanced.workaround.gameFileValidatePolicy}
                 onSelect={(val) => {
@@ -361,6 +478,47 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
             />
           ),
         },
+        {
+          title: t(
+            "GameAdvancedSettingsPage.workaround.settings.useCustomAuthlibInjector.title"
+          ),
+          description: gameConfig.advanced.workaround.useCustomAuthlibInjector
+            .enabled
+            ? gameConfig.advanced.workaround.useCustomAuthlibInjector.path ||
+              t(
+                "GameAdvancedSettingsPage.workaround.settings.useCustomAuthlibInjector.description.notSet"
+              )
+            : "",
+          children: (
+            <HStack>
+              {gameConfig.advanced.workaround.useCustomAuthlibInjector
+                .enabled && (
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  onClick={handleSelectAuthlibJar}
+                >
+                  {t(
+                    "GameAdvancedSettingsPage.workaround.settings.useCustomAuthlibInjector.select"
+                  )}
+                </Button>
+              )}
+              <Switch
+                colorScheme={primaryColor}
+                isChecked={
+                  gameConfig.advanced.workaround.useCustomAuthlibInjector
+                    .enabled
+                }
+                onChange={(event) => {
+                  updateGameAdvancedConfig(
+                    "workaround.useCustomAuthlibInjector.enabled",
+                    event.target.checked
+                  );
+                }}
+              />
+            </HStack>
+          ),
+        },
         ...(config.basicInfo.platform === "linux"
           ? [
               {
@@ -409,7 +567,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
       title={t("GameAdvancedSettingsPage.title")}
       withBackButton
     >
-      <VStack overflow="auto" align="stretch" spacing={4} flex="1">
+      <VStack align="stretch" spacing={4} flex="1">
         <Alert status="warning" fontSize="xs-sm" borderRadius="md">
           <AlertIcon />
           {t("GameAdvancedSettingsPage.topWarning")}

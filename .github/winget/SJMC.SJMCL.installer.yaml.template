@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.10.0.schema.json
+PackageIdentifier: SJMC.SJMCL
+PackageVersion: __VERSION__
+InstallerType: nullsoft
+Installers:
+  - Architecture: x64
+    InstallerUrl: __X64_INSTALLER_URL__
+    InstallerSha256: __X64_INSTALLER_SHA256__
+  - Architecture: x86
+    InstallerUrl: __X86_INSTALLER_URL__
+    InstallerSha256: __X86_INSTALLER_SHA256__
+  - Architecture: arm64
+    InstallerUrl: __ARM64_INSTALLER_URL__
+    InstallerSha256: __ARM64_INSTALLER_SHA256__
+ManifestType: installer
+ManifestVersion: 1.10.0

@@ -39,6 +39,10 @@
           "title": "LittleSkin",
           "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
         },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Provides Simplified Chinese translations for mod information"
+        },
         "scl": {
           "title": "Swift Craft Launcher",
           "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"
@@ -112,12 +116,6 @@
         "title": "Download Game Server",
         "description": "Download game server files for different versions"
       }
-    }
-  },
-  "MainLayout": {
-    "fileDnD": {
-      "title": "Import Modpack",
-      "desc": "Import modpack file {{fileName}} to SJMCL"
     }
   },
   "AddAuthServerModal": {
@@ -302,6 +300,9 @@
           "title": "Font Family",
           "default": "Default"
         },
+        "logFontFamily": {
+          "title": "Log Font"
+        },
         "fontSize": {
           "title": "Font Size",
           "small": "T",
@@ -367,7 +368,8 @@
     "footer": {
       "installFabricApi": "Install Fabric API Mod",
       "installQFAPI": "Install QFAPI / QSL Mod (if available)",
-      "reinstall": "Reinstall"
+      "reinstall": "Reinstall",
+      "removeCurrentInstallation": "Remove Installation"
     }
   },
   "CheckModUpdateModal": {
@@ -448,6 +450,12 @@
       "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
     }
   },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "Remove Friend",
+      "content": "Confirm remove friend \"{{name}}\"?"
+    }
+  },
   "DeleteGameServerAlertDialog": {
     "title": "Delete Game Server",
     "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
@@ -457,8 +465,8 @@
       "title": "Delete Game Instance",
       "content": "Confirm delete the game instance \"{{instanceName}}\" ? It will be lost forever! (A long time!)",
       "warning": {
-        "withVerIso": "Please note that since version isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
-        "woVerIso": "Please note that if version isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+        "withVerIso": "Please note that since instance isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if instance isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
       }
     }
   },
@@ -587,18 +595,11 @@
     },
     "proxy": {
       "title": "Proxy",
+      "headExtra": "Restart Required",
       "settings": {
         "enabled": {
-          "title": "Enable Proxy"
-        },
-        "type": {
-          "title": "Proxy Type"
-        },
-        "host": {
-          "title": "Host"
-        },
-        "port": {
-          "title": "Port"
+          "title": "Enable Proxy for Downloads",
+          "description": "When disabled, the launcher will use the system proxy to download resources automatically"
         }
       }
     }
@@ -614,6 +615,13 @@
       "alpha": "Alpha",
       "beta": "Beta",
       "release": "Release"
+    },
+    "button": {
+      "cancel": "Cancel",
+      "download": "Download",
+      "installToInstance": "Install to Instance",
+      "installToCurrentInstance": "Install to Current Instance",
+      "install": "Install"
     }
   },
   "DownloadTasksPage": {
@@ -642,6 +650,7 @@
       "resourcepack": "Resourcepack",
       "shader": "Shaderpack",
       "modpack": "Modpack",
+      "modpack-wo-install": "Modpack",
       "datapack": "Datapack",
       "patch-files": "Patch Game Files {{param}}",
       "mod-update": "Update Mod",
@@ -773,7 +782,7 @@
       "includedFiles": "Included Files",
       "exportOptions": "Export Options",
       "packWithLauncher": "Pack With Launcher",
-      "minMemory": "Minimum Memory (MB)",
+      "minMemory": "Minimum Memory (MiB)",
       "noCreateRemoteFiles": "Disable Remote Files",
       "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
     },
@@ -859,6 +868,9 @@
     "title": "Update Extension",
     "body": "Extension {{identifier}} downloaded the new version {{version}} from {{src}}. Do you want to confirm installation?"
   },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} and others ({{count}} total)"
+  },
   "GameAdvancedSettingsPage": {
     "title": "Advanced Settings",
     "topWarning": "Advanced settings are for expert users. Changing them may break the game. Do not modify unless you know what you're doing.",
@@ -900,13 +912,65 @@
         },
         "javaPermanentGenerationSpace": {
           "title": "PermGen Space",
-          "placeholder": "in MB"
+          "placeholder": "in MiB"
         },
         "environmentVariable": {
           "title": "Environment Variables"
         },
         "args": {
           "title": "Other JVM Arguments"
+        }
+      }
+    },
+    "graphics": {
+      "title": "Graphics",
+      "settings": {
+        "api": {
+          "title": "Graphics API",
+          "default": {
+            "label": "Default",
+            "desc": "Use Minecraft and the driver default."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Use OpenGL rendering."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Use Vulkan rendering."
+          }
+        },
+        "renderer": {
+          "title": "Renderer / Driver",
+          "default": "Default",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Enable Proxy for Game Process",
+          "description": "When disabled, the game will use the system proxy automatically"
         }
       }
     },
@@ -918,7 +982,10 @@
           "title": "Game File Validation Policy",
           "disable": "Disable Check",
           "normal": "Normal Check",
-          "full": "Full Check"
+          "full": "Full Check",
+          "disableDesc": "",
+          "normalDesc": "Check if files exist, auto-download missing ones",
+          "fullDesc": "Check file SHA1 integrity, auto-download missing ones (takes longer)"
         },
         "dontCheckJvmValidity": {
           "title": "Do not check Java VM compatibility"
@@ -927,8 +994,15 @@
           "title": "Do not attempt to automatically replace native libraries"
         },
         "useLwjglUnsafeAgent": {
-          "title": "Enable LWJGL Unsafe Agent",
+          "title": "Use LWJGL Unsafe Agent",
           "description": "Automatically use HMCL's <hmcl>LWJGL Unsafe Agent</hmcl> on affected Minecraft versions to fix performance issues."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Use Custom Authlib Injector",
+          "description": {
+            "notSet": "No custom path set, will use the built-in version"
+          },
+          "select": "Modify"
         },
         "useNativeGlfw": {
           "title": "Use System GLFW(Linux Only)"
@@ -952,6 +1026,13 @@
     "javaInfo": {
       "javaVersion": "Java Version"
     },
+    "button": {
+      "exportGameInfo": "Export Crash Report",
+      "gameLogs": "Game Logs",
+      "help": "Help"
+    },
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
       "title": "Crash Details",
       "OPENJ9": "OpenJ9 JVM is not supported. Please use HotSpot JVM.",
@@ -1019,13 +1100,7 @@
       "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
       "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
       "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
-    },
-    "button": {
-      "exportGameInfo": "Export Crash Report",
-      "gameLogs": "Game Logs",
-      "help": "Help"
-    },
-    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help."
+    }
   },
   "GameLogPage": {
     "placeholder": "Filter by Text",
@@ -1102,7 +1177,8 @@
     "version": {
       "dev": "development version",
       "nightly": "nightly build",
-      "beta": "beta version"
+      "beta": "beta version",
+      "test-build": "test build"
     },
     "viewOnWiki": "View on Minecraft Wiki"
   },
@@ -1123,8 +1199,8 @@
           "description": "%only available in zh-Hans"
         },
         "skipFirstScreenOptions": {
-          "title": "Skip First Launch Screen Options",
-          "description": "%only available in zh-Hans"
+          "title": "Automatically Set Instance Language",
+          "description": "When enabled, new instances will follow the launcher language and skip the in-game accessibility setup screen."
         }
       }
     },
@@ -1180,10 +1256,10 @@
           "title": "Auto Purge Launcher Logs",
           "description": "Automatically purge launcher log files older than 30 days"
         },
-        "restoreAll": {
-          "title": "Restore All Settings",
-          "description": "Restore all launcher settings to their default values",
-          "restore": "Restore"
+        "resetAll": {
+          "title": "Reset All Settings",
+          "description": "Reset all launcher settings to their default values",
+          "reset": "Reset"
         }
       }
     }
@@ -1222,14 +1298,16 @@
       "settings": {
         "resolution": {
           "title": "Game Resolution",
-          "switch": "Fullscreen"
+          "preset": "Preset",
+          "switch": "Fullscreen",
+          "warning": "Resolution may exceed monitor limit"
         },
         "customTitle": {
           "title": "Custom Window Title"
         },
         "customInfo": {
           "title": "Custom Information",
-          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page."
+          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page (only effective for Minecraft versions before 26.1)."
         }
       }
     },
@@ -1244,7 +1322,7 @@
         },
         "memoryUsage": {
           "title": "Memory Usage",
-          "description": "Used memory {{usedMemory}}GB; Game allocated {{allocatedMemory}}GB; Total memory {{totalMemory}}GB"
+          "description": "Used memory {{usedMemory}}GiB; Game allocated {{allocatedMemory}}GiB; Total memory {{totalMemory}}GiB"
         },
         "processPriority": {
           "title": "Process Priority",
@@ -1258,7 +1336,7 @@
     },
     "versionIsolation": {
       "settings": {
-        "title": "Enable Version Isolation"
+        "title": "Enable Instance Isolation"
       }
     },
     "moreOptions": {
@@ -1284,6 +1362,10 @@
           "button": "Edit Advanced Options"
         }
       }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "The current instance \"{{instance}}\" has specific game Settings enabled, so the options on this page will not affect this instance. ",
+      "editInstanceSettings": "Edit instance specific game settings"
     }
   },
   "GuidedTourProvider": {
@@ -1344,6 +1426,10 @@
         "curseforge": {
           "title": "CurseForge",
           "description": "Discover the world's largest Minecraft mod repository"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "An open-source, modern Minecraft resource platform"
         }
       }
     },
@@ -1355,7 +1441,7 @@
         },
         "UserGroup": {
           "title": "User Community",
-          "description": "Join the QQ group or Discord server to report issues, request features, or get help",
+          "description": "Join the QQ group or GitHub Discussions to report issues, request features, or get help",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
         }
       }
@@ -1373,8 +1459,14 @@
     "header": {
       "title": "Import Players and Auth Servers"
     },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
     "launcherDesc": {
       "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
       "MultiMC": "MultiMC"
     },
     "body": {
@@ -1491,9 +1583,9 @@
     "colorTag": "Color Tag",
     "icon": "Instance Icon",
     "applySettings": "Apply the following specific settings",
-    "restoreSettings": "Restore specific settings",
-    "restoreSettingsDesc": "Restore the following specific settings to the global game settings.",
-    "restore": "Restore",
+    "resetSettings": "Reset specific settings",
+    "resetSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "reset": "Reset",
     "errorMessage": {
       "error-1": "Instance name cannot be empty",
       "error-2": "Instance name is invalid",
@@ -1620,6 +1712,17 @@
       "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
     }
   },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "",
+      "es": "Spanish",
+      "fr": "French",
+      "ja": "Japanese",
+      "lzh": "Literary Chinese",
+      "zh-Hans": "Simplified Chinese",
+      "zh-Hant": "Traditional Chinese"
+    }
+  },
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "Previous Run Exited Abnormally",
@@ -1667,6 +1770,12 @@
     "notCompatibleWith": "Not compatible with {{item}}",
     "noVersionSelected": "No version selected"
   },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Import Modpack",
+      "desc": "Import modpack file {{fileName}} to SJMCL"
+    }
+  },
   "MainWindowTitlebar": {
     "extensionProvidedPage": "This page is provided by extension {{name}}"
   },
@@ -1675,7 +1784,7 @@
     "default": "Default",
     "steve": "Steve",
     "alex": "Alex",
-    "upload": "Upload",
+    "upload": "Choose Local Skin",
     "skin": "Skin",
     "cape": "Cape",
     "model": {
@@ -1702,7 +1811,7 @@
   },
   "MemoryStatusProgress": {
     "title": "Memory Status",
-    "info": "{{used}} / {{total}} GB used",
+    "info": "{{used}} / {{total}} GiB used",
     "label": {
       "now": "In use",
       "maxAllocation": "Maximum allocated for Minecraft"
@@ -1710,6 +1819,41 @@
   },
   "MenuSelector": {
     "selectedCount": "{{count}} selected"
+  },
+  "MicrosoftFriendsModal": {
+    "title": "Minecraft Friends of Microsoft Account {{name}}",
+    "placeholder": {
+      "playerName": "Enter a player name to add as a friend"
+    },
+    "group": {
+      "requests": "Requests",
+      "friends": "Friends"
+    },
+    "request": {
+      "incoming": "Incoming friend request",
+      "outgoing": "Outgoing friend request"
+    },
+    "button": {
+      "add": "Add",
+      "accept": "Accept",
+      "decline": "Decline",
+      "revoke": "Revoke",
+      "remove": "Remove Friend",
+      "xboxSettings": "XBOX Settings"
+    },
+    "empty": {
+      "requests": "No requests",
+      "friends": "No friends"
+    },
+    "status": {
+      "INVITED": "Invited you to join their world",
+      "ONLINE": "Online",
+      "PLAYING_OFFLINE": "Playing Offline",
+      "PLAYING_REALMS": "Playing Realms",
+      "PLAYING_SERVER": "Playing on a Server",
+      "PLAYING_HOSTED_SERVER": "Hosted LAN World",
+      "OFFLINE": "Offline"
+    }
   },
   "NoSuitableJavaDialog": {
     "title": "No suitable Java runtime found for this instance",
@@ -1744,6 +1888,7 @@
   },
   "PlayerMenu": {
     "label": {
+      "friends": "Friends",
       "manageSkin": "Manage Skin",
       "viewSkin": "View Skin",
       "delete": "Delete",
@@ -1752,6 +1897,17 @@
     "toast": {
       "refreshing": "Refreshing player info",
       "deleting": "Deleting player"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Proxy Type"
+    },
+    "host": {
+      "title": "Host"
+    },
+    "port": {
+      "title": "Port"
     }
   },
   "ReLoginPlayerModal": {
@@ -1768,6 +1924,26 @@
     "button": {
       "login": "Login"
     }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Remove Mod Loader",
+      "content": "Are you sure you want to remove {{type}} {{version}} installed for {{instanceName}}? Your mods may stop working."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Remove OptiFine",
+      "content": "Are you sure you want to remove OptiFine {{version}} installed for {{instanceName}}? Your shader packs may stop working."
+    }
+  },
+  "ResetConfigConfirmDialog": {
+    "title": "Reset Launcher Settings",
+    "body": "This action will reset all launcher settings to their default values. Are you sure you want to proceed?"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "Reset Instance Settings",
+    "body": "This action will reset this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
   },
   "ResourceDownloader": {
     "label": {
@@ -2056,20 +2232,12 @@
   "RestartForUpdateConfirmDialog": {
     "title": "Launcher Update",
     "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
-    "bodyMSI": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "bodyWinInstaller": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
     "button": {
       "restart": "Restart",
       "install": "Install",
       "later": "Later"
     }
-  },
-  "RestoreConfigConfirmDialog": {
-    "title": "Restore Launcher Settings",
-    "body": "This action will restore all launcher settings to their default values. Are you sure you want to proceed?"
-  },
-  "RestoreInstanceConfigConfirmDialog": {
-    "title": "Restore Instance Settings",
-    "body": "This action will restore this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
   },
   "RevealConfigJsonConfirmDialog": {
     "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
@@ -2104,10 +2272,10 @@
           "title": "Failed to update launcher settings"
         }
       },
-      "restoreLauncherConfig": {
-        "success": "Successfully restored launcher settings",
+      "resetLauncherConfig": {
+        "success": "Successfully reset launcher settings",
         "error": {
-          "title": "Failed to restore launcher settings"
+          "title": "Failed to reset launcher settings"
         }
       },
       "exportLauncherConfig": {
@@ -2229,11 +2397,11 @@
             "CANCELLED": "OAuth login cancelled",
             "INVALID": "The server type is invalid",
             "NO_MINECRAFT_PROFILE": "No Minecraft profile found",
-            "XSTS_BANNED": "Your account has been banned from Xbox services",
+            "XSTS_BANNED": "Your account has been banned from XBOX services",
             "XSTS_PARENTAL_RESTRICTION": "Your account is blocked by parental controls",
-            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an Xbox account, please visit minecraft.net to set one up",
-            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the Xbox Terms of Service before continuing",
-            "XSTS_REGION_BANNED": "Your account is from a country or region where Xbox Live is not available",
+            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an XBOX account, please visit minecraft.net to set one up",
+            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the XBOX Terms of Service before continuing",
+            "XSTS_REGION_BANNED": "Your account is from a country or region where XBOX Live is not available",
             "XSTS_CHILD_ACCOUNT": "Your account is a minor account and requires parental consent, please visit family.microsoft.com to authorize",
             "XSTS_UNKNOWN_ERROR": "An unknown XSTS authentication error occurred"
           }
@@ -2251,11 +2419,11 @@
             "INVALID": "The player type is invalid",
             "CANCELLED": "OAuth re-login cancelled",
             "NO_MINECRAFT_PROFILE": "No Minecraft profile found",
-            "XSTS_BANNED": "Your account has been banned from Xbox services",
+            "XSTS_BANNED": "Your account has been banned from XBOX services",
             "XSTS_PARENTAL_RESTRICTION": "Your account is blocked by parental controls",
-            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an Xbox account, please visit minecraft.net to set one up",
-            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the Xbox Terms of Service before continuing",
-            "XSTS_REGION_BANNED": "Your account is from a country or region where Xbox Live is not available",
+            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an XBOX account, please visit minecraft.net to set one up",
+            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the XBOX Terms of Service before continuing",
+            "XSTS_REGION_BANNED": "Your account is from a country or region where XBOX Live is not available",
             "XSTS_CHILD_ACCOUNT": "Your account is a minor account and requires parental consent, please visit family.microsoft.com to authorize",
             "XSTS_UNKNOWN_ERROR": "An unknown XSTS authentication error occurred"
           }
@@ -2343,6 +2511,41 @@
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
             "INVALID": "The player type is invalid"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "Successfully retrieved friend list",
+        "error": {
+          "title": "Failed to retrieve Microsoft friend list",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The current player is not a Microsoft account",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to Minecraft services",
+            "FORBIDDEN": "This account is not allowed to access friends",
+            "TOO_MANY_REQUESTS": "Too many requests, please try again later",
+            "SERVICE_UNAVAILABLE": "Minecraft services are temporarily unavailable"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "Successfully updated friend relationship",
+        "error": {
+          "title": "Failed to update Microsoft friend relationship",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The friend action parameters are invalid",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to Minecraft services",
+            "FORBIDDEN": "Unable to add friend right now. Please check the relevant account settings for both you and the other player",
+            "TOO_MANY_REQUESTS": "Too many requests, please try again later",
+            "SERVICE_UNAVAILABLE": "Minecraft services are temporarily unavailable",
+            "UNKNOWN_PROFILE": "The target player does not exist",
+            "CANNOT_ADD_SELF": "You cannot add yourself as a friend",
+            "DUPLICATED_PROFILES": "Duplicated friend operation request"
           }
         }
       },
@@ -2572,10 +2775,10 @@
           }
         }
       },
-      "restoreInstanceGameConfig": {
-        "success": "Successfully restored instance game settings",
+      "resetInstanceGameConfig": {
+        "success": "Successfully reset instance game settings",
         "error": {
-          "title": "Failed to restore instance game settings",
+          "title": "Failed to reset instance game settings",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "SAVE_ERROR": "Failed to save instance settings"
@@ -2611,7 +2814,7 @@
           }
         }
       },
-      "copyResourceToInstances": {
+      "copyResourcesToInstances": {
         "success": "Resource copied successfully",
         "error": {
           "title": "Failed to copy resource",
@@ -2779,12 +2982,39 @@
           }
         }
       },
+      "changeOptiFine": {
+        "error": {
+          "title": "Failed to Change OptiFine"
+        }
+      },
+      "removeModLoader": {
+        "success": "Mod loader removed successfully",
+        "error": {
+          "title": "Failed to remove mod loader",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine removed successfully",
+        "error": {
+          "title": "Failed to remove OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
+        }
+      },
       "retrieveModpackMetaInfo": {
         "error": {
           "title": "Failed to retrieve modpack resource info",
           "description": {
             "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
-            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error"
+            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error",
+            "NETWORK_ERROR": "Failed to fetch the mod loader info required by the modpack",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Unable to recognize the mod loader version required by this modpack"
           }
         }
       },
@@ -2959,6 +3189,12 @@
     }
   },
   "Utils": {
+    "byteSize": {
+      "b": "B",
+      "kib": "KiB",
+      "mib": "MiB",
+      "gib": "GiB"
+    },
     "datetime": {
       "formatRelativeTime": {
         "now": "now",

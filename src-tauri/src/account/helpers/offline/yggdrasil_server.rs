@@ -1,26 +1,23 @@
-use crate::account::models::{PlayerInfo, SkinModel};
-use crate::error::SJMCLResult;
-use crate::utils::image::ImageWrapper;
-use crate::utils::sys_info::find_free_port;
 use axum::{
+  Json, Router,
   extract::{Path, Query, State},
   http::{HeaderMap, StatusCode},
   response::IntoResponse,
   routing::{get, post},
-  Json, Router,
 };
-use base64::{engine::general_purpose, Engine};
+use base64::{Engine, engine::general_purpose};
 use image::{ImageFormat, RgbaImage};
 use rsa::{
+  RsaPrivateKey, RsaPublicKey,
   pkcs1v15::SigningKey,
   pkcs8::EncodePublicKey,
   rand_core,
   signature::{SignatureEncoding, Signer},
-  RsaPrivateKey, RsaPublicKey,
 };
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 use sha1::Sha1;
 use sha2::{Digest, Sha256};
+use sjmcl_types::error::SJMCLResult;
 use std::{
   collections::HashMap,
   io::Cursor,
@@ -30,6 +27,10 @@ use std::{
 };
 use tower_http::cors::CorsLayer;
 use uuid::Uuid;
+
+use crate::account::models::{PlayerInfo, SkinModel};
+use crate::utils::image::ImageWrapper;
+use crate::utils::sys_info::find_free_port;
 
 static KEY_PAIR: OnceLock<(RsaPrivateKey, RsaPublicKey)> = OnceLock::new();
 
@@ -308,14 +309,14 @@ async fn handle_profile_route(
     "Local Yggdrasil server received: GET /sessionserver/session/minecraft/profile/{}",
     uuid
   );
-  if let Ok(parsed_uuid) = Uuid::parse_str(&uuid) {
-    if let Some(player) = state.find_player_by_uuid(parsed_uuid) {
-      return (
-        StatusCode::OK,
-        Json(player.to_full_response(&state.root_url)),
-      )
-        .into_response();
-    }
+  if let Ok(parsed_uuid) = Uuid::parse_str(&uuid)
+    && let Some(player) = state.find_player_by_uuid(parsed_uuid)
+  {
+    return (
+      StatusCode::OK,
+      Json(player.to_full_response(&state.root_url)),
+    )
+      .into_response();
   }
   log::warn!("Profile not found: {}", uuid);
   StatusCode::NO_CONTENT.into_response()

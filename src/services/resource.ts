@@ -111,7 +111,8 @@ export class ResourceService {
     resourceId: string,
     modLoader: ModLoaderType | "All",
     gameVersions: string[],
-    downloadSource: OtherResourceSource
+    downloadSource: OtherResourceSource,
+    resourceType?: OtherResourceType
   ): Promise<InvokeResponse<OtherResourceVersionPack[]>> {
     return await invoke("fetch_resource_version_packs", {
       downloadSource,
@@ -119,6 +120,7 @@ export class ResourceService {
         resourceId,
         modLoader,
         gameVersions,
+        resourceType,
       },
     });
   }

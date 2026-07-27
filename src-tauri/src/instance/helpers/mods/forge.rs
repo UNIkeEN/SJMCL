@@ -1,17 +1,19 @@
 // This file is used to read mod info for Forge or NeoForge (structure almost identical)
 // https://forge.gemwire.uk/wiki/Mods.toml
 // https://docs.neoforged.net/docs/gettingstarted/modfiles/#neoforgemodstoml
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::mods::common::{compress_icon, LocalModMetadataParser};
-use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
-use crate::utils::image::{load_image_from_dir_async, load_image_from_jar, ImageWrapper};
+
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::io::{Cursor, Read, Seek};
 use std::path::Path;
 use zip::ZipArchive;
 use {java_properties, tokio, toml};
+
+use crate::instance::helpers::mods::common::{LocalModMetadataParser, compress_icon};
+use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
+use crate::utils::image::{ImageWrapper, load_image_from_dir_async, load_image_from_jar};
 
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase", default)]
@@ -45,6 +47,7 @@ impl From<ForgeModMetadata> for LocalModInfo {
   fn from(meta: ForgeModMetadata) -> Self {
     let first_mod = meta.mods.into_iter().next().unwrap_or_default();
     Self {
+      mod_id: first_mod.mod_id,
       name: first_mod.display_name.unwrap_or_default(),
       version: first_mod.version.unwrap_or_default(),
       description: first_mod.description.unwrap_or_default(),
@@ -72,14 +75,14 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       meta.loader_type = ModLoaderType::Forge;
       meta_result = Some(meta);
     }
-    if meta_result.is_none() {
-      if let Ok(mut file) = jar.by_name("META-INF/neoforge.mods.toml") {
-        let mut buf = String::new();
-        file.read_to_string(&mut buf)?;
-        let mut meta = toml::from_str::<ForgeModMetadata>(&buf)?;
-        meta.loader_type = ModLoaderType::NeoForge;
-        meta_result = Some(meta);
-      }
+    if meta_result.is_none()
+      && let Ok(mut file) = jar.by_name("META-INF/neoforge.mods.toml")
+    {
+      let mut buf = String::new();
+      file.read_to_string(&mut buf)?;
+      let mut meta = toml::from_str::<ForgeModMetadata>(&buf)?;
+      meta.loader_type = ModLoaderType::NeoForge;
+      meta_result = Some(meta);
     }
     let mut meta = match meta_result {
       Some(val) => val,
@@ -113,16 +116,12 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       .mods
       .first_mut()
       .and_then(|first_mod| first_mod.version.as_mut())
+      && version == "${file.jarVersion}"
+      && let Ok(mf_file) = jar.by_name("META-INF/MANIFEST.MF")
+      && let Ok(mf) = java_properties::read(mf_file)
+      && let Some(jar_version) = mf.get("Implementation-Version")
     {
-      if version == "${file.jarVersion}" {
-        if let Ok(mf_file) = jar.by_name("META-INF/MANIFEST.MF") {
-          if let Ok(mf) = java_properties::read(mf_file) {
-            if let Some(jar_version) = mf.get("Implementation-Version") {
-              *version = jar_version.clone();
-            }
-          }
-        }
-      }
+      *version = jar_version.clone();
     }
     Ok(meta)
   }
@@ -134,13 +133,12 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       meta.loader_type = ModLoaderType::Forge;
       meta_result = Some(meta);
     }
-    if meta_result.is_none() {
-      if let Ok(val) = tokio::fs::read_to_string(dir_path.join("META-INF/neoforge.mods.toml")).await
-      {
-        let mut meta = toml::from_str::<ForgeModMetadata>(val.as_str())?;
-        meta.loader_type = ModLoaderType::NeoForge;
-        meta_result = Some(meta);
-      }
+    if meta_result.is_none()
+      && let Ok(val) = tokio::fs::read_to_string(dir_path.join("META-INF/neoforge.mods.toml")).await
+    {
+      let mut meta = toml::from_str::<ForgeModMetadata>(val.as_str())?;
+      meta.loader_type = ModLoaderType::NeoForge;
+      meta_result = Some(meta);
     }
     let mut meta = match meta_result {
       Some(val) => val,
@@ -174,18 +172,12 @@ impl LocalModMetadataParser for ForgeModMetadataParser {
       .mods
       .first_mut()
       .and_then(|first_mod| first_mod.version.as_mut())
+      && version == "${file.jarVersion}"
+      && let Ok(mf_string) = tokio::fs::read_to_string(dir_path.join("META-INF/MANIFEST.MF")).await
+      && let Ok(mf) = java_properties::read(Cursor::new(mf_string))
+      && let Some(jar_version) = mf.get("Implementation-Version")
     {
-      if version == "${file.jarVersion}" {
-        if let Ok(mf_string) =
-          tokio::fs::read_to_string(dir_path.join("META-INF/MANIFEST.MF")).await
-        {
-          if let Ok(mf) = java_properties::read(Cursor::new(mf_string)) {
-            if let Some(jar_version) = mf.get("Implementation-Version") {
-              *version = jar_version.clone();
-            }
-          }
-        }
-      }
+      *version = jar_version.clone();
     }
     Ok(meta)
   }

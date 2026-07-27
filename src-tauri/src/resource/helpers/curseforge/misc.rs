@@ -1,22 +1,30 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::collections::HashMap;
+use std::env;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::resource::helpers::misc::version_pack_sort;
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceDependency, OtherResourceFileInfo, OtherResourceInfo,
   OtherResourceRequestType, OtherResourceSearchRes, OtherResourceSource, OtherResourceVersionPack,
   ResourceError,
 };
-use lazy_static::lazy_static;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::env;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 lazy_static! {
   pub static ref CURSEFORGE_API_KEY: String = {
     env::var("SJMCL_CURSEFORGE_API_KEY")
       .unwrap_or_else(|_| env!("SJMCL_CURSEFORGE_API_KEY").to_string())
   };
+}
+
+pub fn is_curseforge_authenticated_url(url: &url::Url) -> bool {
+  matches!(
+    url.host_str(),
+    Some("api.curseforge.com" | "edge.forgecdn.net" | "mediafilez.forgecdn.net")
+  )
 }
 
 pub async fn make_curseforge_request<T, P>(
@@ -477,36 +485,6 @@ pub fn cvt_mod_loader_to_id(mod_loader: &str) -> u32 {
     "Fabric" => 4,
     "Quilt" => 5,
     "NeoForge" => 6,
-    _ => 0,
-  }
-}
-
-// https://api.curseforge.com/v1/minecraft/version
-pub fn cvt_version_to_type_id(version: &str) -> u32 {
-  match version {
-    "26.1" => 83806,
-    "1.21" => 77784,
-    "1.20" => 75125,
-    "1.19" => 73407,
-    "1.18" => 73250,
-    "1.17" => 73242,
-    "1.16" => 70886,
-    "1.15" => 68722,
-    "1.14" => 64806,
-    "1.13" => 55023,
-    "1.12" => 628,
-    "1.11" => 599,
-    "1.10" => 572,
-    "1.9" => 552,
-    "1.8" => 4,
-    "1.7" => 5,
-    "1.6" => 6,
-    "1.5" => 11,
-    "1.4" => 12,
-    "1.3" => 13,
-    "1.2" => 14,
-    "1.1" => 15,
-    "1.0" => 16,
     _ => 0,
   }
 }

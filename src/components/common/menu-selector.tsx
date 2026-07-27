@@ -8,17 +8,19 @@ import {
   MenuListProps,
   MenuOptionGroup,
   MenuProps,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 
 type OptionValue = string;
-type OptionLabel = React.ReactNode;
+type OptionLabel = React.ReactNode | { title: string; desc: string };
 
 type MenuSelectorOption =
   | OptionValue
-  | { value: OptionValue; label: OptionLabel };
+  | { value: OptionValue; label: OptionLabel; disabled?: boolean };
 
 export interface MenuSelectorProps extends Omit<MenuProps, "children"> {
   options: MenuSelectorOption[];
@@ -50,9 +52,28 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
   const buildOptions = (opt: MenuSelectorOption) =>
     typeof opt === "string" ? { value: opt, label: opt } : opt;
 
-  const getLabelFromValue = (val: OptionValue) => {
-    const match = options.find((opt) => buildOptions(opt).value === val);
-    return match ? buildOptions(match).label : val;
+  const isTitleDescLabel = (
+    label: OptionLabel
+  ): label is { title: string; desc: string } =>
+    typeof label === "object" &&
+    label !== null &&
+    "title" in label &&
+    "desc" in label;
+
+  const renderLabel = (label: OptionLabel) => {
+    if (isTitleDescLabel(label)) {
+      return (
+        <VStack spacing={0} alignItems="flex-start">
+          <Text fontSize={fontSize}>{label.title}</Text>
+          {label.desc && (
+            <Text fontSize="xs" className="secondary-text">
+              {label.desc}
+            </Text>
+          )}
+        </VStack>
+      );
+    }
+    return label;
   };
 
   const renderButtonLabel = () => {
@@ -60,13 +81,19 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       return placeholder;
     }
 
+    const getLabel = (val: OptionValue) => {
+      const match = options.find((opt) => buildOptions(opt).value === val);
+      const label = match ? buildOptions(match).label : val;
+      return isTitleDescLabel(label) ? label.title : label;
+    };
+
     if (multiple && Array.isArray(value)) {
       return value.length <= 3
-        ? value.map(getLabelFromValue).join(", ")
+        ? value.map(getLabel).join(", ")
         : t("MenuSelector.selectedCount", { count: value.length });
     }
 
-    return getLabelFromValue(value as OptionValue);
+    return getLabel(value as OptionValue);
   };
 
   return (
@@ -81,6 +108,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
         variant="outline"
         textAlign="left"
         w="auto"
+        flexShrink={0}
         {...buttonProps}
       >
         {renderButtonLabel()}
@@ -98,10 +126,15 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
           }}
         >
           {options.map((opt, i) => {
-            const { value: v, label } = buildOptions(opt);
+            const { value: v, label, disabled } = buildOptions(opt);
             return (
-              <MenuItemOption key={i} value={v} fontSize={fontSize}>
-                {label}
+              <MenuItemOption
+                key={i}
+                value={v}
+                fontSize={fontSize}
+                isDisabled={disabled}
+              >
+                {renderLabel(label)}
               </MenuItemOption>
             );
           })}

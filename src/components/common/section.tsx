@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  Button,
   Collapse,
   Flex,
   HStack,
@@ -71,42 +72,52 @@ export const Section: React.FC<SectionProps> = ({
                 }}
               />
             )}
-            {isAccordion && (
-              <IconButton
-                aria-label="accordion-control"
-                icon={
-                  <Icon
-                    as={LuChevronRight}
-                    boxSize={3.5}
-                    sx={{
-                      transition: "transform 0.2s ease-in-out",
-                      transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
-                    }}
-                  />
-                }
-                size="xs"
-                h={21}
-                variant="ghost"
-                colorScheme="gray"
-                onClick={() => {
-                  onAccordionToggle?.(!isOpen);
-                  internalOnToggle();
-                }}
-              />
-            )}
             <VStack spacing={0} align="start">
-              <HStack spacing={2}>
-                {title && (
-                  <Text
-                    fontWeight="bold"
-                    fontSize="sm"
-                    {...(maxTitleLines ? lineClampProps : {})}
-                  >
-                    {title}
-                  </Text>
-                )}
-                {titleExtra}
-              </HStack>
+              {isAccordion ? (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  aria-expanded={isOpen}
+                  onClick={() => {
+                    onAccordionToggle?.(!isOpen);
+                    internalOnToggle();
+                  }}
+                >
+                  <HStack spacing={2}>
+                    <Icon
+                      as={LuChevronRight}
+                      boxSize={3.5}
+                      sx={{
+                        transition: "transform 0.2s ease-in-out",
+                        transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                      }}
+                    />
+                    {title && (
+                      <Text
+                        fontWeight="bold"
+                        fontSize="sm"
+                        {...(maxTitleLines ? lineClampProps : {})}
+                      >
+                        {title}
+                      </Text>
+                    )}
+                    {titleExtra}
+                  </HStack>
+                </Button>
+              ) : (
+                <HStack spacing={2}>
+                  {title && (
+                    <Text
+                      fontWeight="bold"
+                      fontSize="sm"
+                      {...(maxTitleLines ? lineClampProps : {})}
+                    >
+                      {title}
+                    </Text>
+                  )}
+                  {titleExtra}
+                </HStack>
+              )}
               {description && (
                 <Text fontSize="xs" className="secondary-text">
                   {description}

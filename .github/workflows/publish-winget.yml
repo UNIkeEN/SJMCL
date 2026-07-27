@@ -1,0 +1,221 @@
+name: Publish Winget Manifest
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to read assets from. Defaults to v<version>."
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        description: "Version to publish"
+        required: true
+        type: string
+      release_tag:
+        description: "Release tag to read assets from"
+        required: true
+        type: string
+    secrets:
+      WINGET_BOT_GITHUB_TOKEN:
+        description: "GitHub token for pushing to a winget-pkgs fork and creating PRs"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish_winget_manifest:
+    name: Publish Winget manifest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+
+      - name: Read Windows release asset metadata
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          get_asset_digest() {
+            local asset_name="$1"
+            gh api "repos/${GH_REPO}/releases/tags/${RELEASE_TAG}" \
+              --jq ".assets[] | select(.name == \"${asset_name}\") | .digest"
+          }
+
+          X64_ASSET="SJMCL_${VERSION}_windows_x86_64_setup.exe"
+          X86_ASSET="SJMCL_${VERSION}_windows_i686_setup.exe"
+          ARM64_ASSET="SJMCL_${VERSION}_windows_aarch64_setup.exe"
+
+          X64_DIGEST=$(get_asset_digest "$X64_ASSET")
+          X86_DIGEST=$(get_asset_digest "$X86_ASSET")
+          ARM64_DIGEST=$(get_asset_digest "$ARM64_ASSET")
+
+          if [[ -z "$X64_DIGEST" ]]; then
+            echo "Missing release asset digest: ${X64_ASSET}"
+            exit 1
+          fi
+
+          if [[ -z "$X86_DIGEST" ]]; then
+            echo "Missing release asset digest: ${X86_ASSET}"
+            exit 1
+          fi
+
+          if [[ -z "$ARM64_DIGEST" ]]; then
+            echo "Missing release asset digest: ${ARM64_ASSET}"
+            exit 1
+          fi
+
+          if [[ "$X64_DIGEST" != sha256:* || "$X86_DIGEST" != sha256:* || "$ARM64_DIGEST" != sha256:* ]]; then
+            echo "Unexpected Windows asset digest format. Expected sha256:<hex>."
+            exit 1
+          fi
+
+          echo "X64_INSTALLER_URL=https://github.com/${GH_REPO}/releases/download/${RELEASE_TAG}/${X64_ASSET}" >> "$GITHUB_ENV"
+          echo "X86_INSTALLER_URL=https://github.com/${GH_REPO}/releases/download/${RELEASE_TAG}/${X86_ASSET}" >> "$GITHUB_ENV"
+          echo "ARM64_INSTALLER_URL=https://github.com/${GH_REPO}/releases/download/${RELEASE_TAG}/${ARM64_ASSET}" >> "$GITHUB_ENV"
+          echo "X64_INSTALLER_SHA256=${X64_DIGEST#sha256:}" >> "$GITHUB_ENV"
+          echo "X86_INSTALLER_SHA256=${X86_DIGEST#sha256:}" >> "$GITHUB_ENV"
+          echo "ARM64_INSTALLER_SHA256=${ARM64_DIGEST#sha256:}" >> "$GITHUB_ENV"
+
+      - name: Render Winget manifests
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          RELEASE_TAG: ${{ inputs.release_tag || format('v{0}', inputs.version) }}
+        run: |
+          OUTPUT_DIR="winget-manifests/manifests/s/SJMC/SJMCL/${VERSION}"
+          mkdir -p "$OUTPUT_DIR"
+
+          render_template() {
+            local template_path="$1"
+            local output_path="$2"
+
+            cp "$template_path" "$output_path"
+            sed -i "s|__VERSION__|${VERSION}|g" "$output_path"
+            sed -i "s|__RELEASE_TAG__|${RELEASE_TAG}|g" "$output_path"
+            sed -i "s|__X64_INSTALLER_URL__|${X64_INSTALLER_URL}|g" "$output_path"
+            sed -i "s|__X86_INSTALLER_URL__|${X86_INSTALLER_URL}|g" "$output_path"
+            sed -i "s|__ARM64_INSTALLER_URL__|${ARM64_INSTALLER_URL}|g" "$output_path"
+            sed -i "s|__X64_INSTALLER_SHA256__|${X64_INSTALLER_SHA256}|g" "$output_path"
+            sed -i "s|__X86_INSTALLER_SHA256__|${X86_INSTALLER_SHA256}|g" "$output_path"
+            sed -i "s|__ARM64_INSTALLER_SHA256__|${ARM64_INSTALLER_SHA256}|g" "$output_path"
+          }
+
+          render_template ".github/winget/SJMC.SJMCL.yaml.template" "$OUTPUT_DIR/SJMC.SJMCL.yaml"
+          render_template ".github/winget/SJMC.SJMCL.locale.en-US.yaml.template" "$OUTPUT_DIR/SJMC.SJMCL.locale.en-US.yaml"
+          render_template ".github/winget/SJMC.SJMCL.locale.zh-CN.yaml.template" "$OUTPUT_DIR/SJMC.SJMCL.locale.zh-CN.yaml"
+          render_template ".github/winget/SJMC.SJMCL.installer.yaml.template" "$OUTPUT_DIR/SJMC.SJMCL.installer.yaml"
+
+      - name: Show generated manifests
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          find "winget-manifests/manifests/s/SJMC/SJMCL/${VERSION}" -maxdepth 1 -type f | sort | while read -r manifest; do
+            echo "=== ${manifest} ==="
+            cat "$manifest"
+          done
+
+      - name: Upload Winget manifests
+        uses: actions/upload-artifact@v4
+        with:
+          name: winget-manifests-${{ inputs.version }}
+          path: winget-manifests/manifests/s/SJMC/SJMCL/${{ inputs.version }}
+          if-no-files-found: error
+
+  submit_winget_pr:
+    name: Submit Winget PR
+    needs: [publish_winget_manifest]
+    runs-on: windows-latest
+
+    steps:
+      - name: Download Winget manifests
+        uses: actions/download-artifact@v4
+        with:
+          name: winget-manifests-${{ inputs.version }}
+          path: winget-manifests/manifests/s/SJMC/SJMCL/${{ inputs.version }}
+
+      - name: Validate Winget manifests
+        shell: pwsh
+        run: |
+          $manifestPath = (Resolve-Path "winget-manifests/manifests/s/SJMC/SJMCL/${{ inputs.version }}").Path
+          winget validate --manifest $manifestPath --disable-interactivity
+
+      - name: Checkout Winget fork
+        uses: actions/checkout@v4
+        with:
+          repository: SJMC-Dev-Bot/winget-pkgs
+          token: ${{ secrets.WINGET_BOT_GITHUB_TOKEN }}
+          path: winget-pkgs
+          fetch-depth: 0
+
+      - name: Update fork branch
+        id: update-branch
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          BRANCH_NAME="sjmc-sjmcl-${VERSION}"
+          MANIFEST_DIR="manifests/s/SJMC/SJMCL/${VERSION}"
+
+          git -C winget-pkgs config user.name "SJMC-Dev-Bot"
+          git -C winget-pkgs config user.email "launcher@sjmc.club"
+
+          git -C winget-pkgs remote add upstream https://github.com/microsoft/winget-pkgs.git
+          git -C winget-pkgs fetch upstream master
+          git -C winget-pkgs checkout -B "$BRANCH_NAME" upstream/master
+
+          mkdir -p "winget-pkgs/${MANIFEST_DIR}"
+          cp winget-manifests/manifests/s/SJMC/SJMCL/${VERSION}/* "winget-pkgs/${MANIFEST_DIR}/"
+
+          git -C winget-pkgs add "$MANIFEST_DIR"
+
+          if git -C winget-pkgs diff --cached --quiet -- "$MANIFEST_DIR"; then
+            echo "No Winget manifest changes to submit."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git -C winget-pkgs commit -m "Add SJMC.SJMCL version ${VERSION}"
+          git -C winget-pkgs push --force-with-lease origin "$BRANCH_NAME"
+
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create or reuse Winget PR
+        if: steps.update-branch.outputs.has_changes == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.WINGET_BOT_GITHUB_TOKEN }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          BRANCH_NAME="${{ steps.update-branch.outputs.branch_name }}"
+          EXISTING_PR_URL=$(gh pr list \
+            --repo microsoft/winget-pkgs \
+            --state open \
+            --head "SJMC-Dev-Bot:${BRANCH_NAME}" \
+            --json url \
+            --jq '.[0].url')
+
+          if [ -n "$EXISTING_PR_URL" ]; then
+            echo "Winget PR already exists: $EXISTING_PR_URL"
+            exit 0
+          fi
+
+          gh pr create \
+            --repo microsoft/winget-pkgs \
+            --base master \
+            --head "SJMC-Dev-Bot:${BRANCH_NAME}" \
+            --title "New version: SJMC.SJMCL version ${VERSION}" \
+            --body "## Summary\n- Update SJMC.SJMCL to ${VERSION}\n- Generated from GitHub release assets in ${{ github.repository }}"

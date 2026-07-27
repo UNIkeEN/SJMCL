@@ -82,6 +82,7 @@ export interface GameServerInfo {
 export interface LocalModInfo {
   iconSrc: string;
   enabled: boolean;
+  modId: string;
   name: string;
   translatedName?: string;
   version: string;

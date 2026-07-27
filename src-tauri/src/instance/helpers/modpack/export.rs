@@ -1,10 +1,6 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::instance::helpers::modpack::{
-  modrinth::build_modrinth_export_bundle, multimc::build_multimc_export_bundle,
-};
-use crate::instance::models::misc::{Instance, InstanceError, ModpackFileList};
 use regex::{Regex, RegexSet};
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashSet;
 use std::io::{self, Write};
 use std::path::PathBuf;
@@ -13,6 +9,11 @@ use tauri::AppHandle;
 use walkdir::WalkDir;
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
+
+use crate::instance::helpers::modpack::{
+  modrinth::build_modrinth_export_bundle, multimc::build_multimc_export_bundle,
+};
+use crate::instance::models::misc::{Instance, InstanceError, ModpackFileList};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum ExportFormat {
@@ -236,10 +237,10 @@ pub fn list_files(instance: &Instance) -> SJMCLResult<ModpackFileList> {
     if entry.file_type().is_file() {
       let path = entry.path();
       // Ignore name.jar / name.json
-      if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
-        if stem == name {
-          continue;
-        }
+      if let Some(stem) = path.file_stem().and_then(|s| s.to_str())
+        && stem == name
+      {
+        continue;
       }
 
       if let Ok(rel_path) = path.strip_prefix(root) {
@@ -280,16 +281,16 @@ pub(crate) fn normalize_mod_loader_version(raw: &str) -> String {
     return raw.to_string();
   }
 
-  if let Some(caps) = FORGE_VERSION_REGEX.captures(trimmed) {
-    if let Some(matched) = caps.get(2) {
-      return matched.as_str().to_string();
-    }
+  if let Some(caps) = FORGE_VERSION_REGEX.captures(trimmed)
+    && let Some(matched) = caps.get(2)
+  {
+    return matched.as_str().to_string();
   }
 
-  if let Some(caps) = NEOFORGE_VERSION_REGEX.captures(trimmed) {
-    if let Some(matched) = caps.get(2) {
-      return matched.as_str().to_string();
-    }
+  if let Some(caps) = NEOFORGE_VERSION_REGEX.captures(trimmed)
+    && let Some(matched) = caps.get(2)
+  {
+    return matched.as_str().to_string();
   }
 
   raw.to_string()

@@ -19,6 +19,11 @@ on:
         required: false
         type: string
         default: '' # leave empty to use the triggering ref
+      build_type:
+        description: 'Build type exposed to the app at compile time'
+        required: false
+        type: string
+        default: 'release'
     secrets:
       SJMCL_CURSEFORGE_API_KEY:
         required: true
@@ -65,10 +70,21 @@ jobs:
         with:
           ref: ${{ inputs.branch || github.ref || 'main' }} 
 
+      - name: Resolve build metadata
+        id: build_metadata
+        shell: bash
+        run: echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
 
       # See https://github.com/tauri-apps/tauri-action
       - name: Install Rust stable
@@ -88,7 +104,7 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          npm install
+          pnpm install --frozen-lockfile
 
       - name: Remove Font files (MacOS)
         if: matrix.platform == 'macos'
@@ -103,9 +119,11 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.target }}
 
       - name: Build the app
-        run: npm run tauri build -- --target ${{ matrix.target }}
+        run: pnpm tauri build --target ${{ matrix.target }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+          SJMCL_BUILD_TYPE: ${{ inputs.build_type }}
+          SJMCL_COMMIT_SHA: ${{ steps.build_metadata.outputs.commit_sha }}
 
       - name: Patch portable executable
         if: matrix.platform == 'windows' || matrix.platform == 'linux'

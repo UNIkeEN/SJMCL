@@ -1,3 +1,7 @@
+use rmcp::handler::server::tool::ToolRoute;
+use std::path::PathBuf;
+use std::str::FromStr;
+
 use crate::instance::commands::*;
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::intelligence::mcp_server::launcher::McpContext;
@@ -8,13 +12,10 @@ use crate::resource::commands::{
   fetch_game_version_specific, fetch_mod_loader_version_list, fetch_optifine_version_list,
 };
 use crate::resource::models::{ModLoaderResourceInfo, OptiFineResourceInfo, ResourceError};
-use rmcp::handler::server::tool::ToolRoute;
-use std::path::PathBuf;
-use std::str::FromStr;
 
 fn parse_mod_loader_type(
   loader_type: Option<String>,
-) -> Result<ModLoaderType, crate::error::SJMCLError> {
+) -> Result<ModLoaderType, sjmcl_types::error::SJMCLError> {
   match loader_type {
     Some(loader_type) if !loader_type.trim().is_empty() => {
       ModLoaderType::from_str(&loader_type).map_err(|_| ResourceError::NoDownloadApi.into())
@@ -28,13 +29,13 @@ async fn resolve_mod_loader(
   game_version: String,
   loader_type: ModLoaderType,
   loader_version: Option<String>,
-) -> Result<ModLoaderResourceInfo, crate::error::SJMCLError> {
+) -> Result<ModLoaderResourceInfo, sjmcl_types::error::SJMCLError> {
   if loader_type == ModLoaderType::Unknown {
     return Ok(ModLoaderResourceInfo {
       loader_type: ModLoaderType::Unknown,
       version: String::new(),
       description: String::new(),
-      stable: true,
+      stable: None,
       branch: None,
     });
   }
@@ -49,7 +50,7 @@ async fn resolve_mod_loader(
 
   versions
     .iter()
-    .find(|item| item.stable)
+    .find(|item| item.stable.unwrap_or(true))
     .cloned()
     .or_else(|| versions.into_iter().next())
     .ok_or_else(|| ResourceError::ParseError.into())
@@ -59,7 +60,7 @@ async fn resolve_optifine(
   app: tauri::AppHandle,
   game_version: String,
   optifine_version: Option<String>,
-) -> Result<Option<OptiFineResourceInfo>, crate::error::SJMCLError> {
+) -> Result<Option<OptiFineResourceInfo>, sjmcl_types::error::SJMCLError> {
   let Some(optifine_version) = optifine_version.filter(|version| !version.trim().is_empty()) else {
     return Ok(None);
   };
@@ -72,8 +73,20 @@ async fn resolve_optifine(
     .ok_or_else(|| ResourceError::ParseError.into())
 }
 
-// In the user-facing workflow, the default icon mapping lives in the frontend create-instance modal.
-fn default_icon_for_game_type(game_type: &str) -> String {
+// Keep MCP-created instances consistent with the frontend create-instance modal.
+fn default_icon_for_instance(
+  game_type: &str,
+  mod_loader_type: ModLoaderType,
+  has_optifine: bool,
+) -> String {
+  if has_optifine {
+    return "/images/icons/OptiFine.png".to_string();
+  }
+
+  if mod_loader_type != ModLoaderType::Unknown {
+    return mod_loader_type.to_icon_path().to_string();
+  }
+
   match game_type {
     "snapshot" => "/images/icons/JEIcon_Snapshot.png",
     "old_beta" => "/images/icons/StoneOldBeta.png",
@@ -91,8 +104,34 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       "Primary tool for listing local Minecraft instances. Returns instance IDs and metadata for selecting an instance."
     ),
     mcp_tool!(
+      "retrieve_instance_icon_options",
+      "Retrieve supported instance icon sources for `create_instance.icon_src`, including all built-in icon paths and the `custom` option.",
+      |_app, _params: rmcp::model::JsonObject| async move {
+        Ok(serde_json::json!({
+          "builtinIconPaths": [
+            "/images/icons/JEIcon_Release.png",
+            "/images/icons/JEIcon_Snapshot.png",
+            "/images/icons/CommandBlock.png",
+            "/images/icons/CraftingTable.png",
+            "/images/icons/GrassBlock.png",
+            "/images/icons/StoneOldBeta.png",
+            "/images/icons/YellowGlazedTerracotta.png",
+            "/images/icons/Anvil.png",
+            "/images/icons/Forge.png",
+            "/images/icons/Fabric.png",
+            "/images/icons/NeoForge.png",
+            "/images/icons/Quilt.png",
+            "/images/icons/OptiFine.png",
+          ],
+          "customIconSrc": "custom",
+          "customIconDescription": "`custom` displays the custom icon file from the instance root.",
+          "automaticDefaultDescription": "When `create_instance.icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
+        }))
+      }
+    ),
+    mcp_tool!(
       "create_instance",
-      "Create a Minecraft instance and schedule required client/mod-loader downloads. Resolves game and loader metadata from version IDs.",
+      "Create a Minecraft instance and schedule required client/mod-loader downloads. Resolves game and loader metadata from version IDs. Use `retrieve_instance_icon_options` when choosing a manual `icon_src`. If `icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
       |app, params|
       #[serde(deny_unknown_fields)]
       {
@@ -104,7 +143,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         name: String,
         #[schemars(description = "Optional instance description. Defaults to an empty string.")]
         description: Option<String>,
-        #[schemars(description = "Optional instance icon source. Defaults to the standard icon for the selected game version type.")]
+        #[schemars(description = "Optional instance icon source. Omit to let SJMCL pick automatically: OptiFine uses its icon; Fabric, Forge/LegacyForge, NeoForge, and Quilt use their matching icons; otherwise snapshots, old beta, April Fools versions, and releases use their game version type icons. To choose a built-in icon manually, call `retrieve_instance_icon_options` and use one item from `builtinIconPaths`. Pass `custom` only when the instance root already has a custom icon file to display.")]
         icon_src: Option<String>,
         #[schemars(description = "Minecraft game version ID, for example `1.21.5`.")]
         game_version: String,
@@ -142,7 +181,13 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         let icon_src = params
           .icon_src
           .filter(|icon_src| !icon_src.trim().is_empty())
-          .unwrap_or_else(|| default_icon_for_game_type(&game.game_type));
+          .unwrap_or_else(|| {
+            default_icon_for_instance(
+              &game.game_type,
+              mod_loader.loader_type,
+              optifine.is_some(),
+            )
+          });
 
         create_instance(
           app,
@@ -243,9 +288,9 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       }
     ),
     mcp_tool!(
-      "restore_instance_game_config",
-      restore_instance_game_config,
-      "Restore a Minecraft instance's dedicated game configuration to the current global game configuration.",
+      "reset_instance_game_config",
+      reset_instance_game_config,
+      "Reset a Minecraft instance's dedicated game configuration to the current global game configuration.",
       #[serde(deny_unknown_fields)]
       {
         #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]

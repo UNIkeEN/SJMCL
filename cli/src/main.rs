@@ -83,12 +83,7 @@ async fn run() -> Result<(), String> {
       let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
       let result = with_spinner(async {
         client
-          .call_tool(CallToolRequestParams {
-            meta: None,
-            name: name.clone().into(),
-            arguments: Some(arguments),
-            task: None,
-          })
+          .call_tool(CallToolRequestParams::new(name.clone()).with_arguments(arguments))
           .await
           .map_err(service_error_to_string)
       })

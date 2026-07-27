@@ -71,21 +71,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - run: npm install
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+          run_install: false
+      - run: pnpm install --frozen-lockfile
       
       - name: Lint JavaScript/TypeScript Frontend
-        run: npx eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0 
+        run: pnpm eslint 'src/**/*.{js,jsx,ts,tsx}' --no-fix --max-warnings=0
       
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
           components: rustfmt
 
       - name: Lint Rust Backend
-        run: |
-          find src-tauri/src -name '*.rs' | xargs rustfmt --check
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
 
   Build:
     needs: changes
@@ -98,9 +98,7 @@ jobs:
           # - platform: macos-latest
           #   args: '--target aarch64-apple-darwin'
           - platform: 'ubuntu-latest'
-            args: ''
-          # - platform: 'windows-latest'
-          #   args: ''
+          - platform: 'windows-latest'
 
     steps:
       - uses: actions/checkout@v4
@@ -114,20 +112,51 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - run: npm install
-
-      - uses: actions-rs/toolchain@v1
+      - uses: pnpm/action-setup@v4
         with:
-          toolchain: stable
-          override: true
-          target: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
+          version: 10.26.1
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+
+      - uses: dtolnay/rust-toolchain@stable
 
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-          key: ${{ matrix.platform }}-${{ matrix.args }}
+          key: ${{ matrix.platform }}
+
+      - name: Bump version for test build
+        run: pnpm run version bump 0.0.1
 
       - name: Test Build
-        run: npx tauri build ${{ matrix.args }}
+        run: pnpm tauri build --features devtools --no-bundle -- --profile test-build
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+          # Exposed to Rust as compile-time constants by build.rs (all SJMCL_* env vars).
+          SJMCL_BUILD_TYPE: test-build
+          SJMCL_COMMIT_SHA: ${{ github.sha }}
+
+      - name: Build portable artifact
+        id: portable
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          if [ "${{ matrix.platform }}" = "windows-latest" ]; then
+            OUTPUT_NAME="SJMCL_${SHORT_SHA}_windows_x86_64_portable.exe"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/test-build/" -o "$OUTPUT_NAME" "SJMCL.exe"
+          else
+            OUTPUT_NAME="SJMCL_${SHORT_SHA}_linux_x86_64_portable"
+            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/test-build/" -o "$OUTPUT_NAME" "SJMCL"
+          fi
+          cp "src-tauri/target/test-build/$OUTPUT_NAME" artifacts/
+          echo "output_name=$OUTPUT_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Upload portable artifact
+        if: matrix.platform == 'windows-latest' || matrix.platform == 'ubuntu-latest'
+        uses: actions/upload-artifact@v7
+        with:
+          path: artifacts/${{ steps.portable.outputs.output_name }}
+          archive: false
+          if-no-files-found: error

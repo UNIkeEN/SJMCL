@@ -1,17 +1,39 @@
-use crate::error::{SJMCLError, SJMCLResult};
-use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
-use crate::utils::fs::extract_filename as extract_filename_helper;
-use crate::utils::sys_info::get_memory_info;
-use base64::{engine::general_purpose, Engine};
+use base64::{Engine, engine::general_purpose};
 use font_loader::system_fonts;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 use tokio::time::Instant;
 use url::Url;
 
+use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
+use crate::utils::fs::extract_filename as extract_filename_helper;
+use crate::utils::sys_info::get_memory_info;
+
 #[tauri::command]
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
   Ok(get_memory_info())
+}
+
+#[tauri::command]
+pub fn retrieve_resolution_upbound(app: AppHandle) -> SJMCLResult<(u32, u32)> {
+  let monitors = app
+    .get_webview_window("main")
+    .and_then(|w| w.available_monitors().ok())
+    .unwrap_or_default();
+
+  monitors
+    .iter()
+    .max_by_key(|m| {
+      let s = m.size();
+      s.width * s.height
+    })
+    .map(|m| {
+      let s = m.size();
+      (s.width, s.height)
+    })
+    .ok_or_else(|| SJMCLError("No monitor available".into()))
 }
 
 #[tauri::command]
@@ -22,7 +44,7 @@ pub fn retrieve_truetype_font_list() -> SJMCLResult<Vec<String>> {
 
 #[tauri::command]
 pub async fn check_service_availability(
-  client: tauri::State<'_, reqwest::Client>,
+  client: State<'_, reqwest::Client>,
   url: String,
 ) -> SJMCLResult<u128> {
   let parsed_url = Url::parse(&url)

@@ -114,15 +114,15 @@ export class InstanceService {
   }
 
   /**
-   * RESTORE the instance game config to use current global game config.
+   * RESET the instance game config to use current global game config.
    * @param {string} instanceId - The ID of the instance.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async restoreInstanceGameConfig(
+  static async resetInstanceGameConfig(
     instanceId: string
   ): Promise<InvokeResponse<void>> {
-    return await invoke("restore_instance_game_config", {
+    return await invoke("reset_instance_game_config", {
       instanceId,
     });
   }
@@ -201,22 +201,22 @@ export class InstanceService {
   }
 
   /**
-   * COPY the specified resource to the target instance(s).
-   * @param {string} srcFilePath - The path of the file (or the directory) to copy.
+   * COPY the specified resource(s) to the target instance(s).
+   * @param {string | string[]} srcFilePaths - The path(s) of the file(s) or directory(s) to copy.
    * @param {string[]} tgtInstIds - ID of the target instance(s).
    * @param {InstanceSubdirType} tgtDirType - The instance subdir type to operate.
    * @param {boolean} [decompress=false] - Whether to decompress as a zip file
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
-  static async copyResourceToInstances(
-    srcFilePath: string,
+  static async copyResourcesToInstances(
+    srcFilePaths: string | string[],
     tgtInstIds: string[],
     tgtDirType: InstanceSubdirType,
     decompress: boolean = false
   ): Promise<InvokeResponse<void>> {
-    return await invoke("copy_resource_to_instances", {
-      srcFilePath,
+    return await invoke("copy_resources_to_instances", {
+      srcFilePaths: Array.isArray(srcFilePaths) ? srcFilePaths : [srcFilePaths],
       tgtInstIds,
       tgtDirType,
       decompress,
@@ -500,17 +500,60 @@ export class InstanceService {
   @responseHandler("instance")
   static async changeModLoader(
     instanceId: string,
-    newModLoader?: ModLoaderResourceInfo | null,
-    newOptifine?: OptiFineResourceInfo | null,
+    newModLoader: ModLoaderResourceInfo,
     isInstallFabricApi?: boolean,
     isInstallQfApi?: boolean
   ): Promise<InvokeResponse<void>> {
     return await invoke("change_mod_loader", {
       instanceId,
-      newModLoader: newModLoader ?? null,
-      newOptifine: newOptifine ?? null,
+      newModLoader,
       isInstallFabricApi,
       isInstallQfApi,
+    });
+  }
+
+  /**
+   * REMOVE the mod loader from a given instance.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async removeModLoader(
+    instanceId: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("remove_mod_loader", {
+      instanceId,
+    });
+  }
+
+  /**
+   * CHANGE the OptiFine version for a given instance.
+   * @param {string} instanceId - The ID of the instance to update.
+   * @param {OptiFineResourceInfo} newOptifine - The new OptiFine information.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async changeOptiFine(
+    instanceId: string,
+    newOptifine: OptiFineResourceInfo
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("change_optifine", {
+      instanceId,
+      newOptifine,
+    });
+  }
+
+  /**
+   * REMOVE the OptiFine from a given instance.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async removeOptifine(
+    instanceId: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("remove_optifine", {
+      instanceId,
     });
   }
 

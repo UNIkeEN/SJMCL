@@ -1,8 +1,9 @@
+use rmcp::handler::server::tool::ToolRoute;
+
 use crate::extension::commands::{delete_extension, retrieve_extension_list};
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::intelligence::mcp_server::model::MCPError;
 use crate::mcp_tool;
-use rmcp::handler::server::tool::ToolRoute;
 
 pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
   vec![

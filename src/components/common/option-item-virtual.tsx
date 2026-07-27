@@ -1,5 +1,4 @@
 import { Box, Card, Center, Divider } from "@chakra-ui/react";
-import { debounce } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import {
@@ -11,6 +10,7 @@ import {
 import { OptionItem, OptionItemProps } from "@/components/common/option-item";
 import { Section, SectionProps } from "@/components/common/section";
 import cardStyles from "@/styles/card.module.css";
+import { debounce } from "@/utils/debounce";
 
 export { OptionItem };
 export type { OptionItemProps };

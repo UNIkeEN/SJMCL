@@ -1,8 +1,9 @@
-use crate::utils::image::ImageWrapper;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 use strum_macros::Display;
+
+use crate::utils::image::ImageWrapper;
 
 structstruck::strike! {
   #[strikethrough[derive(Debug, Clone, Serialize, Deserialize)]]
@@ -26,10 +27,10 @@ impl ExtensionMetadata {
     if self.name.trim().is_empty() {
       return Err(ExtensionError::InvalidName);
     }
-    if let Some(frontend) = &self.frontend {
-      if frontend.entry.trim().is_empty() {
-        return Err(ExtensionError::InvalidFrontendEntry);
-      }
+    if let Some(frontend) = &self.frontend
+      && frontend.entry.trim().is_empty()
+    {
+      return Err(ExtensionError::InvalidFrontendEntry);
     }
 
     self.version = self.version.take().and_then(|version| {

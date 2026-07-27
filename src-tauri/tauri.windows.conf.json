@@ -6,6 +6,9 @@
         "installerIcon": "assets/icons/icon.ico",
         "languages": [
           "English",
+          "Spanish",
+          "French",
+          "Japanese",
           "SimpChinese",
           "TradChinese"
         ],
@@ -18,7 +21,7 @@
     "windows": [
       {
         "label": "main",
-        "title": " ",
+        "title": "SJMC Launcher",
         "url": "/",
         "width": 820,
         "height": 550,

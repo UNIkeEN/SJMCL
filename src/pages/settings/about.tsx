@@ -18,7 +18,8 @@ import { TitleFullWithLogo } from "@/components/logo-title";
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { isValidSemanticVersion } from "@/utils/string";
+import { BuildType } from "@/enums/misc";
+import { displayLauncherVersion, isValidSemanticVersion } from "@/utils/string";
 
 const AboutSettingsPage = () => {
   const { t } = useTranslation();
@@ -35,10 +36,11 @@ const AboutSettingsPage = () => {
 
   const ackList = {
     skinview3d: "https://github.com/bs-community/skinview3d",
+    mcim: "https://www.mcimirror.top",
     bmclapi: "https://bmclapidoc.bangbang93.com/",
     hmcl: "https://hmcl.huangyuhui.net/",
     littleskin: "https://github.com/LittleSkinChina",
-    sinter: "https://m.ui.cn/details/615564",
+    sinter: "https://www.ui.cn/detail/615564",
     scl: "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/",
   };
 
@@ -64,7 +66,7 @@ const AboutSettingsPage = () => {
     setCheckingUpdate(false);
   }, [handleCheckLauncherUpdate, t, toast, closeToast, openSharedModal]);
 
-  const avatarUserList = ["UNIkeEN", "Reqwey", "SundayChen"];
+  const avatarUserList = ["UNIkeEN", "xunying123", "SundayChen"];
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -76,29 +78,32 @@ const AboutSettingsPage = () => {
           children: (
             <HStack>
               <Text fontSize="xs-sm" className="secondary-text">
-                {`${basicInfo.launcherVersion}${basicInfo.isPortable ? " (Portable)" : ""}`}
+                {displayLauncherVersion(basicInfo)}
               </Text>
-              {isValidSemanticVersion(basicInfo.launcherVersion) && (
-                <Button
-                  variant="subtle"
-                  colorScheme={newerVersion.version ? primaryColor : "gray"}
-                  size="xs"
-                  onClick={
-                    newerVersion.version
-                      ? () => {
-                          openSharedModal("notify-new-version", {
-                            newVersion: newerVersion,
-                          });
-                        }
-                      : checkUpdate
-                  }
-                  isLoading={checkingUpdate}
-                >
-                  {newerVersion.version
-                    ? t("AboutSettingsPage.about.settings.version.foundNew")
-                    : t("AboutSettingsPage.about.settings.version.checkUpdate")}
-                </Button>
-              )}
+              {basicInfo.buildType === BuildType.Release &&
+                isValidSemanticVersion(basicInfo.launcherVersion) && (
+                  <Button
+                    variant="subtle"
+                    colorScheme={newerVersion.version ? primaryColor : "gray"}
+                    size="xs"
+                    onClick={
+                      newerVersion.version
+                        ? () => {
+                            openSharedModal("notify-new-version", {
+                              newVersion: newerVersion,
+                            });
+                          }
+                        : checkUpdate
+                    }
+                    isLoading={checkingUpdate}
+                  >
+                    {newerVersion.version
+                      ? t("AboutSettingsPage.about.settings.version.foundNew")
+                      : t(
+                          "AboutSettingsPage.about.settings.version.checkUpdate"
+                        )}
+                  </Button>
+                )}
             </HStack>
           ),
         },
@@ -116,7 +121,7 @@ const AboutSettingsPage = () => {
                 ))}
               </AvatarGroup>
               <CommonIconButton
-                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors?all=1"
                 icon="external"
                 withTooltip
                 tooltipPlacement="bottom-end"
@@ -124,7 +129,7 @@ const AboutSettingsPage = () => {
                 h={18}
                 onClick={() => {
                   openUrl(
-                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors"
+                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors?all=1"
                   );
                 }}
               />

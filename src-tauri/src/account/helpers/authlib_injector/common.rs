@@ -1,3 +1,13 @@
+use base64::Engine;
+use base64::engine::general_purpose;
+use serde_json::json;
+use sjmcl_types::error::SJMCLResult;
+use std::str::FromStr;
+use strum::IntoEnumIterator;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use uuid::Uuid;
+
 use crate::account::helpers::authlib_injector::models::{MinecraftProfile, TextureInfo};
 use crate::account::helpers::authlib_injector::{oauth, password};
 use crate::account::helpers::misc::fetch_image;
@@ -5,15 +15,6 @@ use crate::account::helpers::offline::load_preset_skin;
 use crate::account::models::{
   AccountError, AuthServer, PlayerInfo, PlayerType, PresetRole, SkinModel, Texture, TextureType,
 };
-use crate::error::SJMCLResult;
-use base64::engine::general_purpose;
-use base64::Engine;
-use serde_json::json;
-use std::str::FromStr;
-use strum::IntoEnumIterator;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use uuid::Uuid;
 
 pub async fn retrieve_profile(
   app: &AppHandle,
@@ -95,6 +96,7 @@ pub async fn parse_profile(
       player_type: PlayerType::ThirdParty,
       auth_account,
       access_token,
+      access_token_expires: None,
       refresh_token,
       textures,
       auth_server_url,

@@ -1,7 +1,3 @@
-use crate::launcher_config::models::LauncherConfig;
-use crate::resource::helpers::misc::get_source_priority_list;
-use crate::resource::helpers::version_manifest::get_game_version_manifest;
-use crate::utils::fs::get_app_resource_filepath;
 use regex::Regex;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -10,6 +6,11 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::version_manifest::get_game_version_manifest;
+use crate::utils::fs::get_app_resource_filepath;
 
 fn load_versions(app: &AppHandle, path: &str, from_cache: bool) -> Vec<String> {
   let list_file_path: Option<PathBuf> = if from_cache {
@@ -68,17 +69,18 @@ pub async fn compare_game_versions(
   }
 
   // Fallback to fetch remote manifest and retry.
-  if fallback_fetch_remote && (idx_a.is_none() || idx_b.is_none()) {
-    if let Some(state) = app.try_state::<Mutex<LauncherConfig>>() {
-      let priority_list = {
-        let locked = state.lock().unwrap();
-        get_source_priority_list(&locked)
-      };
-      let _ = get_game_version_manifest(app, &priority_list).await;
-      versions = load_versions(app, "game_versions.txt", true);
-      idx_a = try_find(&versions, version_a);
-      idx_b = try_find(&versions, version_b);
-    }
+  if fallback_fetch_remote
+    && (idx_a.is_none() || idx_b.is_none())
+    && let Some(state) = app.try_state::<Mutex<LauncherConfig>>()
+  {
+    let priority_list = {
+      let locked = state.lock().unwrap();
+      get_source_priority_list(&locked)
+    };
+    let _ = get_game_version_manifest(app, &priority_list).await;
+    versions = load_versions(app, "game_versions.txt", true);
+    idx_a = try_find(&versions, version_a);
+    idx_b = try_find(&versions, version_b);
   }
 
   // compare version ids
@@ -104,7 +106,7 @@ pub async fn compare_game_versions(
 /// # Returns
 /// A closure suitable for `.sort_by()` or `.sort_by_key()` usage.
 ///
-pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Ordering {
+pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Ordering + use<> {
   let mut versions = load_versions(app, "assets/game/versions.txt", false);
 
   if versions.is_empty() {
@@ -210,17 +212,15 @@ pub async fn get_major_game_version(
     return find_closest_major_version(&versions, idx);
   }
 
-  if fallback_fetch_remote {
-    if let Some(state) = app.try_state::<Mutex<LauncherConfig>>() {
-      let priority_list = {
-        let locked = state.lock().unwrap();
-        get_source_priority_list(&locked)
-      };
-      let _ = get_game_version_manifest(app, &priority_list).await;
-      versions = load_versions(app, "game_versions.txt", true);
-      if let Some(idx) = try_find(&versions, version) {
-        return find_closest_major_version(&versions, idx);
-      }
+  if fallback_fetch_remote && let Some(state) = app.try_state::<Mutex<LauncherConfig>>() {
+    let priority_list = {
+      let locked = state.lock().unwrap();
+      get_source_priority_list(&locked)
+    };
+    let _ = get_game_version_manifest(app, &priority_list).await;
+    versions = load_versions(app, "game_versions.txt", true);
+    if let Some(idx) = try_find(&versions, version) {
+      return find_closest_major_version(&versions, idx);
     }
   }
 

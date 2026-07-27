@@ -1,21 +1,7 @@
-use crate::error::SJMCLError;
-use crate::error::SJMCLResult;
-use crate::instance::helpers::misc::refresh_instances;
-use crate::launcher_config::helpers::java::{
-  build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
-  refresh_and_update_javas,
-};
-use crate::launcher_config::helpers::updater::{
-  self, download_target_version, fetch_latest_version,
-};
-use crate::launcher_config::models::{
-  GameDirectory, JavaInfo, LauncherConfig, LauncherConfigError, VersionMetaInfo,
-};
-use crate::storage::Storage;
-use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
-use crate::utils::fs::{generate_unique_filename, get_subdirectories};
-use crate::utils::string::camel_to_snake_case;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
+use sjmcl_types::error::SJMCLError;
+use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::storage::Storage;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
@@ -24,6 +10,23 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_opener::reveal_item_in_dir;
+
+use crate::instance::helpers::misc::refresh_instances;
+use crate::launcher_config::helpers::graphics::supported_graphics_renderers;
+use crate::launcher_config::helpers::java::{
+  build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
+  refresh_and_update_javas,
+};
+use crate::launcher_config::helpers::updater::{
+  self, download_target_version, fetch_latest_version,
+};
+use crate::launcher_config::models::{
+  BuildType, GameDirectory, GraphicsApi, JavaInfo, LauncherConfig, LauncherConfigError,
+  VersionMetaInfo,
+};
+use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
+use crate::utils::fs::{generate_unique_filename, get_subdirectories};
+use crate::utils::string::camel_to_snake_case;
 
 #[tauri::command]
 pub fn retrieve_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
@@ -43,7 +46,7 @@ pub fn update_launcher_config(app: AppHandle, key_path: String, value: String) -
 }
 
 #[tauri::command]
-pub fn restore_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
+pub fn reset_launcher_config(app: AppHandle) -> SJMCLResult<LauncherConfig> {
   let mut default_config = LauncherConfig::default();
   default_config.setup_with_app(&app)?;
 
@@ -333,37 +336,39 @@ pub async fn clear_download_cache(app: AppHandle) -> SJMCLResult<()> {
 #[tauri::command]
 pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInfo> {
   let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let current_version = {
+  let (current_version, build_type) = {
     let config_state = config_binding.lock()?;
-    config_state.basic_info.launcher_version.clone()
+    (
+      config_state.basic_info.launcher_version.clone(),
+      config_state.basic_info.build_type.clone(),
+    )
   };
 
-  // skip non-semver versions
-  if semver::Version::parse(&current_version).is_err() {
+  // skip non-release builds, then validate the version is a proper semver
+  if build_type != BuildType::Release || semver::Version::parse(&current_version).is_err() {
     return Ok(VersionMetaInfo::default());
   }
 
   if let Ok(Some((new_version, fname, release_notes, published_at))) =
     fetch_latest_version(&app).await
-  {
-    if let (Ok(current), Ok(latest)) = (
+    && let (Ok(current), Ok(latest)) = (
       semver::Version::parse(&current_version),
       semver::Version::parse(&new_version),
-    ) {
-      return Ok(match latest.cmp(&current) {
-        std::cmp::Ordering::Greater => VersionMetaInfo {
-          version: new_version,
-          file_name: fname,
-          release_notes,
-          published_at,
-        },
-        std::cmp::Ordering::Equal => VersionMetaInfo {
-          version: "up2date".to_string(),
-          ..Default::default()
-        },
-        std::cmp::Ordering::Less => VersionMetaInfo::default(),
-      });
-    }
+    )
+  {
+    return Ok(match latest.cmp(&current) {
+      std::cmp::Ordering::Greater => VersionMetaInfo {
+        version: new_version,
+        file_name: fname,
+        release_notes,
+        published_at,
+      },
+      std::cmp::Ordering::Equal => VersionMetaInfo {
+        version: "up2date".to_string(),
+        ..Default::default()
+      },
+      std::cmp::Ordering::Less => VersionMetaInfo::default(),
+    });
   }
 
   Ok(VersionMetaInfo::default())
@@ -397,4 +402,15 @@ pub async fn install_launcher_update(
   {
     Ok(()) // No supported
   }
+}
+
+#[tauri::command]
+pub fn retrieve_supported_graphics_renderers(api: String) -> SJMCLResult<Vec<String>> {
+  let api = match api.trim().to_ascii_lowercase().as_str() {
+    "opengl" => GraphicsApi::Opengl,
+    "vulkan" => GraphicsApi::Vulkan,
+    _ => GraphicsApi::Default,
+  };
+
+  Ok(supported_graphics_renderers(&api))
 }

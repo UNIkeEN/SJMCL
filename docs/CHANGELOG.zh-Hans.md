@@ -2,6 +2,120 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.2.0
+
+`2026-07-13`
+
+- 🌟 支持使用预设组合快速设置游戏分辨率。#1751 #1759 @UNIkeEN @3gf8jv4dv
+- 🌟 支持为新建实例自动设置启动器支持的所有语言。#1755 @HsxMark @3gf8jv4dv
+- 🌟 支持自定义游戏日志窗口的字体。#1770 @UNIkeEN @3gf8jv4dv
+- 🌟 支持从 HMCL 新版本（3.16+）导入角色与认证服务器信息。#1781 @CiiLu
+- 🌟 支持为游戏进程配置网络代理。#1808 @xunying123 @UNIkeEN @3gf8jv4dv
+- 🌟 支持为游戏进程选择不同的图形渲染器。#1809 @xunying123 @UNIkeEN
+- 🌟 支持为实例移除已安装的模组加载器。#1821 #1844 @xunying123 @UNIkeEN @zaixiZaixiSJTU
+- 🌟 支持通过系统右键菜单快速导入 `.mrpack` 格式的整合包。#1824 @zaixiZaixiSJTU @UNIkeEN
+- 🐛 修复更换模组加载器后无法启动游戏的问题。#1670 @xunying123
+- 🐛 修复与优化一系列界面显示问题。#1691 #1723 #1756 #1778 #1801 #1850 @UNIkeEN @renvlers @HsxMark @3gf8jv4dv @zaixiZaixiSJTU
+- 🐛 修复启动参数中启动器元信息格式不规范的问题。#1724 @xunying123
+- 🐛 修复在部分 Linux 发行版下，从移动存储介质运行启动器时错误显示警告的问题。#1727 @xunying123 @UNIkeEN
+- 🐛 修复 NeoForge 与 OptiFine 版本列表的排序与显示问题。#1728 #1813 @xunying123
+- 🐛 修复早期 macOS 平台下启动器白屏的问题。#1799 @UNIkeEN @hans362 @1357310795
+- 🐛 修复 Windows 非便携版本无法自动更新的问题。#1810 @pangbo13
+- 🐛 修复启动参数中自定义信息对 1.13+ 版本游戏无效的问题。#1811 @xunying123
+- 🐛 修复 Modrinth 整合包资源版本显示重复的问题。#1812 @xunying123
+- 🐛 修复部分 Fabric 模组元信息因格式不规范而无法显示的问题。#1823 @pangbo13
+- 🐛 修复通过 MCP 服务创建新实例时，无法修改实例图标的问题。#1846 #1848 @xunying123
+- ⚡️ 优化资源搜索体验。#1589 #1853 @xunying123 @UNIkeEN
+- ⚡️ 提升外观设置页面的加载性能。#1786 @HsxMark @UNIkeEN
+- ⚡️ 提升游戏日志窗口的深色模式显示效果。#1793 @zaixiZaixiSJTU @funkthesky-ops @RobertZhang0901
+- 🛠 调整部分设置项的显示样式与描述。#1694 #1710 #1750 @UNIkeEN @baiyuansjtu @3gf8jv4dv
+- 🛠 调整帮助、关于页面的部分条目与链接。#1717 #1746 @3gf8jv4dv @xunying123 @UNIkeEN
+- 🛠 根据 CurseForge 要求，为指向其的资源下载请求添加 API Key。#1725 @xunying123
+- 🛠 更换内置实例图标中 NeoForge 与 Forge 的图标资源与默认设置。#1748 #1841 @HsxMark @UNIkeEN
+- 🛠 移除 Forge 和 Fabric 版本列表的发行类别显示。#1795 @UNIkeEN @3gf8jv4dv
+- 🛠 当选中实例启用了特定游戏设置时，在全局游戏设置页面进行提示。#1835 @baiyuansjtu
+- 💄 重构部分后端代码以提升构建速度、代码风格与可维护性。#1776 #1777 #1780 #1782 #1822 @ToolmanP @UNIkeEN
+- 🌐 更新启动器界面文本的多语言翻译。#1718 #1719 #1720 #1745 #1768 #1819 #1829 #1837 #1849 @3gf8jv4dv @xunying123 @w1049 @UNIkeEN
+- 🇪🇸 启动器界面支持西班牙语。#1722 #1749 @UNIkeEN @HsxMark
+- 📦 使用 `pnpm` 替换 `npm`。#1700 @pangbo13 @1357310795 @UNIkeEN
+- 📦 为 Windows 平台的非便携版本安装程序更新版权信息。#1721 @3gf8jv4dv
+- 📦 为 Windows 平台的非便携版本安装程序提供多语言支持。#1731 #1760 @3gf8jv4dv
+- 📦 更新多项依赖至补丁版本。#1753 @dependabot[bot] @claude
+- 扩展：
+   - 为扩展提供自定义的 `toast` 方法，与启动器默认样式保持一致。 @UNIkeEN
+   - 新增 `ExtensionUISlotKey.GameErrorWindowOperations` 方法，支持扩展在游戏崩溃窗口提供自定义功能。#1800 @UNIkeEN
+- 工作流：
+   - 版本发布后自动更新仓库中的更新日志文件。#1711 @pangbo13
+   - 支持下载测试工作流中的构建产物。#1715 #1744 #1772 #1820 @pangbo13
+   - 新增 AGENTS.md 与部分仓库级 Skills。#1726 @UNIkeEN @ToolmanP @1357310795
+- 网页与文档：
+   - 更新面向 Snap 与 Winget 安装方式的风险提示。#1729 @pangbo13
+
+## 1.1.3
+
+`2026-06-11`
+
+- 🌟 支持将游戏资源快捷安装到任意实例、快捷安装整合包，优化资源下载的交互体验。#1659 #1677 @UNIkeEN
+- 🌟 支持使用自定义 Authlib Injector 启动游戏。#1664 @UNIkeEN
+- 🐛 修复实例资源包页面前端状态无法更新的问题。#1673 @baiyuansjtu
+- 🛠 调整前端页面折叠面板的响应区域。#1672 @1357310795 @UNIkeEN
+- 📦 终止启动器对 Windows 7 的支持。#1680 @3gf8jv4dv @xunying123
+- 工作流：
+   - 修复 Winget 发版工作流。#1667 #1668 @pangbo13
+
+## 1.1.2
+
+`2026-06-04`
+
+- 🐛 修复登录第三方认证账户时启动器闪退的问题。#1663 @tangge233
+
+## 1.1.1
+
+`2026-06-03`
+
+- 🌟 支持在微软账户 Access Token 过期后自动刷新。#1627 @tangge233
+- 🌟 支持为实例单次导入多个资源文件（通过对话框或拖入启动器窗口）。#1630 @UNIkeEN
+- 🐛 修复 macOS 平台下无法为模组申请麦克风权限的问题。#1631 @AnemoFlower
+- 🐛 修复 Windows 平台下任务栏不显示程序标题的问题。#1637 @UNIkeEN
+- 🐛 修复用户在启动器内设置的代理未生效的问题。#1645 @UNIkeEN
+- 🐛 修复重新登录对话框与扩展列表页面的显示问题。#1646 #1660 @baiyuansjtu
+- 🐛 修复部分场景下实例列表无法加载的问题。#1652 @xunying123
+- 🐛 修复安装整合包时重复下载 Fabric API / QF API 模组的问题。#1654 @SALTWOOD
+- 🛠 重构前端部分代码，移除 `lodash` 依赖以降低项目复杂性。#1634 @xphost008
+- 🛠 在进程初始化期间新增错误处理与对话框提示。#1638 @UNIkeEN
+- 🛠 当创建新实例（包括安装整合包）失败时，自动删除新建的实例文件夹，避免用户在重试时产生困惑。#1658 @UNIkeEN
+- 🌐 调整与 XBOX 相关的国际化翻译。#1628 @3gf8jv4dv
+- 📦 将项目 Rust 升级至 2024 Edition。#1642 #1647 @w1049 @tangge233 @UNIkeEN
+- 📦 更新 Tauri 核心库及其插件。#1642 @w1049
+- 📦 移除 `jsonwebtoken` 的 `aws_lc_rs` 特性以减少安装包体积。#1662 @UNIkeEN
+- 扩展：
+   - 为 `MarkdownContainer` 组件新增 Chakra 表格渲染映射，供扩展使用。#1649 @zaixiZaixiSJTU
+- 工作流：
+   - 新增发版时自动上传 Winget 的工作流，现在可以通过 Winget 便捷安装 SJMCL（Windows 平台）。#1639 @pangbo13
+   - 新增适用于 Linux 平台的原生命令行安装脚本。#1643 @pangbo13
+
+## 1.1.0
+
+`2026-05-20`
+
+- **🔥 支持在启动器内查看并管理 Minecraft 好友（实验性功能）。#1617** @UNIkeEN @3gf8jv4dv @suhang12332 @Dainsleif233
+- 🌟 实例列表页现在会显示正在下载中的实例。#1580 @icgnos
+- 🐛 修复提示 Toast 的显示样式问题。#1599 @Chang-Yo
+- 🐛 修复 Linux 平台下已归档第三方依赖的潜在编译问题。#1601 @ToolmanP
+- 🐛 修复窗口状态存储的性能问题。@UNIkeEN
+- 🐛 修复部分情况下因 Deeplink 注册失败导致的崩溃问题。#1611 @pangbo13
+- 🐛 修复部分情况下，账户功能可用性检查失败的问题，提升中国大陆用户体验。#1616 @UNIkeEN @1357310795
+- 📦 更新 Tauri 核心库及其插件至最新版本。@UNIkeEN
+- 📦 更新 `rmcp` 库至正式版本。#1613 @xunying123
+- 扩展：
+   - 新增 `setHomeWidgetTitle` 方法，支持扩展动态更新主页组件标题。#1602 @UNIkeEN
+   - 新增 `MarkdownContainer`，`FormattedMCText` 等组件供扩展直接使用。@UNIkeEN
+   - 支持通过 Deeplink 重新加载扩展，提升开发者体验。#1608 @UNIkeEN
+- 工作流：
+   - 新增发版时自动上传 Snapcraft 的工作流，现在可以通过 Snapcraft 安装 SJMCL（实验性功能）。#1610 @pangbo13
+   - 调整发版工作流顺序、修改 AUR 工作流的校验字段类型。#1612 @pangbo13
+   - 新增发版时自动上传 Homebrew 的工作流，现在可以通过 Homebrew 便捷安装 SJMCL（macOS 平台）。#1620 @pangbo13
+
 ## 1.0.0
 
 `2026-05-05`

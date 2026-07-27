@@ -127,7 +127,6 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
               version: modpack.modLoader.version,
               branch: modpack.modLoader.branch,
               description: "",
-              stable: true,
             } as ModLoaderResourceInfo)
           : defaultModLoaderResourceInfo,
         undefined,
@@ -195,6 +194,7 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
       scrollBehavior="inside"
       size={{ base: "2xl", lg: "3xl", xl: "4xl" }}
       autoFocus={false}
+      returnFocusOnClose={false}
       {...modalProps}
     >
       <ModalOverlay />

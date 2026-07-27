@@ -17,6 +17,17 @@ export class UtilsService {
   }
 
   /**
+   * RETRIEVE the maximum monitor resolution (upbound).
+   * @returns {Promise<InvokeResponse<[number, number]>>}
+   */
+  @responseHandler("utils")
+  static async retrieveResolutionUpbound(): Promise<
+    InvokeResponse<[number, number]>
+  > {
+    return await invoke("retrieve_resolution_upbound");
+  }
+
+  /**
    * RETRIEVE the list of installed TrueType fonts.
    * @returns {Promise<InvokeResponse<string[]>>}
    */

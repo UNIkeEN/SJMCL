@@ -156,7 +156,11 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   };
 
   return (
-    <Modal size={{ base: "sm", lg: "md" }} {...props}>
+    <Modal
+      size={{ base: "sm", lg: "md" }}
+      returnFocusOnClose={false}
+      {...props}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t("DownloadJavaModal.header.title")}</ModalHeader>

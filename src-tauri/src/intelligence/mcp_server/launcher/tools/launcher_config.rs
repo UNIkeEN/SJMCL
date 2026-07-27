@@ -1,7 +1,8 @@
+use rmcp::handler::server::tool::ToolRoute;
+
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::launcher_config::commands::{retrieve_launcher_config, update_launcher_config};
 use crate::mcp_tool;
-use rmcp::handler::server::tool::ToolRoute;
 
 pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
   vec![

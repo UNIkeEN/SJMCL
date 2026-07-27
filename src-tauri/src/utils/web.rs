@@ -1,9 +1,8 @@
-use crate::launcher_config::models::{LauncherConfig, ProxyType};
 use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
-use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::RetryTransientMiddleware;
+use reqwest_retry::policies::ExponentialBackoff;
 use reqwest_retry::{
-  default_on_request_failure, default_on_request_success, Retryable, RetryableStrategy,
+  Retryable, RetryableStrategy, default_on_request_failure, default_on_request_success,
 };
 use std::sync::Mutex;
 use std::time::Duration;
@@ -13,13 +12,14 @@ use tauri_plugin_http::reqwest::header::HeaderMap;
 use tauri_plugin_http::reqwest::{Client, ClientBuilder, Proxy};
 use url::Url;
 
-/// Builds a reqwest client with SJMCL version header and proxy support.
+use crate::launcher_config::models::{LauncherConfig, ProxyType};
+
+/// Builds a reqwest client with SJMCL User-Agent and proxy support.
 /// Defaults to 10s timeout.
 ///
 /// # Arguments
 ///
 /// * `app` - The Tauri AppHandle.
-/// * `use_version_header` - Whether to include the SJMCL version header.
 /// * `use_proxy` - Whether to use the proxy settings from the config.
 ///
 /// TODO: support more custom config from reqwest::Config
@@ -32,23 +32,21 @@ use url::Url;
 /// # Example
 ///
 /// ```rust
-/// let client = build_sjmcl_client(&app, true, true);
+/// let client = build_sjmcl_client(&app, true);
 /// ```
-pub fn build_sjmcl_client(app: &AppHandle, use_version_header: bool, use_proxy: bool) -> Client {
+pub fn build_sjmcl_client(app: &AppHandle, use_proxy: bool) -> Client {
   let mut builder = ClientBuilder::new()
     .timeout(Duration::from_secs(10))
     .tcp_keepalive(Duration::from_secs(10));
 
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
-    if use_version_header {
-      // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
-      // https://github.com/MCLF-CN/docs/issues/2
-      // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/User-Agent
-      if let Ok(header_value) = format!("SJMCL/{}", &config.basic_info.launcher_version).parse() {
-        let mut headers = HeaderMap::new();
-        headers.insert("User-Agent", header_value);
-        builder = builder.default_headers(headers);
-      }
+    // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
+    // https://github.com/MCLF-CN/docs/issues/2
+    // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/User-Agent
+    if let Ok(header_value) = format!("SJMCL/{}", &config.basic_info.launcher_version).parse() {
+      let mut headers = HeaderMap::new();
+      headers.insert("User-Agent", header_value);
+      builder = builder.default_headers(headers);
     }
 
     if use_proxy && config.download.proxy.enabled {

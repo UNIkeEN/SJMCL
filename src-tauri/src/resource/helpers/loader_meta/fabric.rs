@@ -1,11 +1,12 @@
-use crate::error::SJMCLResult;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use sjmcl_types::error::SJMCLResult;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -45,7 +46,8 @@ pub async fn get_fabric_meta_by_game_version(
                   loader_type: ModLoaderType::Fabric,
                   version: info.loader.version,
                   description: String::new(),
-                  stable: info.loader.stable,
+                  // stable: info.loader.stable,
+                  stable: None,
                   branch: None,
                 })
                 .collect(),

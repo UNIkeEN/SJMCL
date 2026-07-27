@@ -5,11 +5,11 @@ pub mod events;
 pub mod monitor;
 pub mod streams;
 
-use crate::error::SJMCLResult;
 use download::DownloadParam;
 use events::TauriEventSink;
 use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
+use sjmcl_types::error::SJMCLResult;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, RwLock};

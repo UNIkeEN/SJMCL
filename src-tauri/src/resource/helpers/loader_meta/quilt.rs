@@ -1,12 +1,13 @@
-use crate::error::SJMCLResult;
-use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::get_download_api;
-use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+
+use crate::instance::models::misc::ModLoaderType;
+use crate::resource::helpers::misc::get_download_api;
+use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -61,7 +62,7 @@ pub async fn get_quilt_meta_by_game_version(
                     loader_type: ModLoaderType::Quilt,
                     version,
                     description: String::new(),
-                    stable,
+                    stable: Some(stable),
                     branch: None,
                   }
                 })

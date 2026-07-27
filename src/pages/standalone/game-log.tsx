@@ -7,6 +7,7 @@ import {
   Input,
   Spacer,
   Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
@@ -40,6 +41,7 @@ const GameLogPage: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const logFontFamily = config.appearance.font.logFontFamily;
 
   const [logs, setLogs] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -115,8 +117,14 @@ const GameLogPage: React.FC = () => {
     FATAL: { colorScheme: "red", textColor: "red.500" },
     ERROR: { colorScheme: "orange", textColor: "orange.500" },
     WARN: { colorScheme: "yellow", textColor: "yellow.500" },
-    INFO: { colorScheme: "gray", textColor: "gray.600" },
-    DEBUG: { colorScheme: "blue", textColor: "blue.600" },
+    INFO: {
+      colorScheme: "gray",
+      textColor: useColorModeValue("gray.600", "gray.300"),
+    },
+    DEBUG: {
+      colorScheme: "blue",
+      textColor: useColorModeValue("blue.600", "blue.300"),
+    },
   };
 
   const logLevels = useMemo<LogLevel[]>(() => {
@@ -327,6 +335,11 @@ const GameLogPage: React.FC = () => {
         >
           <ChakraText
             className={styles["log-text"]}
+            style={
+              logFontFamily !== "%built-in"
+                ? { fontFamily: logFontFamily }
+                : undefined
+            }
             color={logLevelMap[level].textColor}
             fontWeight={!["INFO", "DEBUG"].includes(level) ? 600 : 400}
             whiteSpace="pre-wrap"

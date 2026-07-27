@@ -18,6 +18,7 @@ fn main() {
   // original naive impl, see: https://github.com/UNIkeEN/SJMCL/pull/412/files
   for (key, value) in env::vars() {
     if key.starts_with("SJMCL_") {
+      println!("cargo:rerun-if-env-changed={}", key);
       println!("cargo:rustc-env={}={}", key, value);
     }
   }

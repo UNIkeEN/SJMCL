@@ -30,7 +30,7 @@ const InstanceResourcePacksPage = () => {
     instanceId,
     summary,
     openInstanceSubdir,
-    handleImportResource,
+    handleImportResources,
     getResourcePackList,
     isResourcePackListLoading,
     getServerResourcePackList,
@@ -78,15 +78,17 @@ const InstanceResourcePacksPage = () => {
 
   useFileDnD({
     extensions: ["zip"],
+    multiple: true,
     titleKey: "InstanceResourcePacksPage.fileDnD.title",
     descKey: "InstanceResourcePacksPage.fileDnD.desc",
     icon: LuPackage,
-    onDrop: async (path) => {
-      handleImportResource({
+    onDrop: async (paths) => {
+      handleImportResources({
         filterName: t("InstanceDetailsLayout.instanceTabList.resourcepacks"),
         filterExt: ["zip"],
         tgtDirType: InstanceSubdirType.ResourcePacks,
-        path,
+        paths,
+        multiple: true,
         onSuccessCallback: () => getResourcePackListWrapper(true),
       });
     },
@@ -129,12 +131,13 @@ const InstanceResourcePacksPage = () => {
         {
           icon: "add",
           onClick: () => {
-            handleImportResource({
+            handleImportResources({
               filterName: t(
                 "InstanceDetailsLayout.instanceTabList.resourcepacks"
               ),
               filterExt: ["zip"],
               tgtDirType: InstanceSubdirType.ResourcePacks,
+              multiple: true,
               onSuccessCallback: () => getResourcePackListWrapper(true),
             });
           },
@@ -209,7 +212,7 @@ const InstanceResourcePacksPage = () => {
             titleExtra={<CountTag count={value.data.length} />}
             onAccordionToggle={(isOpen) => {
               update(
-                "states.instanceResourcepackPage.accordionStates",
+                "states.instanceResourcepacksPage.accordionStates",
                 accordionStates.toSpliced(index, 1, isOpen)
               );
             }}

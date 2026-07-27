@@ -25,10 +25,10 @@ pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<P
 
   // Scan backwards so the most recent crash report wins.
   for line in content.lines().rev() {
-    if let Some(cap) = CRASH_REPORT_REGEX.captures(line) {
-      if let Some(m) = cap.get(1) {
-        return Some(PathBuf::from(m.as_str().trim()));
-      }
+    if let Some(cap) = CRASH_REPORT_REGEX.captures(line)
+      && let Some(m) = cap.get(1)
+    {
+      return Some(PathBuf::from(m.as_str().trim()));
     }
   }
 

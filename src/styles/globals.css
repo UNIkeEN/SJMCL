@@ -66,6 +66,11 @@ body img {
   line-height: var(--chakra-lineHeights-4);
 }
 
+.warning-text {
+  color: var(--chakra-colors-yellow-500);
+  line-height: var(--chakra-lineHeights-4);
+}
+
 .allow-select {
   user-select: initial !important;
 }

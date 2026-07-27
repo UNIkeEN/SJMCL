@@ -1,13 +1,14 @@
-use crate::error::{SJMCLError, SJMCLResult};
+use async_trait::async_trait;
+use image::imageops::FilterType;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::io::{Cursor, Read, Seek};
+use std::path::{Path, PathBuf};
+use zip::ZipArchive;
+
 use crate::instance::constants::COMPRESSED_ICON_SIZE;
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::ImageWrapper;
-use async_trait::async_trait;
-use image::imageops::FilterType;
-use std::io::{Cursor, Read, Seek};
-use std::path::{Path, PathBuf};
-use zip::ZipArchive;
 
 pub fn compress_icon(wrapper: ImageWrapper) -> ImageWrapper {
   let resized_image = image::imageops::resize(
@@ -219,4 +220,54 @@ pub async fn get_mod_info_from_dir(
     "{} cannot be recognized as known",
     dir_name
   )))
+}
+
+// update the potential_incompatibility field of LocalModInfo.
+pub fn check_potential_incompatibility(
+  mod_infos: &mut [LocalModInfo],
+  installed_loader_type: Option<ModLoaderType>,
+  game_version: &str,
+) {
+  let Some(installed_loader_type) = installed_loader_type else {
+    return;
+  };
+
+  let mut supported_loaders = vec![installed_loader_type];
+
+  if installed_loader_type == ModLoaderType::Quilt {
+    supported_loaders.push(ModLoaderType::Fabric);
+  }
+  if installed_loader_type == ModLoaderType::NeoForge && game_version == "1.20.1" {
+    supported_loaders.push(ModLoaderType::Forge);
+  }
+
+  let contains_mod = |mod_id: &str, loader_type: ModLoaderType| -> bool {
+    mod_infos
+      .iter()
+      .any(|m| m.loader_type == loader_type && m.mod_id == mod_id)
+  };
+
+  // Sinytra Connector
+  if installed_loader_type == ModLoaderType::NeoForge
+    && (contains_mod("connector", ModLoaderType::NeoForge)
+      || contains_mod("connectormod", ModLoaderType::NeoForge))
+  {
+    supported_loaders.push(ModLoaderType::Fabric);
+  }
+  if installed_loader_type == ModLoaderType::Forge
+    && game_version == "1.20.1"
+    && contains_mod("connectormod", ModLoaderType::Forge)
+  {
+    supported_loaders.push(ModLoaderType::Fabric);
+  }
+
+  // Kilt
+  if installed_loader_type == ModLoaderType::Fabric && contains_mod("kilt", ModLoaderType::Fabric) {
+    supported_loaders.push(ModLoaderType::Forge);
+    supported_loaders.push(ModLoaderType::NeoForge);
+  }
+
+  mod_infos.iter_mut().for_each(|mod_info| {
+    mod_info.potential_incompatibility = !supported_loaders.contains(&mod_info.loader_type);
+  });
 }

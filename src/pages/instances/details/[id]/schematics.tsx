@@ -24,7 +24,7 @@ const InstanceSchematicsPage = () => {
     instanceId,
     summary,
     openInstanceSubdir,
-    handleImportResource,
+    handleImportResources,
     getSchematicList,
     isSchematicListLoading: isLoading,
   } = useInstanceSharedData();
@@ -50,15 +50,17 @@ const InstanceSchematicsPage = () => {
 
   useFileDnD({
     extensions: ["schematic", "litematic"],
+    multiple: true,
     titleKey: "InstanceSchematicsPage.fileDnD.title",
     descKey: "InstanceSchematicsPage.fileDnD.desc",
     icon: LuBookDashed,
-    onDrop: async (path) => {
-      handleImportResource({
+    onDrop: async (paths) => {
+      handleImportResources({
         filterName: t("InstanceDetailsLayout.instanceTabList.schematics"),
         filterExt: ["schematic", "litematic"],
         tgtDirType: InstanceSubdirType.Schematics,
-        path,
+        paths,
+        multiple: true,
         onSuccessCallback: () => getSchematicListWrapper(true),
       });
     },
@@ -74,10 +76,11 @@ const InstanceSchematicsPage = () => {
     {
       icon: "add",
       onClick: () => {
-        handleImportResource({
+        handleImportResources({
           filterName: t("InstanceDetailsLayout.instanceTabList.schematics"),
           filterExt: ["schematic", "litematic"],
           tgtDirType: InstanceSubdirType.Schematics,
+          multiple: true,
           onSuccessCallback: () => getSchematicListWrapper(true),
         });
       },

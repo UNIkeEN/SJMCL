@@ -1,26 +1,31 @@
 pub mod misc;
 
-use crate::error::SJMCLResult;
+use hex;
+use misc::{
+  ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
+  map_modrinth_file_to_version_pack,
+};
+use sha1::{Digest, Sha1};
+use sjmcl_types::error::SJMCLResult;
+use std::collections::HashMap;
+use std::path::PathBuf;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
+use url::Url;
+
 use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::apply_other_resource_enhancements;
-use crate::resource::helpers::mod_db::handle_search_query;
+use crate::resource::helpers::misc::sort_localized_search_results;
+use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
+use crate::resource::helpers::translation::{
+  apply_other_resource_enhancements, apply_other_resource_enhancements_concurrently,
+};
 use crate::resource::models::{
   OtherResourceApiEndpoint, OtherResourceFileInfo, OtherResourceInfo, OtherResourceRequestType,
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
 use crate::tasks::download::DownloadParam;
-use hex;
-use misc::{
-  get_modrinth_api, make_modrinth_request, map_modrinth_file_to_version_pack, ModrinthProject,
-  ModrinthSearchRes, ModrinthVersionPack,
-};
-use sha1::{Digest, Sha1};
-use std::collections::HashMap;
-use std::path::PathBuf;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
-use url::Url;
+use crate::utils::string::contains_chinese;
 
 const ALL_FILTER: &str = "All";
 
@@ -40,9 +45,13 @@ pub async fn fetch_resource_list_by_name_modrinth(
     page_size,
   } = query;
 
-  let handled_search_query = handle_search_query(app, search_query)
+  let handled_search_query = handle_localized_search_query(app, search_query)
     .await
-    .unwrap_or(search_query.clone()); // Handle Chinese query
+    .unwrap_or_else(|_| HandledSearchQuery {
+      query: search_query.clone(),
+      is_chinese: contains_chinese(search_query),
+    });
+  let is_default_sort = sort_by == "relevance";
 
   let mut facets = vec![vec![format!("project_type:{}", resource_type)]];
   if !game_version.is_empty() && game_version != ALL_FILTER {
@@ -53,7 +62,7 @@ pub async fn fetch_resource_list_by_name_modrinth(
   }
 
   let mut params = HashMap::new();
-  params.insert("query".to_string(), handled_search_query);
+  params.insert("query".to_string(), handled_search_query.query.clone());
   params.insert(
     "facets".to_string(),
     serde_json::to_string(&facets).unwrap_or_default(),
@@ -71,8 +80,10 @@ pub async fn fetch_resource_list_by_name_modrinth(
   .await?;
 
   let mut search_result: OtherResourceSearchRes = results.into();
-  for resource_info in &mut search_result.list {
-    let _ = apply_other_resource_enhancements(app, resource_info).await;
+  apply_other_resource_enhancements_concurrently(app, &mut search_result.list).await;
+
+  if handled_search_query.is_chinese && is_default_sort {
+    sort_localized_search_results(&mut search_result.list, search_query);
   }
 
   Ok(search_result)
@@ -86,6 +97,7 @@ pub async fn fetch_resource_version_packs_modrinth(
     resource_id,
     mod_loader,
     game_versions,
+    resource_type,
   } = query;
 
   let url = get_modrinth_api(OtherResourceApiEndpoint::VersionPack, Some(resource_id))?;
@@ -97,19 +109,19 @@ pub async fn fetch_resource_version_packs_modrinth(
       format!("[\"{}\"]", mod_loader.to_lowercase()),
     );
   }
-  if let Some(first_version) = game_versions.first() {
-    if first_version != ALL_FILTER {
-      let versions_json = format!(
-        "[{}]",
-        game_versions
-          .iter()
-          .map(|v| format!("\"{}\"", v))
-          .collect::<Vec<_>>()
-          .join(",")
-      );
+  if let Some(first_version) = game_versions.first()
+    && first_version != ALL_FILTER
+  {
+    let versions_json = format!(
+      "[{}]",
+      game_versions
+        .iter()
+        .map(|v| format!("\"{}\"", v))
+        .collect::<Vec<_>>()
+        .join(",")
+    );
 
-      params.insert("game_versions".to_string(), versions_json);
-    }
+    params.insert("game_versions".to_string(), versions_json);
   }
 
   let client = app.state::<reqwest::Client>();
@@ -121,7 +133,7 @@ pub async fn fetch_resource_version_packs_modrinth(
   )
   .await?;
 
-  Ok(map_modrinth_file_to_version_pack(results))
+  Ok(map_modrinth_file_to_version_pack(results, resource_type))
 }
 
 pub async fn fetch_remote_resource_by_local_modrinth(
@@ -207,6 +219,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
     resource_id: mod_id.to_string(),
     mod_loader: mod_loader.to_string(),
     game_versions: vec![game_version.to_string()],
+    resource_type: String::new(),
   };
 
   let version_packs = fetch_resource_version_packs_modrinth(app, &query).await?;
