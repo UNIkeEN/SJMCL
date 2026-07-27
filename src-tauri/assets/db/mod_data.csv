@@ -27809,3 +27809,303 @@
 27808,pullupplus,pullup+,飞行警报+,PullUp+,
 27809,create-cannon-gun-sight,,机械动力炮镜,Create Cannon Gun Sight,
 27810,keybind-atlas,keybind-atlas,Keybind Atlas,,KA
+27811,toward-deeper-abyss,,向着更深的深渊,Toward Deeper Abyss,TDA
+27812,configurable-raids,configurable-raids,可配置的袭击,Configurable Raids,
+27813,stairway-to-heaven,stairway-to-heaven,天堂阶梯,Stairway to Heaven,
+27814,dungeons-dimensions-nether,dungeons-dimensions-nether,Dungeons Dimensions: Nether,,
+27815,flight-kick-bypass,flight-kick-bypass,飞行踢出优化,Flight Kick Bypass,FKB
+27816,funky-effect-lib,,奇趣效果Lib,Funky Effect Lib,FEL
+27817,,cnpccurios,CNPC可穿戴饰品,CNPC Curios API,
+27818,jei-structures,,JEI Structures,,
+27819,,extended-storage,拓展存储,Extended Storage,
+27820,remote-access,remote-access,Remote Access,,
+27821,weeping-angels-reforged,,Weeping Angels (Reforged),,
+27822,aquatic-abyss-reforged,,Aquatic Abyss (Reforged),,
+27823,mutant-creatures-reforged,,突变生物：重铸版,Mutant Creatures (Reforged),
+27824,animated-player-mod-reforged,,动画化玩家：重铸版,Animated Player Mod (Reforged),
+27825,hats-reforged,,Hats (Reforged),,
+27826,arke,arke,Arke,,
+27827,foamfix-reforged,,泡沫修复：重铸版,FoamFix (Reforged),
+27828,scannable-unofficial,scannable-unofficial,扫描器：非官方版,Scannable Unofficial,
+27829,vintage-delight-kots,,腌渍乐事 - 耕云钓月版,Vintage Delight KOTS,
+27830,,,Bookshelf Suite,,
+27831,together-forever-unofficial,,Together Forever Unofficial,,TFU
+27832,cloud-glass,cloud-glass,Cloud Glass,,
+27833,shield-hider,shieldhider,Shield Hider,,
+27834,golden-dandelion-mod,,Golden Dandelion Backport Mod,,
+27835,pakko,pakko,Pakko,,
+27836,inventory-profiles-next-backport,,Inventory Profiles Next [Backport],,
+27837,structure-tools,structure-tools,St'ructure Tools,,
+27838,ae2lt-packaged-pattern-provider,ae2lt-packaged-pattern-provider,闪电科技：封包,AE2LT Packaged Pattern Provider,AE2LTPP
+27839,low-latency,low-latency,低延迟,Low Latency,
+27840,tonten,tonten,Tonten,,
+27841,,,非凡物品,Extraordinary Items,ET
+27842,tpaauto,tpaauto,tpaauto,,
+27843,healthbar,,HealthBar,,
+27844,warborn-renewed,,Warborn Renewed,,
+27845,redemptioncodefabric,,兑换码Fabric版,RedemptionCodeFabric,
+27846,,eftlm_weaponofmiracles,史诗战斗车万女仆：奇迹武器扩展,EFTLM_WeaponOfMiracl,EFTLM:WOM
+27847,createatomic,createatomic,Create: Atomic,,
+27848,cobblemon-battle-extras,cobblemon-battle-extras,Cobblemon Battle Extras,,
+27849,ad-astra-planet-screen-expanded,ad-astra-planet-screen-expanded,Ad Astra: Planet Screen Expanded,,
+27850,star-rating,star-rating,星级！,Star Rating,
+27851,,,更合理的合成,Reasonable Crafting,
+27852,complete-fletching-table,complete-fletching_table,完全的制箭台,Complete Fletching Table,FT
+27853,,netherite-torch-bow,下界合金火把弓,Netherite Torch Bow,
+27854,accurate-block-placement-reforked,accurate-block-placement-reforked,Accurate Block Placement Reforked,,
+27855,reforged-accurate-block-placement,reforged-accurate-block-placement,[Reforged] Accurate Block Placement,,
+27856,,,施工图纸,,
+27857,mangos-multiblock-library-revived,,Mango's MultiBlock Library Revived,,
+27858,final-netherite,final-netherite,最终下界合金,Final Netherite,
+27859,casualties-cubed,,Casualties: Cubed,,
+27860,,,Pumpkin Carvier,,
+27861,spooky-scary-halloween-reborn,,Spooky Scary Halloween Reborn,,
+27862,evil-hunter,evil-hunter,Evil Hunter,,
+27863,falling-leaves-backport,falling-leaves-backport,Falling Leaves (Backport),,
+27864,tiny-mob-farm-ce,tiny-mob-farm-ce,迷你刷怪场 社区版,Tiny Mob Farm CE,TMFCE
+27865,pasterdream-recipe-repair-and-addition,pasterdream_recipe_repair_and_addition,帕斯特之梦：配方修复与扩展,Pasterdream: Recipe Repair And Addition,
+27866,,betterbundlehud,BetterBundleHUD,,
+27867,overflowing-bars-backport,,Overflowing Bars [Backport],,
+27868,easy-anvils-backport,easy-anvils-backport,Easy Anvils (Backport),,
+27869,malisisdoorsreborn,malisisdoorsreborn,MalisisDoorsReborn,,
+27870,mp-moogs-paths,mp-moogs-paths,MP - Moog's Paths,,
+27871,pickaxe-armor-trims,,Pickaxe Armor Trims,,
+27872,recipe-crafter,,Recipe Crafter,,
+27873,wavify,,Wavify,,
+27874,magnet-hoppers,magnet-hopper,Magnet Hoppers,,
+27875,better-farmlife,better-farmlife,Better Farmlife,,
+27876,,realplace,真实置物,RealPlace,
+27877,you-died-backport,you-died-backport,You Died [Backport],,
+27878,,,简单的音游,Easy Rhythm,ER
+27879,,perfect-flow,Perfect Flow,,
+27880,dabcrafttcg,,DabcraftTCG,,
+27881,mobbility,,Mobbility [Core],,
+27882,nullpointer-fix-for-mio,nullpointer-fix-for-mio,澪的空指针修复,NullPointer Fix for Mio,MioNPF
+27883,portable-workstations,portable_workstations,便携式工作方块,Portable Workstations,PW
+27884,,,元素生物,Elementals,
+27885,hungry-mechanics,,Hungry Mechanics,,
+27886,equivalency,,Equivalency,,
+27887,extra-golems-fabric,,更多傀儡 Fabric,Extra Golems Fabric,
+27888,random-height,random-height,随机身高,Random Height,RH
+27889,elytra-component,elytra-component,鞘翅组件,Elytra Component,
+27890,real-filing-reborn,real-filing-reborn-cabinet-based-item-storage,Real Filing Reborn,,
+27891,,enderscapes-delight,Enderscape's Delight,,
+27892,roachs-delight-legacy,,蟑螂乐/农家悲,Roach's Delight Legacy,RDL
+27893,requious-frakto-unofficial,,Requious Frakto Unofficial,,
+27894,possibly-baubles,,Possibly Baubles,,
+27895,simplified-guardians,,Simplified Guardians,,
+27896,,doom-sg,肩部装备,DOOM SG,DSG
+27897,applied-schematics,applied-schematics,应用蓝图,Applied Schematics,
+27898,skyresources3,skyresources3,空岛资源3,Sky Resources3,SR3
+27899,,,随机迷彩,RandomCamo,
+27900,calm-the-leaks-ctl,,Calm The Leaks,,CTL
+27901,trinity-unofficial,,三位一体：非官方版,Trinity Unofficial,
+27902,reinhardt-protocol-core,reinhardt-protocol-core,Reinhardt协议核心,,RPC
+27903,zombieseverywhere,zombieseverywhere,尸行遍野,ZombiesEverywhere,
+27904,,,汉字工艺,Chinese Characters,
+27905,,tooltipeta,TooltipETA,,
+27906,,,DiscoTek,,
+27907,cult-of-azazel,cult-of-azazel,Cult of Azazel,,
+27908,chemcraft-liquid-fuels,,液体燃料,Liquid Fuels,
+27909,enhanced-netherite-guns-without-roses,,进阶下界合金：枪炮“没”瑰扩展,Enhanced Netherite: Guns Without Roses,
+27910,visual-recipe-edit-summoning-rituals,visual-recipe-edit-summoning-rituals,可视化召唤仪式配方编辑器,Visual Recipe Edit-Summoning Rituals,VRE-SR
+27911,mine-mod-translator,mine-mod-translator,模组翻译,Mine Mod Translator,MMT
+27912,,,Mod27912(failed),,
+27913,,lyteam,Lycrex的队伍,LyTeam,Team
+27914,substratum,,基质矿物,Substratum,
+27915,,borderless-fullscreen,Borderless Fullscreen,,
+27916,mortis-fix,,毋畏死亡,MortisFix,MTS
+27917,,,预制建筑附属,Prefab Custom Addon,
+27918,utilities-plus,utilities-plus,Utilities Plus,,
+27919,untagged-untitled,,Untagged & Untitled,,UaU
+27920,did-that-hurt,did-that-hurt,疼吗?,Did That Hurt?,DTH
+27921,,hardcore-tweaks,Hardcore Tweaks,,
+27922,carpenters-block-port,,Carpenter's block (Port),,
+27923,,,Mod27923(failed),,
+27924,applied-schematics,applied-schematics,应用蓝图,Applied Schematics,
+27925,emf-compat-create,create-emf-compat-skyhook,机械动力：实体模型特性兼容,Create: EMF Compat,
+27926,unvalkyried-heavens,,Unvalkyried Heavens,,
+27927,ne-carpenters-blocks,,Ne-Carpenter's Blocks,,
+27928,sneakernet,,鞋网,SneakerNet,
+27929,trove-geode,,宝藏世界：晶洞,Trove: Geode,TG
+27930,optimised-block-entities,obe,Optimised Block Entities,,OBE
+27931,keyboard-wizard-ce,keyboard-wizard-ce,按键精灵社区版,Keyboard Wizard CE,
+27932,mystical-world-reborn,,魔幻世界重置版,Mystical World Reborn,
+27933,,,Spectra Blocks,,SpB
+27934,waystones-restored-unofficial-fix,,Waystones: Restored (Unofficial 1.12.2 Fix),,
+27935,necromancer-mod-legacy-raid,,Necromancer Mod Legacy (Raid!),,
+27936,multiplayer-bosses,multiplayerbosses,Multiplayer Bosses,,
+27937,nag-not-another-guidebook,,Not Another Guidebook,,NAG
+27938,,,Mod27938(failed),,
+27939,,,投影打印机 三改版,litematica-printer,
+27940,,,Mod27940(failed),,
+27941,commandhistory,commandhistory,聊天记录/指令历史,Command History,
+27942,tictac-buttons,tictac-buttons,滴答按钮,TicTac Buttons,
+27943,friendly-beacons,,Friendly Beacons,,
+27944,opencomputers-ce,opencomputers-ce,开放式电脑社区版,OpenComputers Community Edition,
+27945,any-dimension-mod-1-7-10,,Any Dimension Mod,,
+27946,hovering-hotbar,hovering-hotbar,Hovering Hotbar,,HH
+27947,bundle-upgrade,bundle-upgrade,Bundle Upgrade,,BU
+27948,reach-behind,reach-behind,Reach Behind,,RB
+27949,open-together,open-together,Open Together,,OT
+27950,vibrant-parrots,vibrant-parrots,Vibrant Parrots,,VP
+27951,,,全维度平坦开启,,
+27952,no-chat-restrictions,no-chat-restrictions,No Chat Restrictions,,
+27953,universal-circuits,,Universal Circuits,,
+27954,musicevents,,音乐事件,MusicEvents,
+27955,pyrite,pyrite,Pyrite,,
+27956,herbcraft-bcks,herbcraft-bcks,百草可食,Herbcraft-BCKS,BCKS
+27957,herbcraft-alchemy,herbcraft_alchemy,百草可食：炼金分册,Herbcraft Alchemy,
+27958,herbcraft-cuisine,herbcraft_cuisine,百草可食：膳房分册,Herbcraft Cuisine,
+27959,fungalworks,fungalworks,菌材实料,Fungalworks,
+27960,slice-by-slice,slice-by-slice,片片俱到,Slice by Slice,
+27961,auto-config,,自动配置 API,Auto Config API,
+27962,small-progressions-2,small-progressions-2,Small Progressions 2,,
+27963,methane-ice,methane-ice,可燃冰,Methane Ice,MI
+27964,xaeromapstages,,Xaero地图阶段控制,XaeroMapStages,
+27965,,inventorio-extra,Inventorio Extra,,
+27966,craftable-capes-reforge,craftable-capes-reforge,可合成的披风 - (Neo)Forge版,Craftable Capes - (Neo)Forge,
+27967,waterupgrade,,饮水升级,Water Upgrade,
+27968,luminabox,,流光音匣,LuminaBox,LB
+27969,mochas-complicated-dungeon,,Mocha's Complicated Dungeon,,
+27970,bridge-worm-reborn,bridge-worm-reborn,Bridge Worm: Reborn,,
+27971,goety-transcended,,诡厄巫法：超越,Goety Transcended,
+27972,,apotheosis_artifice,神化-巧技,Apotheosis Artifice,
+27973,potion-bar,potion-bar,Potion Bar,,
+27974,soph-upgrade-addons,soph-upgrade-addons,精妙背包升级拓展,Soph Upgrade Addons,SUA
+27975,,,万物皆可绳,Super Lead,
+27976,tnt-ultra,,TNT Ultra,,
+27977,,,基础炊具,Basic Cookwares,BC
+27978,,,Aenk合资企业,Aenk Joint Venture,AJV
+27979,,,Inventory Sorter (Configurable) (Legacy),,
+27980,,-fakeplayer-,假人伙伴,FakePlayer,
+27981,omega-config,,Omega Config,,
+27982,faster-iris-shadow-mapper,fism,Faster Iris Shadow Mapper,,
+27983,,xp-sync,XP-Sync,,
+27984,thaumcraft6-research-helper,,神秘时代6研究助手,Thaumcraft6 Research Helper,TC6RH
+27985,,,Masa Gadget 移植,,
+27986,create-armored-constructs,create-armored-constructs,机械动力：装甲构件,Create: Armored Constructs,
+27987,create-sonar,,机械动力：声呐,Create: Sonar,
+27988,gregic-tinkering,gregic-tinkering,Gregic Tinkering,,
+27989,gregtech-nexus,,GregTech: Nexus,,GTNA
+27990,falling-leaves-plus,falling-leaves-plus,Falling Leaves Plus,,FL
+27991,oh-no-another-tnt-mod,onatm,Oh No! Another TNT Mod!,,
+27992,tw-core,tw-core,TW的核心,TW`s Core,TWC
+27993,unvalkyried-heavens-control,,Unvalkyried Heavens Control,,
+27994,srparasites-traps,,Scape and Trap Parasites,,
+27995,botania-unbound,,植物魔法：无缚,Botania Unbound,
+27996,enchantment-library-at-home-unofficial,,家用附魔图书馆 - 非官方版,Enchantment Library at Home Unofficial,
+27997,the-block-box-refabricated,the-block-box-re-fabricated,The Block Box Refabricated,,
+27998,cobblemon-utility,cobblemon-utility+,Cobblemon Utility+,,
+27999,,,Pipez Community Editon,,
+28000,return-by-death-by-lom2333,return-by-death-by-lom233,死亡回归,Return by Death,RBD
+28001,toucanlib,toucan,toucanLib,,
+28002,,anti-ghost-in-client,幽灵方块同步,anticlientghost,
+28003,,,无尽贪婪：更多奇点,Avaritia:More Singularity,AMS
+28004,unknown-echoes,unknown-echoes,未知回响,Unknown Echoes,
+28005,visual-blueprint-materials,visual-blueprint-materials,机械动力：量化蓝图,VisualBlueprintMaterials,VBM
+28006,cnpc-xaerominimap-addon,,CNPC-XaeroMinimap-Addon,,CXA
+28007,,,真实的第一人称,True First Person,TFP
+28008,,,实用作物,Useful Crops,
+28009,rf-windmills,,RF风力发电机,RF Windmills,
+28010,blockspan,blockspan,Blockspan,,
+28011,modular-armour,,模块化装甲,Modular Armour,
+28012,,,TheMasterCaver's World,,TMCW
+28013,,,斩无不断2,Ka Blades 2,
+28014,lumeon,,Lumeon,,
+28015,advanced-rocketry-3-0,advanced-rocketry-3,Advanced Rocketry 3,,AR3
+28016,tinkers-visual-tweaker,tinkers_visual_tweaker,可视化匠魂调整,Tinkers Visual Tweaker,TVT
+28017,tiab-gtm-compat,,TIAB GTM Compat,,
+28018,,,末影书,Ender Book,
+28019,,draftout,Draftout,,
+28020,symbiotic-swiss-knife,symbiotic-swiss-knife,Symbiotic Swiss Knife,,
+28021,,,通量超驱：社区版,Flux Overdrive CE,FLOD-CE
+28022,just-what-i-needed-mod,,刚好是我所需要的,Just What I Needed Mod,JWIN
+28023,ranchable-fluid-cows,,Ranchable Fluid Cows,,
+28024,,,吸入净化单元plus,Mekaimmunity,
+28025,lingua-peripherals,lingua-peripherals,语言外设,Lingua Peripherals,LP
+28026,hardcore-disabled-fix,hardcore_disabled_fix,极限模式禁用选项修复,Hardcore Disabled Fix,
+28027,electricityinnovation,,Electricity Innovation,,
+28028,colored_water,coloredwater,ColoredWater,,
+28029,portable-villager,portable-villager,便携式村民,Portable Villager,
+28030,,,DirectX Mod,,DXM
+28031,,neococoa,NeoCocoa,,
+28032,ftpa,ftpa,FTpa,,
+28033,superchocolatemaker2,,超级巧克力制造2,SuperChocolateMaker2,
+28034,alchemylib-neoforged,,AlchemyLib: NeoForged,,
+28035,frame-companion,,Frame Companion,,
+28036,,,天与魂石,TianYuHunShi,TYHS
+28037,villagertradeedit,villagertradesedit,村民交易编辑,VillagerTradesEdit,
+28038,no-more-meshes,no-more-meshes,不再有筛网,No More Meshes,
+28039,create-neapolitan,create-neapolitan,Create: Neapolitan,,
+28040,create-improve,create-improve,机械动力：改进,Create: Improve,CI
+28041,create-auto-track,create-auto-track,机械动力：径工地点,Create: Auto Track,CAT
+28042,rsoncreate,,存力合作,RS on Create,
+28043,create-redstone-link-gui,create-redstone-link-gui,机械动力：红石信号终端GUI,Create: Redstone Link GUI,
+28044,create-vvvf-simulator,,机械动力：VVVF模拟器,Create: VVVF-Simulator,CVS
+28045,create-nowheel,create-nowheel,Create: Nowheel,,
+28046,kroiautilities,kroia_modutilities,KROIA Utilities / ModUtilities,,
+28047,aeronautics-addition,aeronautics-addition,航空学：Addition,Aeronautics: Addition,
+28048,aeronautics-wind-tunnel,aeronauticswind-tunnel,航空学：风洞,Aeronautics: Wind Tunnel,
+28049,create-gregified-storage,,Create: Gregified Storage,,
+28050,frequency-create,frequency-create,Frequency Create,,
+28051,banksystem,kroia_banksystem,银行系统,BankSystem,
+28052,farmers-cutting-collection,,Farmer's Cutting Collection,,
+28053,,lifecan,生命罐头,Life Can,
+28054,,os-flyingcarpet,神奇飞毯,O's FlyingCarpet,FC
+28055,visuality-reforged-backport,,Visuality: Reforged (Backport),,
+28056,magma-lucky-block,,Magma Lucky Block,,
+28057,creating-tables,,Creating Tables,,
+28058,betterweather-renewed,,BetterWeather: Renewed,,
+28059,rpg-rpgae-neoforge,,RPG天启进化（NeoForge）,RPGApocalypticEvolution,RPGAE
+28060,rebind,,Rebind,,
+28061,bosses-rise-intro-skipper,,跳过剧情等于跳过人生,Bosses Rise Intro Skipper,
+28062,ancient-tweaks,,古代调整,Ancient Tweaks,AT
+28063,deltaforceskills,delta_force_skills,三角洲技艺,Delta Force Skills,
+28064,,,是的长官，我们已经准备就绪！,YES SIR!,
+28065,tacz-40k,tacz40k,Tacz 40k / Tacz40k,,
+28066,carpentry-chisels,carpentry-and-chisels,Carpentry & Chisels,,
+28067,,,匠魂元素,TinkersElemental,TE
+28068,sky-islands,skyislands,空岛世界,Sky Islands,
+28069,more-withers,more-withers,More Withers,,
+28070,,itemcommander,Item Commander,,
+28071,spooky-foods,spooky-foods,Spooky Foods,,
+28072,peaks,,Peaks,,
+28073,chemlib-neoforged,,ChemLib: NeoForged,,
+28074,particular-reforged-backport,,Particular ✨ Reforged (Backport),,
+28075,mtr-traffic-addon,mtr-traffic-addon,MTR Traffic Addon,,MTA
+28076,,,加速呈现,AcceleratedPresents,AP
+28077,mundus-magicus,,Mundus Magicus,,
+28078,chest-tracker-forge-edition,,Chest Tracker - Reforged,,
+28079,midnight-thoughts,midnight-thoughts,Midnight Thoughts,,
+28080,bosscraft-2-remake,bosscraft-2-reamke,Bosscraft 2: Remake,,
+28081,,formula-loader,公式加载器,Formula Loader,
+28082,mc2-interactive-foliage,mc2-interactive-foliage,Interactive Foliage,,
+28083,,,DE ChaosIsland Legacy,,
+28084,,,Wildfire's Female Gender Mod Legacy,,
+28085,alchemistry-neoforged,,Alchemistry: NeoForged,,
+28086,,vulkanmodneoforge,VulkanModNeoForge,,VKN
+28087,,,HoonPad Mod,,
+28088,moretraffic,moretraffic,MoreTraffic,,
+28089,dopplegangers,,Dopplegangers,,
+28090,self-aware-robot,selfawarerobot,Self-Aware Robot,,
+28091,,pixelated-uc,像素化-城建,Pixelated Urban Construction,PLUC
+28092,cc-utf-8-compat,,CC UTF-8 Compat,,
+28093,,,多功能按键,Multi-Function Key,MulK
+28094,neoportals,neoportals,NeoPortals,,
+28095,,,凤凰计划,Project Phoenix,
+28096,justsink,justsink,水槽,JustSink,
+28097,ef-cz,,史诗战斗：巅峰,EpicFight: ChampionZone,EFCZ
+28098,,world-preview-neoforged-(unofficial),世界预览：新锻,World Preview NeoForged,
+28099,world-preview-tfc,world-preview-terrafirmacraft,世界预览：群峦,World Preview TFC,
+28100,genesis-world-previewer-pregenerator,genesis-world-previewer-pregenerator,Genesis - World Previewer & Pregenerator,,
+28101,goety-dargui,goety-dargui,诡厄巫法：黑暗祭坛GUI,Goety DarGui,GDG
+28102,radiation-area,,辐射区,Radiation Area,
+28103,galtc,,Galtc,,
+28104,chestcavitytweak,,ChestCavityTweak,,CCT
+28105,,,Voxy Server Side,,VSS
+28106,bmaddon,,BloodMagic AE2 Addition,,BMAddon
+28107,gregtech-x-forestry-addon-by-moojifiji,,GregTech X Forestry Addon,,GTXFA
+28108,aeronautics-no-horizon,,航空学：无界,Aeronautics: No Horizon,
+28109,glimmering-gardens,glimmering-gardens,Glimmering Gardens,,
+28110,slenderman-ascend,slenderman-ascend,Slenderman: Ascend,,
