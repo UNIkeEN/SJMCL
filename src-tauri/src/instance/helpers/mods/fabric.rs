@@ -30,6 +30,7 @@ pub struct FabricModMetadata {
 impl From<FabricModMetadata> for LocalModInfo {
   fn from(meta: FabricModMetadata) -> Self {
     Self {
+      mod_id: meta.id,
       name: meta.name.unwrap_or_default(),
       version: meta.version,
       description: meta.description.unwrap_or_default(),

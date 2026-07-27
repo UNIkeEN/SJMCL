@@ -47,6 +47,7 @@ impl From<ForgeModMetadata> for LocalModInfo {
   fn from(meta: ForgeModMetadata) -> Self {
     let first_mod = meta.mods.into_iter().next().unwrap_or_default();
     Self {
+      mod_id: first_mod.mod_id,
       name: first_mod.display_name.unwrap_or_default(),
       version: first_mod.version.unwrap_or_default(),
       description: first_mod.description.unwrap_or_default(),

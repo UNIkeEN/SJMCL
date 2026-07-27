@@ -180,6 +180,7 @@ impl InstanceSummary {
 pub struct LocalModInfo {
   pub icon_src: ImageWrapper,
   pub enabled: bool,
+  pub mod_id: String,
   pub name: String,
   pub translated_name: Option<String>,
   pub version: String,
