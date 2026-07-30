@@ -19,7 +19,7 @@ import {
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPlus, LuTrash } from "react-icons/lu";
 import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
@@ -196,6 +196,25 @@ const AppearanceSettingsPage = () => {
       : font;
   };
 
+  const fontOptions = useMemo(
+    () =>
+      fonts.map((font) => ({
+        value: font,
+        label: (
+          <Text
+            fontSize="xs"
+            fontFamily={font === "%built-in" ? undefined : font}
+            isTruncated
+          >
+            {font === "%built-in"
+              ? t("AppearanceSettingsPage.font.settings.fontFamily.default")
+              : font}
+          </Text>
+        ),
+      })),
+    [fonts, t]
+  );
+
   const FontFamilyMenu = ({
     value,
     onChange,
@@ -205,15 +224,20 @@ const AppearanceSettingsPage = () => {
   }) => {
     return (
       <MenuSelector
-        options={fonts.map((font) => ({
-          value: font,
-          label: <Text fontSize="xs">{buildFontName(font)}</Text>,
-        }))}
+        options={fontOptions}
         value={value}
         onSelect={(v) => onChange(v as string)}
         placeholder={buildFontName(value)}
         isLazy
-        menuListProps={{ maxH: "40vh", overflowY: "auto" }}
+        virtualized
+        virtualRowHeight={34}
+        virtualListHeight={320}
+        virtualListWidth={280}
+        virtualOverscan={8}
+        menuListProps={{
+          p: 0,
+          overflow: "hidden",
+        }}
       />
     );
   };
