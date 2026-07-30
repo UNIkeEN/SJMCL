@@ -660,6 +660,7 @@
       "optifine-libraries": "Bibliothèques d'exécution d'OptiFine",
       "launcher-update": "Mettre à jour le lanceur",
       "extension-update": "Mettre à jour l'extension {{param1}} {{param2}}",
+      "extension-update-all": "Mettre à jour les extensions par lot",
       "mojang-java": "Java {{param}} fonctionne"
     }
   },
@@ -861,6 +862,26 @@
           "description": "Parcourez sur GitHub la liste des extensions développées par la communauté.",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "Mettre à jour toutes les extensions",
+      "cancel": "Annuler la mise à jour",
+      "checkFailed": "Échec de la vérification des mises à jour des extensions",
+      "checking": "Recherche de mises à jour… {{current}}/{{total}}",
+      "completed": "Mise à jour terminée : {{updated}} mises à jour, {{upToDate}} à jour, {{skipped}} ignorées, {{failed}} en échec",
+      "downloading": "Téléchargement de {{name}}… {{current}}/{{total}}",
+      "installing": "Installation de {{name}}… {{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "La mise à jour a été annulée",
+        "checkFailed": "Échec de la recherche de mises à jour : {{details}}",
+        "downloadFailed": "Échec du téléchargement : {{details}}",
+        "installFailed": "Échec de l’installation : {{details}}",
+        "invalidVersion": "La version disponible est absente ou invalide",
+        "notFound": "Aucun paquet de mise à jour trouvé dans la dernière version",
+        "sourceInvalid": "L’URL source n’est pas un dépôt GitHub valide",
+        "sourceUnavailable": "La source de mise à jour est indisponible : {{details}}",
+        "unknown": "Erreur inconnue"
       }
     }
   },
@@ -3051,8 +3072,10 @@
             "INVALID_IDENTIFIER": "L'identifiant de l'extension est invalide",
             "IDENTIFIER_MISMATCH": "L'identifiant de l'extension ne correspond pas à celui attendu",
             "INVALID_NAME": "Le nom de l'extension est invalide",
+            "INVALID_VERSION": "La version du paquet de mise à jour est absente ou invalide",
             "LAUNCHER_VERSION_TOO_LOW": "La version du lanceur est trop ancienne",
-            "EXTENSION_NOT_FOUND": "Fichier du paquet cible introuvable"
+            "EXTENSION_NOT_FOUND": "Fichier du paquet cible introuvable",
+            "VERSION_NOT_NEWER": "La version du paquet de mise à jour n’est pas plus récente que la version installée"
           }
         }
       },

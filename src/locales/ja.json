@@ -660,6 +660,7 @@
       "optifine-libraries": "OptiFine ランタイムライブラリ",
       "launcher-update": "ランチャーを更新",
       "extension-update": "拡張機能 {{param1}} {{param2}} を更新",
+      "extension-update-all": "拡張機能を一括更新",
       "mojang-java": "Java {{param}} ランタイム"
     }
   },
@@ -861,6 +862,26 @@
           "description": "GitHub でコミュニティ製の拡張機能一覧を閲覧します。",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "すべての拡張機能を更新",
+      "cancel": "更新をキャンセル",
+      "checkFailed": "拡張機能の更新確認に失敗しました",
+      "checking": "更新を確認しています... {{current}}/{{total}}",
+      "completed": "更新が完了しました：更新 {{updated}} 件、最新 {{upToDate}} 件、スキップ {{skipped}} 件、失敗 {{failed}} 件",
+      "downloading": "{{name}} をダウンロードしています... {{current}}/{{total}}",
+      "installing": "{{name}} をインストールしています... {{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "更新がキャンセルされました",
+        "checkFailed": "更新の確認に失敗しました：{{details}}",
+        "downloadFailed": "ダウンロードに失敗しました：{{details}}",
+        "installFailed": "インストールに失敗しました：{{details}}",
+        "invalidVersion": "利用可能なバージョンがないか、無効です",
+        "notFound": "最新のリリースに更新パッケージが見つかりません",
+        "sourceInvalid": "更新元は有効な GitHub リポジトリの URL ではありません",
+        "sourceUnavailable": "更新元を利用できません：{{details}}",
+        "unknown": "不明なエラー"
       }
     }
   },
@@ -3051,8 +3072,10 @@
             "INVALID_IDENTIFIER": "拡張機能識別子が無効です",
             "IDENTIFIER_MISMATCH": "拡張機能識別子が想定と一致しません",
             "INVALID_NAME": "拡張機能名が無効です",
+            "INVALID_VERSION": "更新パッケージのバージョンがないか、無効です",
             "LAUNCHER_VERSION_TOO_LOW": "ランチャーバージョンが低すぎます",
-            "EXTENSION_NOT_FOUND": "対象のパッケージファイルが見つかりません"
+            "EXTENSION_NOT_FOUND": "対象のパッケージファイルが見つかりません",
+            "VERSION_NOT_NEWER": "更新パッケージのバージョンがインストール済みのバージョンより新しくありません"
           }
         }
       },
