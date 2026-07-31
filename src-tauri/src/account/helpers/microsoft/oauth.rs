@@ -275,15 +275,26 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
     .await
     .map_err(|_| AccountError::ParseError)?;
 
-  parse_profile(app, &tokens).await
+  let mut refreshed_player = parse_profile(app, &tokens).await?;
+  refreshed_player.id = player.id.clone();
+  Ok(refreshed_player)
 }
 
 pub async fn validate(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<bool> {
-  let status = validate_access_token(app, &get_access_token(app, player).await?).await?;
+  let access_token = match get_access_token(app, player).await {
+    Ok(access_token) => access_token,
+    Err(error) if error == AccountError::Expired.into() => return Ok(false),
+    Err(error) => return Err(error),
+  };
+  let status = validate_access_token(app, &access_token).await?;
 
   if status == reqwest::StatusCode::UNAUTHORIZED {
     let current_player = misc::get_player_by_id(app, &player.id)?.ok_or(AccountError::NotFound)?;
-    let refreshed_player = refresh(app, &current_player).await?;
+    let refreshed_player = match refresh(app, &current_player).await {
+      Ok(refreshed_player) => refreshed_player,
+      Err(error) if error == AccountError::Expired.into() => return Ok(false),
+      Err(error) => return Err(error),
+    };
     let access_token = refreshed_player
       .access_token
       .clone()
