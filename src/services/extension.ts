@@ -62,13 +62,26 @@ const normalizeSemver = (version: string): string | undefined => {
   return SEMVER_PATTERN.test(normalized) ? normalized : undefined;
 };
 
-// Compare two versions; returns true only if `next` is strictly greater than `current`.
+const compareSemver = (a: string, b: string): number => {
+  const [aMain, aPre = ""] = a.split("-");
+  const [bMain, bPre = ""] = b.split("-");
+  const aParts = aMain.split(".").map(Number);
+  const bParts = bMain.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (aParts[i] !== bParts[i]) return aParts[i] - bParts[i];
+  }
+  if (!aPre && !bPre) return 0;
+  if (!aPre) return 1;
+  if (!bPre) return -1;
+  return aPre < bPre ? -1 : aPre > bPre ? 1 : 0;
+};
+
 const isVersionNewer = (next: string, current?: string | null): boolean => {
   const a = normalizeSemver(next);
   const b = current ? normalizeSemver(current) : undefined;
   if (!a) return false;
   if (!b) return true;
-  return a !== b;
+  return compareSemver(a, b) > 0;
 };
 
 // Parse a GitHub repository URL ("https://github.com/{owner}/{repo}") into owner/repo.
