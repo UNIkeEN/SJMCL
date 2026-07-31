@@ -76,7 +76,8 @@ use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::{
   RemoveDirGuard, copy_whole_dir, create_url_shortcut, generate_unique_filename,
-  get_files_with_regex, get_subdirectories, normalize_relative_path,
+  get_files_with_regex, get_files_with_regex_recursive, get_subdirectories,
+  normalize_relative_path,
 };
 use crate::utils::image::ImageWrapper;
 
@@ -835,7 +836,15 @@ pub fn retrieve_schematic_list(
     .build()
     .unwrap();
   let mut schematic_list = Vec::new();
-  for schematic_path in get_files_with_regex(schematics_dir.as_path(), &valid_extensions)? {
+  for schematic_path in
+    get_files_with_regex_recursive(schematics_dir.as_path(), &valid_extensions, Some(3))?
+  {
+    let Ok(relative_path) = schematic_path
+      .strip_prefix(&schematics_dir)
+      .map(Path::to_path_buf)
+    else {
+      continue;
+    };
     schematic_list.push(SchematicInfo {
       name: schematic_path
         .file_stem()
@@ -843,8 +852,10 @@ pub fn retrieve_schematic_list(
         .to_string_lossy()
         .to_string(),
       file_path: schematic_path,
+      relative_path,
     });
   }
+  schematic_list.sort_by(|a, b| a.relative_path.cmp(&b.relative_path));
 
   Ok(schematic_list)
 }

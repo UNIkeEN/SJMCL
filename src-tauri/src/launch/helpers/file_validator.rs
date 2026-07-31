@@ -5,7 +5,7 @@ use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::load_json_async;
 use std::collections::{HashMap, HashSet};
 use std::io::Cursor;
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
@@ -376,6 +376,50 @@ pub fn get_native_library_paths(
   Ok(result)
 }
 
+fn get_native_library_extract_dir(client_info: &McClientInfo, natives_dir: &Path) -> PathBuf {
+  const JAVA_LIBRARY_PATH_PREFIX: &str = "-Djava.library.path=";
+  const NATIVES_SUBDIR_PREFIX: &str = "${natives_directory}/";
+
+  let Some(arguments) = &client_info.arguments else {
+    return natives_dir.to_path_buf();
+  };
+
+  for argument in &arguments.jvm {
+    if !argument.rules.is_empty() {
+      continue;
+    }
+
+    for value in &argument.value {
+      let Some(path) = value.strip_prefix(JAVA_LIBRARY_PATH_PREFIX) else {
+        continue;
+      };
+
+      // Minecraft versions before 26.2-snapshot-1 use ${natives_directory} directly.
+      if path == "${natives_directory}" {
+        return natives_dir.to_path_buf();
+      }
+
+      // Minecraft 26.2-snapshot-1+ may use a subdirectory such as ${natives_directory}/java.
+      let Some(relative_path) = path.strip_prefix(NATIVES_SUBDIR_PREFIX) else {
+        return natives_dir.to_path_buf();
+      };
+      let relative_path = Path::new(relative_path);
+
+      if relative_path.as_os_str().is_empty()
+        || !relative_path
+          .components()
+          .all(|component| matches!(component, Component::Normal(_)))
+      {
+        return natives_dir.to_path_buf();
+      }
+
+      return natives_dir.join(relative_path);
+    }
+  }
+
+  natives_dir.to_path_buf()
+}
+
 pub async fn extract_native_libraries(
   client_info: &McClientInfo,
   library_path: &Path,
@@ -388,7 +432,8 @@ pub async fn extract_native_libraries(
     fs::remove_dir_all(natives_dir).await?;
   }
 
-  fs::create_dir_all(natives_dir).await?;
+  let extract_dir = get_native_library_extract_dir(client_info, natives_dir);
+  fs::create_dir_all(&extract_dir).await?;
 
   let native_libraries = get_native_library_paths(
     client_info,
@@ -399,11 +444,11 @@ pub async fn extract_native_libraries(
   let tasks: Vec<tokio::task::JoinHandle<SJMCLResult<()>>> = native_libraries
     .into_iter()
     .map(|library_path| {
-      let patches_dir_clone = natives_dir.clone();
+      let extract_dir = extract_dir.clone();
       tokio::spawn(async move {
         let file = Cursor::new(fs::read(library_path).await?);
         let mut jar = ZipArchive::new(file)?;
-        jar.extract(&patches_dir_clone)?;
+        jar.extract(&extract_dir)?;
         Ok(())
       })
     })

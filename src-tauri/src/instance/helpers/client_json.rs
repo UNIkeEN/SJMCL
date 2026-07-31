@@ -405,10 +405,10 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
     }
 
     let mut patch_arguments = patch.arguments.clone();
-    if patch.id == "optifine" {
-      if let Some(arguments) = &mut patch_arguments {
-        normalize_optifine_tweaker(arguments, has_forge_patch);
-      }
+    if patch.id == "optifine"
+      && let Some(arguments) = &mut patch_arguments
+    {
+      normalize_optifine_tweaker(arguments, has_forge_patch);
     }
 
     if let Some(arguments) = patch_arguments {
