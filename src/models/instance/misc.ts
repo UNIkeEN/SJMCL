@@ -104,6 +104,7 @@ export interface ResourcePackInfo {
 export interface SchematicInfo {
   name: string;
   filePath: string;
+  relativePath: string;
 }
 
 export interface ShaderPackInfo {

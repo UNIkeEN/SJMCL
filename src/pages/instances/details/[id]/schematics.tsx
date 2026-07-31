@@ -1,4 +1,4 @@
-import { Center, HStack } from "@chakra-ui/react";
+import { Center, HStack, Text } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -117,6 +117,21 @@ const InstanceSchematicsPage = () => {
     },
   ];
 
+  const renderSchematicPath = (relativePath: string) => {
+    const fileNameStart =
+      Math.max(relativePath.lastIndexOf("/"), relativePath.lastIndexOf("\\")) +
+      1;
+
+    return (
+      <Text fontSize="xs-sm">
+        <Text as="span" className="secondary-text">
+          {relativePath.slice(0, fileNameStart)}
+        </Text>
+        {relativePath.slice(fileNameStart)}
+      </Text>
+    );
+  };
+
   return (
     <>
       <Section
@@ -144,7 +159,10 @@ const InstanceSchematicsPage = () => {
         ) : schematics.length > 0 ? (
           <OptionItemGroup
             items={schematics.map((schem) => (
-              <OptionItem key={schem.name} title={schem.name}>
+              <OptionItem
+                key={schem.relativePath}
+                title={renderSchematicPath(schem.relativePath)}
+              >
                 <HStack spacing={0}>
                   {schemItemMenuOperations(schem).map((item, index) => (
                     <CommonIconButton

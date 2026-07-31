@@ -8,6 +8,7 @@ use std::path::{Component, Path, PathBuf};
 use std::{fs, io};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
+use walkdir::WalkDir;
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
 
@@ -185,29 +186,39 @@ pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> SJMCLResult<Vec<PathBuf>> 
 /// let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
 /// ```
 pub fn get_files_with_regex<P: AsRef<Path>>(path: P, pattern: &Regex) -> SJMCLResult<Vec<PathBuf>> {
-  let dir_entries = fs::read_dir(&path).map_err(|e| {
-    let error_message = match e.kind() {
-      io::ErrorKind::NotFound => "Path does not exist".to_string(),
-      _ => format!("IO Error: {}", e),
-    };
-    SJMCLError(error_message)
-  })?;
+  get_files_with_regex_recursive(path, pattern, Some(0))
+}
 
-  let mut matching_files = Vec::new();
-
-  for entry in dir_entries {
-    let entry = entry.map_err(|e| SJMCLError(format!("Read Entry Error: {}", e)))?;
-    let path = entry.path();
-
-    if let Some(file_name) = path.file_name()
-      && let Some(file_name_str) = file_name.to_str()
-      && pattern.is_match(file_name_str)
-    {
-      matching_files.push(path);
-    }
+/// Recursively retrieves files that match a specified regular expression.
+///
+/// `max_depth` limits the number of subdirectory levels to traverse. `None` traverses all levels.
+pub fn get_files_with_regex_recursive<P: AsRef<Path>>(
+  path: P,
+  pattern: &Regex,
+  max_depth: Option<usize>,
+) -> SJMCLResult<Vec<PathBuf>> {
+  let mut walker = WalkDir::new(path).min_depth(1);
+  if let Some(max_depth) = max_depth {
+    walker = walker.max_depth(max_depth + 1);
   }
 
-  Ok(matching_files)
+  walker
+    .into_iter()
+    .filter_map(|entry| match entry {
+      Ok(entry)
+        if (entry.file_type().is_file()
+          || (entry.file_type().is_symlink() && entry.path().is_file()))
+          && entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| pattern.is_match(name)) =>
+      {
+        Some(Ok(entry.into_path()))
+      }
+      Ok(_) => None,
+      Err(e) => Some(Err(SJMCLError(format!("Walk Directory Error: {}", e)))),
+    })
+    .collect()
 }
 
 /// Retrieves the full filesystem path to an application resource, choosing between
