@@ -20,9 +20,11 @@ export const mockSchematics: SchematicInfo[] = [
   {
     name: "TestFile.schematic",
     filePath: "/.minecraft/schematics",
+    relativePath: "TestFile.schematic",
   },
   {
     name: "McDonalds-Minhang-Campus.litematic",
     filePath: "/.minecraft/schematics",
+    relativePath: "McDonalds-Minhang-Campus.litematic",
   },
 ];

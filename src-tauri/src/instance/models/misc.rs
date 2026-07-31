@@ -229,6 +229,7 @@ pub struct ResourcePackInfo {
 pub struct SchematicInfo {
   pub name: String,
   pub file_path: PathBuf,
+  pub relative_path: PathBuf,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
