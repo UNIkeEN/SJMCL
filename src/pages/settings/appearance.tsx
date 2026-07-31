@@ -23,7 +23,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPlus, LuTrash } from "react-icons/lu";
 import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
-import { MenuSelector } from "@/components/common/menu-selector";
+import {
+  MenuSelector,
+  VirtualMenuSelector,
+} from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -223,17 +226,12 @@ const AppearanceSettingsPage = () => {
     onChange: (v: string) => void;
   }) => {
     return (
-      <MenuSelector
+      <VirtualMenuSelector
         options={fontOptions}
         value={value}
         onSelect={(v) => onChange(v as string)}
         placeholder={buildFontName(value)}
         isLazy
-        virtualized
-        virtualRowHeight={34}
-        virtualListHeight={320}
-        virtualListWidth={280}
-        virtualOverscan={8}
         menuListProps={{
           p: 0,
           overflow: "hidden",
