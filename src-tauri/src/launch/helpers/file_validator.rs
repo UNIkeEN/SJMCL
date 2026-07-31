@@ -394,10 +394,12 @@ fn get_native_library_extract_dir(client_info: &McClientInfo, natives_dir: &Path
         continue;
       };
 
+      // Minecraft versions before 26.2-snapshot-1 use ${natives_directory} directly.
       if path == "${natives_directory}" {
         return natives_dir.to_path_buf();
       }
 
+      // Minecraft 26.2-snapshot-1+ may use a subdirectory such as ${natives_directory}/java.
       let Some(relative_path) = path.strip_prefix(NATIVES_SUBDIR_PREFIX) else {
         return natives_dir.to_path_buf();
       };
