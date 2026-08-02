@@ -276,6 +276,7 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
     .map_err(|_| AccountError::ParseError)?;
 
   let mut refreshed_player = parse_profile(app, &tokens).await?;
+  // Retain the internal player ID so a profile rename does not invalidate selected_player_id (#1350).
   refreshed_player.id = player.id.clone();
   Ok(refreshed_player)
 }
