@@ -391,6 +391,7 @@
       "source": "源"
     },
     "error": {
+      "network": "不能稽模組更新，請稽網路連線",
       "renameOldMod": "更名舊案未成"
     }
   },

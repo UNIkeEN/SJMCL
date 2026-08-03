@@ -391,6 +391,7 @@
       "source": "Fuente"
     },
     "error": {
+      "network": "No se pueden comprobar las actualizaciones de mods. Comprueba tu conexión de red.",
       "renameOldMod": "Error al renombrar el archivo del mod antiguo"
     }
   },

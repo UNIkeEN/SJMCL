@@ -391,6 +391,7 @@
       "source": "来源"
     },
     "error": {
+      "network": "无法检查模组更新，请检查网络连接",
       "renameOldMod": "重命名旧文件失败"
     }
   },

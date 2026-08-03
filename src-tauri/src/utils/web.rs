@@ -1,3 +1,4 @@
+use futures::stream::{FuturesUnordered, StreamExt};
 use reqwest_middleware::{ClientBuilder as ClientWithMiddlewareBuilder, ClientWithMiddleware};
 use reqwest_retry::RetryTransientMiddleware;
 use reqwest_retry::policies::ExponentialBackoff;
@@ -94,6 +95,37 @@ pub fn with_retry(client: Client) -> ClientWithMiddleware {
       SJMCLRetryableStrategy {},
     ))
     .build()
+}
+
+/// Checks whether the internet is reachable through any common connectivity endpoint.
+pub async fn check_network_connection(client: &Client) -> bool {
+  async fn is_reachable(client: &Client, url: &str) -> bool {
+    client
+      .get(url)
+      .timeout(Duration::from_secs(3))
+      .send()
+      .await
+      .is_ok()
+  }
+
+  let endpoints = [
+    "https://connectivitycheck.gstatic.com/generate_204",
+    "https://www.msftconnecttest.com/connecttest.txt",
+    "https://captive.apple.com/hotspot-detect.html",
+    "https://www.bing.com",
+  ];
+  let mut checks = endpoints
+    .iter()
+    .map(|url| is_reachable(client, url))
+    .collect::<FuturesUnordered<_>>();
+
+  while let Some(is_connected) = checks.next().await {
+    if is_connected {
+      return true;
+    }
+  }
+
+  false
 }
 
 /// Check whether the current IP is located in mainland China.

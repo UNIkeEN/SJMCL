@@ -201,6 +201,7 @@ pub async fn run() {
         utils::commands::retrieve_resolution_upbound,
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
+        utils::commands::check_network_connection,
         utils::commands::extract_filename,
         utils::commands::delete_file,
         utils::commands::delete_directory,
