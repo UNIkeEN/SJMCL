@@ -214,7 +214,7 @@ pub async fn validate_game_files(
 }
 
 // Step 3: validate selected player, if its type is 3rd-party, load server meta for authlib.
-// returns Ok(false) if the access_token is expired, Ok(true) if the token is valid.
+// returns Ok(false) if the access token is invalid, Ok(true) if the token is valid.
 #[tauri::command]
 pub async fn validate_selected_player(
   app: AppHandle,
@@ -222,6 +222,15 @@ pub async fn validate_selected_player(
   local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
   let mut player = get_selected_player_info(&app)?;
+
+  if player.player_type == PlayerType::Microsoft {
+    if !microsoft::oauth::validate(&app, &player).await? {
+      return Ok(false);
+    }
+
+    // Validation can refresh the token, so use the persisted player for launch arguments.
+    player = get_selected_player_info(&app)?;
+  }
 
   let metadata = if player.player_type == PlayerType::ThirdParty {
     authlib_injector::jar::check_authlib_jar(&app)
@@ -258,7 +267,7 @@ pub async fn validate_selected_player(
 
   match player.player_type {
     PlayerType::ThirdParty => authlib_injector::common::validate(&app, &player).await,
-    PlayerType::Microsoft => microsoft::oauth::validate(&app, &player).await,
+    PlayerType::Microsoft => Ok(true),
     PlayerType::Offline => Ok(true),
   }
 }
