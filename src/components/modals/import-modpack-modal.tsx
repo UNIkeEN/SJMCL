@@ -130,7 +130,10 @@ const ImportModpackModal: React.FC<ImportModpackModalProps> = ({
             } as ModLoaderResourceInfo)
           : defaultModLoaderResourceInfo,
         undefined,
-        path
+        path,
+        undefined,
+        undefined,
+        modpack.version
       );
       if (createResp.status === "success") {
         onClose();

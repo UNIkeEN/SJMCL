@@ -104,6 +104,7 @@ structstruck::strike! {
     pub use_spec_game_config: bool,
     // if use_spec_game_config is false, this field is ignored
     pub spec_game_config: Option<GameConfig>,
+    pub modpack_version: Option<String>,
   }
 }
 
@@ -142,6 +143,7 @@ pub struct InstanceSummary {
   pub support_quick_play: bool,
   pub use_spec_game_config: bool,
   pub is_version_isolated: bool,
+  pub modpack_version: Option<String>,
 }
 
 impl InstanceSummary {
@@ -171,6 +173,7 @@ impl InstanceSummary {
         .is_ge(),
       use_spec_game_config: instance.use_spec_game_config,
       is_version_isolated,
+      modpack_version: instance.modpack_version.clone(),
     }
   }
 }
