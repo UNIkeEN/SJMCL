@@ -391,6 +391,7 @@
       "source": "Source"
     },
     "error": {
+      "network": "Impossible de vérifier les mises à jour des mods. Vérifiez votre connexion réseau.",
       "renameOldMod": "Échec du renommage de l'ancien fichier"
     }
   },

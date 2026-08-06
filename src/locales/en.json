@@ -391,6 +391,7 @@
       "source": "Source"
     },
     "error": {
+      "network": "Unable to check mod updates. Please check your network connection.",
       "renameOldMod": "Failed to rename old mod file"
     }
   },

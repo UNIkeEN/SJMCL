@@ -10,6 +10,7 @@ use url::Url;
 use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
 use crate::utils::sys_info::get_memory_info;
+use crate::utils::web::check_network_connection as check_network_connection_helper;
 
 #[tauri::command]
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
@@ -64,6 +65,11 @@ pub async fn check_service_availability(
     }
     Err(_) => Err(LauncherConfigError::FetchError.into()),
   }
+}
+
+#[tauri::command]
+pub async fn check_network_connection(client: State<'_, reqwest::Client>) -> SJMCLResult<bool> {
+  Ok(check_network_connection_helper(&client).await)
 }
 
 #[tauri::command]

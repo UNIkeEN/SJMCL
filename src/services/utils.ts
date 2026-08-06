@@ -49,6 +49,15 @@ export class UtilsService {
   }
 
   /**
+   * CHECK whether the device has an available internet connection.
+   * @returns {Promise<InvokeResponse<boolean>>}
+   */
+  @responseHandler("utils")
+  static async checkNetworkConnection(): Promise<InvokeResponse<boolean>> {
+    return await invoke("check_network_connection");
+  }
+
+  /**
    * EXTRACT the file name from a path.
    * @param pathStr The full path string.
    * @param withExt Whether to keep the file extension.

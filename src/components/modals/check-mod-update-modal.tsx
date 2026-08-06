@@ -19,15 +19,25 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource } from "@/enums/resource";
+import { ResourceServiceError } from "@/enums/service-error";
 import { InstanceSummary, LocalModInfo } from "@/models/instance/misc";
 import {
   ModUpdateQuery,
   ModUpdateRecord,
   OtherResourceFileInfo,
 } from "@/models/resource";
+import { ResponseError } from "@/models/response";
 import { ResourceService } from "@/services/resource";
+import { UtilsService } from "@/services/utils";
+
+const isNetworkError = (error: unknown): error is ResponseError =>
+  typeof error === "object" &&
+  error !== null &&
+  "raw_error" in error &&
+  error.raw_error === ResourceServiceError.NetworkError;
 
 interface CheckModUpdateModalProps extends Omit<ModalProps, "children"> {
   summary: InstanceSummary | undefined;
@@ -40,6 +50,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   ...modalProps
 }) => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const addPrefix =
@@ -51,6 +62,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const [updateList, setUpdateList] = useState<ModUpdateRecord[]>([]);
   const [modsToUpdate, setModsToUpdate] = useState<LocalModInfo[]>([]);
   const [checkingUpdateIndex, setCheckingUpdateIndex] = useState<number>(1);
+  const [checkError, setCheckError] = useState<string>();
 
   const headerBg = useColorModeValue("gray.50", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
@@ -85,6 +97,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     setModsToUpdate([]);
     setSelectedMods([]);
     setCheckingUpdateIndex(1);
+    setCheckError(undefined);
   }, []);
 
   const handleFetchLatestMod = useCallback(
@@ -94,37 +107,36 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       gameVersions: string[],
       downloadSource: OtherResourceSource
     ): Promise<OtherResourceFileInfo | undefined> => {
-      try {
-        const response = await ResourceService.fetchResourceVersionPacks(
-          resourceId,
-          modLoader,
-          gameVersions,
-          downloadSource
+      const response = await ResourceService.fetchResourceVersionPacks(
+        resourceId,
+        modLoader,
+        gameVersions,
+        downloadSource
+      );
+
+      if (isNetworkError(response)) throw response;
+
+      if (response.status === "success") {
+        const versionPack = response.data.find(
+          (pack) => pack.name === summary?.version
         );
 
-        if (response.status === "success") {
-          const versionPack = response.data.find(
-            (pack) => pack.name === summary?.version
-          );
+        if (!versionPack) return undefined;
 
-          if (!versionPack) return undefined;
+        const candidateFiles = versionPack.items.filter(
+          (file) =>
+            file.releaseType === "beta" || file.releaseType === "release"
+        );
 
-          const candidateFiles = versionPack.items.filter(
-            (file) =>
-              file.releaseType === "beta" || file.releaseType === "release"
-          );
+        candidateFiles.sort(
+          (a, b) =>
+            new Date(b.fileDate).getTime() - new Date(a.fileDate).getTime()
+        );
 
-          candidateFiles.sort(
-            (a, b) =>
-              new Date(b.fileDate).getTime() - new Date(a.fileDate).getTime()
-          );
-
-          return candidateFiles[0];
-        } else return undefined;
-      } catch (error) {
-        logger.error("Failed to fetch latest mod:", error);
-        return undefined;
+        return candidateFiles[0];
       }
+
+      return undefined;
     },
     [summary?.version]
   );
@@ -140,6 +152,14 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
         return;
       }
 
+      const networkStatus = await UtilsService.checkNetworkConnection();
+      if (networkStatus.status !== "success" || !networkStatus.data) {
+        const message = t("CheckModUpdateModal.error.network");
+        setCheckError(message);
+        toast({ title: message, status: "error" });
+        return;
+      }
+
       const updatePromises = currentLocalMods.map(async (mod) => {
         try {
           const [cfRemoteModRes, mrRemoteModRes] = await Promise.all([
@@ -152,6 +172,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               mod.filePath
             ),
           ]);
+
+          if (isNetworkError(cfRemoteModRes)) throw cfRemoteModRes;
+          if (isNetworkError(mrRemoteModRes)) throw mrRemoteModRes;
 
           let cfRemoteMod = undefined;
           let mrRemoteMod = undefined;
@@ -230,6 +253,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
           }
           return null;
         } catch (error) {
+          if (isNetworkError(error)) throw error;
           logger.error(`Failed to check update for mod ${mod.name}:`, error);
           return null;
         }
@@ -237,7 +261,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
 
       const results: any[] = [];
 
-      await Promise.allSettled(
+      await Promise.all(
         updatePromises.map(async (p) => {
           const res = await p;
           setCheckingUpdateIndex(results.length + 1);
@@ -253,10 +277,26 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       setUpdateList(validUpdates.map((item) => item.updateRecord));
     } catch (error) {
       logger.error("Failed to check mod updates:", error);
+      const message = isNetworkError(error)
+        ? error.details
+        : t("CheckModUpdateModal.error.network");
+      setCheckError(message);
+      toast({
+        title: t("CheckModUpdateModal.error.network"),
+        description: message,
+        status: "error",
+      });
     } finally {
       setIsCheckingUpdate(false);
     }
-  }, [summary, localMods, handleFetchLatestMod, onCheckUpdateModalClear]);
+  }, [
+    summary,
+    localMods,
+    handleFetchLatestMod,
+    onCheckUpdateModalClear,
+    t,
+    toast,
+  ]);
 
   const summaryId = summary?.id;
 
@@ -345,6 +385,10 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 w="80%"
                 borderRadius="md"
               />
+            </VStack>
+          ) : checkError ? (
+            <VStack mt={8}>
+              <Text color="red.500">{checkError}</Text>
             </VStack>
           ) : updateList.length === 0 ? (
             <VStack mt={8}>
