@@ -202,6 +202,7 @@ pub async fn run() {
         utils::commands::retrieve_truetype_font_list,
         utils::commands::check_service_availability,
         utils::commands::extract_filename,
+        utils::commands::create_window,
         utils::commands::delete_file,
         utils::commands::delete_directory,
         utils::commands::read_file,

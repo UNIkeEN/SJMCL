@@ -1776,9 +1776,6 @@
       "desc": "将整合包文件 {{fileName}} 导入到 SJMCL"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "当前页面由扩展 {{name}} 提供"
-  },
   "ManageSkinModal": {
     "skinManage": "管理皮肤",
     "default": "默认",
@@ -3236,6 +3233,9 @@
     "button": {
       "agree": "同意并继续"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "当前页面由扩展 {{name}} 提供"
   },
   "WorldLevelDataModal": {
     "header": {

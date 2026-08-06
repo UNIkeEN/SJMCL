@@ -1776,9 +1776,6 @@
       "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
-  },
   "ManageSkinModal": {
     "skinManage": "スキン管理",
     "default": "デフォルト",
@@ -3236,6 +3233,9 @@
     "button": {
       "agree": "同意して続ける"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
   },
   "WorldLevelDataModal": {
     "header": {

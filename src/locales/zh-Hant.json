@@ -1776,9 +1776,6 @@
       "desc": "將模組包檔案 {{fileName}} 匯入到 SJMCL"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "此頁面由擴充套件 {{name}} 提供"
-  },
   "ManageSkinModal": {
     "skinManage": "管理外觀",
     "default": "預設",
@@ -3236,6 +3233,9 @@
     "button": {
       "agree": "同意並繼續"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "此頁面由擴充套件 {{name}} 提供"
   },
   "WorldLevelDataModal": {
     "header": {
