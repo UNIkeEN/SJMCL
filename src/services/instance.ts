@@ -49,6 +49,7 @@ export class InstanceService {
    * @param {string} [modpackPath] - Optional path to the modpack archive file.
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
    * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
+   * @param {string} [modpackVersion] - Optional modpack version to use.
    * @returns {Promise<InvokeResponse<null>>}
    */
   @responseHandler("instance")
@@ -62,7 +63,8 @@ export class InstanceService {
     optifine?: OptiFineResourceInfo,
     modpackPath?: string,
     isInstallFabricApi?: boolean,
-    isInstallQfApi?: boolean
+    isInstallQfApi?: boolean,
+    modpackVersion?: string
   ): Promise<InvokeResponse<null>> {
     return await invoke("create_instance", {
       directory,
@@ -75,6 +77,7 @@ export class InstanceService {
       modpackPath,
       isInstallFabricApi,
       isInstallQfApi,
+      modpackVersion,
     });
   }
 

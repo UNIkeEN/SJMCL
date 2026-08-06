@@ -1047,6 +1047,7 @@ pub async fn create_instance(
   modpack_path: Option<String>,
   mut is_install_fabric_api: Option<bool>,
   mut is_install_qf_api: Option<bool>,
+  modpack_version: Option<String>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -1101,6 +1102,7 @@ pub async fn create_instance(
     play_time: 0,
     use_spec_game_config: false,
     spec_game_config: None,
+    modpack_version: modpack_version.clone(),
   };
 
   // Download version info

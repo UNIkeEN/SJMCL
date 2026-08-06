@@ -159,6 +159,8 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         is_install_fabric_api: Option<bool>,
         #[schemars(description = "Whether to install QFAPI/QSL when creating a Quilt instance. Defaults to true.")]
         is_install_qf_api: Option<bool>,
+        #[schemars(description = "Optional modpack version to use.")]
+        modpack_version: Option<String>,
       } => async move {
         if params.name.trim().is_empty()
           || params.directory_name.trim().is_empty()
@@ -204,6 +206,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
           params.modpack_path,
           params.is_install_fabric_api.or(Some(true)),
           params.is_install_qf_api.or(Some(true)),
+          params.modpack_version,
         )
         .await
       }

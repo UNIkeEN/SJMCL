@@ -57,8 +57,17 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     description: [generateInstanceDesc(instance), instance.description]
       .filter(Boolean)
       .join(", "),
-    titleExtra: (instance.starred || isChakraColor(instance.tag)) && (
+    titleExtra: (instance.modpackVersion != null ||
+      instance.starred ||
+      isChakraColor(instance.tag)) && (
       <HStack spacing={1}>
+        {instance.modpackVersion != null && (
+          <Text fontSize="xs-sm" color="gray.500">
+            {instance.modpackVersion.startsWith("v")
+              ? instance.modpackVersion
+              : `v${instance.modpackVersion}`}
+          </Text>
+        )}
         {instance.starred && <Icon as={FaStar} color="yellow.500" />}
         {isChakraColor(instance.tag) && (
           <Icon as={GoDotFill} color={`${instance.tag}.500`} />
