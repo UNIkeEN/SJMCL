@@ -590,6 +590,14 @@
           "title": "Clear Download Cache",
           "description": "Clear all files in the cache directory, which will not affect downloaded resource files.",
           "button": "Clear"
+        },
+        "autoClear": {
+          "title": "Auto Clear Cache",
+          "description": "Automatically delete download cache files older than the retention threshold on startup"
+        },
+        "retention": {
+          "title": "Retention Threshold",
+          "description": "Files newer than the threshold will not be cleared"
         }
       }
     },

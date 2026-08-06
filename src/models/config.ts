@@ -127,6 +127,8 @@ export interface LauncherConfig {
     };
     cache: {
       directory: string;
+      autoClear: boolean;
+      retentionHours: number;
     };
     proxy: {
       enabled: boolean;
@@ -319,6 +321,8 @@ export const defaultConfig: LauncherConfig = {
     },
     cache: {
       directory: "/mock/path/to/cache/",
+      autoClear: true,
+      retentionHours: 24,
     },
     proxy: {
       enabled: false,
