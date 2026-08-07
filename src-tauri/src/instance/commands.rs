@@ -397,6 +397,19 @@ pub async fn copy_resources_to_instances(
           archive
             .extract(&dest_path)
             .map_err(|_| InstanceError::ZipFileProcessFailed)?;
+
+          let inner = fs::read_dir(&dest_path)
+            .map_err(|_| InstanceError::ZipFileProcessFailed)?
+            .flatten()
+            .map(|e| e.path())
+            .collect::<Vec<_>>();
+          if inner.len() == 1 && inner[0].is_dir() {
+            let inner_dir = &inner[0];
+            let final_path =
+              generate_unique_filename(tgt_path, inner_dir.file_name().unwrap_or(file_name));
+            fs::rename(inner_dir, &final_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+            fs::remove_dir_all(&dest_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+          }
         } else {
           let dest_path = generate_unique_filename(tgt_path, file_name);
           fs::copy(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
