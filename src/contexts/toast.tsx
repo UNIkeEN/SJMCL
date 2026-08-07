@@ -5,12 +5,7 @@ import {
   useToast as chakraUseToast,
   useColorModeValue,
 } from "@chakra-ui/react";
-import React, {
-  ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-} from "react";
+import React, { ReactNode, createContext, useContext, useMemo } from "react";
 import { BeatLoader } from "react-spinners";
 
 interface ToastContextProviderProps {
@@ -19,6 +14,7 @@ interface ToastContextProviderProps {
 
 interface ToastContextType {
   (options: UseToastOptions): ToastId;
+  close: (id: ToastId) => void;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -29,8 +25,8 @@ export const ToastContextProvider: React.FC<ToastContextProviderProps> = ({
   const chakraToast = chakraUseToast();
   const toastVariant = useColorModeValue("left-accent", "solid");
 
-  const customToast: ToastContextType = useCallback(
-    (options) => {
+  const customToast = useMemo(() => {
+    const toast = (options: UseToastOptions): ToastId => {
       let id = chakraToast({
         position: "bottom-left",
         duration: options.status === "loading" ? null : 3000,
@@ -49,9 +45,11 @@ export const ToastContextProvider: React.FC<ToastContextProviderProps> = ({
         ...options,
       });
       return id;
-    },
-    [chakraToast, toastVariant]
-  );
+    };
+    return Object.assign(toast, {
+      close: (id: ToastId) => chakraToast.close(id),
+    }) as ToastContextType;
+  }, [chakraToast, toastVariant]);
 
   return (
     <ToastContext.Provider value={customToast}>
