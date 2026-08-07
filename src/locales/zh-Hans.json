@@ -1654,7 +1654,8 @@
       "gamemodeDesc": "，{{gamemode}}",
       "difficultyDesc": "（难度：{{difficulty}}）",
       "viewLevelData": "世界基础数据",
-      "launch": "游玩此世界"
+      "launch": "游玩此世界",
+      "extract": "智能解压"
     },
     "serverList": {
       "title": "服务器",

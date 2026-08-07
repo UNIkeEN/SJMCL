@@ -49,7 +49,10 @@ use crate::instance::helpers::server::{
   GameServerInfo, get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt,
   query_servers_online, save_servers_to_nbt,
 };
-use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
+use crate::instance::helpers::world::{
+  load_level_data_from_nbt, load_world_data_from_zip, load_world_info_from_dir,
+  load_world_info_from_zip,
+};
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
   ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
@@ -509,11 +512,23 @@ pub async fn retrieve_world_list(
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
-  if let Ok(world_paths) = get_subdirectories(worlds_dir) {
+  let zip_pattern = RegexBuilder::new(r"\.zip$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+  let zip_paths = get_files_with_regex(&worlds_dir, &zip_pattern).unwrap_or(vec![]);
+
+  if let Ok(world_paths) = get_subdirectories(&worlds_dir) {
     for path in world_paths {
       if let Ok(info) = load_world_info_from_dir(&path, has_difficulty_support).await {
         world_list.push(info);
       }
+    }
+  }
+
+  for path in zip_paths {
+    if let Some(info) = load_world_info_from_zip(&path, has_difficulty_support) {
+      world_list.push(info);
     }
   }
 
@@ -998,8 +1013,12 @@ pub async fn retrieve_world_details(
       Some(path) => path,
       None => return Err(InstanceError::WorldNotExistError.into()),
     };
-  let level_path = worlds_dir.join(world_name).join("level.dat");
+  let level_path = worlds_dir.join(&world_name).join("level.dat");
   if tokio::fs::metadata(&level_path).await.is_err() {
+    let zip_path = worlds_dir.join(format!("{world_name}.zip"));
+    if let Ok(level_data) = load_world_data_from_zip(&zip_path) {
+      return Ok(level_data);
+    }
     return Err(InstanceError::LevelNotExistError.into());
   }
   if let Ok(level_data) = load_level_data_from_nbt(&level_path).await {

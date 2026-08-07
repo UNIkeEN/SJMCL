@@ -5,6 +5,7 @@ export interface WorldInfo {
   gamemode: string;
   iconSrc: string;
   dirPath: string;
+  isZip: boolean;
 }
 
 // level and player data

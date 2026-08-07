@@ -11,7 +11,7 @@ import { convertFileSrc } from "@tauri-apps/api/core";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCheck, LuEarth, LuX } from "react-icons/lu";
+import { LuArchiveRestore, LuCheck, LuEarth, LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
@@ -247,20 +247,38 @@ const InstanceWorldsPage = () => {
         onWorldLevelDataModallOpen();
       },
     },
-    ...(summary?.supportQuickPlay
+    ...(save.isZip
       ? [
           {
-            label: t("InstanceWorldsPage.worldList.launch"),
-            icon: "launch",
+            label: t("InstanceWorldsPage.worldList.extract"),
+            icon: LuArchiveRestore,
             onClick: () => {
-              openSharedModal("launch", {
-                instanceId: instanceId,
-                quickPlaySingleplayer: save.name,
+              handleImportResources({
+                filterName: t("InstanceDetailsLayout.instanceTabList.worlds"),
+                filterExt: ["zip"],
+                tgtDirType: InstanceSubdirType.Saves,
+                paths: [save.dirPath],
+                multiple: false,
+                decompress: true,
+                onSuccessCallback: () => getWorldListWrapper(true),
               });
             },
           },
         ]
-      : []),
+      : summary?.supportQuickPlay
+        ? [
+            {
+              label: t("InstanceWorldsPage.worldList.launch"),
+              icon: "launch",
+              onClick: () => {
+                openSharedModal("launch", {
+                  instanceId: instanceId,
+                  quickPlaySingleplayer: save.name,
+                });
+              },
+            },
+          ]
+        : []),
   ];
 
   const serverItemMenuOperations = (server: GameServerInfo) => [
@@ -361,10 +379,23 @@ const InstanceWorldsPage = () => {
                 <OptionItem
                   key={world.name}
                   title={world.name}
+                  titleExtra={
+                    world.isZip ? (
+                      <Tag colorScheme="blue" className="tag-xs">
+                        ZIP
+                      </Tag>
+                    ) : undefined
+                  }
                   description={description}
                   prefixElement={
                     <Image
-                      src={convertFileSrc(world.iconSrc)}
+                      src={
+                        world.isZip
+                          ? world.iconSrc
+                            ? base64ImgSrc(world.iconSrc)
+                            : undefined
+                          : convertFileSrc(world.iconSrc)
+                      }
                       fallbackSrc="/images/icons/UnknownWorld.webp"
                       alt={world.name}
                       boxSize="28px"
