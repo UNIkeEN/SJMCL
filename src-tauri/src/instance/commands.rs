@@ -390,7 +390,7 @@ pub async fn copy_resources_to_instances(
             .and_then(|ext| if ext == "zip" { Some(()) } else { None })
             .and_then(|_| Path::new(file_name).file_stem())
             .unwrap_or(file_name);
-          let dest_path = generate_unique_filename(tgt_path, base_name);
+          let dest_path = generate_unique_filename(tgt_path, base_name, false);
 
           let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
           let mut archive =
@@ -429,21 +429,22 @@ pub async fn copy_resources_to_instances(
             let tmp_path = generate_unique_filename(
               tgt_path,
               OsStr::new(&format!(".sjmcl_extract_{decoded_name}")),
+              false,
             );
             fs::rename(inner_dir, &tmp_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
             fs::remove_dir_all(&dest_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
-            let final_path = generate_unique_filename(tgt_path, OsStr::new(&decoded_name));
+            let final_path = generate_unique_filename(tgt_path, OsStr::new(&decoded_name), false);
             fs::rename(&tmp_path, &final_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
           }
         } else {
-          let dest_path = generate_unique_filename(tgt_path, file_name);
+          let dest_path = generate_unique_filename(tgt_path, file_name, true);
           fs::copy(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
         }
       } else if src_path.is_dir() {
         let dir_name = src_path
           .file_name()
           .ok_or(InstanceError::InvalidSourcePath)?;
-        let dest_path = generate_unique_filename(tgt_path, dir_name);
+        let dest_path = generate_unique_filename(tgt_path, dir_name, false);
         copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
       } else {
         return Err(InstanceError::InvalidSourcePath.into());
@@ -503,7 +504,7 @@ pub fn move_resource_to_instance(
     fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
   }
 
-  let dest_path = generate_unique_filename(&tgt_path, file_name);
+  let dest_path = generate_unique_filename(&tgt_path, file_name, true);
   fs::rename(&src_file_path, &dest_path).map_err(|_| InstanceError::FileMoveFailed)?;
   Ok(())
 }
