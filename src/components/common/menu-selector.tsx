@@ -14,6 +14,7 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { type ListRowRenderer, List as VirtualList } from "react-virtualized";
 
 type OptionValue = string;
 type OptionLabel = React.ReactNode | { title: string; desc: string };
@@ -33,6 +34,13 @@ export interface MenuSelectorProps extends Omit<MenuProps, "children"> {
   fontSize?: string;
   buttonProps?: ButtonProps;
   menuListProps?: MenuListProps;
+
+  // for virtualized list
+  virtualized?: boolean;
+  virtualRowHeight?: number;
+  virtualListHeight?: number;
+  virtualListWidth?: number;
+  virtualOverscan?: number;
 }
 
 export const MenuSelector: React.FC<MenuSelectorProps> = ({
@@ -46,6 +54,13 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
   fontSize = "xs",
   buttonProps,
   menuListProps,
+
+  virtualized = false,
+  virtualRowHeight = 34,
+  virtualListHeight = 320,
+  virtualListWidth = 280,
+  virtualOverscan = 10,
+
   ...menuProps
 }) => {
   const { t } = useTranslation();
@@ -96,6 +111,85 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
     return getLabel(value as OptionValue);
   };
 
+  // -------------------------------------------------
+  const normalizedOptions = options.map(buildOptions);
+
+  const renderOption = (
+    opt: ReturnType<typeof buildOptions>,
+    key: React.Key,
+    style?: React.CSSProperties
+  ) => {
+    const { value: optionValue, label, disabled: optionDisabled } = opt;
+
+    return (
+      <MenuItemOption
+        key={key}
+        value={optionValue}
+        fontSize={fontSize}
+        isDisabled={optionDisabled}
+        style={style}
+        display="flex"
+        alignItems="center"
+        whiteSpace="nowrap"
+        overflow="hidden"
+        textOverflow="ellipsis"
+      >
+        {renderLabel(label)}
+      </MenuItemOption>
+    );
+  };
+
+  const selectedIndex =
+    !multiple && typeof value === "string"
+      ? normalizedOptions.findIndex((option) => option.value === value)
+      : -1;
+
+  // When virtualized, MenuItemOption is not a direct child of MenuOptionGroup,
+  // so Chakra's cloneElement-based onClick/isChecked injection (see useMenuOptionGroup)
+  // never reaches it. We manage selection here instead.
+  const rowRenderer: ListRowRenderer = ({ index, key, style }) => {
+    const opt = normalizedOptions[index];
+    const { value: optionValue } = opt;
+    const isChecked = multiple
+      ? Array.isArray(value) && value.includes(optionValue)
+      : optionValue === value;
+    const handleSelect = () => {
+      if (multiple) {
+        const arr = Array.isArray(value) ? value : [];
+        onSelect(
+          arr.includes(optionValue)
+            ? arr.filter((v) => v !== optionValue)
+            : arr.concat(optionValue)
+        );
+      } else {
+        onSelect(optionValue);
+      }
+    };
+    return (
+      <MenuItemOption
+        key={key}
+        value={optionValue}
+        fontSize={fontSize}
+        style={style}
+        isChecked={isChecked}
+        onClick={handleSelect}
+        display="flex"
+        alignItems="center"
+        whiteSpace="nowrap"
+        overflow="hidden"
+        textOverflow="ellipsis"
+      >
+        {renderLabel(opt.label)}
+      </MenuItemOption>
+    );
+  };
+
+  const actualVirtualListHeight = Math.min(
+    virtualListHeight,
+    Math.max(1, normalizedOptions.length) * virtualRowHeight
+  );
+
+  // ----------------------------------------------------------
   return (
     <Menu closeOnSelect={!multiple} {...menuProps}>
       <MenuButton
@@ -125,19 +219,22 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
             }
           }}
         >
-          {options.map((opt, i) => {
-            const { value: v, label, disabled } = buildOptions(opt);
-            return (
-              <MenuItemOption
-                key={i}
-                value={v}
-                fontSize={fontSize}
-                isDisabled={disabled}
-              >
-                {renderLabel(label)}
-              </MenuItemOption>
-            );
-          })}
+          {virtualized ? (
+            <VirtualList
+              width={virtualListWidth}
+              height={actualVirtualListHeight}
+              rowCount={normalizedOptions.length}
+              rowHeight={virtualRowHeight}
+              rowRenderer={rowRenderer}
+              overscanRowCount={virtualOverscan}
+              scrollToIndex={selectedIndex >= 0 ? selectedIndex : undefined}
+              scrollToAlignment="center"
+            />
+          ) : (
+            normalizedOptions.map((option) =>
+              renderOption(option, option.value)
+            )
+          )}
         </MenuOptionGroup>
       </MenuList>
     </Menu>

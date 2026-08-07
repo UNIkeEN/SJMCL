@@ -660,6 +660,7 @@
       "optifine-libraries": "OptiFine 執行庫",
       "launcher-update": "更新啟動器",
       "extension-update": "更新擴充套件 {{param1}} {{param2}}",
+      "extension-update-all": "批次更新擴充套件",
       "mojang-java": "Java {{param}} 執行時"
     }
   },
@@ -861,6 +862,26 @@
           "description": "前往 GitHub 瀏覽社群開發的擴充套件列表",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "更新全部擴充套件",
+      "cancel": "取消更新",
+      "checkFailed": "擴充套件更新檢查失敗",
+      "checking": "正在檢查更新... {{current}}/{{total}}",
+      "completed": "更新完成：已更新 {{updated}} 個，已是最新 {{upToDate}} 個，已跳過 {{skipped}} 個，失敗 {{failed}} 個",
+      "downloading": "正在下載 {{name}}... {{current}}/{{total}}",
+      "installing": "正在安裝 {{name}}... {{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "更新已取消",
+        "checkFailed": "檢查更新失敗：{{details}}",
+        "downloadFailed": "下載失敗：{{details}}",
+        "installFailed": "安裝失敗：{{details}}",
+        "invalidVersion": "可用版本缺失或無效",
+        "notFound": "最新發行中未找到更新包",
+        "sourceInvalid": "更新來源不是有效的 GitHub 儲存庫地址",
+        "sourceUnavailable": "更新來源暫時無法使用：{{details}}",
+        "unknown": "未知錯誤"
       }
     }
   },
@@ -3048,8 +3069,10 @@
             "INVALID_IDENTIFIER": "擴充套件識別碼無效",
             "IDENTIFIER_MISMATCH": "擴充套件識別碼與預期不符",
             "INVALID_NAME": "擴充套件名稱無效",
+            "INVALID_VERSION": "更新套件版本缺失或無效",
             "LAUNCHER_VERSION_TOO_LOW": "啟動器版本過低",
-            "EXTENSION_NOT_FOUND": "找不到要新增的檔案"
+            "EXTENSION_NOT_FOUND": "找不到要新增的檔案",
+            "VERSION_NOT_NEWER": "更新套件版本未高於已安裝版本"
           }
         }
       },

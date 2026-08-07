@@ -660,6 +660,7 @@
       "optifine-libraries": "OptiFine Libraries",
       "launcher-update": "Update Launcher",
       "extension-update": "Update Extension {{param1}} {{param2}}",
+      "extension-update-all": "Update Extensions in Batch",
       "mojang-java": "Java {{param}} Runtime"
     }
   },
@@ -861,6 +862,26 @@
           "description": "Visit GitHub to browse a list of extensions developed by the community.",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "Update All Extensions",
+      "cancel": "Cancel Update",
+      "checkFailed": "Failed to check extension updates",
+      "checking": "Checking for updates... {{current}}/{{total}}",
+      "completed": "Update complete: {{updated}} updated, {{upToDate}} up to date, {{skipped}} skipped, {{failed}} failed",
+      "downloading": "Downloading {{name}}... {{current}}/{{total}}",
+      "installing": "Installing {{name}}... {{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "Update was cancelled",
+        "checkFailed": "Failed to check for updates: {{details}}",
+        "downloadFailed": "Download failed: {{details}}",
+        "installFailed": "Installation failed: {{details}}",
+        "invalidVersion": "The available version is missing or invalid",
+        "notFound": "No update package was found in the latest release",
+        "sourceInvalid": "The update source URL is not a valid GitHub repository",
+        "sourceUnavailable": "The update source is unavailable: {{details}}",
+        "unknown": "Unknown error"
       }
     }
   },
@@ -3048,8 +3069,10 @@
             "INVALID_IDENTIFIER": "Extension identifier is invalid",
             "IDENTIFIER_MISMATCH": "The extension identifier does not match the expectation",
             "INVALID_NAME": "Extension name is invalid",
+            "INVALID_VERSION": "The update package version is missing or invalid",
             "LAUNCHER_VERSION_TOO_LOW": "Launcher version is too low",
-            "EXTENSION_NOT_FOUND": "Target package file not found"
+            "EXTENSION_NOT_FOUND": "Target package file not found",
+            "VERSION_NOT_NEWER": "The update package version is not newer than the installed version"
           }
         }
       },

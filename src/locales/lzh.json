@@ -660,6 +660,7 @@
       "optifine-libraries": "OptiFine 行庫",
       "launcher-update": "迭更啟者",
       "extension-update": "迭更擴充套件 {{param1}} {{param2}}",
+      "extension-update-all": "批次迭更擴充套件",
       "mojang-java": "爪哇 {{param}} 行時"
     }
   },
@@ -861,6 +862,26 @@
           "description": "往群碼之匯覽社群所開發之擴充列表",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "悉迭更擴充套件",
+      "cancel": "罷迭更",
+      "checkFailed": "驗擴充之新版未成",
+      "checking": "正驗新版……{{current}}/{{total}}",
+      "completed": "擴充迭更既畢：迭更 {{updated}}，已新 {{upToDate}}，略之 {{skipped}}，未成 {{failed}}",
+      "downloading": "正引 {{name}}……{{current}}/{{total}}",
+      "installing": "正置 {{name}}……{{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "迭更已罷",
+        "checkFailed": "驗新版未成：{{details}}",
+        "downloadFailed": "引檔未成：{{details}}",
+        "installFailed": "置之未成：{{details}}",
+        "invalidVersion": "可用版闕或無效",
+        "notFound": "最新之釋未得迭更之包",
+        "sourceInvalid": "迭更之源非 GitHub 庫之址",
+        "sourceUnavailable": "迭更之源不可用：{{details}}",
+        "unknown": "未知之誤"
       }
     }
   },
@@ -3048,8 +3069,10 @@
             "INVALID_IDENTIFIER": "擴充套件識別符號無效",
             "IDENTIFIER_MISMATCH": "擴充套件識別符號與所期不符",
             "INVALID_NAME": "擴充套件逾矩之名",
+            "INVALID_VERSION": "迭更包之版本闕或無效",
             "LAUNCHER_VERSION_TOO_LOW": "啟者版過低",
-            "EXTENSION_NOT_FOUND": "未找到待增案"
+            "EXTENSION_NOT_FOUND": "未找到待增案",
+            "VERSION_NOT_NEWER": "迭更包之版本不新於已裝之版"
           }
         }
       },
