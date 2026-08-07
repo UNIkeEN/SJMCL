@@ -5,6 +5,7 @@ use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::partial::{PartialError, PartialUpdate};
 use sjmcl_types::storage::{Storage, load_json_async, save_json_async};
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -408,10 +409,31 @@ pub async fn copy_resources_to_instances(
             .collect::<Vec<_>>();
           if inner.len() == 1 && inner[0].is_dir() {
             let inner_dir = &inner[0];
-            let final_path =
-              generate_unique_filename(tgt_path, inner_dir.file_name().unwrap_or(file_name));
-            fs::rename(inner_dir, &final_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+            let mut decoded_name = inner_dir
+              .file_name()
+              .unwrap_or(file_name)
+              .to_string_lossy()
+              .into_owned();
+            for i in 0..archive.len() {
+              let Ok(entry) = archive.by_index(i) else {
+                continue;
+              };
+              let Some(first) = entry.name_raw().split(|&b| b == b'/').next() else {
+                continue;
+              };
+              if !first.is_empty() {
+                decoded_name = decode_zip_name(first);
+                break;
+              }
+            }
+            let tmp_path = generate_unique_filename(
+              tgt_path,
+              OsStr::new(&format!(".sjmcl_extract_{decoded_name}")),
+            );
+            fs::rename(inner_dir, &tmp_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
             fs::remove_dir_all(&dest_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+            let final_path = generate_unique_filename(tgt_path, OsStr::new(&decoded_name));
+            fs::rename(&tmp_path, &final_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
           }
         } else {
           let dest_path = generate_unique_filename(tgt_path, file_name);
@@ -1000,6 +1022,13 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
   }
 
   Ok(())
+}
+
+fn decode_zip_name(raw: &[u8]) -> String {
+  match std::str::from_utf8(raw) {
+    Ok(s) => s.to_string(),
+    Err(_) => encoding_rs::GBK.decode(raw).0.into_owned(),
+  }
 }
 
 #[tauri::command]
