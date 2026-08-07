@@ -1776,9 +1776,6 @@
       "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "Cette page est fournie par l'extension {{name}}"
-  },
   "ManageSkinModal": {
     "skinManage": "Gérer les skins",
     "default": "Par défaut",
@@ -3236,6 +3233,9 @@
     "button": {
       "agree": "Accepter"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "Cette page est fournie par l'extension {{name}}"
   },
   "WorldLevelDataModal": {
     "header": {

@@ -11,7 +11,7 @@ import type {
   ShaderPackInfo,
 } from "@/models/instance/misc";
 import type { WorldInfo } from "@/models/instance/world";
-import type { JavaInfo } from "@/models/system-info";
+import type { JavaInfo } from "@/models/misc";
 import type { ExtensionContributionBase } from "./contribution";
 
 interface ExtensionInstanceSlotContextBase {

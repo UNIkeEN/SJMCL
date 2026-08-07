@@ -31,7 +31,7 @@
         "hiddenTitle": true,
         "dragDropEnabled": true,
         "trafficLightPosition": {
-          "x": 12,
+          "x": 10,
           "y": 12
         }
       },
@@ -45,7 +45,14 @@
         "minWidth": 640,
         "minHeight": 440,
         "center": true,
-        "dragDropEnabled": false
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "dragDropEnabled": false,
+        "trafficLightPosition": {
+          "x": 10,
+          "y": 12
+        }
       },
       {
         "label": "game_log",
@@ -57,7 +64,14 @@
         "minWidth": 640,
         "minHeight": 440,
         "center": true,
-        "dragDropEnabled": false
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "dragDropEnabled": false,
+        "trafficLightPosition": {
+          "x": 10,
+          "y": 12
+        }
       }
     ]
   }

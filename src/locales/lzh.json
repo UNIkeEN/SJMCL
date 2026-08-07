@@ -1776,9 +1776,6 @@
       "desc": "將改囊集案 {{fileName}} 導入 SJMCL"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "今頁由擴充套件 {{name}} 提供"
-  },
   "ManageSkinModal": {
     "skinManage": "司外觀",
     "default": "本",
@@ -3236,6 +3233,9 @@
     "button": {
       "agree": "許並續"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "今頁由擴充套件 {{name}} 提供"
   },
   "WorldLevelDataModal": {
     "header": {

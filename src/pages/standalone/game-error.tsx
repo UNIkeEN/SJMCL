@@ -25,7 +25,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useExtensionHost } from "@/contexts/extension/host";
 import { ExtensionUISlotKey } from "@/enums/extension";
 import { InstanceSummary } from "@/models/instance/misc";
-import { JavaInfo } from "@/models/system-info";
+import { JavaInfo } from "@/models/misc";
 import { LaunchService } from "@/services/launch";
 import { ISOToDatetime } from "@/utils/datetime";
 import { parseModernWindowsVersion } from "@/utils/env";
@@ -81,15 +81,6 @@ const GameErrorPage: React.FC = () => {
     infoList.set("arch", config.basicInfo.arch);
     setBasicInfoParams(infoList);
   }, [config.basicInfo, platformName]);
-
-  // set window title with i18n
-  useEffect(() => {
-    (async () => {
-      await getCurrentWebviewWindow().setTitle(
-        t("Tauri.windowTitle.gameError")
-      );
-    })();
-  }, [t]);
 
   // retrieve states and logs (for crash analysis)
   useEffect(() => {
@@ -166,7 +157,7 @@ const GameErrorPage: React.FC = () => {
   };
 
   return (
-    <Flex direction="column" h="100vh">
+    <Flex direction="column" h="100%">
       <Alert status="error">
         <AlertIcon />
         <AlertTitle fontSize="md">{t("GameErrorPage.title")}</AlertTitle>
