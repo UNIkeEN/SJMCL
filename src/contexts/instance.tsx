@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType } from "@/enums/instance";
@@ -89,6 +90,7 @@ export const InstanceContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const toast = useToast();
+  const { t } = useTranslation();
   const { getInstanceList } = useGlobalData();
   const { setInstanceList } = useGlobalDataDispatch();
 
@@ -248,12 +250,22 @@ export const InstanceContextProvider: React.FC<{
               ? [selectedPath]
               : [];
           if (selectedPaths.length === 0) return;
+          const toastId = decompress
+            ? toast({
+                title: t("General.extracting"),
+                status: "loading",
+                duration: null,
+              })
+            : undefined;
           InstanceService.copyResourcesToInstances(
             selectedPaths,
             [instanceId],
             tgtDirType,
             decompress
           ).then((response) => {
+            if (toastId !== undefined) {
+              toast.close(toastId);
+            }
             if (response.status === "success") {
               toast({
                 title: response.message,
@@ -271,7 +283,7 @@ export const InstanceContextProvider: React.FC<{
         });
       }
     },
-    [instanceId, toast]
+    [instanceId, toast, t]
   );
 
   const handleRetrieveWorldList = useCallback(async () => {

@@ -199,7 +199,7 @@ pub fn add_custom_background(app: AppHandle, source_src: String) -> SJMCLResult<
   }
 
   let file_name = source_path.file_name().unwrap();
-  let dest_path = generate_unique_filename(&custom_bg_dir, file_name);
+  let dest_path = generate_unique_filename(&custom_bg_dir, file_name, true);
   fs::copy(source_path, &dest_path)?;
 
   Ok(dest_path.file_name().unwrap().to_string_lossy().to_string())

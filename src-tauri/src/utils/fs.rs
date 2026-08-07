@@ -48,10 +48,18 @@ pub fn copy_whole_dir(src: &Path, dst: &Path) -> std::io::Result<()> {
 /// # Examples
 ///
 /// ```rust
-/// let dest_path = generate_unique_filename(&tgt_path, base_name);
+/// let dest_path = generate_unique_filename(&tgt_path, base_name, true);
 /// ```
-pub fn generate_unique_filename(base_path: &Path, filename: &OsStr) -> PathBuf {
-  let (name, extension) = split_filename(filename);
+pub fn generate_unique_filename(
+  base_path: &Path,
+  filename: &OsStr,
+  keep_extension: bool,
+) -> PathBuf {
+  let (name, extension) = if keep_extension {
+    split_filename(filename)
+  } else {
+    (filename.to_string_lossy().into_owned(), String::new())
+  };
   let mut dest_path = base_path.join(filename);
   let mut counter = 1;
 
