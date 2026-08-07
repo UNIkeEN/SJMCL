@@ -24,9 +24,9 @@ pub struct LevelData {
 
   pub border_warning_blocks: Option<f64>,
   pub border_warning_time: Option<f64>,
-  pub clear_weather_time: i64,
+  pub clear_weather_time: Option<i64>,
   pub data_version: i64,
-  pub daytime: i64,
+  pub daytime: Option<i64>,
   pub difficulty: Option<u8>,
   #[serde(rename = "difficulty_settings")]
   pub difficulty_settings: Option<DifficultySettings>,
@@ -47,9 +47,9 @@ pub struct LevelData {
   pub map_features: Option<bool>,
   pub player: Option<PlayerData>,
   #[serde(rename = "rainTime")]
-  pub rain_time: i64,
+  pub rain_time: Option<i64>,
   #[serde(rename = "raining")]
-  pub raining: bool,
+  pub raining: Option<bool>,
   #[serde(rename = "RandomSeed")]
   pub seed: Option<i64>,
   #[serde(rename = "singleplayer_uuid")]
@@ -58,20 +58,20 @@ pub struct LevelData {
   pub spawn: Option<SpawnData>,
   pub world_border: Option<WorldBorderData>,
   pub weather: Option<WeatherData>,
-  pub spawn_x: i64,
-  pub spawn_y: i64,
-  pub spawn_z: i64,
+  pub spawn_x: Option<i64>,
+  pub spawn_y: Option<i64>,
+  pub spawn_z: Option<i64>,
   #[serde(rename = "thundering")]
-  pub thundering: u8,
+  pub thundering: Option<u8>,
   #[serde(rename = "thunderTime")]
-  pub thunder_time: i64,
+  pub thunder_time: Option<i64>,
   pub time: i64,
   #[serde(rename = "version")]
   pub version: i64,
   #[serde(rename = "Version")]
   pub version_struct: Version,
-  pub wandering_trader_spawn_chance: i64,
-  pub wandering_trader_spawn_delay: i64,
+  pub wandering_trader_spawn_chance: Option<i64>,
+  pub wandering_trader_spawn_delay: Option<i64>,
   pub was_modded: u8,
 }
 

@@ -19,9 +19,9 @@ export interface LevelData {
   borderSizeLerpTime?: number;
   borderWarningBlocks?: number;
   borderWarningTime?: number;
-  clearWeatherTime: number;
+  clearWeatherTime?: number;
   dataVersion: number;
-  daytime: number;
+  daytime?: number;
   difficulty?: number;
   difficultySettings?: DifficultySettings;
   difficultyLocked?: boolean;
@@ -33,23 +33,23 @@ export interface LevelData {
   levelName: string;
   mapFeatures?: boolean;
   player?: PlayerData;
-  rainTime: number;
-  raining: boolean;
+  rainTime?: number;
+  raining?: boolean;
   seed?: number;
   singleplayerUuid?: number[];
   spawn?: SpawnData;
   worldBorder?: WorldBorderData;
   weather?: WeatherData;
-  spawnX: number;
-  spawnY: number;
-  spawnZ: number;
-  thundering: number;
-  thunderTime: number;
+  spawnX?: number;
+  spawnY?: number;
+  spawnZ?: number;
+  thundering?: number;
+  thunderTime?: number;
   time: number;
   version: number;
   versionStruct: Version;
-  wanderingTraderSpawnChance: number;
-  wanderingTraderSpawnDelay: number;
+  wanderingTraderSpawnChance?: number;
+  wanderingTraderSpawnDelay?: number;
   wasModded: number;
 }
 
