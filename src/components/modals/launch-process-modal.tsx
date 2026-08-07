@@ -33,13 +33,16 @@ import SelectPlayerModal from "@/components/modals/select-player-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
+import { parseTaskGroup } from "@/contexts/task";
 import { useToast } from "@/contexts/toast";
 import { LaunchServiceError } from "@/enums/service-error";
 import { Player } from "@/models/account";
 import { InstanceSummary } from "@/models/instance/misc";
 import { ResponseError } from "@/models/response";
+import { GTaskEventStatusEnums } from "@/models/task";
 import { AccountService } from "@/services/account";
 import { LaunchService } from "@/services/launch";
+import { TaskService } from "@/services/task";
 
 // This modal will use shared-modal-context
 interface LaunchProcessModalProps extends Omit<ModalProps, "children"> {
@@ -73,6 +76,8 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   const [activeStep, setActiveStep] = useState<number>(-1);
 
   const previousStep = useRef<number>(-1);
+  const awaitingPatchRef = useRef(false);
+  const [revalidateNonce, setRevalidateNonce] = useState(0);
   const candidatePlayers = getPlayerList();
   const candidateInstances = getInstanceList();
   const shouldPickInstance = instanceId?.toLowerCase() === "tbd";
@@ -182,15 +187,17 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
         isOK: (data: any) => true,
         onResCallback: (data: any) => {}, // TODO
         onErrCallback: (error: ResponseError) => {
+          if (error.raw_error === LaunchServiceError.GameFilesIncomplete) {
+            awaitingPatchRef.current = true;
+            setErrorPaused(false);
+            setErrorDesc("");
+            return;
+          }
           toast({
             title: error.message,
             description: error.details,
             status: "error",
           });
-          if (error.raw_error === LaunchServiceError.GameFilesIncomplete) {
-            handleCloseModalWithCancel();
-            router.push("/downloads");
-          }
         },
       },
       {
@@ -243,7 +250,6 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
       closeSharedModal,
       effectiveInstance,
       effectiveSelectedPlayer,
-      handleCloseModalWithCancel,
       openGenericConfirmDialog,
       openSharedModal,
       quickPlaySingleplayer,
@@ -334,9 +340,35 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     requestedPlayer,
     selectedPlayer,
     update,
+    revalidateNonce,
     t,
     toast,
   ]);
+
+  useEffect(() => {
+    const unlisten = TaskService.onTaskGroupUpdate((payload) => {
+      if (!awaitingPatchRef.current) return;
+      const { name, params } = parseTaskGroup(payload.taskGroup);
+      if (name !== "patch-files") return;
+      if (payload.event === GTaskEventStatusEnums.Completed) {
+        awaitingPatchRef.current = false;
+        previousStep.current = 0;
+        setRevalidateNonce((n) => n + 1);
+      } else if (
+        payload.event === GTaskEventStatusEnums.Failed ||
+        payload.event === GTaskEventStatusEnums.Stopped
+      ) {
+        awaitingPatchRef.current = false;
+        setErrorPaused(true);
+        setErrorDesc(
+          t("Services.task.onTaskGroupUpdate.status.Failed", {
+            param: t("DownloadTasksPage.task.patch-files", params),
+          })
+        );
+      }
+    });
+    return unlisten;
+  }, [t]);
 
   return (
     <Modal
