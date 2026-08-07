@@ -226,6 +226,7 @@ pub async fn run() {
         let os = launcher_config.basic_info.platform.clone();
         let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
         let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
+        let auto_clear_download_cache = launcher_config.download.cache.auto_clear;
         let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
         app.manage(Mutex::new(launcher_config));
 
@@ -315,6 +316,14 @@ pub async fn run() {
           let app_handle = app.handle().clone();
           tauri::async_runtime::spawn(async move {
             let _ = utils::logging::purge_old_launcher_logs(app_handle, 30).await;
+          });
+        }
+
+        // Auto clear stale download cache entries if enabled
+        if auto_clear_download_cache {
+          let app_handle = app.handle().clone();
+          tauri::async_runtime::spawn(async move {
+            let _ = launcher_config::helpers::misc::auto_clear_download_cache(&app_handle).await;
           });
         }
 

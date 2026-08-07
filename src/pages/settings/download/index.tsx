@@ -63,6 +63,12 @@ const DownloadSettingsPage = () => {
   const [speedLimitValue, setSpeedLimitValue] = useState<number>(
     downloadConfigs.transmission.speedLimitValue
   );
+  const [retentionHours, setRetentionHours] = useState<number>(
+    downloadConfigs.cache.retentionHours
+  );
+  const [sliderRetentionHours, setSliderRetentionHours] = useState<number>(
+    downloadConfigs.cache.retentionHours
+  );
   const [isClearingDownloadCache, setIsClearingDownloadCache] =
     useState<boolean>(false);
 
@@ -354,6 +360,79 @@ const DownloadSettingsPage = () => {
             </Button>
           ),
         },
+        {
+          title: t("DownloadSettingPage.cache.settings.autoClear.title"),
+          description: t(
+            "DownloadSettingPage.cache.settings.autoClear.description"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={downloadConfigs.cache.autoClear}
+              onChange={(event) => {
+                update("download.cache.autoClear", event.target.checked);
+              }}
+            />
+          ),
+        },
+        ...(downloadConfigs.cache.autoClear
+          ? [
+              {
+                title: t("DownloadSettingPage.cache.settings.retention.title"),
+                description: t(
+                  "DownloadSettingPage.cache.settings.retention.description"
+                ),
+                children: (
+                  <HStack spacing={4}>
+                    <Slider
+                      min={1}
+                      max={168}
+                      step={1}
+                      w={32}
+                      colorScheme={primaryColor}
+                      value={sliderRetentionHours}
+                      onChange={(value) => {
+                        setSliderRetentionHours(value);
+                        setRetentionHours(value);
+                      }}
+                      onBlur={() => {
+                        update("download.cache.retentionHours", retentionHours);
+                      }}
+                    >
+                      <SliderTrack>
+                        <SliderFilledTrack />
+                      </SliderTrack>
+                      <SliderThumb />
+                    </Slider>
+                    <NumberInput
+                      min={1}
+                      max={168}
+                      size="xs"
+                      maxW={16}
+                      focusBorderColor={`${primaryColor}.500`}
+                      value={retentionHours}
+                      onChange={(value) => {
+                        if (!/^\d*$/.test(value)) return;
+                        setRetentionHours(Number(value));
+                      }}
+                      onBlur={() => {
+                        setSliderRetentionHours(retentionHours);
+                        update(
+                          "download.cache.retentionHours",
+                          Math.max(1, Math.min(retentionHours, 168))
+                        );
+                      }}
+                    >
+                      <NumberInputField />
+                    </NumberInput>
+                    <Text fontSize="xs" className="secondary-text">
+                      h
+                    </Text>
+                  </HStack>
+                ),
+              },
+            ]
+          : []),
       ],
     },
     {
