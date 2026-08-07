@@ -49,7 +49,7 @@ use crate::instance::helpers::server::{
   GameServerInfo, get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt,
   query_servers_online, save_servers_to_nbt,
 };
-use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
+use crate::instance::helpers::world::{load_world_data_from_dir, load_world_info_from_dir};
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
   ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
@@ -985,11 +985,8 @@ pub async fn retrieve_world_details(
       Some(path) => path,
       None => return Err(InstanceError::WorldNotExistError.into()),
     };
-  let level_path = worlds_dir.join(world_name).join("level.dat");
-  if tokio::fs::metadata(&level_path).await.is_err() {
-    return Err(InstanceError::LevelNotExistError.into());
-  }
-  if let Ok(level_data) = load_level_data_from_nbt(&level_path).await {
+  let world_dir = worlds_dir.join(world_name);
+  if let Ok(level_data) = load_world_data_from_dir(&world_dir).await {
     Ok(level_data)
   } else {
     Err(InstanceError::LevelParseError.into())

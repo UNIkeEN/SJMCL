@@ -52,17 +52,19 @@ export const buildStructTreeNodes = (
     return [];
   }
 
-  return Object.entries(data).map(([key, value]) => {
-    const id = `${parentId}.${key}`;
-    return {
-      id,
-      data: { key, value },
-      children:
-        typeof value === "object" && value !== null
-          ? buildStructTreeNodes(value, id)
-          : [],
-    };
-  });
+  return Object.entries(data)
+    .filter(([, value]) => value !== null)
+    .map(([key, value]) => {
+      const id = `${parentId}.${key}`;
+      return {
+        id,
+        data: { key, value },
+        children:
+          typeof value === "object" && value !== null
+            ? buildStructTreeNodes(value, id)
+            : [],
+      };
+    });
 };
 
 const TreeView = <T,>({
