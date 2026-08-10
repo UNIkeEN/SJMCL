@@ -1,3 +1,4 @@
+import { useToast as useChakraToast } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
@@ -90,6 +91,7 @@ export const InstanceContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const toast = useToast();
+  const { close: closeToast } = useChakraToast();
   const { t } = useTranslation();
   const { getInstanceList } = useGlobalData();
   const { setInstanceList } = useGlobalDataDispatch();
@@ -264,7 +266,7 @@ export const InstanceContextProvider: React.FC<{
             decompress
           ).then((response) => {
             if (toastId !== undefined) {
-              toast.close(toastId);
+              closeToast(toastId);
             }
             if (response.status === "success") {
               toast({
@@ -283,7 +285,7 @@ export const InstanceContextProvider: React.FC<{
         });
       }
     },
-    [instanceId, toast, t]
+    [instanceId, toast, t, closeToast]
   );
 
   const handleRetrieveWorldList = useCallback(async () => {

@@ -14,7 +14,6 @@ interface ToastContextProviderProps {
 
 interface ToastContextType {
   (options: UseToastOptions): ToastId;
-  close: (id: ToastId) => void;
 }
 
 const ToastContext = createContext<ToastContextType | null>(null);
@@ -46,9 +45,7 @@ export const ToastContextProvider: React.FC<ToastContextProviderProps> = ({
       });
       return id;
     };
-    return Object.assign(toast, {
-      close: (id: ToastId) => chakraToast.close(id),
-    }) as ToastContextType;
+    return toast;
   }, [chakraToast, toastVariant]);
 
   return (
