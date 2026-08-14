@@ -123,6 +123,7 @@ static BLACKLIST: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     "log4j2.xml",
     "hmclversion.cfg",
     // SJMCL
+    ".sjmcl",
     "install_profile.json",
     "sjmclcfg.json",
     // Curse
