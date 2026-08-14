@@ -814,6 +814,35 @@
       }
     }
   },
+  "ExportModListModal": {
+    "header": {
+      "title": "匯出模組列表"
+    },
+    "format": "格式",
+    "toast": {
+      "success": "匯出模組列表成功",
+      "failed": "匯出模組列表失敗"
+    },
+    "field": {
+      "field": "欄位",
+      "mcmodId": "MC 百科 ID",
+      "modloaderType": "模組載入器類型",
+      "translatedName": "翻譯後的名稱",
+      "name": "名稱",
+      "description": "簡介",
+      "translatedDescription": "翻譯後的簡介",
+      "mcmodWebsite": "MC 百科地址",
+      "modrinthWebsite": "Modrinth 地址",
+      "curseforgeWebsite": "CurseForge 地址",
+      "version": "版本",
+      "fileName": "檔名",
+      "enabled": "啟用狀態"
+    },
+    "button": {
+      "cancel": "取消",
+      "export": "匯出"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "擴充套件內容繪製失敗。"
   },
