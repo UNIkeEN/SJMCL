@@ -28,6 +28,7 @@ import { OtherResourceSource } from "@/enums/resource";
 import { save } from "@tauri-apps/plugin-dialog";
 import { UtilsService } from "@/services/utils";
 import { Parser } from "json2csv";
+import { useToast } from "@/contexts/toast";
 
 
 interface ExportModListModalProps extends Omit<ModalProps, "children"> {
@@ -70,6 +71,7 @@ const ExportModListModal: React.FC<ExportModListModalProps> = ({
   const [selectedFormat, setSelectedFormat] = useState<string>(SupportedFormat.CSV.toString());
   const [selectedFields, setSelectedFields] = useState<(string | number)[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const toast = useToast();
 
   const formatKeys = Object.keys(SupportedFormat).filter(key => isNaN(Number(key)));
   const fieldKeys = Object.keys(new ExportedItem(
@@ -190,9 +192,18 @@ const ExportModListModal: React.FC<ExportModListModalProps> = ({
           content = new Parser().parse(filteredData);
         }
         await UtilsService.writeFile(filePath, content, "string");
+
+        toast({
+          title: t("ExportModListModal.toast.success"),
+          status: "success",
+        });
       }
     } catch (error) {
       await logger.error(`Failed to handle export:`, error);
+      toast({
+        title: t("ExportModListModal.toast.failed"),
+        status: "error",
+      });
       return null;
     } finally {
       setIsLoading(false);

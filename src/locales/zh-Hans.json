@@ -819,6 +819,10 @@
       "title": "导出模组列表"
     },
     "format": "格式",
+    "toast": {
+      "success": "导出模组列表成功",
+      "failed": "导出模组列表失败"
+    },
     "field": {
       "field": "字段",
       "mcmodId": "MC 百科 ID",
