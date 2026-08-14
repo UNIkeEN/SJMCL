@@ -399,6 +399,17 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
   let mut patch_refs = patches.iter().skip(1).collect::<Vec<_>>();
   patch_refs.sort_by_key(|patch| patch.priority.unwrap_or(i64::MIN));
 
+  // Non-OptiFine `minecraftArguments` replace the inherited template; OptiFine arguments are incremental (ref: #1897).
+  if let Some(minecraft_arguments) = patch_refs
+    .iter()
+    .rev()
+    .filter(|patch| patch.id != "optifine")
+    .filter_map(|patch| patch.minecraft_arguments.as_ref())
+    .find(|arguments| !arguments.is_empty())
+  {
+    client_info.minecraft_arguments = Some(minecraft_arguments.clone());
+  }
+
   for patch in patch_refs {
     if let Some(main_class) = &patch.main_class {
       client_info.main_class = Some(main_class.clone());
@@ -432,6 +443,11 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
       if minecraft_arguments.is_empty() {
         continue;
       }
+
+      if patch.id != "optifine" {
+        continue;
+      }
+
       match &mut client_info.minecraft_arguments {
         Some(base_arguments) if !base_arguments.is_empty() => {
           if !base_arguments.ends_with(' ') {
