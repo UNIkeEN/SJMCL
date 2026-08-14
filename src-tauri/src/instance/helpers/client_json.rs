@@ -399,7 +399,7 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
   let mut patch_refs = patches.iter().skip(1).collect::<Vec<_>>();
   patch_refs.sort_by_key(|patch| patch.priority.unwrap_or(i64::MIN));
 
-  // Non-OptiFine `minecraftArguments` replace the inherited template; OptiFine arguments are incremental.
+  // Non-OptiFine `minecraftArguments` replace the inherited template; OptiFine arguments are incremental (ref: #1897).
   if let Some(minecraft_arguments) = patch_refs
     .iter()
     .rev()
