@@ -1864,6 +1864,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "加载更多（+{{left}}）",
       "showAll": "显示全部（+{{left}}）"
     }
   },

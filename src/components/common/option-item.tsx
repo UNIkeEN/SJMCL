@@ -40,6 +40,7 @@ export interface OptionItemGroupProps extends SectionProps {
   withDivider?: boolean;
   maxFirstVisibleItems?: number;
   enableShowAll?: boolean;
+  showAllStep?: number;
 }
 
 export const OptionItem: React.FC<OptionItemProps> = ({
@@ -186,12 +187,15 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   withDivider = true,
   maxFirstVisibleItems,
   enableShowAll = true,
+  showAllStep,
   ...props
 }) => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const [showAll, setShowAll] = useState(false);
+
+  const limit = maxFirstVisibleItems ?? items.length;
+  const [visibleCount, setVisibleCount] = useState(limit);
 
   function isOptionItemProps(item: any): item is OptionItemProps {
     return (
@@ -200,40 +204,48 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
     );
   }
 
-  const hasShowAllBtn = !(
-    !maxFirstVisibleItems ||
-    showAll ||
-    items.length <= maxFirstVisibleItems
-  );
+  const isIncremental = !!showAllStep && showAllStep > 0;
 
-  const visibleItems = hasShowAllBtn
-    ? [...items.slice(0, maxFirstVisibleItems)]
-    : items;
+  const hasShowAllBtn = !!maxFirstVisibleItems && items.length > limit;
+  const effectiveVisibleCount = hasShowAllBtn
+    ? Math.min(visibleCount, items.length)
+    : items.length;
+  const remainingCount = items.length - effectiveVisibleCount;
+
+  const visibleItems = items.slice(0, effectiveVisibleCount);
+
+  const handleShowAll = () => {
+    if (isIncremental) {
+      setVisibleCount((count) => Math.min(count + showAllStep, items.length));
+    } else {
+      setVisibleCount(items.length);
+    }
+  };
 
   const renderItems = () => (
     <>
-      {[...visibleItems].map((item, index) => (
+      {visibleItems.map((item, index) => (
         <React.Fragment key={index}>
           {isOptionItemProps(item) ? <OptionItem {...item} /> : item}
           {index !== visibleItems.length - 1 &&
             (withDivider ? <Divider my={1.5} /> : <Box h={1.5} />)}
         </React.Fragment>
       ))}
-      {hasShowAllBtn && (
+      {hasShowAllBtn && remainingCount > 0 && (
         <Box>
           <Button
             key="show-all"
             size="xs"
             colorScheme={primaryColor}
             variant="ghost"
-            onClick={() => setShowAll(!showAll)}
+            onClick={handleShowAll}
             mt={1.5}
             ml={-1.5}
             disabled={!enableShowAll}
           >
-            {t("OptionItemGroup.button.showAll", {
-              left: items.length - maxFirstVisibleItems,
-            })}
+            {isIncremental
+              ? t("OptionItemGroup.button.loadMore", { left: remainingCount })
+              : t("OptionItemGroup.button.showAll", { left: remainingCount })}
           </Button>
         </Box>
       )}
