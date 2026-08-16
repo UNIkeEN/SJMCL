@@ -316,7 +316,7 @@ pub async fn launch_game(
   } = generate_launch_command(&app, quick_play_singleplayer, quick_play_multiplayer).await?;
 
   if instance.mod_loader.loader_type == Cleanroom {
-    class_paths.retain(|it| !it.contains("2.9.4-nightly-20150209"))
+    class_paths.retain(|it| !it.contains("2.9.4-nightly-20150209"));
   }
 
   let wrapper = game_config
