@@ -12,6 +12,7 @@ use zip::ZipArchive;
 
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
+use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
 use crate::instance::helpers::loader::forge::download_forge_libraries;
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::helpers::loader::optifine::download_optifine_libraries;
@@ -176,6 +177,10 @@ async fn refresh_instance(
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
               download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
             }
+            ModLoaderType::Cleanroom => {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+            }
             ModLoaderType::NeoForge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
               download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
@@ -193,6 +198,10 @@ async fn refresh_instance(
           ModLoaderType::Forge => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
             download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
+          }
+          ModLoaderType::Cleanroom => {
+            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+            download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await
           }
           ModLoaderType::NeoForge => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;

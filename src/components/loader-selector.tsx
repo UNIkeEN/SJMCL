@@ -33,6 +33,7 @@ import { ISOToDatetime } from "@/utils/datetime";
 
 export const modLoaderTypes: ModLoaderType[] = [
   ModLoaderType.Forge,
+  ModLoaderType.Cleanroom,
   ModLoaderType.Fabric,
   ModLoaderType.NeoForge,
   ModLoaderType.Quilt,
@@ -42,6 +43,7 @@ export const modLoaderTypesToIcon: Record<string, string> = {
   Unknown: "",
   Fabric: "Fabric.png",
   Forge: "Forge.png",
+  Cleanroom: "Cleanroom.png",
   NeoForge: "NeoForge.png",
   Quilt: "Quilt.png",
 };

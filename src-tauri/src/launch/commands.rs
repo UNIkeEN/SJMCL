@@ -20,6 +20,7 @@ use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
+use crate::instance::models::misc::ModLoaderType::Cleanroom;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
 use crate::launch::helpers::command_generator::{
   LaunchCommand, export_full_launch_command, generate_launch_command,
@@ -310,9 +311,13 @@ pub async fn launch_game(
 
   // generate launch command
   let LaunchCommand {
-    class_paths,
+    mut class_paths,
     args: cmd_args,
   } = generate_launch_command(&app, quick_play_singleplayer, quick_play_multiplayer).await?;
+
+  if instance.mod_loader.loader_type == Cleanroom {
+    class_paths.retain(|it| !it.contains("2.9.4-nightly-20150209"))
+  }
 
   let wrapper = game_config
     .advanced

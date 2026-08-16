@@ -11,6 +11,7 @@ use crate::resource::helpers::curseforge::{
   fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge,
   fetch_resource_list_by_name_curseforge, fetch_resource_version_packs_curseforge,
 };
+use crate::resource::helpers::loader_meta::cleanroom::get_cleanroom_meta_by_game_version;
 use crate::resource::helpers::loader_meta::fabric::get_fabric_meta_by_game_version;
 use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
@@ -68,6 +69,9 @@ pub async fn fetch_mod_loader_version_list(
   match mod_loader_type {
     ModLoaderType::Forge | ModLoaderType::LegacyForge => {
       Ok(get_forge_meta_by_game_version(&app, &priority_list, &game_version).await?)
+    }
+    ModLoaderType::Cleanroom => {
+      Ok(get_cleanroom_meta_by_game_version(&app, &game_version).await?)
     }
     ModLoaderType::Fabric => {
       Ok(get_fabric_meta_by_game_version(&app, &priority_list, &game_version).await?)

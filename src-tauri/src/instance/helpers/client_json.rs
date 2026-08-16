@@ -380,7 +380,7 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
   };
   let has_forge_patch = patches
     .iter()
-    .any(|patch| matches!(patch.id.as_str(), "forge" | "legacyforge"));
+    .any(|patch| matches!(patch.id.as_str(), "cleanroom" | "forge" | "legacyforge"));
 
   client_info.libraries.clear();
   let mut library_names = HashSet::new();
