@@ -541,7 +541,7 @@ const DownloadSpecificResourceModal: React.FC<
         {pack.items.length > 0 ? (
           <OptionItemGroup
             maxFirstVisibleItems={20}
-            showAllStep={20}
+            showMoreStep={20}
             items={pack.items.map((item, index) => (
               <OptionItem
                 key={index}

@@ -40,7 +40,7 @@ export interface OptionItemGroupProps extends SectionProps {
   withDivider?: boolean;
   maxFirstVisibleItems?: number;
   enableShowAll?: boolean;
-  showAllStep?: number;
+  showMoreStep?: number;
 }
 
 export const OptionItem: React.FC<OptionItemProps> = ({
@@ -187,7 +187,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   withDivider = true,
   maxFirstVisibleItems,
   enableShowAll = true,
-  showAllStep,
+  showMoreStep,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -204,7 +204,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
     );
   }
 
-  const isIncremental = !!showAllStep && showAllStep > 0;
+  const isIncremental = !!showMoreStep && showMoreStep > 0;
 
   const hasShowAllBtn = !!maxFirstVisibleItems && items.length > limit;
   const effectiveVisibleCount = hasShowAllBtn
@@ -216,7 +216,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
 
   const handleShowAll = () => {
     if (isIncremental) {
-      setVisibleCount((count) => Math.min(count + showAllStep, items.length));
+      setVisibleCount((count) => Math.min(count + showMoreStep, items.length));
     } else {
       setVisibleCount(items.length);
     }
