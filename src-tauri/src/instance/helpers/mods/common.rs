@@ -129,7 +129,9 @@ impl ModLoaderType {
     match self {
       Self::Fabric => fabric::FabricModMetadataParser::parse_mod_info_from_jar(jar),
       Self::Forge | Self::NeoForge => forge::ForgeModMetadataParser::parse_mod_info_from_jar(jar),
-      Self::LegacyForge | Self::Cleanroom => legacy_forge::LegacyForgeModMetadataParser::parse_mod_info_from_jar(jar),
+      Self::LegacyForge | Self::Cleanroom => {
+        legacy_forge::LegacyForgeModMetadataParser::parse_mod_info_from_jar(jar)
+      }
       Self::LiteLoader => liteloader::LiteLoaderModMetadataParser::parse_mod_info_from_jar(jar),
       Self::Quilt => quilt::QuiltModMetadataParser::parse_mod_info_from_jar(jar),
       Self::Unknown => FallbackManifestModMetadataParser::parse_mod_info_from_jar(jar),

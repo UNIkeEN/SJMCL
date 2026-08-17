@@ -67,7 +67,9 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
         "https://hmcl.glavo.site/metadata/cleanroom/files/",
       )?),
       ResourceType::CleanroomMaven => Ok(Url::parse("https://maven.cleanroommc.com/")?),
-      ResourceType::CleanroomMeta => Ok(Url::parse("https://hmcl.glavo.site/metadata/cleanroom/index.json")?),
+      ResourceType::CleanroomMeta => Ok(Url::parse(
+        "https://hmcl.glavo.site/metadata/cleanroom/index.json",
+      )?),
     },
     SourceType::BMCLAPIMirror => match resource_type {
       ResourceType::VersionManifest => Ok(Url::parse(
@@ -111,7 +113,9 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
         "https://hmcl.glavo.site/metadata/cleanroom/files/",
       )?),
       ResourceType::CleanroomMaven => Ok(Url::parse("https://maven.cleanroommc.com/")?),
-      ResourceType::CleanroomMeta => Ok(Url::parse("https://hmcl.glavo.site/metadata/cleanroom/index.json")?),
+      ResourceType::CleanroomMeta => Ok(Url::parse(
+        "https://hmcl.glavo.site/metadata/cleanroom/index.json",
+      )?),
     },
   }
 }

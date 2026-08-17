@@ -70,9 +70,7 @@ pub async fn fetch_mod_loader_version_list(
     ModLoaderType::Forge | ModLoaderType::LegacyForge => {
       Ok(get_forge_meta_by_game_version(&app, &priority_list, &game_version).await?)
     }
-    ModLoaderType::Cleanroom => {
-      Ok(get_cleanroom_meta_by_game_version(&app, &game_version).await?)
-    }
+    ModLoaderType::Cleanroom => Ok(get_cleanroom_meta_by_game_version(&app, &game_version).await?),
     ModLoaderType::Fabric => {
       Ok(get_fabric_meta_by_game_version(&app, &priority_list, &game_version).await?)
     }

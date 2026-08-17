@@ -179,7 +179,8 @@ async fn refresh_instance(
             }
             ModLoaderType::Cleanroom => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+              download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data)
+                .await?;
             }
             ModLoaderType::NeoForge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
