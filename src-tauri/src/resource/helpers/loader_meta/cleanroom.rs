@@ -22,7 +22,7 @@ async fn get_cleanroom_meta_by_game_version_official(
     Ok(response) => {
       if response.status().is_success() {
         if let Ok(mut manifest) = response.json::<Vec<CleanroomMetaItem>>().await {
-          manifest.sort_by_key(|b| std::cmp::Reverse(b.name.clone()));
+          manifest.sort_by_key(|b| std::cmp::Reverse(b.created_at.clone()));
           Ok(
             manifest
               .into_iter()
