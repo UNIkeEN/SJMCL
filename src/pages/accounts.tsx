@@ -266,7 +266,7 @@ const AccountsPage = () => {
                 ) && (
                   <Tooltip label={t("AccountsPage.button.deleteServer")}>
                     <IconButton
-                      aria-label="home"
+                      aria-label="deleteServer"
                       size="xs"
                       fontSize="sm"
                       colorScheme="red"
