@@ -15,6 +15,7 @@ export enum ModLoaderType {
   Unknown = "Unknown",
   Fabric = "Fabric",
   Forge = "Forge",
+  Cleanroom = "Cleanroom",
   LegacyForge = "LegacyForge",
   NeoForge = "NeoForge",
   LiteLoader = "LiteLoader",

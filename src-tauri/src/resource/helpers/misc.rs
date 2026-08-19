@@ -63,6 +63,13 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       }
       ResourceType::QuiltMaven => Ok(Url::parse("https://maven.quiltmc.org/repository/release/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://meta.quiltmc.org/")?),
+      ResourceType::CleanroomInstall => Ok(Url::parse(
+        "https://hmcl.glavo.site/metadata/cleanroom/files/",
+      )?),
+      ResourceType::CleanroomMaven => Ok(Url::parse("https://maven.cleanroommc.com/")?),
+      ResourceType::CleanroomMeta => Ok(Url::parse(
+        "https://hmcl.glavo.site/metadata/cleanroom/index.json",
+      )?),
     },
     SourceType::BMCLAPIMirror => match resource_type {
       ResourceType::VersionManifest => Ok(Url::parse(
@@ -102,6 +109,13 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::OptiFine => Ok(Url::parse("https://bmclapi2.bangbang93.com/optifine/")?),
       ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?), // seems 'not found'
+      ResourceType::CleanroomInstall => Ok(Url::parse(
+        "https://hmcl.glavo.site/metadata/cleanroom/files/",
+      )?),
+      ResourceType::CleanroomMaven => Ok(Url::parse("https://maven.cleanroommc.com/")?),
+      ResourceType::CleanroomMeta => Ok(Url::parse(
+        "https://hmcl.glavo.site/metadata/cleanroom/index.json",
+      )?),
     },
   }
 }
