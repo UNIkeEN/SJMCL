@@ -1864,6 +1864,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "續載（+{{left}}）",
       "showAll": "顯全覽（+{{left}}）"
     }
   },

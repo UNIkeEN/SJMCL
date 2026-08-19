@@ -1864,6 +1864,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "Charger plus (+{{left}})",
       "showAll": "Tout afficher (+{{left}})"
     }
   },
