@@ -4,15 +4,24 @@ import {
   Avatar,
   AvatarBadge,
   Badge,
+  Box,
   HStack,
+  Progress,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath, openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { Trans, useTranslation } from "react-i18next";
-import { LuCircleCheck, LuCircleMinus } from "react-icons/lu";
+import { IconType } from "react-icons";
+import {
+  LuCircleCheck,
+  LuCircleMinus,
+  LuClockArrowUp,
+  LuX,
+} from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -43,6 +52,10 @@ const ExtensionSettingsPage = () => {
     getExtensionList,
     getExtensionSettingsPage,
     handleAddExtension,
+    extensionUpdateState,
+    handleUpdateExtensions,
+    cancelExtensionUpdate,
+    resetExtensionUpdateState,
   } = useExtensionHost();
   const extensions = extensionList || [];
 
@@ -129,7 +142,13 @@ const ExtensionSettingsPage = () => {
     }
   };
 
-  const secMenu = [
+  const isUpdating = extensionUpdateState.running;
+  const secMenu: {
+    icon: string | IconType;
+    label?: string;
+    onClick: () => void;
+    isDisabled?: boolean;
+  }[] = [
     {
       icon: "openFolder",
       onClick: handleOpenExtensionsFolder,
@@ -140,7 +159,21 @@ const ExtensionSettingsPage = () => {
     },
     {
       icon: "refresh",
-      onClick: () => getExtensionList(true),
+      // clearing the previous update report before refreshing keeps the UI tidy
+      onClick: () => {
+        resetExtensionUpdateState();
+        getExtensionList(true);
+      },
+    },
+    {
+      icon: isUpdating ? LuX : LuClockArrowUp,
+      label: t(
+        isUpdating
+          ? "ExtensionSettingsPage.update.cancel"
+          : "ExtensionSettingsPage.update.action"
+      ),
+      onClick: isUpdating ? cancelExtensionUpdate : handleUpdateExtensions,
+      isDisabled: !isUpdating && extensions.length === 0,
     },
   ];
 
@@ -290,6 +323,41 @@ const ExtensionSettingsPage = () => {
     },
   ];
 
+  const updateFailures = extensionUpdateState.items.filter(
+    (item) => item.status === "failed"
+  );
+  const currentUpdateItem = extensionUpdateState.items.find(
+    (item) => item.status === "downloading" || item.status === "installing"
+  );
+  const counts = {
+    updated: extensionUpdateState.items.filter((i) => i.status === "updated")
+      .length,
+    upToDate: extensionUpdateState.items.filter((i) => i.status === "upToDate")
+      .length,
+    skipped: extensionUpdateState.items.filter((i) => i.status === "skipped")
+      .length,
+    failed: updateFailures.length,
+  };
+  const updateMessage =
+    extensionUpdateState.phase === "checking"
+      ? t("ExtensionSettingsPage.update.checking", {
+          current: extensionUpdateState.current,
+          total: extensionUpdateState.total,
+        })
+      : extensionUpdateState.phase === "updating"
+        ? t(
+            `ExtensionSettingsPage.update.${currentUpdateItem?.status === "installing" ? "installing" : "downloading"}`,
+            {
+              name: currentUpdateItem?.name || "",
+              current: extensionUpdateState.current,
+              total: extensionUpdateState.total,
+            }
+          )
+        : t("ExtensionSettingsPage.update.completed", counts);
+  const updateStartedTime = extensionUpdateState.startedAt
+    ? new Date(extensionUpdateState.startedAt).toLocaleTimeString()
+    : undefined;
+
   return (
     <>
       <Section
@@ -309,10 +377,12 @@ const ExtensionSettingsPage = () => {
               <CommonIconButton
                 key={index}
                 icon={btn.icon}
+                label={btn.label}
                 onClick={btn.onClick}
                 size="xs"
                 fontSize="sm"
                 h={21}
+                isDisabled={btn.isDisabled}
               />
             ))}
           </HStack>
@@ -322,6 +392,67 @@ const ExtensionSettingsPage = () => {
           <AlertIcon />
           {t("ExtensionSettingsPage.alert")}
         </Alert>
+        {extensionUpdateState.phase !== "idle" && (
+          <Alert
+            status={
+              extensionUpdateState.running
+                ? "info"
+                : updateFailures.length > 0
+                  ? "error"
+                  : "success"
+            }
+            fontSize="xs-sm"
+            borderRadius="md"
+            mb={3}
+            alignItems="flex-start"
+          >
+            <AlertIcon mt={0.5} />
+            <Box flex={1} minW={0}>
+              <HStack justify="space-between" align="flex-start" spacing={2}>
+                <Text fontWeight="bold" wordBreak="break-word">
+                  {updateMessage}
+                </Text>
+                {updateStartedTime && (
+                  <Text
+                    color="gray.500"
+                    fontSize="xs"
+                    whiteSpace="nowrap"
+                    flexShrink={0}
+                  >
+                    {updateStartedTime}
+                  </Text>
+                )}
+              </HStack>
+              {extensionUpdateState.running && (
+                <Progress
+                  value={extensionUpdateState.progress}
+                  size="xs"
+                  colorScheme={primaryColor}
+                  borderRadius="md"
+                  mt={2}
+                />
+              )}
+              {updateFailures.length > 0 && (
+                <VStack align="stretch" spacing={1} mt={2}>
+                  {updateFailures.map((item) => (
+                    <HStack
+                      key={item.identifier}
+                      align="flex-start"
+                      spacing={2}
+                    >
+                      <Text fontWeight="bold" fontSize="xs" flexShrink={0}>
+                        {item.name}
+                      </Text>
+                      <Text fontSize="xs" color="gray.600">
+                        {item.failureMessage}
+                      </Text>
+                    </HStack>
+                  ))}
+                </VStack>
+              )}
+            </Box>
+          </Alert>
+        )}
         {extensions.length > 0 ? (
           <OptionItemGroup items={extensionItems} />
         ) : (

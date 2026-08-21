@@ -660,6 +660,7 @@
       "optifine-libraries": "OptiFine 运行库",
       "launcher-update": "更新启动器",
       "extension-update": "更新扩展 {{param1}} {{param2}}",
+      "extension-update-all": "批量更新扩展",
       "mojang-java": "Java {{param}} 运行时"
     }
   },
@@ -861,6 +862,26 @@
           "description": "前往 GitHub 浏览社区开发的扩展列表",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "更新全部扩展",
+      "cancel": "取消更新",
+      "checkFailed": "扩展更新检查失败",
+      "checking": "正在检查更新... {{current}}/{{total}}",
+      "completed": "更新完成：已更新 {{updated}} 个，已是最新 {{upToDate}} 个，已跳过 {{skipped}} 个，失败 {{failed}} 个",
+      "downloading": "正在下载 {{name}}... {{current}}/{{total}}",
+      "installing": "正在安装 {{name}}... {{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "更新已取消",
+        "checkFailed": "检查更新失败：{{details}}",
+        "downloadFailed": "下载失败：{{details}}",
+        "installFailed": "安装失败：{{details}}",
+        "invalidVersion": "可用版本缺失或无效",
+        "notFound": "最新发布中未找到更新包",
+        "sourceInvalid": "更新源不是有效的 GitHub 仓库地址",
+        "sourceUnavailable": "更新源暂不可用：{{details}}",
+        "unknown": "未知错误"
       }
     }
   },
@@ -3049,8 +3070,10 @@
             "INVALID_IDENTIFIER": "扩展标识符无效",
             "IDENTIFIER_MISMATCH": "扩展标识符与预期不匹配",
             "INVALID_NAME": "扩展名称无效",
+            "INVALID_VERSION": "更新包版本缺失或无效",
             "LAUNCHER_VERSION_TOO_LOW": "启动器版本过低",
-            "EXTENSION_NOT_FOUND": "未找到待添加文件"
+            "EXTENSION_NOT_FOUND": "未找到待添加文件",
+            "VERSION_NOT_NEWER": "更新包版本不高于已安装版本"
           }
         }
       },
