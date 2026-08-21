@@ -22,8 +22,8 @@ import {
   LuChevronRight,
   LuCircleCheck,
   LuCircleMinus,
-  LuClockArrowUp,
-  LuSearch,
+  LuClockArrowUp, LuDatabase, LuDatabaseBackup, LuDatabaseZap, LuFileDown,
+  LuSearch, LuSquareArrowOutDownRight, LuSquareArrowRight,
   LuSquareLibrary,
   LuTriangleAlert,
   LuX,
@@ -59,6 +59,7 @@ import { ResourceService } from "@/services/resource";
 import { UtilsService } from "@/services/utils";
 import { parseModLoaderVersion } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
+import ExportModListModal from "@/components/modals/export-mod-list-modal";
 
 const InstanceModsPage = () => {
   const { t } = useTranslation();
@@ -105,6 +106,12 @@ const InstanceModsPage = () => {
     isOpen: isCheckUpdateModalOpen,
     onOpen: onCheckUpdateModalOpen,
     onClose: onCheckUpdateModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isExportModListModalOpen,
+    onOpen: onExportModListModalOpen,
+    onClose: onExportModListModalClose,
   } = useDisclosure();
 
   const {
@@ -317,6 +324,12 @@ const InstanceModsPage = () => {
       icon: LuClockArrowUp,
       label: t("InstanceModsPage.modList.menu.update"),
       onClick: onCheckUpdateModalOpen,
+      disable: isLoading || localMods.length === 0,
+    },
+    {
+      icon: LuFileDown,
+      label: t("InstanceModsPage.modList.menu.export"),
+      onClick: onExportModListModalOpen,
       disable: isLoading || localMods.length === 0,
     },
     {
@@ -658,6 +671,13 @@ const InstanceModsPage = () => {
       <CheckModUpdateModal
         isOpen={isCheckUpdateModalOpen}
         onClose={onCheckUpdateModalClose}
+        summary={summary}
+        localMods={localMods}
+      />
+
+      <ExportModListModal
+        isOpen={isExportModListModalOpen}
+        onClose={onExportModListModalClose}
         summary={summary}
         localMods={localMods}
       />

@@ -814,6 +814,35 @@
       }
     }
   },
+  "ExportModListModal": {
+    "header": {
+      "title": "Export Mod List"
+    },
+    "format": "Format",
+    "toast": {
+      "success": "Export mod list successfully",
+      "failed": "Export mod list failed"
+    },
+    "field": {
+      "field": "Field",
+      "mcmodId": "MCMod ID",
+      "modloaderType": "Modloader Type",
+      "translatedName": "Translated Name",
+      "name": "Name",
+      "description": "Description",
+      "translatedDescription": "Translated Description",
+      "mcmodWebsite": "MCMod Address",
+      "modrinthWebsite": "Modrinth Website",
+      "curseforgeWebsite": "Curseforge Website",
+      "version": "Version",
+      "fileName": "File Name",
+      "enabled": "Enabled Status"
+    },
+    "button": {
+      "cancel": "Cancel",
+      "export": "Export"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "Failed to render this extension content."
   },
