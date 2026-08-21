@@ -25,6 +25,7 @@ use crate::resource::helpers::{
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
+use crate::utils::fs::normalize_relative_path;
 
 structstruck::strike! {
 #[strikethrough[serialize_skip_none]]
@@ -58,6 +59,12 @@ pub struct ModrinthManifest {
   pub summary: Option<String>,
   pub files: Vec<ModrinthFile>,
   pub dependencies: HashMap<String, String>,
+}
+
+fn resolve_download_path(instance_path: &Path, path: &str) -> SJMCLResult<PathBuf> {
+  let relative_path =
+    normalize_relative_path(Path::new(path)).map_err(|_| InstanceError::InvalidSourcePath)?;
+  Ok(instance_path.join(relative_path))
 }
 
 #[async_trait]
@@ -138,15 +145,18 @@ impl ModpackManifest for ModrinthManifest {
         Ok(PTaskParam::Download(DownloadParam {
           src: url::Url::parse(download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
           sha1: Some(file.hashes.sha1.clone()),
-          dest: instance_path.join(&file.path),
+          dest: resolve_download_path(instance_path, &file.path)?,
           filename: None,
         }))
       })
       .collect::<SJMCLResult<Vec<_>>>()
   }
 
-  fn get_overrides_path(&self) -> String {
-    "overrides/".to_string()
+  fn get_overrides_paths(&self) -> Vec<PathBuf> {
+    vec![
+      PathBuf::from("overrides"),
+      PathBuf::from("client-overrides"),
+    ]
   }
 }
 
@@ -329,4 +339,20 @@ async fn collect_modrinth_files(
   }
 
   Ok((modrinth_files, override_files))
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn rejects_modrinth_files_outside_instance_directory() {
+    let instance_path = Path::new("instance");
+    assert!(resolve_download_path(instance_path, "../outside.jar").is_err());
+    assert!(resolve_download_path(instance_path, "/outside.jar").is_err());
+    assert_eq!(
+      resolve_download_path(instance_path, "mods/example.jar").unwrap(),
+      PathBuf::from("instance/mods/example.jar")
+    );
+  }
 }
