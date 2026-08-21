@@ -36,7 +36,7 @@ use crate::instance::helpers::modpack::export::{
   validate_export_options,
 };
 use crate::instance::helpers::modpack::import::{
-  ModpackMetaInfo, extract_overrides, get_download_params,
+  ModpackMetaInfo, build_install_plan, extract_overrides,
 };
 use crate::instance::helpers::mods::common::{
   check_potential_incompatibility, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
@@ -1224,8 +1224,11 @@ pub async fn create_instance(
   if let Some(modpack_path) = modpack_path {
     let path = PathBuf::from(modpack_path);
     let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-    task_params.extend(get_download_params(&app, &file, &version_path).await?);
-    extract_overrides(&file, &version_path)?;
+    let plan = build_install_plan(&app, &file, &version_path).await?;
+    let override_files = extract_overrides(&file, &version_path, &plan)?;
+    let lock = plan.create_lock(&version_path, override_files)?;
+    task_params.extend(plan.download_params.clone());
+    lock.save(&version_path)?;
   }
 
   schedule_progressive_task_group(

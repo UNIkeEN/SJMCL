@@ -455,6 +455,13 @@ pub fn validate_sha1(dest_path: PathBuf, truth: String) -> SJMCLResult<()> {
   }
 }
 
+pub fn calculate_sha1(path: &Path) -> SJMCLResult<String> {
+  let mut file = fs::File::open(path)?;
+  let mut hasher = Sha1::new();
+  std::io::copy(&mut file, &mut hasher)?;
+  Ok(hex::encode(hasher.finalize()))
+}
+
 /// Calculates the SHA256 hash of a file.
 ///
 /// # Parameters
