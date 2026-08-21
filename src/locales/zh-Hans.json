@@ -1154,6 +1154,7 @@
     "exit": "退出",
     "finish": "完成",
     "import": "导入",
+    "extracting": "解压中...",
     "launch": "启动",
     "more": "更多",
     "new": "新",
@@ -1654,7 +1655,8 @@
       "gamemodeDesc": "，{{gamemode}}",
       "difficultyDesc": "（难度：{{difficulty}}）",
       "viewLevelData": "世界基础数据",
-      "launch": "游玩此世界"
+      "launch": "游玩此世界",
+      "extract": "智能解压"
     },
     "serverList": {
       "title": "服务器",

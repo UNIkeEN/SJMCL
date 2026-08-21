@@ -8,6 +8,7 @@ pub struct WorldInfo {
   pub last_played_at: i64,
   pub difficulty: Option<String>,
   pub gamemode: String,
-  pub icon_src: PathBuf,
+  pub icon_src: String,
   pub dir_path: PathBuf,
+  pub is_zip: bool,
 }
