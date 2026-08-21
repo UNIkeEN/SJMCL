@@ -308,6 +308,10 @@ structstruck::strike! {
       },
       pub cache: struct {
         pub directory: PathBuf,
+        #[default = true]
+        pub auto_clear: bool,
+        #[default = 24]
+        pub retention_hours: u32,
       },
       pub proxy: ProxyConfig,
     },
