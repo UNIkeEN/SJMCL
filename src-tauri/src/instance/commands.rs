@@ -51,9 +51,9 @@ use crate::instance::helpers::server::{
 };
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
-  Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
-  ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
-  ScreenshotInfo, ShaderPackInfo,
+  __migration_meta, Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo,
+  ModLoader, ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo,
+  SchematicInfo, ScreenshotInfo, ShaderPackInfo,
 };
 use crate::instance::models::world::base::WorldInfo;
 use crate::instance::models::world::level::LevelData;
@@ -1077,6 +1077,7 @@ pub async fn create_instance(
 
   // Create instance config
   let instance = Instance {
+    config_version: __migration_meta::MAX_VERSION.to_string(),
     id: format!("{}:{}", directory.name, name.clone()),
     name: name.clone(),
     version: game.id.clone(),

@@ -6,8 +6,8 @@ use strum_macros::Display;
 use crate::utils::image::ImageWrapper;
 
 structstruck::strike! {
-  #[strikethrough[derive(Debug, Clone, Serialize, Deserialize)]]
-  #[strikethrough[serde(rename_all = "camelCase")]]
+  #[structstruck::each[derive(Debug, Clone, Serialize, Deserialize)]]
+  #[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct ExtensionMetadata {
     pub identifier: String,
     pub name: String,

@@ -497,8 +497,8 @@ pub struct InstallProfile {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Debug, Serialize, Deserialize, Default)]]
-#[strikethrough[serde(rename_all = "camelCase", default)]]
+#[structstruck::each[derive(Debug, Serialize, Deserialize, Default)]]
+#[structstruck::each[serde(rename_all = "camelCase", default)]]
 pub struct LegacyInstallProfile {
   pub install: struct {
     pub path: String,

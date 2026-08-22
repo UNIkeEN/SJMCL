@@ -67,3 +67,5 @@ package-lock.json
 !.claude/skills
 .gemini/
 .cursor/
+src-tauri/src/launcher_config/models.rs
+src-tauri/src/launcher_config/models.rs

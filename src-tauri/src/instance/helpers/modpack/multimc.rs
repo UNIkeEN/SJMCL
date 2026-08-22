@@ -38,8 +38,8 @@ pub struct MultiMcComponent {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct MultiMcManifest {
     pub components: Vec<MultiMcComponent>,
     pub format_version: u64,

@@ -233,8 +233,8 @@ pub struct OAuthErrorResponse {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
-  #[strikethrough[serde(rename_all = "camelCase", deny_unknown_fields)]]
+  #[structstruck::each[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
+  #[structstruck::each[serde(rename_all = "camelCase", deny_unknown_fields)]]
   pub struct AuthServer {
     pub name: String,
     pub auth_url: String,

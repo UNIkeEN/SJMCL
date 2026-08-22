@@ -75,6 +75,7 @@ export interface GameDirectory {
 }
 
 export interface LauncherConfig {
+  version: string;
   basicInfo: {
     launcherVersion: string;
     platform: string;
@@ -268,6 +269,7 @@ export const defaultGameConfig: GameConfig = {
 };
 
 export const defaultConfig: LauncherConfig = {
+  version: "1.2.0",
   basicInfo: {
     launcherVersion: "dev",
     platform: "",
