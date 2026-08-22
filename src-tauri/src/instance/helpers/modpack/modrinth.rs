@@ -27,9 +27,9 @@ use crate::tasks::PTaskParam;
 use crate::tasks::download::DownloadParam;
 
 structstruck::strike! {
-#[strikethrough[serialize_skip_none]]
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[serialize_skip_none]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
 pub struct ModrinthFile {
   pub path: String,
   pub hashes: struct ModrinthFileHashes {

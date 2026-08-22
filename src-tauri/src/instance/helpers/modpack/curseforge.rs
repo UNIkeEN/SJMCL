@@ -34,8 +34,8 @@ pub struct CurseForgeFiles {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct CurseForgeManifest {
     pub name: String,
     pub version: Option<String>,
@@ -50,8 +50,8 @@ structstruck::strike! {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct CurseForgeFileManifest {
     pub data: struct {
       pub download_url: Option<String>,

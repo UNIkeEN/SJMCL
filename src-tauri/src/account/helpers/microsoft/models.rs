@@ -21,7 +21,7 @@ pub struct TextureEntry {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize)]]
+#[structstruck::each[derive(Deserialize)]]
   pub struct XstsResponse {
     #[serde(rename = "Token")]
     pub token: String,
