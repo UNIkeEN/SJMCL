@@ -305,7 +305,7 @@ impl Default for AccountInfo {
       auth_servers: PRESET_AUTH_SERVERS
         .iter()
         .map(|url| AuthServerInfo {
-          server_name: Some("".to_string()),
+          server_name: None,
           auth_url: url.to_string(),
           client_id: None,
           metadata: Value::Null,
