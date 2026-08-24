@@ -580,6 +580,7 @@ pub fn rename_auth_server(app: AppHandle, url: String, target: String) -> SJMCLR
     .auth_servers
     .iter_mut()
     .find(|server| server.auth_url == url)
+    .ok_or(AccountError::NotFound)?
     .map(|server| server.server_name = Some(target));
 
   account_state.save()?;
