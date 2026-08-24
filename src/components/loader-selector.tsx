@@ -201,56 +201,62 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       .finally(() => setIsLoading(false));
   }, [selectedGameVersion.id, buildOptionItems, toast]);
 
-  let selectableCardItems = modLoaderTypes.map(
-    (type): SelectableCardProps => ({
-      title: type,
-      iconSrc: `/images/icons/${modLoaderTypesToIcon[type]}`,
-      description:
-        selectedModLoader.loaderType !== ModLoaderType.Unknown
-          ? selectedModLoader.loaderType === type
-            ? selectedModLoader.version || t("LoaderSelector.noVersionSelected")
-            : t("LoaderSelector.notCompatibleWith", {
-                item: selectedModLoader.loaderType,
-              })
-          : t("LoaderSelector.noVersionSelected"),
-      displayMode: "selector",
-      isLoading,
-      isSelected: type === selectedModLoader.loaderType,
-      isChevronShown: selectedType !== type,
-      onSelect: () => {
-        setSelectedType(type);
-        if (selectedModLoader.loaderType !== type) {
-          onSelectModLoader({
-            loaderType: type,
-            version: "",
-            description: "",
-          });
-          setSelectedId("");
-        } else {
-          setSelectedId(selectedModLoader.version);
-        }
-        if (
-          type !== ModLoaderType.Forge ||
-          (selectedOptiFine && !selectedOptiFine.filename)
-        ) {
-          // When OptiFine is not compatible with the selected mod loader, or selected without a version, clear it
-          onSelectOptiFine?.(undefined);
-        }
-      },
-      onCancel: () => {
-        if (selectedType === type) {
-          if (!!selectedOptiFine) {
-            setSelectedType("OptiFine");
-            setSelectedId(selectedOptiFine!.filename);
-          } else {
-            setSelectedType(ModLoaderType.Unknown);
+  let selectableCardItems = modLoaderTypes
+    .filter(
+      (it) =>
+        it != ModLoaderType.Cleanroom || selectedGameVersion.id === "1.12.2"
+    )
+    .map(
+      (type): SelectableCardProps => ({
+        title: type,
+        iconSrc: `/images/icons/${modLoaderTypesToIcon[type]}`,
+        description:
+          selectedModLoader.loaderType !== ModLoaderType.Unknown
+            ? selectedModLoader.loaderType === type
+              ? selectedModLoader.version ||
+                t("LoaderSelector.noVersionSelected")
+              : t("LoaderSelector.notCompatibleWith", {
+                  item: selectedModLoader.loaderType,
+                })
+            : t("LoaderSelector.noVersionSelected"),
+        displayMode: "selector",
+        isLoading,
+        isSelected: type === selectedModLoader.loaderType,
+        isChevronShown: selectedType !== type,
+        onSelect: () => {
+          setSelectedType(type);
+          if (selectedModLoader.loaderType !== type) {
+            onSelectModLoader({
+              loaderType: type,
+              version: "",
+              description: "",
+            });
             setSelectedId("");
+          } else {
+            setSelectedId(selectedModLoader.version);
           }
-        }
-        onSelectModLoader(defaultModLoaderResourceInfo);
-      },
-    })
-  );
+          if (
+            type !== ModLoaderType.Forge ||
+            (selectedOptiFine && !selectedOptiFine.filename)
+          ) {
+            // When OptiFine is not compatible with the selected mod loader, or selected without a version, clear it
+            onSelectOptiFine?.(undefined);
+          }
+        },
+        onCancel: () => {
+          if (selectedType === type) {
+            if (!!selectedOptiFine) {
+              setSelectedType("OptiFine");
+              setSelectedId(selectedOptiFine!.filename);
+            } else {
+              setSelectedType(ModLoaderType.Unknown);
+              setSelectedId("");
+            }
+          }
+          onSelectModLoader(defaultModLoaderResourceInfo);
+        },
+      })
+    );
 
   if (typeof onSelectOptiFine === "function") {
     selectableCardItems.push({
