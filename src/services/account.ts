@@ -293,6 +293,20 @@ export class AccountService {
   }
 
   /**
+   * RENAME the authentication server by URL.
+   * @param {string} url - The URL of the authentication server to be renamed.
+   * @param {string} target - The target name.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("account")
+  static async renameAuthServer(
+    url: string,
+    target: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("rename_auth_server", { url, target });
+  }
+
+  /**
    * RETRIEVE other launcher account info for importing (stage 1).
    * @param {ImportLauncherType} launcherType - The external launcher type (e.g., HMCL / MultiMC).
    * @returns {Promise<InvokeResponse<[Player[], AuthServer[]]>>} - The other launcher account info for user selection.

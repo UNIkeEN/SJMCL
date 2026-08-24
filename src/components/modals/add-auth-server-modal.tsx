@@ -100,6 +100,11 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
     setIsLoading(true);
     // save the server info to the storage
     AccountService.addAuthServer(trimmedServerUrl)
+      .then(async (response) => {
+        if (response.status !== "error")
+          await AccountService.renameAuthServer(trimmedServerUrl, serverName);
+        return Promise.resolve(response);
+      })
       .then((response) => {
         if (response.status === "success") {
           getAuthServerList(true);
@@ -172,10 +177,14 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
           ) : (
             <VStack spacing={3.5} align="flex-start">
               <HStack spacing={2}>
-                <Text fontWeight={500}>
+                <Text fontWeight={500} whiteSpace="nowrap">
                   {t("AddAuthServerModal.page2.name")}
                 </Text>
-                <Text>{serverName}</Text>
+                <Input
+                  value={serverName}
+                  onChange={(e) => setServerName(e.target.value)}
+                  isRequired
+                />
               </HStack>
               <HStack spacing={2}>
                 <Text fontWeight={500}>
