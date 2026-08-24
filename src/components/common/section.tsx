@@ -131,7 +131,7 @@ export const Section: React.FC<SectionProps> = ({
         </Flex>
       )}
       {isAccordion ? (
-        <Collapse in={isOpen} animateOpacity>
+        <Collapse in={isOpen} animateOpacity unmountOnExit>
           {children}
         </Collapse>
       ) : (

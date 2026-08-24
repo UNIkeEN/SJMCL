@@ -1864,6 +1864,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "Cargar más (+{{left}})",
       "showAll": "Mostrar todo (+{{left}})"
     }
   },

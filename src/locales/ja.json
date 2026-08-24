@@ -1864,6 +1864,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "さらに読み込む（+{{left}}）",
       "showAll": "すべて表示（+{{left}}）"
     }
   },
