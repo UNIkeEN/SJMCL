@@ -107,10 +107,10 @@ export class LaunchService {
   }
 
   /**
-   * TERMAITE the game process.
-   * This command is usually called by the game error window when game process crashed.
-   * @param {number} launchingId The id of the launching state to retrieve.
-   * @returns {Promise<InvokeResponse<LaunchingState>>} The current game launching state.
+   * TERMINATE the game process.
+   * This command is usually called by the game-log window to terminate a running game process.
+   * @param {number} launchingId The id of the launching state to terminate.
+   * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("launch")
   static async terminateGameProcess(
