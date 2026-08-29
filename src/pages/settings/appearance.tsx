@@ -69,7 +69,7 @@ const AppearanceSettingsPage = () => {
         return span;
       });
       const widths = elements.map((el) => el.offsetWidth);
-      return widths.every((w) => w - widths[0] <= 1);
+      return widths.every((w) => Math.abs(w - widths[0]) <= 1);
     } finally {
       document.body.removeChild(container);
     }
