@@ -11,9 +11,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager, State};
 
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
-
 use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
@@ -45,6 +42,9 @@ use crate::utils::fs::create_zip_from_dirs;
 use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
 use crate::utils::window::create_webview_window;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+use sysinfo::{Pid, System};
 
 #[cfg(target_os = "windows")]
 use crate::launch::helpers::file_validator::get_invalid_windows_mesa_loader_file;
@@ -456,6 +456,19 @@ pub fn retrieve_game_launching_state(
   let launching_queue = launching_queue_state.lock()?;
   if let Some(launching) = launching_queue.iter().find(|l| l.id == launching_id) {
     Ok(launching.clone())
+  } else {
+    Err(LaunchError::LaunchingStateNotFound.into())
+  }
+}
+
+#[tauri::command]
+pub fn terminate_game_process(
+  launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  launching_id: u64,
+) -> SJMCLResult<()> {
+  let launching_queue = launching_queue_state.lock()?;
+  if let Some(launching) = launching_queue.iter().find(|l| l.id == launching_id) {
+    kill_process(launching.pid)
   } else {
     Err(LaunchError::LaunchingStateNotFound.into())
   }
