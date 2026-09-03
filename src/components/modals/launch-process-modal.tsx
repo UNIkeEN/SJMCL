@@ -276,6 +276,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
         title: t("LaunchProcessModal.toast.noSelectedPlayer"),
         status: "warning",
       });
+      router.push("/accounts");
       handleCloseModalWithCancel();
       return;
     }
@@ -336,6 +337,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
     update,
     t,
     toast,
+    router,
   ]);
 
   return (
