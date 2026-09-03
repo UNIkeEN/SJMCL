@@ -53,6 +53,12 @@ SJMCL 目前支持以下平台：
 curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
 ```
 
+如果安装了 [Homebrew](https://brew.sh)，可以通过 [Homebrew](https://brew.sh) Cask 来安装：
+
+```bash
+brew install --cask sjmcl
+```
+
 不使用 root 权限安装 Linux 便携版：
 
 ```bash
@@ -90,7 +96,7 @@ sudo snap install sjmcl
 通过 Homebrew 安装：
 
 ```bash
-brew install --cask SJMC-Dev/SJMCL/sjmcl
+brew install --cask sjmcl
 ```
 
 </details>
