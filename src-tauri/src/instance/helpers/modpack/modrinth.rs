@@ -16,7 +16,9 @@ use zip::ZipArchive;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
-use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::helpers::modpack::import::{
+  ModpackLockInfo, ModpackManifest, ModpackMetaInfo,
+};
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::resource::helpers::{
   curseforge::fetch_remote_resource_by_local_curseforge,
@@ -147,6 +149,13 @@ impl ModpackManifest for ModrinthManifest {
 
   fn get_overrides_path(&self) -> String {
     "overrides/".to_string()
+  }
+
+  fn get_lock_info(&self) -> ModpackLockInfo {
+    ModpackLockInfo {
+      source: OtherResourceSource::Modrinth,
+      version: Some(self.version_id.clone()),
+    }
   }
 }
 
