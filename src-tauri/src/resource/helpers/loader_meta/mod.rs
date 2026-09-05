@@ -1,3 +1,4 @@
+pub mod cleanroom;
 pub mod fabric;
 pub mod forge;
 pub mod neoforge;

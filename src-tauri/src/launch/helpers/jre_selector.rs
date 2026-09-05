@@ -5,6 +5,7 @@ use tauri::{AppHandle, Manager};
 
 use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::models::misc::Instance;
+use crate::instance::models::misc::ModLoaderType::Cleanroom;
 use crate::launch::models::LaunchError;
 use crate::launcher_config::models::{GameJava, JavaInfo};
 
@@ -27,6 +28,22 @@ pub async fn select_java_runtime(
   }
 
   let mut min_version_req = get_minimum_java_version_by_game(app, instance, true).await;
+
+  if instance.mod_loader.loader_type == Cleanroom {
+    let parsed_cleanroom_version = semver::Version::parse(instance.mod_loader.version.as_ref());
+    let minium_25_cleanroom_version = semver::Version::parse("0.5.0-alpha");
+    if let Ok(parsed) = parsed_cleanroom_version
+      && let Ok(minium_25) = minium_25_cleanroom_version
+    {
+      if parsed.cmp(&minium_25).is_lt() {
+        min_version_req = 21;
+      } else {
+        min_version_req = 25;
+      }
+    } else {
+      min_version_req = 25;
+    };
+  }
 
   if client_json_req > min_version_req {
     min_version_req = client_json_req;
