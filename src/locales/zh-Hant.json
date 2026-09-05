@@ -1106,7 +1106,8 @@
     "placeholder": "輸入關鍵字篩選",
     "revealRawLog": "顯示原始日誌檔案",
     "clearLogs": "清除所有日誌",
-    "scrollToBottom": "滾動到底部"
+    "scrollToBottom": "滾動到底部",
+    "terminate": "結束遊戲進程"
   },
   "GameVersionSelector": {
     "old_beta": "遠古版",

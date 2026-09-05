@@ -1106,7 +1106,8 @@
     "placeholder": "Filter by Text",
     "revealRawLog": "Reveal Raw Log File",
     "clearLogs": "Clear All Logs",
-    "scrollToBottom": "Scroll to Bottom"
+    "scrollToBottom": "Scroll to Bottom",
+    "terminate": "Terminate Game Process"
   },
   "GameVersionSelector": {
     "old_beta": "Beta",
