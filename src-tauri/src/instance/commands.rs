@@ -1139,7 +1139,8 @@ pub async fn create_instance(
     if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await
       && err.0 == LaunchError::NoSuitableJava.to_string()
     {
-      let minimum_java_version = get_minimum_java_version_by_game(&app, &instance, false).await;
+      let minimum_java_version =
+        get_minimum_java_version_by_game(&app, &instance, client_java_version, false).await;
       let minimum_java_version = minimum_java_version.to_string();
       task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
       java_version_to_download = Some(minimum_java_version);

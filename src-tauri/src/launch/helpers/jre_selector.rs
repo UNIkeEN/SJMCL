@@ -27,27 +27,8 @@ pub async fn select_java_runtime(
       .ok_or_else(|| LaunchError::SelectedJavaUnavailable.into());
   }
 
-  let mut min_version_req = get_minimum_java_version_by_game(app, instance, true).await;
-
-  if instance.mod_loader.loader_type == Cleanroom {
-    let parsed_cleanroom_version = semver::Version::parse(instance.mod_loader.version.as_ref());
-    let minium_25_cleanroom_version = semver::Version::parse("0.5.0-alpha");
-    if let Ok(parsed) = parsed_cleanroom_version
-      && let Ok(minium_25) = minium_25_cleanroom_version
-    {
-      if parsed.cmp(&minium_25).is_lt() {
-        min_version_req = 21;
-      } else {
-        min_version_req = 25;
-      }
-    } else {
-      min_version_req = 25;
-    };
-  }
-
-  if client_json_req > min_version_req {
-    min_version_req = client_json_req;
-  }
+  let min_version_req =
+    get_minimum_java_version_by_game(app, instance, client_json_req, true).await;
 
   let mut suitable_candidates = Vec::new();
   for java in &java_list {
@@ -66,9 +47,9 @@ pub async fn select_java_runtime(
   }
 }
 
-/// Get minimum java version requirement by game client version
+/// Get minimum java version requirement by game client version.
 /// ref: https://zh.minecraft.wiki/w/Java%E7%89%88?variant=zh-cn#%E8%BD%AF%E4%BB%B6%E9%9C%80%E6%B1%82
-pub async fn get_minimum_java_version_by_game(
+async fn get_minimum_java_version_by_client(
   app: &AppHandle,
   instance: &Instance,
   fallback_fetch_remote: bool,
@@ -104,4 +85,41 @@ pub async fn get_minimum_java_version_by_game(
     return 8;
   }
   0
+}
+
+fn get_minimum_java_version_by_mod_loader(instance: &Instance) -> i32 {
+  // Cleanroom
+  if instance.mod_loader.loader_type == Cleanroom {
+    let parsed_cleanroom_version = semver::Version::parse(&instance.mod_loader.version);
+    let minimum_java_25_version = semver::Version::parse("0.5.0-alpha");
+
+    return if let Ok(parsed) = parsed_cleanroom_version
+      && let Ok(minimum_java_25) = minimum_java_25_version
+    {
+      if parsed < minimum_java_25 { 21 } else { 25 }
+    } else {
+      25
+    };
+  }
+
+  0
+}
+
+pub async fn get_minimum_java_version_by_game(
+  app: &AppHandle,
+  instance: &Instance,
+  client_json_req: i32,
+  fallback_fetch_remote: bool,
+) -> i32 {
+  // by default, the minimum java version requirement is determined by the game client version.
+  let client_version_req =
+    get_minimum_java_version_by_client(app, instance, fallback_fetch_remote).await;
+
+  // override by the mod loader
+  let mod_loader_version_req = get_minimum_java_version_by_mod_loader(instance);
+
+  // override by the client.json requirement
+  client_version_req
+    .max(mod_loader_version_req)
+    .max(client_json_req)
 }
