@@ -522,6 +522,11 @@ pub async fn libraries_to_info(
         loader_version = Some(v.to_string());
         break;
       }
+      ("com.cleanroommc", "cleanroom") => {
+        loader_type = ModLoaderType::Cleanroom;
+        loader_version = Some(v.to_string());
+        break;
+      }
       ("net.neoforged.fancymodloader", _) | ("net.neoforged", "fancymodloader") => {
         loader_type = ModLoaderType::NeoForge;
         let arguments = client.arguments.clone();

@@ -114,9 +114,9 @@ impl LocalModMetadataParser for FallbackManifestModMetadataParser {
   }
 }
 
-const DEFAULT_MOD_LOADER_PRIORITY_LIST: [ModLoaderType; 7] = [
+// Cleanroom and NeoForge are omitted because they reuse the LegacyForge and Forge parsers, respectively.
+const DEFAULT_MOD_LOADER_PRIORITY_LIST: [ModLoaderType; 6] = [
   ModLoaderType::Fabric,
-  ModLoaderType::Cleanroom,
   ModLoaderType::Forge,
   ModLoaderType::LegacyForge,
   ModLoaderType::LiteLoader,
@@ -239,6 +239,9 @@ pub fn check_potential_incompatibility(
 
   if installed_loader_type == ModLoaderType::Quilt {
     supported_loaders.push(ModLoaderType::Fabric);
+  }
+  if installed_loader_type == ModLoaderType::Cleanroom {
+    supported_loaders.push(ModLoaderType::Forge);
   }
   if installed_loader_type == ModLoaderType::NeoForge && game_version == "1.20.1" {
     supported_loaders.push(ModLoaderType::Forge);
