@@ -1154,6 +1154,7 @@
     "exit": "Exit",
     "finish": "Finish",
     "import": "Import",
+    "extracting": "Extracting...",
     "launch": "Launch",
     "more": "More",
     "new": "New",
@@ -1654,7 +1655,8 @@
       "gamemodeDesc": ", {{gamemode}}",
       "difficultyDesc": " (Difficulty: {{difficulty}})",
       "viewLevelData": "View Level Data",
-      "launch": "Play this World"
+      "launch": "Play this World",
+      "extract": "Smart Extract"
     },
     "serverList": {
       "title": "Servers",

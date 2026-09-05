@@ -1,3 +1,4 @@
+import { useToast as useChakraToast } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
@@ -8,6 +9,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useGlobalData, useGlobalDataDispatch } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType } from "@/enums/instance";
@@ -89,6 +91,8 @@ export const InstanceContextProvider: React.FC<{
 }> = ({ children }) => {
   const router = useRouter();
   const toast = useToast();
+  const { close: closeToast } = useChakraToast();
+  const { t } = useTranslation();
   const { getInstanceList } = useGlobalData();
   const { setInstanceList } = useGlobalDataDispatch();
 
@@ -248,12 +252,22 @@ export const InstanceContextProvider: React.FC<{
               ? [selectedPath]
               : [];
           if (selectedPaths.length === 0) return;
+          const toastId = decompress
+            ? toast({
+                title: t("General.extracting"),
+                status: "loading",
+                duration: null,
+              })
+            : undefined;
           InstanceService.copyResourcesToInstances(
             selectedPaths,
             [instanceId],
             tgtDirType,
             decompress
           ).then((response) => {
+            if (toastId !== undefined) {
+              closeToast(toastId);
+            }
             if (response.status === "success") {
               toast({
                 title: response.message,
@@ -271,7 +285,7 @@ export const InstanceContextProvider: React.FC<{
         });
       }
     },
-    [instanceId, toast]
+    [instanceId, toast, t, closeToast]
   );
 
   const handleRetrieveWorldList = useCallback(async () => {

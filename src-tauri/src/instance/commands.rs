@@ -5,6 +5,7 @@ use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::partial::{PartialError, PartialUpdate};
 use sjmcl_types::storage::{Storage, load_json_async, save_json_async};
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -49,7 +50,10 @@ use crate::instance::helpers::server::{
   GameServerInfo, get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt,
   query_servers_online, save_servers_to_nbt,
 };
-use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
+use crate::instance::helpers::world::{
+  load_level_data_from_nbt, load_world_data_from_zip, load_world_info_from_dir,
+  load_world_info_from_zip,
+};
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, InstanceSummary, LocalModInfo, ModLoader,
   ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
@@ -386,7 +390,7 @@ pub async fn copy_resources_to_instances(
             .and_then(|ext| if ext == "zip" { Some(()) } else { None })
             .and_then(|_| Path::new(file_name).file_stem())
             .unwrap_or(file_name);
-          let dest_path = generate_unique_filename(tgt_path, base_name);
+          let dest_path = generate_unique_filename(tgt_path, base_name, false);
 
           let file = fs::File::open(src_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
           let mut archive =
@@ -397,15 +401,50 @@ pub async fn copy_resources_to_instances(
           archive
             .extract(&dest_path)
             .map_err(|_| InstanceError::ZipFileProcessFailed)?;
+
+          let inner = fs::read_dir(&dest_path)
+            .map_err(|_| InstanceError::ZipFileProcessFailed)?
+            .flatten()
+            .map(|e| e.path())
+            .collect::<Vec<_>>();
+          if inner.len() == 1 && inner[0].is_dir() {
+            let inner_dir = &inner[0];
+            let mut decoded_name = inner_dir
+              .file_name()
+              .unwrap_or(file_name)
+              .to_string_lossy()
+              .into_owned();
+            for i in 0..archive.len() {
+              let Ok(entry) = archive.by_index(i) else {
+                continue;
+              };
+              let Some(first) = entry.name_raw().split(|&b| b == b'/').next() else {
+                continue;
+              };
+              if !first.is_empty() {
+                decoded_name = decode_zip_name(first);
+                break;
+              }
+            }
+            let tmp_path = generate_unique_filename(
+              tgt_path,
+              OsStr::new(&format!(".sjmcl_extract_{decoded_name}")),
+              false,
+            );
+            fs::rename(inner_dir, &tmp_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+            fs::remove_dir_all(&dest_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+            let final_path = generate_unique_filename(tgt_path, OsStr::new(&decoded_name), false);
+            fs::rename(&tmp_path, &final_path).map_err(|_| InstanceError::ZipFileProcessFailed)?;
+          }
         } else {
-          let dest_path = generate_unique_filename(tgt_path, file_name);
+          let dest_path = generate_unique_filename(tgt_path, file_name, true);
           fs::copy(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
         }
       } else if src_path.is_dir() {
         let dir_name = src_path
           .file_name()
           .ok_or(InstanceError::InvalidSourcePath)?;
-        let dest_path = generate_unique_filename(tgt_path, dir_name);
+        let dest_path = generate_unique_filename(tgt_path, dir_name, false);
         copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
       } else {
         return Err(InstanceError::InvalidSourcePath.into());
@@ -465,7 +504,7 @@ pub fn move_resource_to_instance(
     fs::create_dir_all(&tgt_path).map_err(|_| InstanceError::FolderCreationFailed)?;
   }
 
-  let dest_path = generate_unique_filename(&tgt_path, file_name);
+  let dest_path = generate_unique_filename(&tgt_path, file_name, true);
   fs::rename(&src_file_path, &dest_path).map_err(|_| InstanceError::FileMoveFailed)?;
   Ok(())
 }
@@ -496,11 +535,23 @@ pub async fn retrieve_world_list(
       Some(path) => path,
       None => return Ok(Vec::new()),
     };
-  if let Ok(world_paths) = get_subdirectories(worlds_dir) {
+  let zip_pattern = RegexBuilder::new(r"\.zip$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+  let zip_paths = get_files_with_regex(&worlds_dir, &zip_pattern).unwrap_or(vec![]);
+
+  if let Ok(world_paths) = get_subdirectories(&worlds_dir) {
     for path in world_paths {
       if let Ok(info) = load_world_info_from_dir(&path, has_difficulty_support).await {
         world_list.push(info);
       }
+    }
+  }
+
+  for path in zip_paths {
+    if let Some(info) = load_world_info_from_zip(&path, has_difficulty_support) {
+      world_list.push(info);
     }
   }
 
@@ -974,6 +1025,13 @@ pub fn toggle_mod_by_extension(file_path: PathBuf, enable: bool) -> SJMCLResult<
   Ok(())
 }
 
+fn decode_zip_name(raw: &[u8]) -> String {
+  match std::str::from_utf8(raw) {
+    Ok(s) => s.to_string(),
+    Err(_) => encoding_rs::GBK.decode(raw).0.into_owned(),
+  }
+}
+
 #[tauri::command]
 pub async fn retrieve_world_details(
   app: AppHandle,
@@ -985,8 +1043,12 @@ pub async fn retrieve_world_details(
       Some(path) => path,
       None => return Err(InstanceError::WorldNotExistError.into()),
     };
-  let level_path = worlds_dir.join(world_name).join("level.dat");
+  let level_path = worlds_dir.join(&world_name).join("level.dat");
   if tokio::fs::metadata(&level_path).await.is_err() {
+    let zip_path = worlds_dir.join(format!("{world_name}.zip"));
+    if let Ok(level_data) = load_world_data_from_zip(&zip_path) {
+      return Ok(level_data);
+    }
     return Err(InstanceError::LevelNotExistError.into());
   }
   if let Ok(level_data) = load_level_data_from_nbt(&level_path).await {
