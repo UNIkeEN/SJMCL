@@ -234,11 +234,11 @@ pub async fn download_cleanroom_libraries(
     &serde_json::to_vec_pretty(&profile)?,
   )?;
 
-  let forge_info: McClientInfo = serde_json::from_str(&version)?;
-  client_info.main_class = forge_info.main_class.clone();
+  let cleanroom_info: McClientInfo = serde_json::from_str(&version)?;
+  client_info.main_class = cleanroom_info.main_class.clone();
 
   let mut loader_libraries = vec![];
-  for lib in forge_info.libraries.iter() {
+  for lib in cleanroom_info.libraries.iter() {
     let name = &lib.name;
     add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
     add_library_entry(&mut loader_libraries, name, Some(lib.clone()))?;
@@ -269,19 +269,19 @@ pub async fn download_cleanroom_libraries(
     }));
   }
 
-  let arguments = forge_info.arguments.clone();
+  let arguments = cleanroom_info.arguments.clone();
   let minecraft_arguments = if arguments.is_some() {
     None
   } else {
-    forge_info.minecraft_arguments.clone()
+    cleanroom_info.minecraft_arguments.clone()
   };
 
   client_info.patches.push(McClientInfo {
     id: "cleanroom".to_string(),
     version: Some(instance.mod_loader.version.clone()),
     priority: Some(30000),
-    inherits_from: forge_info.inherits_from.clone(),
-    main_class: forge_info.main_class.clone(),
+    inherits_from: cleanroom_info.inherits_from.clone(),
+    main_class: cleanroom_info.main_class.clone(),
     arguments,
     minecraft_arguments,
     libraries: loader_libraries,
