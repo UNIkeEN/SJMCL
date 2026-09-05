@@ -4,6 +4,7 @@ use sjmcl_types::partial::{PartialAccess, PartialUpdate};
 use std::fs;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::sync::Mutex;
+use std::time::{Duration, SystemTime};
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 
@@ -14,6 +15,8 @@ use crate::launcher_config::models::{
 use crate::utils::fs::calculate_sha256;
 use crate::utils::portable::extract_assets;
 use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
+
+const DOWNLOAD_CACHE_RETENTION_DAYS: u64 = 30;
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -246,4 +249,44 @@ pub fn check_exe_path_availability(app: &AppHandle) -> bool {
       || exe_str.starts_with("/private/var/tmp/")
       || exe_str.contains("/.Trash/"))
   }
+}
+
+pub async fn auto_clear_download_cache(app: &AppHandle) -> SJMCLResult<()> {
+  let cache_dir = {
+    let config = app.state::<Mutex<LauncherConfig>>();
+    let config = config.lock()?;
+    config.download.cache.directory.clone()
+  };
+
+  let now = SystemTime::now();
+  let retention = Duration::from_secs(DOWNLOAD_CACHE_RETENTION_DAYS * 24 * 60 * 60);
+
+  let mut entries = match tokio::fs::read_dir(&cache_dir).await {
+    Ok(entries) => entries,
+    Err(_) => return Ok(()),
+  };
+  while let Some(entry) = entries.next_entry().await? {
+    let metadata = match entry.metadata().await {
+      Ok(metadata) => metadata,
+      Err(_) => continue,
+    };
+    if !metadata.is_file() {
+      continue;
+    }
+    if metadata
+      .modified()
+      .ok()
+      .and_then(|modified| now.duration_since(modified).ok())
+      .is_some_and(|age| age > retention)
+      && let Err(e) = tokio::fs::remove_file(entry.path()).await
+    {
+      log::warn!(
+        "Failed to remove stale download cache entry {:?}: {}",
+        entry.path(),
+        e
+      );
+    }
+  }
+
+  Ok(())
 }
