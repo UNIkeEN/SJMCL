@@ -16,6 +16,7 @@ use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
+use launcher_config::helpers::misc::auto_clear_download_cache;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
 use resource::helpers::translation::LocalModTranslationsCache;
@@ -225,7 +226,6 @@ pub async fn run() {
         let os = launcher_config.basic_info.platform.clone();
         let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
         let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
-        let auto_clear_download_cache = launcher_config.download.cache.auto_clear;
         let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
         app.manage(Mutex::new(launcher_config));
 
@@ -318,13 +318,10 @@ pub async fn run() {
           });
         }
 
-        // Auto clear stale download cache entries if enabled
-        if auto_clear_download_cache {
-          let app_handle = app.handle().clone();
-          tauri::async_runtime::spawn(async move {
-            let _ = launcher_config::helpers::misc::auto_clear_download_cache(&app_handle).await;
-          });
-        }
+        let app_handle = app.handle().clone();
+        tauri::async_runtime::spawn(async move {
+          let _ = auto_clear_download_cache(&app_handle).await;
+        });
 
         // On platforms other than macOS, set the menu to empty to hide the default menu.
         // On macOS, some shortcuts depend on default menu: https://github.com/tauri-apps/tauri/issues/12458

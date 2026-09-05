@@ -590,14 +590,6 @@
           "title": "清除下载缓存",
           "description": "清除下载缓存目录中的所有文件，此操作不会清除已下载的资源文件",
           "button": "清除"
-        },
-        "autoClear": {
-          "title": "自动清除缓存",
-          "description": "启动时自动删除超过保留时间的下载缓存文件"
-        },
-        "retention": {
-          "title": "保留时间阈值",
-          "description": "时间在阈值内的文件不会被清除"
         }
       }
     },
