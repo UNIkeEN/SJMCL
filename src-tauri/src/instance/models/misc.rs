@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use sjmcl_types::storage::{load_json_async, save_json_async};
+use serde_json::Value;
+use sjmcl_migration::migrate;
+use sjmcl_types::storage::save_json_async;
+use smart_default::SmartDefault;
 use std::cmp::{Ord, Ordering, PartialOrd};
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -26,16 +29,73 @@ pub enum InstanceSubdirType {
   ShaderPacks,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, Default, Display)]
-pub enum ModLoaderType {
-  #[default]
-  Unknown,
-  Fabric,
-  Forge,
-  LegacyForge,
-  NeoForge,
-  LiteLoader,
-  Quilt,
+sjmcl_macros::migrations! {
+  schema v1.2.0 {
+    #[structstruck::each[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, SmartDefault)]]
+    #[structstruck::each[serde(rename_all = "camelCase", default)]]
+    pub struct Instance {
+      // Config format version (the `version` field is the Minecraft version).
+      #[default(_code = "__migration_meta::MAX_VERSION.to_string()")]
+      pub config_version: String,
+      pub id: String,
+      pub name: String,
+      pub description: String,
+      pub tag: Option<String>,
+      pub icon_src: String,
+      pub starred: bool,
+      pub play_time: u128,
+      pub version: String,
+      pub version_path: PathBuf,
+      pub mod_loader: struct {
+        pub status: ModLoaderStatus,
+        pub loader_type: ModLoaderType,
+        pub version: String,
+        pub branch: Option<String>, // Optional branch name for mod loaders like Forge
+      },
+      pub optifine: Option<OptiFine>,
+      // if true, use the spec_game_config, else use the global game config
+      pub use_spec_game_config: bool,
+      // if use_spec_game_config is false, this field is ignored
+      pub spec_game_config: Option<GameConfig>,
+      pub modpack_version: Option<String>,
+    }
+    #[aux]
+    #[derive(Debug, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, Default, Display)]
+    pub enum ModLoaderType {
+      #[default]
+      Unknown,
+      Fabric,
+      Forge,
+      LegacyForge,
+      NeoForge,
+      LiteLoader,
+      Quilt,
+    }
+    #[aux]
+    #[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
+    pub enum ModLoaderStatus {
+      NotDownloaded, // mod loader's library has not been downloaded
+      DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
+                      Only when SJMCL restart, it will try to re-download library while making no changes to client info JSON (is_retry = true),
+                      and do following steps */
+      Downloading, // mod loader's library download process is ongoing
+      Installing,  // mod loader's library has been downloaded, and installation processors are working
+      #[default]
+      Installed,
+    }
+    #[aux]
+    #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
+    #[serde(rename_all = "camelCase")]
+    pub struct OptiFine {
+      pub filename: String,
+      pub version: String,
+      pub status: ModLoaderStatus,
+    }
+  }
+  // Legacy instance configs (written before format versioning) carry no
+  // `configVersion` key and fall back to the chain-start version (v1.0.0).
+  v1.0.0 -> v1.1.0 {}
+  v1.1.0 -> v1.2.0 {}
 }
 
 impl FromStr for ModLoaderType {
@@ -68,46 +128,6 @@ impl ModLoaderType {
   }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
-pub enum ModLoaderStatus {
-  NotDownloaded, // mod loader's library has not been downloaded
-  DownloadFailed, /* mod loader's library download process failed (including processor installation failed)
-                  Only when SJMCL restart, it will try to re-download library while making no changes to client info JSON (is_retry = true),
-                  and do following steps */
-  Downloading, // mod loader's library download process is ongoing
-  Installing,  // mod loader's library has been downloaded, and installation processors are working
-  #[default]
-  Installed,
-}
-
-structstruck::strike! {
-  #[strikethrough[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]]
-  #[strikethrough[serde(rename_all = "camelCase", default)]]
-  pub struct Instance {
-    pub id: String,
-    pub name: String,
-    pub description: String,
-    pub tag: Option<String>,
-    pub icon_src: String,
-    pub starred: bool,
-    pub play_time: u128,
-    pub version: String,
-    pub version_path: PathBuf,
-    pub mod_loader: struct {
-      pub status: ModLoaderStatus,
-      pub loader_type: ModLoaderType,
-      pub version: String,
-      pub branch: Option<String>, // Optional branch name for mod loaders like Forge
-    },
-    pub optifine: Option<OptiFine>,
-    // if true, use the spec_game_config, else use the global game config
-    pub use_spec_game_config: bool,
-    // if use_spec_game_config is false, this field is ignored
-    pub spec_game_config: Option<GameConfig>,
-    pub modpack_version: Option<String>,
-  }
-}
-
 impl Instance {
   pub fn get_json_cfg_path(&self) -> PathBuf {
     self.version_path.join(INSTANCE_CFG_FILE_NAME)
@@ -117,7 +137,12 @@ impl Instance {
   where
     Self: Sized + serde::de::DeserializeOwned + Send,
   {
-    load_json_async::<Self>(&self.get_json_cfg_path()).await
+    let json_string = tokio::fs::read_to_string(self.get_json_cfg_path()).await?;
+    let mut value: Value = serde_json::from_str(&json_string)?;
+    // Config files written before 1.1.0 carry no `configVersion` key; migrate()
+    // falls back to the chain-start version and applies the declared steps.
+    migrate(&mut value, &MIGRATIONS, None, "configVersion").map_err(std::io::Error::other)?;
+    serde_json::from_value(value).map_err(std::io::Error::other)
   }
 
   pub async fn save_json_cfg(&self) -> Result<(), std::io::Error> {
@@ -286,14 +311,6 @@ pub enum InstanceError {
   LoaderInstallerNotFound,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct OptiFine {
-  pub filename: String,
-  pub version: String,
-  pub status: ModLoaderStatus,
-}
-
 impl std::error::Error for InstanceError {}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -301,4 +318,39 @@ impl std::error::Error for InstanceError {}
 pub struct ModpackFileList {
   pub all: Vec<String>,
   pub unchecked: Vec<String>,
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn migrate_fills_config_version_for_legacy_instance() {
+    // A pre-1.1.0 instance config has no `configVersion` key; migrate() falls
+    // back to the chain-start version and stamps the current version. The
+    // Minecraft `version` key must be left untouched.
+    let mut doc: Value = serde_json::json!({
+      "id": "test:instance",
+      "version": "26.3-snapshot-9",
+    });
+    migrate(&mut doc, &MIGRATIONS, None, "configVersion").unwrap();
+    assert_eq!(doc["configVersion"], "1.1.0");
+    assert_eq!(doc["version"], "26.3-snapshot-9");
+  }
+
+  #[test]
+  fn migrate_keeps_current_config_version_unchanged() {
+    let mut doc: Value = serde_json::json!({
+      "configVersion": "1.1.0",
+      "version": "1.20.1",
+    });
+    migrate(&mut doc, &MIGRATIONS, None, "configVersion").unwrap();
+    assert_eq!(doc["configVersion"], "1.1.0");
+    assert_eq!(doc["version"], "1.20.1");
+  }
+
+  #[test]
+  fn default_config_version_is_max_version() {
+    assert_eq!(Instance::default().config_version, "1.1.0");
+  }
 }

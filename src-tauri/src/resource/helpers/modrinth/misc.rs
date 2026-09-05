@@ -98,7 +98,7 @@ pub struct ModrinthSearchRes {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Debug)]]
+#[structstruck::each[derive(Deserialize, Debug)]]
   pub struct ModrinthFileInfo {
     pub url: String,
     pub filename: String,
@@ -111,7 +111,7 @@ structstruck::strike! {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Debug)]]
+#[structstruck::each[derive(Deserialize, Debug)]]
   pub struct ModrinthVersionPack {
     pub project_id: String,
     pub dependencies: Vec<pub struct {

@@ -1,70 +1,51 @@
-use serde::Deserialize;
-use serde::de::Deserializer;
 use serde_json::Value;
-
-use crate::launcher_config::models::AppearanceBackgroundConfig;
+use serde_json::json;
+use sjmcl_migration::MigrationError;
 
 // Migrate old built-in wallpaper choices to the new default preset.
 const LEGACY_BUILT_IN_BACKGROUNDS: &[&str] = &["%built-in:Jokull", "%built-in:GNLXC"];
 
-#[derive(Deserialize, Default)]
-#[serde(rename_all = "camelCase", default)]
-struct BackgroundPayload {
-  choice: String,
-  random_custom: bool,
-  auto_darken: bool,
-}
+/// Migration helper: convert a legacy `appearance.background` object.
+///
+/// The built-in wallpaper set changed in 1.2.0; old presets are remapped to the
+/// new default preset and `auto_darken` is reset. Invoked by the migration
+/// chain when restoring configs written before 1.2.0.
+pub fn migrate_background(value: &Value) -> Result<Value, MigrationError> {
+  let mut obj = value
+    .as_object()
+    .cloned()
+    .ok_or_else(|| MigrationError::TypeMismatch("background object".into()))?;
 
-pub fn deserialize_background<'de, D>(
-  deserializer: D,
-) -> Result<AppearanceBackgroundConfig, D::Error>
-where
-  D: Deserializer<'de>,
-{
-  let mut payload = BackgroundPayload::deserialize(deserializer)?;
-
-  if LEGACY_BUILT_IN_BACKGROUNDS.contains(&payload.choice.as_str()) {
-    payload.choice = "%built-in:Florwyn".to_string();
-    payload.auto_darken = false;
+  let choice = obj
+    .get("choice")
+    .and_then(|v| v.as_str())
+    .unwrap_or_default();
+  if LEGACY_BUILT_IN_BACKGROUNDS.contains(&choice) {
+    obj.insert("choice".to_string(), json!("%built-in:Florwyn"));
+    obj.insert("autoDarken".to_string(), json!(false));
   }
 
-  Ok(AppearanceBackgroundConfig {
-    choice: payload.choice,
-    random_custom: payload.random_custom,
-    auto_darken: payload.auto_darken,
-  })
+  Ok(Value::Object(obj))
 }
 
-// Deserializing discover sources from old and new formats.
-// Migrated from Vec<String> to Vec<(String, bool)> with default enabled=true
-pub fn deserialize_discover_sources<'de, D>(
-  deserializer: D,
-) -> Result<Vec<(String, bool)>, D::Error>
-where
-  D: Deserializer<'de>,
-{
-  let value = match Value::deserialize(deserializer) {
-    Ok(value) => value,
-    Err(_) => return Ok(Vec::default()),
+/// Migration helper: convert old `discoverSourceEndpoints` formats.
+///
+/// Migrated from `Vec<String>` to `Vec<(String, bool)>` with default
+/// enabled=true. Invoked by the migration chain when restoring configs written
+/// before 1.2.0.
+pub fn migrate_discover_sources(value: &Value) -> Result<Value, MigrationError> {
+  let Some(items) = value.as_array() else {
+    return Ok(Value::Array(Vec::new()));
   };
 
-  let items = match value.as_array() {
-    Some(items) => items,
-    None => return Ok(Vec::default()),
-  };
-
-  Ok(
+  Ok(Value::Array(
     items
       .iter()
       .filter_map(|item| match item {
-        Value::String(url) => Some((url.to_string(), true)),
-        Value::Array(tuple) if tuple.len() == 2 => {
-          let url = tuple.first()?.as_str()?;
-          let enabled = tuple.get(1)?.as_bool()?;
-          Some((url.to_string(), enabled))
-        }
+        Value::String(url) => Some(json!([url, true])),
+        Value::Array(tuple) if tuple.len() == 2 => Some(Value::Array(tuple.clone())),
         _ => None,
       })
       .collect(),
-  )
+  ))
 }

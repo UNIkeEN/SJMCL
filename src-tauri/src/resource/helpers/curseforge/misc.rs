@@ -85,8 +85,8 @@ pub fn get_curseforge_api(
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct CurseForgeProject {
     pub id: i32,
     pub class_id: Option<i32>,
@@ -125,8 +125,8 @@ pub struct CurseForgeSearchRes {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct CurseForgeFileInfo {
     pub id: i32,
     pub mod_id: i32,
@@ -155,8 +155,8 @@ pub struct CurseForgeVersionPackSearchRes {
 }
 
 structstruck::strike! {
-#[strikethrough[derive(Deserialize, Serialize, Debug, Clone)]]
-#[strikethrough[serde(rename_all = "camelCase")]]
+#[structstruck::each[derive(Deserialize, Serialize, Debug, Clone)]]
+#[structstruck::each[serde(rename_all = "camelCase")]]
   pub struct CurseForgeFingerprintRes {
     pub data: pub struct {
       pub exact_matches: Vec<pub struct {

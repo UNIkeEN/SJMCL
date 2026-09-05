@@ -14,7 +14,7 @@ pub struct MinecraftProfile {
 }
 
 structstruck::strike! {
-  #[strikethrough[derive(serde::Deserialize, serde::Serialize)]]
+  #[structstruck::each[derive(serde::Deserialize, serde::Serialize)]]
   pub struct TextureInfo {
     pub textures: HashMap<String, pub struct {
       pub url: String,
