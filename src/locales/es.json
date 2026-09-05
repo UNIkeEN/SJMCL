@@ -660,6 +660,7 @@
       "optifine-libraries": "Librerías de OptiFine",
       "launcher-update": "Actualizar Lanzador",
       "extension-update": "Actualizar Extensión {{param1}} {{param2}}",
+      "extension-update-all": "Actualizar extensiones por lotes",
       "mojang-java": "Tiempo de Ejecución de Java {{param}}"
     }
   },
@@ -861,6 +862,26 @@
           "description": "Visita GitHub para explorar una lista de extensiones desarrolladas por la comunidad.",
           "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
         }
+      }
+    },
+    "update": {
+      "action": "Actualizar todas las extensiones",
+      "cancel": "Cancelar actualización",
+      "checkFailed": "No se pudieron comprobar las actualizaciones de las extensiones",
+      "checking": "Comprobando actualizaciones... {{current}}/{{total}}",
+      "completed": "Actualización completada: {{updated}} actualizadas, {{upToDate}} al día, {{skipped}} omitidas, {{failed}} con errores",
+      "downloading": "Descargando {{name}}... {{current}}/{{total}}",
+      "installing": "Instalando {{name}}... {{current}}/{{total}}",
+      "reasons": {
+        "cancelled": "La actualización fue cancelada",
+        "checkFailed": "No se pudo comprobar si hay actualizaciones: {{details}}",
+        "downloadFailed": "La descarga falló: {{details}}",
+        "installFailed": "La instalación falló: {{details}}",
+        "invalidVersion": "La versión disponible falta o no es válida",
+        "notFound": "No se encontró ningún paquete de actualización en el último lanzamiento",
+        "sourceInvalid": "La URL de origen no es un repositorio de GitHub válido",
+        "sourceUnavailable": "La fuente de actualización no está disponible: {{details}}",
+        "unknown": "Error desconocido"
       }
     }
   },
@@ -3049,8 +3070,10 @@
             "INVALID_IDENTIFIER": "El identificador de la extensión es inválido",
             "IDENTIFIER_MISMATCH": "El identificador de la extensión no coincide con la expectativa",
             "INVALID_NAME": "El nombre de la extensión es inválido",
+            "INVALID_VERSION": "La versión del paquete de actualización falta o no es válida",
             "LAUNCHER_VERSION_TOO_LOW": "La versión del lanzador es demasiado antigua",
-            "EXTENSION_NOT_FOUND": "Archivo de paquete objetivo no encontrado"
+            "EXTENSION_NOT_FOUND": "Archivo de paquete objetivo no encontrado",
+            "VERSION_NOT_NEWER": "La versión del paquete de actualización no es posterior a la versión instalada"
           }
         }
       },
