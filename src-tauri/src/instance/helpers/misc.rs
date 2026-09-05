@@ -37,6 +37,9 @@ pub fn get_instance_subdir_paths(
   directory_types: &[&InstanceSubdirType],
 ) -> Option<Vec<PathBuf>> {
   let version_path = &instance.version_path;
+  if !version_path.exists() {
+    return None;
+  }
   let game_dir = version_path.parent()?.parent()?; // safe unwrap to `?`
 
   let version_isolation = get_instance_game_config(app, instance).version_isolation;
