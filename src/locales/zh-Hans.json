@@ -814,6 +814,35 @@
       }
     }
   },
+  "ExportModListModal": {
+    "header": {
+      "title": "导出模组列表"
+    },
+    "format": "格式",
+    "toast": {
+      "success": "导出模组列表成功",
+      "failed": "导出模组列表失败"
+    },
+    "field": {
+      "field": "字段",
+      "mcmodId": "MC 百科 ID",
+      "modloaderType": "模组加载器类型",
+      "translatedName": "翻译后的名称",
+      "name": "名称",
+      "description": "简介",
+      "translatedDescription": "翻译后的简介",
+      "mcmodWebsite": "MC 百科地址",
+      "modrinthWebsite": "Modrinth 地址",
+      "curseforgeWebsite": "Curseforge 地址",
+      "version": "版本",
+      "fileName": "文件名",
+      "enabled": "启用状态"
+    },
+    "button": {
+      "cancel": "取消",
+      "export": "导出"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "扩展内容渲染失败。"
   },
@@ -1546,6 +1575,7 @@
         "alert": "可能不兼容",
         "info": "查看信息",
         "update": "检查更新",
+        "export": "导出列表",
         "search": "搜索",
         "placeholder": "搜索模组..."
       }
