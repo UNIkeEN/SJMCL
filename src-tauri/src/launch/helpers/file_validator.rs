@@ -335,17 +335,20 @@ pub fn get_nonnative_library_paths(
       continue;
     }
 
-    // Cleanroom replaces some legacy libraries under different Maven coordinates.
-    if mod_loader_type == ModLoaderType::Cleanroom
-      && matches!(
-        library.name.as_str(),
-        "org.lwjgl.lwjgl:lwjgl:2.9.4-nightly-20150209"
-          | "org.lwjgl.lwjgl:lwjgl_util:2.9.4-nightly-20150209"
-          | "net.java.dev.jna:platform:3.4.0"
-          | "com.ibm.icu:icu4j-core-mojang:51.2"
-      )
-    {
-      continue;
+    if mod_loader_type == ModLoaderType::Cleanroom {
+      // Cleanroom replaces legacy LWJGL 2 libraries, whose versions vary by platform.
+      let is_legacy_lwjgl = parse_library_name(&library.name, None).is_ok_and(|parts| {
+        parts.path == "org/lwjgl/lwjgl"
+          && matches!(parts.pack_name.as_str(), "lwjgl" | "lwjgl_util")
+      });
+      if is_legacy_lwjgl
+        || matches!(
+          library.name.as_str(),
+          "net.java.dev.jna:platform:3.4.0" | "com.ibm.icu:icu4j-core-mojang:51.2"
+        )
+      {
+        continue;
+      }
     }
 
     libraries.push(library.clone());
