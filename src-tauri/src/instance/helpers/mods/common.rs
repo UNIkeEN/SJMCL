@@ -114,6 +114,7 @@ impl LocalModMetadataParser for FallbackManifestModMetadataParser {
   }
 }
 
+// Cleanroom and NeoForge are omitted because they reuse the LegacyForge and Forge parsers, respectively.
 const DEFAULT_MOD_LOADER_PRIORITY_LIST: [ModLoaderType; 6] = [
   ModLoaderType::Fabric,
   ModLoaderType::Forge,
@@ -128,7 +129,9 @@ impl ModLoaderType {
     match self {
       Self::Fabric => fabric::FabricModMetadataParser::parse_mod_info_from_jar(jar),
       Self::Forge | Self::NeoForge => forge::ForgeModMetadataParser::parse_mod_info_from_jar(jar),
-      Self::LegacyForge => legacy_forge::LegacyForgeModMetadataParser::parse_mod_info_from_jar(jar),
+      Self::LegacyForge | Self::Cleanroom => {
+        legacy_forge::LegacyForgeModMetadataParser::parse_mod_info_from_jar(jar)
+      }
       Self::LiteLoader => liteloader::LiteLoaderModMetadataParser::parse_mod_info_from_jar(jar),
       Self::Quilt => quilt::QuiltModMetadataParser::parse_mod_info_from_jar(jar),
       Self::Unknown => FallbackManifestModMetadataParser::parse_mod_info_from_jar(jar),
@@ -141,7 +144,7 @@ impl ModLoaderType {
       Self::Forge | Self::NeoForge => {
         forge::ForgeModMetadataParser::parse_mod_info_from_dir(dir_path).await
       }
-      Self::LegacyForge => {
+      Self::LegacyForge | Self::Cleanroom => {
         legacy_forge::LegacyForgeModMetadataParser::parse_mod_info_from_dir(dir_path).await
       }
       Self::LiteLoader => {
@@ -236,6 +239,9 @@ pub fn check_potential_incompatibility(
 
   if installed_loader_type == ModLoaderType::Quilt {
     supported_loaders.push(ModLoaderType::Fabric);
+  }
+  if installed_loader_type == ModLoaderType::Cleanroom {
+    supported_loaders.push(ModLoaderType::Forge);
   }
   if installed_loader_type == ModLoaderType::NeoForge && game_version == "1.20.1" {
     supported_loaders.push(ModLoaderType::Forge);

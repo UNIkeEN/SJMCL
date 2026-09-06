@@ -68,7 +68,7 @@ import { ResourceService } from "@/services/resource";
 import { TaskService } from "@/services/task";
 import cardStyles from "@/styles/card.module.css";
 import { ISOToDate } from "@/utils/datetime";
-import { translateTag } from "@/utils/resource";
+import { getResourceCompatibleModLoader, translateTag } from "@/utils/resource";
 import { formatDisplayCount, sanitizeFileName } from "@/utils/string";
 
 interface DownloadSpecificResourceModalProps extends Omit<
@@ -104,13 +104,16 @@ const DownloadSpecificResourceModal: React.FC<
   const addPrefix =
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.translatedFilenamePrefix;
+  const curInstanceResourceModLoader = curInstanceModLoader
+    ? getResourceCompatibleModLoader(curInstanceModLoader)
+    : undefined;
 
   const [gameVersionList, setGameVersionList] = useState<string[]>([]);
   const [versionLabels, setVersionLabels] = useState<string[]>([]);
   const [selectedVersionLabel, setSelectedVersionLabel] = useState<string>("");
   const [selectedModLoader, setSelectedModLoader] = useState<
     ModLoaderType | "All"
-  >(curInstanceModLoader || "All");
+  >(curInstanceResourceModLoader || "All");
   const [isVersionPacksLoading, setIsLoadingVersionPacks] =
     useState<boolean>(true);
   const [versionPacks, setVersionPacks] = useState<OtherResourceVersionPack[]>(
@@ -391,12 +394,13 @@ const DownloadSpecificResourceModal: React.FC<
       resource.type === OtherResourceType.Mod &&
       !resource.tags.includes("datapack")
     ) {
-      if (curInstanceModLoader) {
+      if (curInstanceResourceModLoader) {
         for (const pack of matchingPacks) {
           const matchingFiles = pack.items.filter(
             (item) =>
               item.loader &&
-              item.loader.toLowerCase() === curInstanceModLoader.toLowerCase()
+              item.loader.toLowerCase() ===
+                curInstanceResourceModLoader.toLowerCase()
           );
           candidateFiles.push(...matchingFiles);
         }
@@ -421,7 +425,7 @@ const DownloadSpecificResourceModal: React.FC<
     versionPacks,
     resource.type,
     resource.tags,
-    curInstanceModLoader,
+    curInstanceResourceModLoader,
   ]);
 
   const shouldShowRecommendedSection = (): boolean => {
@@ -433,7 +437,8 @@ const DownloadSpecificResourceModal: React.FC<
       selectedVersionLabel === curInstanceMajorVersion;
 
     const isCorrectModLoaderFilter =
-      selectedModLoader === "All" || selectedModLoader === curInstanceModLoader;
+      selectedModLoader === "All" ||
+      selectedModLoader === curInstanceResourceModLoader;
 
     return isCorrectVersionFilter && isCorrectModLoaderFilter;
   };
@@ -613,8 +618,8 @@ const DownloadSpecificResourceModal: React.FC<
   };
 
   useEffect(() => {
-    setSelectedModLoader(curInstanceModLoader || "All");
-  }, [curInstanceModLoader]);
+    setSelectedModLoader(curInstanceResourceModLoader || "All");
+  }, [curInstanceResourceModLoader]);
 
   useEffect(() => {
     const initialVersion = curInstanceMajorVersion || "All";

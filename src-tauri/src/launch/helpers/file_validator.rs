@@ -20,7 +20,7 @@ use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
   DownloadsArtifact, FeaturesInfo, IsAllowed, LibrariesValue, McClientInfo,
 };
-use crate::instance::models::misc::InstanceError;
+use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
@@ -323,6 +323,7 @@ pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCL
 pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
+  mod_loader_type: ModLoaderType,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut libraries = Vec::new();
   let feature = FeaturesInfo::default();
@@ -333,8 +334,26 @@ pub fn get_nonnative_library_paths(
     if library.natives.is_some() {
       continue;
     }
+
+    if mod_loader_type == ModLoaderType::Cleanroom {
+      // Cleanroom replaces legacy LWJGL 2 libraries, whose versions vary by platform.
+      let is_legacy_lwjgl = parse_library_name(&library.name, None).is_ok_and(|parts| {
+        parts.path == "org/lwjgl/lwjgl"
+          && matches!(parts.pack_name.as_str(), "lwjgl" | "lwjgl_util")
+      });
+      if is_legacy_lwjgl
+        || matches!(
+          library.name.as_str(),
+          "net.java.dev.jna:platform:3.4.0" | "com.ibm.icu:icu4j-core-mojang:51.2"
+        )
+      {
+        continue;
+      }
+    }
+
     libraries.push(library.clone());
   }
+
   libraries = merge_library_lists(&libraries, &[]); // remove duplicates to prevent launch errors
   let mut result = Vec::new();
   for library in libraries {
