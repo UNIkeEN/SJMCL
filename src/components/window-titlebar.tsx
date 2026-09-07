@@ -8,33 +8,13 @@ import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useExtensionHost } from "@/contexts/extension/host";
 
-const MainWindowTitlebar = () => {
+const MainWindowExtensionTitle = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { config } = useLauncherConfig();
   const { extensionList } = useExtensionHost();
-  const osType = config.basicInfo.osType;
 
-  const isLinux = osType === "linux";
-  const isMac = osType === "macos" || osType === "darwin";
-  const isWindows = osType === "windows";
+  const textColor = useColorModeValue("blackAlpha.600", "whiteAlpha.700");
 
-  const titlebarHeight = isWindows ? 32 : 28; // the same as Windows 11 / macOS 15 native titlebar height.
-
-  const [isMacFullscreen, setIsMacFullscreen] = useState(false);
-  const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);
-
-  const titlebarBg = useColorModeValue("whiteAlpha.600", "blackAlpha.500");
-  const titlebarBorderColor = useColorModeValue(
-    "blackAlpha.200",
-    "whiteAlpha.300"
-  );
-  const titlebarTextColor = useColorModeValue(
-    "blackAlpha.600",
-    "whiteAlpha.700"
-  );
-
-  // if the current page is provided by an extension, show the extension name in titlebar center
   const extensionIdentifier = (() => {
     if (!router.isReady) return undefined;
     const path = router.asPath.split("?")[0];
@@ -52,6 +32,72 @@ const MainWindowTitlebar = () => {
   const extensionName = extensionList?.find(
     (extension) => extension.identifier === extensionIdentifier
   )?.name;
+
+  if (!extensionName) return null;
+
+  return (
+    <Flex
+      position="absolute"
+      inset={0}
+      align="center"
+      justify="center"
+      pointerEvents="none"
+    >
+      <Text fontSize="xs-sm" color={textColor}>
+        {t("WindowTitlebar.extensionProvidedPage", {
+          name: extensionName,
+        })}
+      </Text>
+    </Flex>
+  );
+};
+
+const WindowTitlebar = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { config } = useLauncherConfig();
+  const osType = config.basicInfo.osType;
+
+  const isLinux = osType === "linux";
+  const isMac = osType === "macos" || osType === "darwin";
+  const isWindows = osType === "windows";
+
+  const titlebarHeight = isWindows ? 32 : 28; // the same as Windows 11 / macOS 15 native titlebar height.
+
+  const [isMacFullscreen, setIsMacFullscreen] = useState(false);
+  const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);
+  const [isMainWindow, setIsMainWindow] = useState(true);
+  const [windowTitle, setWindowTitle] = useState("");
+
+  const titlebarBg = useColorModeValue("whiteAlpha.600", "blackAlpha.500");
+  const titlebarBorderColor = useColorModeValue(
+    "blackAlpha.200",
+    "whiteAlpha.300"
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const currentWindow = getCurrentWindow();
+    const isMain = currentWindow.label === "main";
+    setIsMainWindow(isMain);
+
+    if (isMain) return;
+
+    const titleKey: string | undefined = {
+      "/standalone/game-error": "Tauri.windowTitle.gameError",
+      "/standalone/game-log": "Tauri.windowTitle.gameLog",
+    }[router.pathname];
+
+    (async () => {
+      if (titleKey) {
+        const title = t(titleKey);
+        setWindowTitle(title);
+      } else {
+        setWindowTitle(await currentWindow.title());
+      }
+    })();
+  }, [router.pathname, t]);
 
   const linuxWindowButtons = [
     {
@@ -109,14 +155,10 @@ const MainWindowTitlebar = () => {
       setIsLinuxMaximized(await currentWindow.isMaximized());
     };
 
-    void syncMaximized();
-    currentWindow
-      .onResized(() => {
-        void syncMaximized();
-      })
-      .then((unlisten) => {
-        unlistenResized = unlisten;
-      });
+    (async () => {
+      await syncMaximized();
+      unlistenResized = await currentWindow.onResized(syncMaximized);
+    })();
 
     return () => {
       if (unlistenResized) {
@@ -128,7 +170,7 @@ const MainWindowTitlebar = () => {
   // Remove decorum fallback titlebar if it was created before React host mounted.
   useEffect(() => {
     if (typeof window === "undefined" || !isWindows) return;
-    const host = document.getElementById("sjmcl-main-decorum-host");
+    const host = document.getElementById("sjmcl-window-decorum-host");
     if (!host) return;
 
     const allHosts = Array.from(
@@ -158,14 +200,10 @@ const MainWindowTitlebar = () => {
     const syncFullscreen = async () => {
       setIsMacFullscreen(await currentWindow.isFullscreen());
     };
-    void syncFullscreen();
-    currentWindow
-      .onResized(() => {
-        void syncFullscreen();
-      })
-      .then((unlisten) => {
-        unlistenResized = unlisten;
-      });
+    (async () => {
+      await syncFullscreen();
+      unlistenResized = await currentWindow.onResized(syncFullscreen);
+    })();
 
     return () => {
       if (unlistenResized) {
@@ -187,23 +225,11 @@ const MainWindowTitlebar = () => {
       zIndex={9999}
       pl={2}
     >
-      {extensionName && (
-        <Flex
-          position="absolute"
-          inset={0}
-          align="center"
-          justify="center"
-          pointerEvents="none"
-        >
-          <Text fontSize="xs-sm" color={titlebarTextColor}>
-            {t("MainWindowTitlebar.extensionProvidedPage", {
-              name: extensionName,
-            })}
-          </Text>
-        </Flex>
+      {isMainWindow && !router.pathname.startsWith("/standalone") && (
+        <MainWindowExtensionTitle />
       )}
       <Flex
-        id="sjmcl-main-drag-region"
+        id="sjmcl-window-drag-region"
         data-tauri-drag-region
         flex="1"
         h="100%"
@@ -216,10 +242,20 @@ const MainWindowTitlebar = () => {
             boxSize="16px"
           />
         )}
+        {!isMainWindow && windowTitle && (
+          <Text
+            ml={isMac ? 16 : 2}
+            fontSize="xs-sm"
+            fontWeight="semibold"
+            noOfLines={1}
+          >
+            {windowTitle}
+          </Text>
+        )}
       </Flex>
       {isWindows && (
         <HStack
-          id="sjmcl-main-decorum-host"
+          id="sjmcl-window-decorum-host"
           data-tauri-decorum-tb
           spacing={0}
           h="100%"
@@ -246,4 +282,4 @@ const MainWindowTitlebar = () => {
   );
 };
 
-export default MainWindowTitlebar;
+export default WindowTitlebar;

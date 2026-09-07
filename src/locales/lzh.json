@@ -656,6 +656,7 @@
       "mod-update": "迭更改囊",
       "retry": "復試",
       "neoforge-libraries": "NeoForge 行庫",
+      "cleanroom-libraries": "Cleanroom 行庫",
       "forge-libraries": "Forge 行庫",
       "optifine-libraries": "OptiFine 行庫",
       "launcher-update": "迭更啟者",
@@ -1776,9 +1777,6 @@
       "desc": "將改囊集案 {{fileName}} 導入 SJMCL"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "今頁由擴充套件 {{name}} 提供"
-  },
   "ManageSkinModal": {
     "skinManage": "司外觀",
     "default": "本",
@@ -1867,6 +1865,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "續載（+{{left}}）",
       "showAll": "顯全覽（+{{left}}）"
     }
   },
@@ -3236,6 +3235,9 @@
     "button": {
       "agree": "許並續"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "今頁由擴充套件 {{name}} 提供"
   },
   "WorldLevelDataModal": {
     "header": {

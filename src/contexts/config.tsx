@@ -16,7 +16,7 @@ import {
   defaultConfig,
   defaultVersionMetaInfo,
 } from "@/models/config";
-import { JavaInfo } from "@/models/system-info";
+import { JavaInfo } from "@/models/misc";
 import { ConfigService } from "@/services/config";
 import { updateByKeyPath } from "@/utils/partial";
 

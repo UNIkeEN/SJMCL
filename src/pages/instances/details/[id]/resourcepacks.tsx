@@ -212,7 +212,7 @@ const InstanceResourcePacksPage = () => {
             titleExtra={<CountTag count={value.data.length} />}
             onAccordionToggle={(isOpen) => {
               update(
-                "states.instanceResourcepacksPage.accordionStates",
+                "states.instanceResourcePacksPage.accordionStates",
                 accordionStates.toSpliced(index, 1, isOpen)
               );
             }}

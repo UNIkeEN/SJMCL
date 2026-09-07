@@ -656,6 +656,7 @@
       "mod-update": "Actualizar Mod",
       "retry": "Reintentar",
       "neoforge-libraries": "Librerías de NeoForge",
+      "cleanroom-libraries": "Librerías de Cleanroom",
       "forge-libraries": "Librerías de Forge",
       "optifine-libraries": "Librerías de OptiFine",
       "launcher-update": "Actualizar Lanzador",
@@ -1776,9 +1777,6 @@
       "desc": "Importar archivo de modpack {{fileName}} a SJMCL"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "Esta página es proporcionada por la extensión {{name}}"
-  },
   "ManageSkinModal": {
     "skinManage": "Administrar skin",
     "default": "Predeterminado",
@@ -1867,6 +1865,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "Cargar más (+{{left}})",
       "showAll": "Mostrar todo (+{{left}})"
     }
   },
@@ -3236,6 +3235,9 @@
     "button": {
       "agree": "Aceptar"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "Esta página es proporcionada por la extensión {{name}}"
   },
   "WorldLevelDataModal": {
     "header": {

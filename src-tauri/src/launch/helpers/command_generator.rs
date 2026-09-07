@@ -163,12 +163,16 @@ pub async fn generate_launch_command(
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
 
-  let mut class_paths: Vec<String> = get_nonnative_library_paths(&client_info, libraries_dir)?
-    .into_iter()
-    .collect::<HashSet<_>>()
-    .into_iter()
-    .map(|p| p.to_string_lossy().to_string())
-    .collect();
+  let mut class_paths: Vec<String> = get_nonnative_library_paths(
+    &client_info,
+    libraries_dir,
+    selected_instance.mod_loader.loader_type,
+  )?
+  .into_iter()
+  .collect::<HashSet<_>>()
+  .into_iter()
+  .map(|p| p.to_string_lossy().to_string())
+  .collect();
   class_paths.push(client_jar_path.clone());
 
   let quickplay_server_url = match quick_play_multiplayer {

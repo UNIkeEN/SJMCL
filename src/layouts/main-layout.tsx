@@ -29,13 +29,13 @@ import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
 import HeadNavBar from "@/components/head-navbar-v2";
 import LanguageMenu from "@/components/language-menu";
-import MainWindowTitlebar from "@/components/main-window-titlebar";
 import StarUsModal from "@/components/modals/star-us-modal";
 import WelcomeAndTermsModal from "@/components/modals/welcome-and-terms-modal";
 import {
   FileDnDProvider,
   useFileDnD,
 } from "@/components/special/file-dnd-overlay";
+import WindowTitlebar from "@/components/window-titlebar";
 import { useLauncherConfig } from "@/contexts/config";
 import { useExtensionHost } from "@/contexts/extension/host";
 import { useSharedModals } from "@/contexts/shared-modal";
@@ -263,17 +263,30 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     "var(--chakra-colors-gray-900)"
   );
 
+  const linuxBorderStyle = {
+    border: "0.5px solid",
+    borderColor: "gray.500",
+    borderRadius: "lg",
+  };
+
   if (isStandAlone) {
     return (
-      <div
+      <Flex
+        direction="column"
+        h="100vh"
+        overflow="hidden"
+        {...(config.basicInfo.osType === "linux" && linuxBorderStyle)}
         style={{
           ...getGlobalExtraStyle(config),
           backgroundColor: standaloneBgColor,
         }}
       >
-        {children}
+        <WindowTitlebar />
+        <Box flex="1" minH={0} overflow="auto">
+          {children}
+        </Box>
         {isDev && <DevToolbar />}
-      </div>
+      </Flex>
     );
   }
 
@@ -294,15 +307,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       bgRepeat="no-repeat"
       bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
       bgBlendMode={isDarkenBg ? "darken" : "normal"}
-      {...(config.basicInfo.osType === "linux" && {
-        border: "0.5px solid",
-        borderColor: "gray.500",
-        borderRadius: "lg",
-      })}
+      {...(config.basicInfo.osType === "linux" && linuxBorderStyle)}
       overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
-      <MainWindowTitlebar />
+      <WindowTitlebar />
       <Box
         position="relative"
         display="flex"

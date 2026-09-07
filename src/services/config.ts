@@ -1,8 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { LauncherConfig, VersionMetaInfo } from "@/models/config";
+import { JavaInfo } from "@/models/misc";
 import { InvokeResponse } from "@/models/response";
-import { JavaInfo } from "@/models/system-info";
 import { responseHandler } from "@/utils/response";
 
 export const CONFIG_PARTIAL_UPDATE_EVENT = "config:partial-update";

@@ -656,6 +656,7 @@
       "mod-update": "モッドを更新",
       "retry": "再試行",
       "neoforge-libraries": "NeoForge ランタイムライブラリ",
+      "cleanroom-libraries": "Cleanroom ランタイムライブラリ",
       "forge-libraries": "Forge ランタイムライブラリ",
       "optifine-libraries": "OptiFine ランタイムライブラリ",
       "launcher-update": "ランチャーを更新",
@@ -1776,9 +1777,6 @@
       "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
     }
   },
-  "MainWindowTitlebar": {
-    "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
-  },
   "ManageSkinModal": {
     "skinManage": "スキン管理",
     "default": "デフォルト",
@@ -1867,6 +1865,7 @@
   },
   "OptionItemGroup": {
     "button": {
+      "loadMore": "さらに読み込む（+{{left}}）",
       "showAll": "すべて表示（+{{left}}）"
     }
   },
@@ -3236,6 +3235,9 @@
     "button": {
       "agree": "同意して続ける"
     }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "このページは拡張機能 {{name}} によって提供されています"
   },
   "WorldLevelDataModal": {
     "header": {

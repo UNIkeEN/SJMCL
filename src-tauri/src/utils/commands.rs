@@ -10,6 +10,7 @@ use url::Url;
 use crate::launcher_config::models::{LauncherConfigError, MemoryInfo};
 use crate::utils::fs::extract_filename as extract_filename_helper;
 use crate::utils::sys_info::get_memory_info;
+use crate::utils::window::create_webview_window_with_config as create_webview_window_helper;
 
 #[tauri::command]
 pub fn retrieve_memory_info() -> SJMCLResult<MemoryInfo> {
@@ -69,6 +70,17 @@ pub async fn check_service_availability(
 #[tauri::command]
 pub fn extract_filename(path_str: String, with_ext: bool) -> SJMCLResult<String> {
   Ok(extract_filename_helper(&path_str, with_ext))
+}
+
+#[tauri::command]
+pub async fn create_window(
+  app: AppHandle,
+  config: tauri::utils::config::WindowConfig,
+  custom_overlaid: bool,
+) -> SJMCLResult<()> {
+  create_webview_window_helper(&app, config, custom_overlaid)
+    .await
+    .map(|_| ())
 }
 
 // ------- Additional file commands for extensions. -------

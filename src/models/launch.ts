@@ -1,7 +1,7 @@
 import { PlayerInfo } from "@/models/account";
 import { GameConfig } from "@/models/config";
 import { InstanceSummary } from "@/models/instance/misc";
-import { JavaInfo } from "@/models/system-info";
+import { JavaInfo } from "@/models/misc";
 
 export interface LaunchingState {
   id: number;

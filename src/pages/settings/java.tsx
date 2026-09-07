@@ -13,7 +13,7 @@ import ManualAddJavaPathModal from "@/components/modals/manual-add-java-path-mod
 import { useLauncherConfig } from "@/contexts/config";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { JavaInfo } from "@/models/system-info";
+import { JavaInfo } from "@/models/misc";
 import { ConfigService } from "@/services/config";
 
 const JavaSettingsPage = () => {

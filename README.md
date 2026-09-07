@@ -53,6 +53,13 @@ Install the latest stable release with the Linux installer:
 curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
 ```
 
+Install the latest stable release via [Homebrew](https://brew.sh) Cask if [Homebrew](https://brew.sh) is installed:
+
+```bash
+brew install --cask sjmcl
+```
+
+
 Install the portable Linux build without root access:
 
 ```bash
@@ -90,7 +97,7 @@ sudo snap install sjmcl
 Install with Homebrew:
 
 ```bash
-brew install --cask SJMC-Dev/SJMCL/sjmcl
+brew install --cask sjmcl
 ```
 
 </details>

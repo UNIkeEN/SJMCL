@@ -32,6 +32,7 @@ pub enum ModLoaderType {
   Unknown,
   Fabric,
   Forge,
+  Cleanroom,
   LegacyForge,
   NeoForge,
   LiteLoader,
@@ -46,6 +47,7 @@ impl FromStr for ModLoaderType {
       "unknown" => Ok(ModLoaderType::Unknown),
       "fabric" => Ok(ModLoaderType::Fabric),
       "forge" => Ok(ModLoaderType::Forge),
+      "cleanroom" => Ok(ModLoaderType::Cleanroom),
       "legacyforge" => Ok(ModLoaderType::LegacyForge),
       "neoforge" => Ok(ModLoaderType::NeoForge),
       "liteloader" => Ok(ModLoaderType::LiteLoader),
@@ -61,6 +63,7 @@ impl ModLoaderType {
       ModLoaderType::Unknown => "/images/icons/JEIcon_Release.png",
       ModLoaderType::Fabric => "/images/icons/Fabric.png",
       ModLoaderType::Forge | ModLoaderType::LegacyForge => "/images/icons/Forge.png",
+      ModLoaderType::Cleanroom => "/images/icons/Cleanroom.png",
       ModLoaderType::NeoForge => "/images/icons/NeoForge.png",
       ModLoaderType::LiteLoader => "/images/icons/LiteLoader.png",
       ModLoaderType::Quilt => "/images/icons/Quilt.png",
@@ -104,6 +107,7 @@ structstruck::strike! {
     pub use_spec_game_config: bool,
     // if use_spec_game_config is false, this field is ignored
     pub spec_game_config: Option<GameConfig>,
+    pub modpack_version: Option<String>,
   }
 }
 
@@ -142,6 +146,7 @@ pub struct InstanceSummary {
   pub support_quick_play: bool,
   pub use_spec_game_config: bool,
   pub is_version_isolated: bool,
+  pub modpack_version: Option<String>,
 }
 
 impl InstanceSummary {
@@ -171,6 +176,7 @@ impl InstanceSummary {
         .is_ge(),
       use_spec_game_config: instance.use_spec_game_config,
       is_version_isolated,
+      modpack_version: instance.modpack_version.clone(),
     }
   }
 }

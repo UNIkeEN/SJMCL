@@ -23,8 +23,7 @@ import {
 import MemoryStatusProgress from "@/components/memory-status-progress";
 import { useLauncherConfig } from "@/contexts/config";
 import { GameConfig } from "@/models/config";
-import { MemoryInfo } from "@/models/system-info";
-import { JavaInfo } from "@/models/system-info";
+import { JavaInfo, MemoryInfo } from "@/models/misc";
 import { UtilsService } from "@/services/utils";
 
 export interface GameSettingsGroupsProps {

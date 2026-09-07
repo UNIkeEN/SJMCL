@@ -38,6 +38,7 @@ export interface InstanceSummary {
   supportQuickPlay: boolean;
   useSpecGameConfig: boolean;
   isVersionIsolated: boolean;
+  modpackVersion?: string;
 }
 
 export interface ModpackMetaInfo {

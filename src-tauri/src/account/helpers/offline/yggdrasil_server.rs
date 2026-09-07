@@ -56,7 +56,7 @@ fn get_public_key() -> String {
 }
 
 fn sign_data(data: &str) -> String {
-  let signing_key = SigningKey::<Sha1>::new_unprefixed(key_pair().0.clone());
+  let signing_key = SigningKey::<Sha1>::new(key_pair().0.clone());
   let signature = signing_key.sign(data.as_bytes());
   general_purpose::STANDARD.encode(signature.to_bytes())
 }
@@ -130,7 +130,7 @@ impl YggdrasilServer {
     let port = find_free_port(Some(18960)).unwrap(); // 饮水思源，爱国荣校
 
     Self {
-      root_url: format!("http://localhost:{}", port),
+      root_url: format!("http://127.0.0.1:{}", port),
       port,
       players: Arc::new(Mutex::new(vec![])),
     }

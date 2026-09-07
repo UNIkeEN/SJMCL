@@ -1047,6 +1047,7 @@ pub async fn create_instance(
   modpack_path: Option<String>,
   mut is_install_fabric_api: Option<bool>,
   mut is_install_qf_api: Option<bool>,
+  modpack_version: Option<String>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
@@ -1101,6 +1102,7 @@ pub async fn create_instance(
     play_time: 0,
     use_spec_game_config: false,
     spec_game_config: None,
+    modpack_version: modpack_version.clone(),
   };
 
   // Download version info
@@ -1137,7 +1139,8 @@ pub async fn create_instance(
     if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await
       && err.0 == LaunchError::NoSuitableJava.to_string()
     {
-      let minimum_java_version = get_minimum_java_version_by_game(&app, &instance, false).await;
+      let minimum_java_version =
+        get_minimum_java_version_by_game(&app, &instance, client_java_version, false).await;
       let minimum_java_version = minimum_java_version.to_string();
       task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
       java_version_to_download = Some(minimum_java_version);

@@ -72,12 +72,6 @@ const GameLogPage: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      await getCurrentWebviewWindow().setTitle(t("Tauri.windowTitle.gameLog"));
-    })();
-  }, [t]);
-
-  useEffect(() => {
-    (async () => {
       launchingIdRef.current = parseIdFromWindowLabel(
         getCurrentWebviewWindow().label
       );
@@ -360,7 +354,7 @@ const GameLogPage: React.FC = () => {
     <Box
       ref={containerRef}
       p={4}
-      h="100vh"
+      h="100%"
       display="flex"
       flexDirection="column"
     >

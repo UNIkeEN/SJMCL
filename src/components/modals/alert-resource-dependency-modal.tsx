@@ -186,7 +186,9 @@ const AlertResourceDependencyModal: React.FC<
         }
         isFullClickZone
         onClick={() => {
-          modalProps.onClose();
+          if (dependencies.length < 2) {
+            modalProps.onClose();
+          }
           openSharedModal("download-specific-resource", {
             resource,
             curInstanceMajorVersion,

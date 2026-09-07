@@ -112,7 +112,7 @@ pub async fn monitor_process(
   ));
 
   let log_window = if display_log_window {
-    create_webview_window(&app, &label, "game_log", None)
+    create_webview_window(&app, &label, "game_log", None, true)
       .await
       .ok()
   } else {
@@ -253,9 +253,10 @@ pub async fn monitor_process(
           let mut launching_queue = launching_queue_state.lock().unwrap();
           launching_queue.retain(|state| state.id != id);
         } else {
-          let _ = create_webview_window(&app, &format!("game_error_{id}"), "game_error", None)
-            .await
-            .unwrap();
+          let _ =
+            create_webview_window(&app, &format!("game_error_{id}"), "game_error", None, true)
+              .await
+              .unwrap();
         }
       }
     }

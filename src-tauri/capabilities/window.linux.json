@@ -2,7 +2,7 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "window-linux",
   "description": "window controls permissions for linux",
-  "windows": ["main"],
+  "windows": ["main", "game_log*", "game_error*", "extension_standalone*"],
   "platforms": ["linux"],
   "permissions": [
     "core:window:allow-close",

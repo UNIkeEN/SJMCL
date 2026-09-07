@@ -7,6 +7,7 @@ use tauri::AppHandle;
 use zip::ZipArchive;
 
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
+use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
 use crate::instance::helpers::loader::forge::{InstallProfile, install_forge_loader};
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
@@ -74,6 +75,9 @@ pub async fn install_mod_loader(
     }
     ModLoaderType::Forge => {
       install_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params).await
+    }
+    ModLoaderType::Cleanroom => {
+      install_cleanroom_loader(priority, loader, lib_dir.clone(), task_params).await
     }
     ModLoaderType::NeoForge => {
       install_neoforge_loader(priority, loader, lib_dir, task_params).await

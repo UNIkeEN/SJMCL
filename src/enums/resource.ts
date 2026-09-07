@@ -172,9 +172,8 @@ export const shaderPackTagList = {
       "pbr",
       "reflections",
       "shadows",
-      "potato",
     ],
-    performance: ["low", "medium", "high", "screenshot"],
+    performance: ["potato", "low", "medium", "high", "screenshot"],
   },
 };
 
