@@ -2,6 +2,29 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.3.0
+
+`2026-09-07`
+
+- **🔥 Support the Cleanroom mod loader. #1909 #1926** @CiiLu @UNIkeEN @xunying123
+- 🌟 Support potential incompatibility warnings for installed mods in certain special cases. #1870 @UNIkeEN @xunying123
+- 🌟 Support native libraries required by Minecraft 26.2. #1874 @xunying123
+- 🌟 Support viewing schematics in subfolders. #1880 @UNIkeEN
+- 🌟 Record and display the version of instances imported from modpacks. #1886 @CiiLu
+- 🌟 Use custom title bars in the game log and game crash windows for a consistent visual style. #1888 @UNIkeEN @3gf8jv4dv
+- 🌟 Automatically clean up expired download cache on startup. #1892 @icgnos @UNIkeEN
+- 🐛 Fix an issue where expired Microsoft account sessions could prevent the game from launching. #1868 @xunying123
+- 🐛 Fix and improve a series of UI display issues. #1889 #1899 #1903 #1913 @icgnos @UNIkeEN @3gf8jv4dv @CiiLu
+- 🐛 Fix duplicated game arguments in legacy Forge instances. #1897 @xunying123
+- 🐛 Fix custom offline account skins not working in NeoForge instances. #1906 @xunying123
+- ⚡️ Improve resource version loading performance through local filtering. #1869 @xunying123
+- ⚡️ Improve frontend performance of the resource download version selection modal. #1908 @Okabe-Rintarou-0
+- 🛠 Redirect to the account page when launching the game without a selected account. #1921 @CiiLu
+- 🌐 Update translations for resource categories to stay in sync with upstream websites. #1902 @3gf8jv4dv
+- 📦 Update multiple dependencies to patch versions. #1860 #1871 #1872 #1904 @dependabot[bot] @UNIkeEN
+- Workflow:
+   - Migrate Homebrew distribution from a self-hosted Tap to Homebrew Cask. #1923 @wu21-web
+
 ## 1.2.0
 
 `2026-07-13`
