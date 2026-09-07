@@ -138,6 +138,7 @@ export const InstanceIconSelector: React.FC<InstanceIconSelectorProps> = ({
       "/images/icons/Anvil.png",
     ],
     [
+      "/images/icons/Cleanroom.png",
       "/images/icons/Forge.png",
       "/images/icons/Fabric.png",
       "/images/icons/NeoForge.png",

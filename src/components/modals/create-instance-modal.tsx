@@ -55,6 +55,7 @@ export const loaderTypesToIcon: Record<string, string> = {
   Unknown: "",
   Fabric: "/images/icons/Fabric.png",
   Forge: "/images/icons/Forge.png",
+  Cleanroom: "/images/icons/Cleanroom.png",
   NeoForge: "/images/icons/NeoForge.png",
   OptiFine: "/images/icons/OptiFine.png",
   Quilt: "/images/icons/Quilt.png",

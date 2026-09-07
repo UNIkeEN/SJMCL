@@ -463,6 +463,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 getJavaInfos(true);
                 break;
               case "forge-libraries":
+              case "cleanroom-libraries":
               case "neoforge-libraries":
                 if (params.param || params.param1) {
                   const instanceId = params.param || params.param1;

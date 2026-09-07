@@ -73,7 +73,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
       {
         #[schemars(description = "Minecraft game version ID.")]
         game_version: String,
-        #[schemars(description = "Mod loader type. Accepted values include `forge`, `legacyforge`, `fabric`, `neoforge`, and `quilt`.")]
+        #[schemars(description = "Mod loader type. Accepted values include `forge`, `legacyforge`, `cleanroom`, `fabric`, `neoforge`, and `quilt`.")]
         mod_loader_type: String,
       } => async move {
         let mod_loader_type =

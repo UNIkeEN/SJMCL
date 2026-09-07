@@ -1,4 +1,5 @@
 import { t } from "i18next";
+import { ModLoaderType } from "@/enums/instance";
 import {
   OtherResourceSource,
   OtherResourceType,
@@ -9,6 +10,11 @@ import {
   shaderPackTagList,
   worldTagList,
 } from "@/enums/resource";
+
+export const getResourceCompatibleModLoader = (
+  modLoader: ModLoaderType | "All"
+): ModLoaderType | "All" =>
+  modLoader === ModLoaderType.Cleanroom ? ModLoaderType.Forge : modLoader;
 
 const tagLists: Record<string, any> = {
   mod: modTagList,
