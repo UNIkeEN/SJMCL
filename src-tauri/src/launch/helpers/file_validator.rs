@@ -337,11 +337,8 @@ pub fn get_nonnative_library_paths(
 
     if mod_loader_type == ModLoaderType::Cleanroom {
       // Cleanroom replaces legacy LWJGL 2 libraries, whose versions vary by platform.
-      let is_legacy_lwjgl = parse_library_name(&library.name, None).is_ok_and(|parts| {
-        parts.path == "org/lwjgl/lwjgl"
-          && matches!(parts.pack_name.as_str(), "lwjgl" | "lwjgl_util")
-      });
-      if is_legacy_lwjgl
+      if library.name.starts_with("org.lwjgl.lwjgl:lwjgl:")
+        || library.name.starts_with("org.lwjgl.lwjgl:lwjgl_util:")
         || matches!(
           library.name.as_str(),
           "net.java.dev.jna:platform:3.4.0" | "com.ibm.icu:icu4j-core-mojang:51.2"
