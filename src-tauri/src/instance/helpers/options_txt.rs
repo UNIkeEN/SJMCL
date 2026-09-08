@@ -6,6 +6,7 @@ use crate::instance::helpers::game_version::build_game_version_cmp_fn;
 /// picks the best (highest) matching version for a given locale.
 const LANG_TAG_MAPPINGS: &[(&str, &str, &str)] = &[
   // Legacy format (≥ 1.1)
+  ("de", "1.1", "de_DE"),
   ("en", "1.1", "en_US"),
   ("es", "1.1", "es_ES"),
   ("fr", "1.1", "fr_FR"),
@@ -14,6 +15,7 @@ const LANG_TAG_MAPPINGS: &[(&str, &str, &str)] = &[
   ("zh-Hant", "1.1", "zh_TW"),
   ("lzh", "1.1", "zh_CN"), // fallback
   // Modern format (≥ 1.11)
+  ("de", "1.11", "de_de"),
   ("en", "1.11", "en_us"),
   ("es", "1.11", "es_es"),
   ("fr", "1.11", "fr_fr"),
