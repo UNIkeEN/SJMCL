@@ -31,7 +31,7 @@ use crate::launcher_config::models::{LauncherConfig, ProxyType};
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,ignore
 /// let client = build_sjmcl_client(&app, true);
 /// ```
 pub fn build_sjmcl_client(app: &AppHandle, use_proxy: bool) -> Client {

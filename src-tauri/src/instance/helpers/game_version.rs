@@ -35,7 +35,7 @@ fn try_find(versions: &[String], version: &str) -> Option<usize> {
 /// or fallback to cache, and optionally refresh from remote manifest if not found.
 ///
 /// # Examples
-/// ```
+/// ```rust,ignore
 /// if compare_game_versions(&app, version, "1.19", true).await.le(&Ordering::Equal) {
 ///     println!("{} <= 1.19", version);
 /// }
@@ -98,7 +98,7 @@ pub async fn compare_game_versions(
 /// The returned comparator can be used directly in sorting operations, e.g.:
 ///
 /// # Examples
-/// ```
+/// ```rust,ignore
 /// let cmp_fn = build_game_version_cmp_fn(&app);
 /// summary_list.sort_by(|a, b| cmp_fn(&a.version, &b.version));
 /// ```
@@ -142,7 +142,7 @@ pub fn build_game_version_cmp_fn(app: &AppHandle) -> impl Fn(&str, &str) -> Orde
 /// ref: https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system
 ///
 /// # Examples
-/// ```
+/// ```rust,ignore
 /// let version = get_major_game_version(&app, "1.18-pre1", true).await;
 /// println!("Major version of 1.18-pre1: {}", version); // => "1.18"
 ///

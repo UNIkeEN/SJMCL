@@ -18,7 +18,7 @@ use crate::IS_PORTABLE;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// copy_whole_dir(src_path, &dest_path).map_err(|_| InstanceError::FileCopyFailed)?;
 /// ```
 pub fn copy_whole_dir(src: &Path, dst: &Path) -> std::io::Result<()> {
@@ -47,7 +47,7 @@ pub fn copy_whole_dir(src: &Path, dst: &Path) -> std::io::Result<()> {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let dest_path = generate_unique_filename(&tgt_path, base_name);
 /// ```
 pub fn generate_unique_filename(base_path: &Path, filename: &OsStr) -> PathBuf {
@@ -83,7 +83,7 @@ pub fn generate_unique_filename(base_path: &Path, filename: &OsStr) -> PathBuf {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let (name, extension) = split_filename(filename);
 /// ```
 pub fn split_filename(filename: &OsStr) -> (String, String) {
@@ -133,7 +133,7 @@ pub fn extract_filename(path_str: &str, with_ext: bool) -> String {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let path = normalize_relative_path(Path::new("./config/options.txt"))?;
 /// assert_eq!(path, PathBuf::from("config/options.txt"));
 /// ```
@@ -159,7 +159,7 @@ pub fn normalize_relative_path(path: &Path) -> SJMCLResult<PathBuf> {
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let sub_dirs = get_subdirectories(&directory).unwrap_or_default();
 /// ```
 pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> SJMCLResult<Vec<PathBuf>> {
@@ -182,7 +182,7 @@ pub fn get_subdirectories<P: AsRef<Path>>(path: P) -> SJMCLResult<Vec<PathBuf>> 
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
 /// ```
 pub fn get_files_with_regex<P: AsRef<Path>>(path: P, pattern: &Regex) -> SJMCLResult<Vec<PathBuf>> {
@@ -232,7 +232,7 @@ pub fn get_files_with_regex_recursive<P: AsRef<Path>>(
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,ignore
 /// let texture_path = get_app_resource(&app, "assets/skins/player.png")?;
 /// println!("Texture will be loaded from: {:?}", texture_path);
 /// ```
@@ -281,7 +281,7 @@ pub fn get_app_resource_filepath(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// create_url_shortcut(
 ///     app,
 ///     "Add Auth Server".to_string(),
@@ -538,7 +538,7 @@ pub enum PermissionOperation {
 ///     - `PermissionOperation::Exact` sets the permissions exactly to the specified mask.
 ///
 /// # Examples
-/// ```rust
+/// ```rust,ignore
 /// manage_permissions_unix("/path/to/your/file", 0o111, PermissionOperation::Upgrade)?;
 /// manage_permissions_unix("/path/to/your/file", 0o111, PermissionOperation::Downgrade)?;
 /// manage_permissions_unix("/path/to/your/file", 0o755, PermissionOperation::Exact)?;
