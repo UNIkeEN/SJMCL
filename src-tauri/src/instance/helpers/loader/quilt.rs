@@ -24,6 +24,23 @@ fn resolve_maven_root<'a>(coord: &str, quilt_root: &'a str) -> &'a str {
   }
 }
 
+fn get_quilt_library_paths(meta: &serde_json::Value) -> SJMCLResult<Vec<&str>> {
+  let loader_path = meta["loader"]["maven"]
+    .as_str()
+    .ok_or(SJMCLError("meta missing loader maven".to_string()))?;
+
+  Ok(
+    [
+      Some(loader_path),
+      meta["intermediary"]["maven"].as_str(),
+      meta["hashed"]["maven"].as_str(),
+    ]
+    .into_iter()
+    .flatten()
+    .collect(),
+  )
+}
+
 pub async fn install_quilt_loader(
   app: AppHandle,
   priority: &[SourceType],
@@ -63,15 +80,7 @@ pub async fn install_quilt_loader(
   let meta = meta.ok_or(SJMCLError("failed to fetch Quilt loader meta".to_string()))?;
   let quilt_maven = quilt_maven.ok_or(SJMCLError("failed to get Quilt Maven URL".to_string()))?;
 
-  let loader_path = meta["loader"]["maven"]
-    .as_str()
-    .ok_or(SJMCLError("meta missing loader maven".to_string()))?;
-  let int_path = meta["intermediary"]["maven"]
-    .as_str()
-    .ok_or(SJMCLError("meta missing intermediary maven".to_string()))?;
-  let hashed_path = meta["hashed"]["maven"]
-    .as_str()
-    .ok_or(SJMCLError("meta missing hashed maven".to_string()))?;
+  let library_paths = get_quilt_library_paths(&meta)?;
 
   let main_class = meta["launcherMeta"]["mainClass"]["client"]
     .as_str()
@@ -85,7 +94,7 @@ pub async fn install_quilt_loader(
     ..Default::default()
   };
 
-  for path in &[loader_path, int_path, hashed_path] {
+  for path in &library_paths {
     add_library_entry(&mut client_info.libraries, path, None)?;
     add_library_entry(&mut new_patch.libraries, path, None)?;
   }
@@ -140,7 +149,7 @@ pub async fn install_quilt_loader(
   }
   client_info.patches.push(new_patch);
 
-  for path in &[loader_path, int_path, hashed_path] {
+  for path in &library_paths {
     let rel: String = convert_library_name_to_path(path, None)?;
     let root_url = resolve_maven_root(path, quilt_maven.as_str());
     let full_url = Url::parse(root_url)?.join(&rel)?;
