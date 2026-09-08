@@ -1,11 +1,10 @@
 import { getCurrent, onOpenUrl } from "@tauri-apps/plugin-deep-link";
-import micromatch from "micromatch";
 import { useEffect, useRef } from "react";
 
 const SJMCL_LINK_PREFIX = "sjmcl://";
 const EMIT_DEEPLINK_EVENT = "deeplink:emit";
 
-type TriggerRule = string | string[] | RegExp | ((subpath: string) => boolean);
+type TriggerRule = RegExp | ((subpath: string) => boolean);
 
 interface UseDeepLinkOptions {
   trigger: TriggerRule;
@@ -28,9 +27,7 @@ export const useDeepLink = ({ trigger, onCall }: UseDeepLinkOptions) => {
 
   useEffect(() => {
     function matchSubpath(path: string, rule: TriggerRule): boolean {
-      if (typeof rule === "string" || Array.isArray(rule)) {
-        return micromatch.isMatch(path, rule);
-      } else if (rule instanceof RegExp) {
+      if (rule instanceof RegExp) {
         return rule.test(path);
       } else if (typeof rule === "function") {
         return rule(path);
