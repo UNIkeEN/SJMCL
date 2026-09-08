@@ -13,6 +13,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
+use crate::download::DownloadParam;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::sort_localized_search_results;
 use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
@@ -24,7 +25,6 @@ use crate::resource::models::{
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
-use crate::tasks::download::DownloadParam;
 use crate::utils::string::contains_chinese;
 
 const ALL_FILTER: &str = "All";

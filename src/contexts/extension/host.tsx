@@ -48,9 +48,8 @@ import {
   ExtensionSlotItemMap,
   ExtensionSlotRegistry,
 } from "@/models/extension";
-import { TaskTypeEnums } from "@/models/task";
+import { DownloadService } from "@/services/download";
 import { ExtensionService } from "@/services/extension";
-import { TaskService } from "@/services/task";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
 import { sanitizeFileName } from "@/utils/string";
@@ -447,7 +446,12 @@ const ActiveExtensionHostContextProvider: React.FC<{
           "delete_directory",
           "read_file",
           "write_file",
-          "schedule_progressive_task_group",
+          "plugin:download|submit_group",
+          "plugin:download|pause_group",
+          "plugin:download|resume_group",
+          "plugin:download|cancel_group",
+          "plugin:download|retry_group",
+          "plugin:download|remove_group",
           "add_extension",
           "delete_extension",
         ].includes(command)
@@ -554,21 +558,18 @@ const ActiveExtensionHostContextProvider: React.FC<{
       const filename = sanitizeFileName(
         `${extension.identifier}_${normalizedVersion}.sjmclx`
       );
-      const response = await TaskService.scheduleProgressiveTaskGroup(
-        `extension-update?${extension.identifier}&${normalizedVersion}`,
-        [
+      await DownloadService.submitGroup({
+        name: `extension-update?${extension.identifier}&${normalizedVersion}`,
+        autoResume: true,
+        tasks: [
           {
-            taskType: TaskTypeEnums.Download,
-            src: normalizedSrc,
+            name: filename,
+            executor: "download",
+            spec: { url: normalizedSrc },
             dest: await join(cacheDir, filename),
-            filename,
           },
-        ]
-      );
-
-      if (response.status !== "success") {
-        throw response.raw_error || response.details || response.message;
-      }
+        ],
+      });
     },
     [config.download.cache.directory]
   );

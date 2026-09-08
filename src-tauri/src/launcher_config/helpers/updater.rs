@@ -8,10 +8,10 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 type SourceTuple = (&'static str, &'static str, fn(&str, &str) -> String);
 const SOURCES: [SourceTuple; 2] = [
@@ -141,7 +141,7 @@ pub async fn download_target_version(
     {
       let url = mk_url(&version, &fname);
 
-      schedule_progressive_task_group(
+      submit_download_group(
         app.clone(),
         format!("launcher-update?{}", fname),
         vec![PTaskParam::Download(DownloadParam {

@@ -11,10 +11,10 @@ use tauri_plugin_http::reqwest;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
+use crate::download::{DownloadParam, PTaskParam};
 use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
-use crate::tasks::{PTaskParam, download::DownloadParam};
 use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 
 #[cfg(target_os = "windows")]
