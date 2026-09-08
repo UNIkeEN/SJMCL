@@ -7,6 +7,9 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{McClientInfo, reset_fields_from_patches};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -15,9 +18,6 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],
@@ -340,7 +340,7 @@ pub async fn download_neoforge_libraries(
     PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
   });
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app.clone(),
     format!("neoforge-libraries?{}", instance.id),
     task_params,

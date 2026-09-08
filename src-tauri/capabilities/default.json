@@ -19,6 +19,7 @@
     "core:window:allow-set-title",
     "deep-link:default",
     "dialog:default",
+    "download:default",
     "log:default",
     "os:default",
     "process:default"

@@ -3067,10 +3067,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "タスクの作成に失敗"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} ダウンロードタスクを開始しました",
           "Failed": "{{param}} 一部のダウンロードに失敗しました。再試行してください",
