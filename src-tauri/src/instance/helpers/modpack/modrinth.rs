@@ -116,6 +116,7 @@ impl ModpackManifest for ModrinthManifest {
         "forge" => return Ok((ModLoaderType::Forge, val.to_string())),
         "fabric-loader" => return Ok((ModLoaderType::Fabric, val.to_string())),
         "neoforge" => return Ok((ModLoaderType::NeoForge, val.to_string())),
+        "quilt-loader" => return Ok((ModLoaderType::Quilt, val.to_string())),
         _ => return Err(InstanceError::UnsupportedModLoader.into()),
       }
     }
