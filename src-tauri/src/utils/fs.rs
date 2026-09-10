@@ -426,23 +426,7 @@ Terminal=false
 }
 
 pub fn validate_sha1(dest_path: PathBuf, truth: String) -> SJMCLResult<()> {
-  let mut f = std::fs::File::options()
-    .read(true)
-    .create(false)
-    .write(false)
-    .open(&dest_path)
-    .map_err(|e| {
-      SJMCLError(format!(
-        "Failed to open file {}: {}",
-        dest_path.display(),
-        e
-      ))
-    })?;
-  let mut hasher = Sha1::new();
-  std::io::copy(&mut f, &mut hasher)
-    .map_err(|e| SJMCLError(format!("Failed to copy data for SHA1 validation: {}", e)))?;
-
-  let sha1 = hex::encode(hasher.finalize());
+  let sha1 = calculate_sha1(&dest_path)?;
   if sha1 != truth {
     Err(SJMCLError(format!(
       "SHA1 mismatch for {}: expected {}, got {}",

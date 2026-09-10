@@ -10,6 +10,7 @@ use walkdir::WalkDir;
 use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
 
+use crate::instance::constants::MODPACK_LOCK_FILE_PATH;
 use crate::instance::helpers::modpack::{
   modrinth::build_modrinth_export_bundle, multimc::build_multimc_export_bundle,
 };
@@ -123,7 +124,7 @@ static BLACKLIST: LazyLock<HashSet<&'static str>> = LazyLock::new(|| {
     "log4j2.xml",
     "hmclversion.cfg",
     // SJMCL
-    ".sjmcl",
+    MODPACK_LOCK_FILE_PATH,
     "install_profile.json",
     "sjmclcfg.json",
     // Curse

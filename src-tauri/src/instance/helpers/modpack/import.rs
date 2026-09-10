@@ -259,11 +259,18 @@ fn relative_path_string(root: &Path, path: &Path) -> SJMCLResult<String> {
   let relative = path
     .strip_prefix(root)
     .map_err(|_| InstanceError::InvalidSourcePath)?;
-  Ok(
-    relative
-      .components()
-      .map(|component| component.as_os_str().to_string_lossy())
-      .collect::<Vec<_>>()
-      .join("/"),
-  )
+  let mut result = String::new();
+
+  for (index, component) in relative.components().enumerate() {
+    if index > 0 {
+      result.push('/');
+    }
+    let component = component
+      .as_os_str()
+      .to_str()
+      .ok_or(InstanceError::InvalidSourcePath)?;
+    result.push_str(component);
+  }
+
+  Ok(result)
 }
