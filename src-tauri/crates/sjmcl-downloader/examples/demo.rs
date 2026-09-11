@@ -1,13 +1,16 @@
-//! 端到端演示：mock-server + sjmcl-downloader 引擎。
+//! End-to-end demo using a mock server and the sjmcl-downloader engine.
 //!
-//! 运行：先起 mock-server（另开终端），再 cargo run -p tauri-plugin-download --example demo
+//! Start the mock server in another terminal, then run
+//! `cargo run -p tauri-plugin-sjmcl-downloader --example demo`.
 //!
-//! 演示场景（每组提交后自动依次执行）：
-//!   1. 正常下载 + sha256 校验
-//!   2. slow 限速 + 中途暂停 → 恢复（Range 续传）
-//!   3. flaky：前两次 500 → 自动退避重试成功
-//!   4. corrupt：校验失败 → fail-fast 组 Draining
-//!   5. 取消组
+//! The demo runs these scenarios in sequence:
+//!   1. Successful download with SHA-256 verification.
+//!   2. Rate-limited download paused and resumed through a Range request.
+//!   3. Two initial 500 responses followed by a successful backoff retry.
+//!   4. Corrupt content triggering verification failure and fail-fast Draining.
+//!   5. Group cancellation.
+//!   6. Global rate limiting at 500 KB/s.
+//!   7. Crash recovery from SQLite state and a partial file.
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -29,7 +32,7 @@ impl EventSink for PrintSink {
   fn emit(&self, ev: &EngineEvent) {
     match ev {
       EngineEvent::Tick(items) => {
-        // 只打印有速度/进度的条目，避免刷屏
+        // Print only entries with speed or progress to limit output.
         let active: Vec<_> = items
           .iter()
           .filter(|p| {
@@ -128,7 +131,7 @@ async fn main() {
     .init();
 
   let cfg = EngineConfig {
-    concurrency: 2, // 场景4需要"未开始的 Pending"任务被 fail-fast 中止
+    concurrency: 2, // Scenario 4 needs an unstarted Pending task for fail-fast cancellation.
     max_active_groups: 2,
     emit_interval: Duration::from_millis(200),
     dispatch_interval: Duration::from_millis(10),
@@ -205,7 +208,7 @@ async fn main() {
   wait_finished(&engine, &g3).await;
 
   println!("== 场景4: corrupt 校验失败 → fail-fast ==");
-  // 取"正确内容"的 sha256（corrupt 内容被篡改 → 必然校验失败）
+  // Hash the expected content so the altered corrupt response must fail verification.
   let good_hash: String = {
     let body = reqwest::get("http://127.0.0.1:8080/sha256/1000000")
       .await
@@ -324,8 +327,9 @@ async fn main() {
       .unwrap()
       .into()
   };
-  // 独立线程 + runtime 跑第一个引擎：shutdown_timeout(0) 杀死全部任务 =
-  // 忠实模拟进程崩溃（无 Interrupted 回报、无清理、连接断开、.part 保留）
+  // Run the first engine on a dedicated thread and runtime. shutdown_timeout(0) stops every task,
+  // accurately simulating a process crash: no Interrupted report or cleanup, a dropped connection,
+  // and a retained `.part` file.
   let store1 = Arc::new(SqliteStore::open(std::path::Path::new(db_path)).unwrap());
   let g7 = std::thread::spawn(move || {
     let rt = tokio::runtime::Runtime::new().unwrap();
@@ -354,7 +358,7 @@ async fn main() {
         .await
         .unwrap()
     });
-    std::thread::sleep(Duration::from_millis(1200)); // 下载一部分后崩溃
+    std::thread::sleep(Duration::from_millis(1200)); // Crash after downloading part of the file.
     rt.shutdown_timeout(Duration::ZERO);
     gid
   })
@@ -365,7 +369,7 @@ async fn main() {
     .unwrap_or(0);
   assert!(part_len > 0, ".part 应保留崩溃时的进度，实际 {part_len}");
 
-  // 重启：同一 DB → 状态恢复为 Paused，resume 后应续传而非重下
+  // Restart with the same database. State restores as Paused and resume should continue the file.
   let store2 = Arc::new(SqliteStore::open(std::path::Path::new(db_path)).unwrap());
   let mut b2 = Engine::builder(
     EngineConfig {
@@ -403,6 +407,6 @@ async fn main() {
   );
 
   println!("\n全部场景通过 ✓");
-  // 保持进程一会儿观察 tick 停止
+  // Keep the process alive briefly to observe tick emission stopping.
   sleep(Duration::from_secs(1)).await;
 }

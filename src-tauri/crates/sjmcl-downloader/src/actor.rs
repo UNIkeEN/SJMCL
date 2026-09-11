@@ -1,16 +1,18 @@
-//! EngineActor：引擎唯一事件循环（状态唯一所有者）。
+//! `EngineActor` is the engine's sole event loop and state owner.
 //!
-//! 输入三路 + 两个定时器：
-//!   - cmds（前端命令）
-//!   - reports（worker 回报）
-//!   - dispatch tick（激活组 / 派发 ready 队列）
-//!   - emit tick（合并进度为一个 Tick 事件）
+//! It consumes two input channels and two timers:
+//!   - cmds for frontend commands;
+//!   - reports from workers;
+//!   - dispatch ticks for activating groups and dispatching the ready queue;
+//!   - emit ticks for coalescing progress into a Tick event.
 //!
-//! 规则：
-//!   - 只有 actor 能 emit 事件（EventSink）
-//!   - worker 只通过 TaskReport 回报，不接触状态
-//!   - 控制 = 取消 CancellationToken（start_token 杀排队、run_token 杀 in-flight）
-//!   - fail-fast：task 失败 → 组 Draining（不再调度、in-flight 排水、Pending 中止）
+//! Rules:
+//!   - Only the actor emits events through `EventSink`.
+//!   - Workers report through `TaskReport` and never access state directly.
+//!   - Control operations cancel `CancellationToken`s: `start_token` for queued jobs and
+//!     `run_token` for in-flight jobs.
+//!   - A task failure puts its group into Draining: stop scheduling, drain in-flight jobs, and
+//!     cancel pending jobs.
 
 use std::collections::{HashMap, VecDeque};
 use std::sync::Arc;
@@ -30,7 +32,7 @@ use crate::model::{
 use crate::storage::StateStore;
 use crate::{ExecContext, GroupSummary, Progress, TaskOutcome, TaskReport};
 
-/// 前端句柄：只持命令发送端。
+/// Frontend handle containing only the command sender.
 pub struct Engine {
   tx: mpsc::Sender<Command>,
 }
@@ -183,7 +185,7 @@ impl EngineBuilder {
       seq: 0,
       _worker_handles: worker_handles,
     };
-    // 重启恢复：加载已持久化的组（非终态 → Paused，等用户 resume）
+    // Restore persisted groups after restart, leaving non-terminal groups Paused until resumed.
     if let Ok(mut groups) = actor.store.load_all() {
       crate::storage::reconcile_after_restart(&mut groups);
       actor.seq = groups
@@ -214,7 +216,7 @@ impl EngineBuilder {
 struct EngineState {
   groups: Vec<TaskGroup>,
   runtime: HashMap<String, RuntimeGroup>,
-  /// 全局 ready 队列（task_id，提交序）。
+  /// Global ready queue of task IDs in submission order.
   ready: VecDeque<String>,
 }
 
@@ -227,7 +229,7 @@ struct EngineActor {
   report_rx: mpsc::Receiver<TaskReport>,
   report_tx: mpsc::Sender<TaskReport>,
   ready_tx: async_channel::Sender<Job>,
-  /// actor 自己的发送端（内部延迟重试）。
+  /// Actor's own sender for internal delayed retries.
   self_tx: mpsc::Sender<Command>,
   state: EngineState,
   seq: u64,
@@ -257,7 +259,7 @@ impl EngineActor {
     tracing::info!("engine actor stopped");
   }
 
-  // ---------- 查询与工具 ----------
+  // ---------- Queries and utilities ----------
 
   fn find(&self, task_id: &str) -> Option<(usize, usize)> {
     for (gi, g) in self.state.groups.iter().enumerate() {
@@ -294,7 +296,7 @@ impl EngineActor {
     self.state.runtime.insert(group_id.to_string(), rtg);
   }
 
-  // ---------- 命令处理 ----------
+  // ---------- Command handling ----------
 
   fn handle_cmd(&mut self, cmd: Command) {
     match cmd {
@@ -355,7 +357,7 @@ impl EngineActor {
       )));
       return;
     }
-    // 校验 executor 存在
+    // Validate that the executor exists.
     for t in &sg.tasks {
       if self.executors.get(&t.executor).is_none() {
         let _ = reply.send(Err(EngineError::UnknownExecutor(t.executor.clone())));
@@ -391,7 +393,7 @@ impl EngineActor {
     self.emit(EngineEvent::GroupSubmitted {
       group_id: gid.clone(),
     });
-    // 有容量立即激活
+    // Activate immediately if capacity is available.
     self.try_activate_next_group();
     let _ = reply.send(Ok(gid));
   }
@@ -410,7 +412,7 @@ impl EngineActor {
       )));
     }
     if st == GroupState::Active {
-      // 杀排队 + 杀 in-flight；Pending 保持 Pending（resume 后继续）
+      // Cancel queued and in-flight jobs. Pending tasks remain Pending for resume.
       if let Some(rtg) = self.state.runtime.get_mut(group_id) {
         rtg.cancel_reason = Some(CancelReason::Pause);
       }
@@ -439,7 +441,7 @@ impl EngineActor {
     if self.state.groups[gi].state != GroupState::Paused {
       return Err(EngineError::InvalidState("只有 Paused 组可 resume".into()));
     }
-    // 换新 token（旧 token 已取消不可复用）
+    // Replace cancelled tokens because they cannot be reused.
     if let Some(rtg) = self.state.runtime.get_mut(group_id) {
       rtg.cancel_reason = None;
     }
@@ -478,7 +480,8 @@ impl EngineActor {
     ) {
       return Err(EngineError::InvalidState(format!("{group_id} 已终结")));
     }
-    // 组进入"中止排水"：杀排队 + 杀 in-flight，等全部终态后 Finished(Cancelled)
+    // Enter cancellation draining: stop queued and in-flight jobs, then finish as Cancelled once
+    // every task reaches a terminal state.
     let rtg = self.state.runtime.get_mut(group_id).unwrap();
     rtg.cancel_reason = Some(CancelReason::Cancel);
     self.cancel_all_tokens(group_id);
@@ -591,7 +594,7 @@ impl EngineActor {
     self.persist_group(group_id);
   }
 
-  // ---------- worker 回报 ----------
+  // ---------- Worker reports ----------
 
   fn handle_report(&mut self, rep: TaskReport) {
     match rep {
@@ -662,11 +665,11 @@ impl EngineActor {
     };
     let gid = self.state.groups[gi].id.clone();
     if self.state.groups[gi].state == GroupState::Finished {
-      return; // 迟到的回报（组已终结）
+      return; // Ignore a late report for a finished group.
     }
     let old = self.state.groups[gi].tasks[ti].state;
 
-    // 1. 计算目标状态与需要 emit 的信息（短借用，避免跨 await/emit 持有 &mut）
+    // 1. Compute the target state and event data in a short borrow that ends before await or emit.
     let new_state: TaskState;
     let mut task_error: Option<TaskError> = None;
     let mut emit_verified = false;
@@ -693,7 +696,7 @@ impl EngineActor {
         let mut persisted_offset = *offset;
         let current = self.state.groups[gi].tasks[ti].state;
         if current.is_terminal() {
-          // 已在 fail-fast 中被标记 Cancelled（领取门禁竞态）→ 保持终态，不降级
+          // A fail-fast claim race already marked this task Cancelled; preserve the terminal state.
           new_state = current;
         } else {
           let reason = self.state.runtime.get(&gid).and_then(|g| g.cancel_reason);
@@ -705,7 +708,7 @@ impl EngineActor {
               new_state = TaskState::Cancelled;
             }
             None => {
-              // drain 不 cancel run token；防御性兜底
+              // Draining does not cancel run_token; retain this defensive fallback.
               new_state = TaskState::Paused;
             }
           }
@@ -714,7 +717,7 @@ impl EngineActor {
         self.state.groups[gi].tasks[ti].received = persisted_offset;
       }
     }
-    // 2. 落状态
+    // 2. Commit the state change.
     {
       let t = &mut self.state.groups[gi].tasks[ti];
       t.state = new_state;
@@ -730,7 +733,7 @@ impl EngineActor {
         t.error = Some(e.clone());
       }
     }
-    // 3. emit（无借用）
+    // 3. Emit events after releasing all borrows.
     self.emit_task_state(&gid, task_id, old, new_state);
     if emit_verified {
       self.emit(EngineEvent::TaskVerified {
@@ -747,7 +750,7 @@ impl EngineActor {
         });
       }
     }
-    // 4. 自动重试 / fail-fast 判定
+    // 4. Decide whether to retry automatically or fail fast.
     let (attempts, transient, group_active) = {
       let t = &self.state.groups[gi].tasks[ti];
       (
@@ -791,7 +794,8 @@ impl EngineActor {
     self.maybe_finish_group(&gid);
   }
 
-  /// fail-fast：组 → Draining，杀排队、中止 Pending，in-flight 排水。
+  /// Fails a group fast by entering Draining, stopping queued jobs, cancelling Pending tasks, and
+  /// allowing in-flight jobs to drain.
   fn fail_group(&mut self, group_id: &str, _failed_task_id: &str) {
     let Some(gi) = self.state.groups.iter().position(|g| g.id == group_id) else {
       return;
@@ -799,7 +803,7 @@ impl EngineActor {
     if self.state.groups[gi].state == GroupState::Finished {
       return;
     }
-    // 只杀 start_token：排队 job 在领取时丢弃，in-flight 排水不受影响
+    // Cancel only start_token so queued jobs are dropped on claim while in-flight jobs drain.
     self.cancel_start_tokens(group_id);
     self.dequeue_group(group_id);
     let old = self.state.groups[gi].state;
@@ -807,7 +811,8 @@ impl EngineActor {
       self.state.groups[gi].state = GroupState::Draining;
       self.emit_group_state(group_id, old, GroupState::Draining);
     }
-    // Pending → Cancelled（组失败中止；不逐个发 state 事件，避免批量风暴，前端靠 tick/快照）
+    // Change Pending tasks to Cancelled without per-task events to avoid an event storm; the
+    // frontend observes the batch through ticks and snapshots.
     for t in self.state.groups[gi].tasks.iter_mut() {
       if t.state == TaskState::Pending {
         t.state = TaskState::Cancelled;
@@ -824,9 +829,9 @@ impl EngineActor {
     let st = self.state.groups[gi].state;
     match st {
       GroupState::Active => {
-        // Active 下只有"全部 Done"才算自然完成；
-        // 存在 Failed/Cancelled 时要么在自动重试（将回到 Pending），
-        // 要么由 fail_group 转入 Draining，这里一律不终结。
+        // An Active group completes naturally only when every task is Done. Failed or Cancelled
+        // tasks are either awaiting an automatic retry back to Pending or moving the group into
+        // Draining through fail_group, so do not finish the group here.
         if self.state.groups[gi]
           .tasks
           .iter()
@@ -878,10 +883,10 @@ impl EngineActor {
     self.persist_group(group_id);
   }
 
-  // ---------- 调度 ----------
+  // ---------- Scheduling ----------
 
   fn dispatch_step(&mut self) {
-    // 1. 激活排队组（有容量才激活）
+    // 1. Activate queued groups while capacity is available.
     loop {
       let active = self
         .state
@@ -906,7 +911,7 @@ impl EngineActor {
       self.emit_group_state(&gid, old, GroupState::Active);
       self.enqueue_group(&gid);
     }
-    // 2. 派发 ready 队列
+    // 2. Dispatch the ready queue.
     while let Some(tid) = self.state.ready.pop_front() {
       let Some((gi, ti)) = self.find(&tid) else {
         continue;
@@ -945,11 +950,11 @@ impl EngineActor {
         report: self.report_tx.clone(),
       };
       if self.ready_tx.try_send(Job { ctx }).is_err() {
-        // channel 满：放回队首，等下个 tick
+        // Return the task to the front when the channel is full and retry on the next tick.
         self.state.ready.push_front(tid);
         break;
       }
-      // 派发成功：置 queued（直到 worker Started 回报才清除）
+      // Mark a dispatched task as queued until the worker reports Started.
       if let Some(rt) = self
         .state
         .runtime
@@ -977,8 +982,8 @@ impl EngineActor {
   }
 
   fn enqueue_one(&mut self, group_id: &str, task_id: &str) {
-    // 去重：已派发到 worker channel（queued=true）或已在 ready 队列中的不重复入队。
-    // 注意：queued 仅在 try_send 成功时置位；ready 队列中的条目 queued 仍为 false。
+    // Do not enqueue tasks already sent to a worker channel (`queued=true`) or already in the ready
+    // queue. The flag becomes true only after try_send succeeds, so ready-queue entries remain false.
     if self.state.ready.contains(&task_id.to_string()) {
       return;
     }
@@ -994,7 +999,8 @@ impl EngineActor {
     }
   }
 
-  /// 把某组所有排队中任务从 ready 队列摘除（置 queued=false，留待重新入队）。
+  /// Removes all queued tasks for a group from the ready queue and clears their `queued` flags so
+  /// they may be enqueued again.
   fn dequeue_group(&mut self, group_id: &str) {
     let mut keep = VecDeque::new();
     while let Some(tid) = self.state.ready.pop_front() {
@@ -1018,7 +1024,8 @@ impl EngineActor {
     self.state.ready = keep;
   }
 
-  /// 只杀 start_token（排队中的 job 领取时被丢弃）——fail-fast/Draining 用，in-flight 排水。
+  /// Cancels only start_token so queued jobs are dropped on claim while in-flight jobs drain.
+  /// Used for fail-fast and Draining.
   fn cancel_start_tokens(&mut self, group_id: &str) {
     let Some(rtg) = self.state.runtime.get_mut(group_id) else {
       return;
@@ -1028,7 +1035,7 @@ impl EngineActor {
     }
   }
 
-  /// 杀 start + run token——pause/cancel 用，in-flight 立即中断。
+  /// Cancels both start and run tokens for pause and cancel, interrupting in-flight jobs immediately.
   fn cancel_all_tokens(&mut self, group_id: &str) {
     let Some(rtg) = self.state.runtime.get_mut(group_id) else {
       return;
@@ -1039,7 +1046,7 @@ impl EngineActor {
     }
   }
 
-  /// 换新 token（resume / retry 后旧 token 已失效）。
+  /// Replaces tokens invalidated by resume or retry.
   fn renew_tokens(&mut self, group_id: &str) {
     let Some(rtg) = self.state.runtime.get_mut(group_id) else {
       return;
@@ -1052,7 +1059,7 @@ impl EngineActor {
   }
 
   fn try_activate_next_group(&mut self) {
-    // 与 dispatch_step 的激活逻辑相同；submit 后立即尝试
+    // Match dispatch_step activation and try immediately after submission.
     if self.active_group_count() < self.cfg.max_active_groups.max(1) {
       if let Some(gi) = self
         .state
@@ -1078,7 +1085,7 @@ impl EngineActor {
       .count()
   }
 
-  // ---------- 进度事件 ----------
+  // ---------- Progress events ----------
 
   fn emit_progress(&mut self) {
     let now = Instant::now();
@@ -1086,10 +1093,10 @@ impl EngineActor {
     for gi in 0..self.state.groups.len() {
       let gid = self.state.groups[gi].id.clone();
       let mut items: Vec<(String, TaskState, u64, u64, f64, Option<f64>)> = Vec::new();
-      // 先收集（避免借用冲突）
+      // Collect first to avoid conflicting borrows.
       for t in &self.state.groups[gi].tasks {
-        // 只报真正在动的任务；Paused/Pending 是静态的（由 state 事件 + 快照表达），
-        // 持续上报会让前端在暂停后仍每 200ms 刷新一次 DOM
+        // Report only active tasks. Paused and Pending are static and represented by state events
+        // and snapshots; reporting them would keep refreshing the DOM every 200 ms after a pause.
         if !matches!(t.state, TaskState::Downloading | TaskState::Verifying) {
           continue;
         }
@@ -1144,7 +1151,7 @@ impl EngineActor {
     }
   }
 
-  // ---------- 事件/持久化辅助 ----------
+  // ---------- Event and persistence helpers ----------
 
   fn emit_group_state(&self, group_id: &str, old: GroupState, new: GroupState) {
     if old != new {

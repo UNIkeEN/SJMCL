@@ -1,6 +1,7 @@
-//! 事件定义 + EventSink trait（core 与 tauri 的解耦点）。
+//! Event definitions and the `EventSink` trait that decouples the core from Tauri.
 //!
-//! 规则：只有 actor 能 emit；高频进度合并为一个 Tick；状态/错误即时发。
+//! Only the actor emits events. Frequent progress updates are coalesced into a Tick, while state
+//! changes and errors are emitted immediately.
 
 use crate::model::{FinishKind, GroupState, Progress, TaskError, TaskState};
 use serde::Serialize;
@@ -12,41 +13,41 @@ use serde::Serialize;
   rename_all_fields = "camelCase"
 )]
 pub enum EngineEvent {
-  /// 200ms 合并一次的进度快照（唯一高频事件）。
+  /// Progress snapshot coalesced every 200 ms, the only high-frequency event.
   Tick(Vec<Progress>),
-  /// 新任务组已持久化；即使仍在排队，前端也应立即刷新快照。
+  /// A new task group was persisted. The frontend should refresh even if the group is still queued.
   GroupSubmitted { group_id: String },
-  /// task 状态切换（低频，即时）。
+  /// Immediate, low-frequency task state change.
   TaskStateChanged {
     group_id: String,
     task_id: String,
     old: TaskState,
     new: TaskState,
   },
-  /// 组状态切换。
+  /// Task group state change.
   GroupStateChanged {
     group_id: String,
     old: GroupState,
     new: GroupState,
   },
-  /// 组终结汇报（drain 完成或 cancel/complete）。
+  /// Task group completion after draining, cancellation, or successful completion.
   GroupFinished {
     group_id: String,
     finish: FinishKind,
     failed_tasks: Vec<String>,
     summary: crate::GroupStats,
   },
-  /// task 失败即时上报（触发组 Draining 时前端第一时间看到）。
+  /// Immediate task failure report so the frontend sees a group entering Draining promptly.
   TaskFailed {
     group_id: String,
     task_id: String,
     error: TaskError,
   },
-  /// 校验通过（低频）。
+  /// Low-frequency verification success event.
   TaskVerified { group_id: String, task_id: String },
 }
 
-/// 事件出口。tauri 适配器实现为 `AppHandle::emit`；测试可打印或收集。
+/// Event output implemented with `AppHandle::emit` in Tauri and printable or collectable in tests.
 pub trait EventSink: Send + Sync {
   fn emit(&self, ev: &EngineEvent);
 }
@@ -57,7 +58,7 @@ impl EventSink for Box<dyn EventSink> {
   }
 }
 
-/// 空实现（调试用）。
+/// No-op implementation for debugging.
 pub struct NoopSink;
 impl EventSink for NoopSink {
   fn emit(&self, _ev: &EngineEvent) {}

@@ -1,5 +1,5 @@
-//! actor 输入命令。带回复的用 oneshot（快照/提交/控制确认），
-//! RetryTask 是 actor 给自己发的内部延迟命令（瞬态错误自动重试）。
+//! Input commands for the actor. Commands requiring a response use oneshot channels for snapshots,
+//! submissions, and control acknowledgements. `RetryTask` schedules an internal delayed retry.
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -10,9 +10,9 @@ use crate::model::EngineError;
 #[serde(rename_all = "camelCase")]
 pub struct SubmitTask {
   pub name: String,
-  /// executor 注册名，如 "download"。
+  /// Registered executor name, such as "download".
   pub executor: String,
-  /// executor 私有参数。download executor: { "url": "..." }
+  /// Executor-specific parameters. Download executor: `{ "url": "..." }`.
   pub spec: serde_json::Value,
   pub dest: Option<PathBuf>,
   pub sha1: Option<String>,
@@ -24,7 +24,7 @@ pub struct SubmitTask {
 pub struct SubmitGroup {
   pub name: String,
   pub tasks: Vec<SubmitTask>,
-  /// 应用重启后是否自动恢复（否则恢复为 Paused 等用户 resume）。
+  /// Whether to resume automatically after an application restart; otherwise restored as Paused.
   pub auto_resume: bool,
 }
 
@@ -53,14 +53,14 @@ pub enum Command {
     group_id: String,
     reply: Reply<()>,
   },
-  /// 内部：瞬态失败后延迟重试单任务。
+  /// Internal command that retries one task after a transient failure.
   RetryTask {
     group_id: String,
     task_id: String,
   },
-  /// 全量快照（前端挂载时灌状态）。
+  /// Complete snapshot used to initialize frontend state on mount.
   Snapshot(tokio::sync::oneshot::Sender<Vec<crate::GroupSummary>>),
-  /// 组内 task 明细。
+  /// Task details for a group.
   ListTasks {
     group_id: String,
     reply: Reply<Vec<crate::model::Task>>,

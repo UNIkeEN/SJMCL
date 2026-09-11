@@ -1,11 +1,11 @@
-//! SJMCL 下载引擎及其 Tauri 适配层。
+//! SJMCL download engine and its Tauri adapter.
 //!
-//! 架构：Actor 模式。`EngineActor` 是单一事件循环，持有全部状态；
-//! 执行单元（worker）通过 channel 回报，前端通过命令 + 事件双通道访问。
+//! Architecture: `EngineActor` is the sole event loop and owns all state. Workers report through
+//! channels, while the frontend communicates through commands and events.
 //!
-//! 语义：TaskGroup 是唯一控制面（pause/resume/cancel/retry 均组级）；
-//! 任一 task 失败 → 组进入 Draining（fail-fast）：不再调度新任务、
-//! in-flight 排水跑完、未开始的 Pending → Cancelled，随后 Finished(Failed) 汇报。
+//! Semantics: `TaskGroup` is the sole control surface; pause, resume, cancel, and retry all operate
+//! at group level. Any task failure puts its group into Draining: no new tasks are scheduled,
+//! in-flight tasks finish, pending tasks become Cancelled, then the group reports Finished(Failed).
 
 pub mod actor;
 pub mod command;
@@ -29,7 +29,7 @@ pub use rate::TokenBucket;
 pub use storage::StateStore;
 pub use tauri::{EngineHandle, EngineRuntime, commands, init, init_with_db_path, setup_engine};
 
-/// 引擎查询结果：组摘要（前端挂载时拉全量用）。
+/// Engine query result containing group summaries used to initialize the frontend.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupSummary {
@@ -52,7 +52,7 @@ pub struct GroupStats {
   pub verified: usize,
 }
 
-/// 引擎内部执行上下文（actor 克隆数据给 worker，不借用引擎）。
+/// Internal execution context cloned by the actor for workers without borrowing the engine.
 #[derive(Debug)]
 pub struct ExecContext {
   pub task_id: String,
@@ -64,17 +64,17 @@ pub struct ExecContext {
   pub sha1: Option<String>,
   pub sha256: Option<String>,
   pub resume_offset: u64,
-  /// 排队→领取阶段令牌（pause/cancel/draining 会取消它）。
+  /// Token for the queued-to-claimed phase, cancelled by pause, cancel, or draining.
   pub start_token: tokio_util::sync::CancellationToken,
-  /// 执行中令牌（pause/cancel 会取消它，draining 不会）。
+  /// In-flight token, cancelled by pause or cancel but not by draining.
   pub run_token: tokio_util::sync::CancellationToken,
   pub report: tokio::sync::mpsc::Sender<TaskReport>,
 }
 
-/// worker → actor 的回传通道（唯一出口，事件只有 actor 能发）。
+/// Worker-to-actor report channel, the sole output path because only the actor emits events.
 #[derive(Debug)]
 pub enum TaskReport {
-  /// worker 领取任务后请求 actor 确认；actor 先落 Downloading，再允许执行。
+  /// A worker asks the actor to confirm a claimed task. The actor records Downloading first.
   StartRequested {
     task_id: String,
     start_token: tokio_util::sync::CancellationToken,
@@ -96,12 +96,13 @@ pub enum TaskReport {
 
 #[derive(Debug)]
 pub enum TaskOutcome {
-  /// 正常完成（含校验通过）。
+  /// Completed successfully, including content verification.
   Done { verified: bool },
-  /// 校验失败（已删 .part）。
+  /// Content verification failed and the `.part` file was removed.
   ChecksumFailed { expected: String, actual: String },
-  /// 失败（网络/HTTP/IO）。
+  /// Failed due to a network, HTTP, or I/O error.
   Failed { error: TaskError },
-  /// 被 token 中断，offset 为已写字节（暂停保留 .part，取消由 actor 删）。
+  /// Interrupted by a token. `offset` is the byte count written; pause retains `.part`, while the
+  /// actor removes it on cancellation.
   Interrupted { offset: u64 },
 }

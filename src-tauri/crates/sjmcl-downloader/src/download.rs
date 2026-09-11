@@ -1,21 +1,20 @@
-//! download executor：reqwest 流式下载 + Range 断点续传 + SHA-1/SHA-256 校验。
+//! Download executor with reqwest streaming, Range requests, and SHA-1/SHA-256 verification.
 //!
-//! spec 格式：`{ "url": "https://..." }`
+//! Spec format: `{ "url": "https://..." }`.
 //!
-//! 实现形态：**AsyncRead 组合**。
-//! `DownloadReader`（本文件的 AsyncRead 实现）包在 tokio-util 的
-//! `StreamReader` 外面，职责全部内聚在 reader 里：
-//!   - 取消：poll 时检查 run_token → 返回 `Interrupted` 错误，copy 自然中断
-//!   - 进度：节流后 `try_send` 回报（可丢，下一个窗口再补）
-//!   - 限速：可选 TokenBucket，`consume(n)` 返回等待时长，挂 Sleep 驱动
+//! The implementation composes `AsyncRead` types. `DownloadReader`, the `AsyncRead` implementation
+//! in this module, wraps tokio-util's `StreamReader` and handles:
+//!   - cancellation by checking `run_token` during polling and returning `Interrupted`;
+//!   - throttled progress reports through `try_send`, which may drop an update before the next window;
+//!   - optional rate limiting through `TokenBucket`, whose delay drives a Sleep.
 //!
-//! `run_inner` 退化为编排：握手 → copy → 校验 → rename。
+//! `run_inner` only orchestrates the request, copy, verification, and rename steps.
 //!
-//! 行为约定：
-//! - 写 `<dest>.part`，校验通过后 rename 为 dest
-//! - resume_offset > 0 时带 `Range: bytes=offset-`；服务端不支持 Range 则重头下
-//! - .part 文件大小即断点 offset（resume 时 stat），无需额外持久化
-//! - 中断时回报 `Interrupted { offset }`；.part 去留由 actor 按原因决定
+//! Behavior:
+//! - Write to `<dest>.part`, then rename it to `dest` after successful verification.
+//! - Send `Range: bytes=offset-` when `resume_offset > 0`; restart if Range is unsupported.
+//! - Use the `.part` file size as the resume offset, so no separate persistence is needed.
+//! - Report `Interrupted { offset }` on interruption; the actor decides whether to retain `.part`.
 
 use std::io;
 use std::path::{Path, PathBuf};
@@ -40,11 +39,12 @@ pub type RequestDecorator =
 
 pub struct DownloadExecutor {
   pub client: reqwest::Client,
-  /// 进度回报节流。
+  /// Progress reporting interval.
   pub report_interval: Duration,
-  /// 限速器（同一 executor 实例内共享，即全局生效；None = 不限速）。
+  /// Rate limiter shared by the executor instance, or None for unlimited throughput.
   pub limiter: Option<Arc<TokenBucket>>,
-  /// 由嵌入方按 URL 注入认证头等请求信息，避免把凭据写入持久化任务 spec。
+  /// Host-provided request customization for injecting authentication by URL without persisting
+  /// credentials in task specs.
   pub request_decorator: Option<RequestDecorator>,
 }
 
@@ -99,15 +99,16 @@ impl DownloadExecutor {
         .map_err(|e| TaskError::Io(e.to_string()))?;
     }
     let part_path = part_path(&dest);
-    // 实际续传点 = .part 文件大小（权威）。
-    // 崩溃场景：DB offset 未及时落库（无 Interrupted 回报），但 .part 保留了全部进度；
-    // 正常暂停/取消/校验失败路径分别由 offset 落库 / 删 .part 保证一致性。
+    // The `.part` file size is the authoritative resume offset. After a crash, the database offset
+    // may be stale because no Interrupted report was sent, while `.part` retains all progress.
+    // Normal pause, cancellation, and verification-failure paths persist the offset or remove
+    // `.part` as appropriate.
     let resume = match tokio::fs::metadata(&part_path).await {
       Ok(m) if m.len() > 0 => m.len(),
       _ => 0,
     };
 
-    // 1. 握手（可被 run_token 中断）
+    // 1. Send the request, cancellable through run_token.
     let req = self.client.get(&url).header("Accept-Encoding", "identity");
     let req = if resume > 0 {
       req.header("Range", format!("bytes={resume}-"))
@@ -143,7 +144,7 @@ impl DownloadExecutor {
           .await;
         return finalize_download(&ctx, &part_path, &dest).await;
       }
-      // 本地断点比远端对象大或响应无效：清掉断点，自动重试时从头下载。
+      // Clear an invalid or oversized local checkpoint so the automatic retry starts over.
       let _ = tokio::fs::remove_file(&part_path).await;
       return Err(TaskError::Network("服务器拒绝断点位置，将从头重试".into()));
     }
@@ -151,7 +152,7 @@ impl DownloadExecutor {
     if !status.is_success() {
       return Err(TaskError::Http(status.as_u16()));
     }
-    // 续传协商：请求了 Range 但服务端回 200 → 重头下
+    // A 200 response to a Range request means the server requires a full restart.
     let offset = if resume > 0 && !is_range { 0 } else { resume };
     let total = if is_range {
       let Some((start, total)) = content_range(resp.headers().get("content-range")) else {
@@ -171,7 +172,7 @@ impl DownloadExecutor {
       resp.content_length().unwrap_or(0)
     };
 
-    // 2. 构建读取管线：bytes_stream → DownloadReader（取消/进度/限速内聚）
+    // 2. Build the bytes_stream -> DownloadReader pipeline for cancellation, progress, and limits.
     let stream: Pin<Box<dyn Stream<Item = Result<bytes::Bytes, io::Error>> + Send>> =
       Box::pin(resp.bytes_stream().map(|r| r.map_err(io::Error::other)));
     let inner = StreamReader::new(stream);
@@ -199,7 +200,7 @@ impl DownloadExecutor {
         .map_err(|e| TaskError::Io(e.to_string()))?
     };
 
-    // 3. 拷贝（取消 = reader 返回 Interrupted）
+    // 3. Copy the response; cancellation makes the reader return Interrupted.
     match tokio::io::copy(&mut reader, &mut file).await {
       Ok(_) => {}
       Err(e) if e.kind() == io::ErrorKind::Interrupted => {
@@ -223,7 +224,7 @@ impl DownloadExecutor {
       .await
       .map_err(|e| TaskError::Io(e.to_string()))?;
 
-    // 4. 终报进度 + 内容校验 + rename
+    // 4. Report final progress, verify content, and rename the file.
     let _ = ctx
       .report
       .send(TaskReport::Progress {
@@ -236,7 +237,7 @@ impl DownloadExecutor {
   }
 }
 
-/// 下载读取器：把 `AsyncRead`（StreamReader）包成带取消/进度/限速的 AsyncRead。
+/// Wraps a `StreamReader` with cancellation, progress reporting, and rate limiting.
 pub struct DownloadReader<R> {
   inner: R,
   task_id: String,
@@ -244,11 +245,11 @@ pub struct DownloadReader<R> {
   report: Option<tokio::sync::mpsc::Sender<TaskReport>>,
   report_interval: Duration,
   limiter: Option<Arc<TokenBucket>>,
-  /// 已 yield 字节（含续传起点）。
+  /// Bytes yielded, including the resume offset.
   received: u64,
   total: u64,
   last_report: Instant,
-  /// 限流等待中的 Sleep。
+  /// Sleep for the current rate-limit delay.
   wait: Option<Pin<Box<tokio::time::Sleep>>>,
 }
 
@@ -273,13 +274,13 @@ impl<R> DownloadReader<R> {
       limiter,
       received: offset,
       total,
-      // 减去一个间隔：保证首个 chunk 立即上报
+      // Subtract one interval so the first chunk is reported immediately.
       last_report: Instant::now() - report_interval,
       wait: None,
     }
   }
 
-  /// 已消费字节（中断时作为 offset 回报）。
+  /// Bytes consumed, reported as the offset on interruption.
   pub fn offset(&self) -> u64 {
     self.received
   }
@@ -291,18 +292,18 @@ impl<R: AsyncRead + Unpin> AsyncRead for DownloadReader<R> {
     cx: &mut Context<'_>,
     buf: &mut ReadBuf<'_>,
   ) -> Poll<io::Result<()>> {
-    // 1. 取消：返回 Interrupted，让 copy 自然中断
+    // 1. Return Interrupted on cancellation so the copy stops naturally.
     if self.token.is_cancelled() {
       return Poll::Ready(Err(io::Error::new(io::ErrorKind::Interrupted, "cancelled")));
     }
-    // 2. 限流等待（poll 式 Sleep）
+    // 2. Poll the rate-limit Sleep.
     if let Some(wait) = self.wait.as_mut() {
       match Future::poll(wait.as_mut(), cx) {
         Poll::Pending => return Poll::Pending,
         Poll::Ready(_) => self.wait = None,
       }
     }
-    // 3. 读 inner
+    // 3. Read from the inner reader.
     match Pin::new(&mut self.inner).poll_read(cx, buf) {
       Poll::Pending => Poll::Pending,
       Poll::Ready(Err(e)) => Poll::Ready(Err(e)),
@@ -310,7 +311,7 @@ impl<R: AsyncRead + Unpin> AsyncRead for DownloadReader<R> {
         let n = buf.filled().len() as u64;
         if n > 0 {
           self.received += n;
-          // 4. 进度节流上报（try_send 可丢，下一个窗口补）
+          // 4. Send a throttled progress update; try_send may defer it to the next window.
           let now = Instant::now();
           if now.duration_since(self.last_report) >= self.report_interval {
             self.last_report = now;
@@ -322,7 +323,7 @@ impl<R: AsyncRead + Unpin> AsyncRead for DownloadReader<R> {
               });
             }
           }
-          // 5. 限速记账（返回前设置等待，下一 poll 阻塞）
+          // 5. Account for rate limiting and set the delay before the next poll.
           if let Some(lim) = &self.limiter {
             let wait = lim.consume(n);
             if wait > Duration::ZERO {
@@ -342,7 +343,7 @@ fn part_path(dest: &Path) -> PathBuf {
   PathBuf::from(s)
 }
 
-/// 解析 `Content-Range: bytes start-end/total` 的起点和总长度。
+/// Parses the start and total length from `Content-Range: bytes start-end/total`.
 fn content_range(v: Option<&reqwest::header::HeaderValue>) -> Option<(u64, u64)> {
   let value = v?.to_str().ok()?.strip_prefix("bytes ")?;
   let (range, total) = value.split_once('/')?;
@@ -350,7 +351,7 @@ fn content_range(v: Option<&reqwest::header::HeaderValue>) -> Option<(u64, u64)>
   Some((start.parse().ok()?, total.parse().ok()?))
 }
 
-/// 解析 416 响应中的 `Content-Range: bytes */total`。
+/// Parses `Content-Range: bytes */total` from a 416 response.
 fn content_range_unsatisfied_total(v: Option<&reqwest::header::HeaderValue>) -> Option<u64> {
   v?.to_str().ok()?.strip_prefix("bytes */")?.parse().ok()
 }
@@ -451,7 +452,7 @@ async fn report_if_cancelled(ctx: &ExecContext, part_path: &Path) -> bool {
   true
 }
 
-/// 单次读取同时计算 SHA-1 与 SHA-256（hex 小写）。
+/// Computes lowercase hexadecimal SHA-1 and SHA-256 digests in a single read.
 async fn hash_file(path: &Path) -> Result<(String, String), std::io::Error> {
   use tokio::io::AsyncReadExt;
   let mut file = tokio::fs::File::open(path).await?;

@@ -1,4 +1,4 @@
-//! 数据模型：Task / TaskGroup / 状态机。
+//! Data models for tasks, task groups, and their state machines.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -7,7 +7,7 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-/// Task 叶子状态机。
+/// State machine for an individual task.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum TaskState {
@@ -29,7 +29,7 @@ impl TaskState {
   }
 }
 
-/// TaskGroup 控制状态机。
+/// Control state machine for a task group.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum GroupState {
@@ -40,7 +40,7 @@ pub enum GroupState {
   Finished,
 }
 
-/// Finished 的细分。
+/// Detailed outcome of a finished task group.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum FinishKind {
@@ -49,7 +49,7 @@ pub enum FinishKind {
   Cancelled,
 }
 
-/// 错误分类（决定是否自动重试、是否保留 .part）。
+/// Error categories that determine automatic retries and `.part` file retention.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Error)]
 pub enum TaskError {
   #[error("网络错误: {0}")]
@@ -65,7 +65,7 @@ pub enum TaskError {
 }
 
 impl TaskError {
-  /// 瞬态错误（可自动退避重试）：网络错误 + 5xx。
+  /// Whether this is a transient error eligible for automatic backoff retries.
   pub fn is_transient(&self) -> bool {
     match self {
       TaskError::Network(_) => true,
@@ -75,7 +75,7 @@ impl TaskError {
   }
 }
 
-/// 单个执行任务。spec 是 executor 私有参数（JSON），core 不理解含义。
+/// An individual task. `spec` contains executor-specific JSON opaque to the core.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Task {
@@ -90,18 +90,18 @@ pub struct Task {
   pub sha1: Option<String>,
   pub sha256: Option<String>,
   pub state: TaskState,
-  /// 已接收字节（含续传部分）。
+  /// Bytes received, including bytes from an earlier partial download.
   pub received: u64,
-  /// 总字节，0 表示未知。
+  /// Total bytes, or zero if unknown.
   pub total: u64,
-  /// .part 已落盘偏移（断点续传起点）。
+  /// Persisted `.part` offset from which to resume.
   pub offset: u64,
   pub attempts: u32,
   pub error: Option<TaskError>,
-  /// 是否实际执行并通过了内容校验。
+  /// Whether the task ran and passed content verification.
   #[serde(default)]
   pub verified: bool,
-  /// 瞬态错误自动重试是否已耗尽（耗尽才触发组 fail-fast）。
+  /// Whether transient-error retries are exhausted, which triggers group fail-fast.
   #[serde(default, alias = "retries_exhausted")]
   pub retries_exhausted: bool,
 }
@@ -133,11 +133,11 @@ impl Task {
 pub struct TaskGroup {
   pub id: String,
   pub name: String,
-  /// 应用重启后是否自动恢复未完成任务。
+  /// Whether to resume unfinished tasks automatically after an application restart.
   pub auto_resume: bool,
   pub state: GroupState,
   pub finish: Option<FinishKind>,
-  /// 提交顺序即调度顺序。
+  /// Tasks are scheduled in submission order.
   pub tasks: Vec<Task>,
 }
 
@@ -172,13 +172,13 @@ impl TaskGroup {
     s
   }
 
-  /// 所有 task 是否已进入终态。
+  /// Whether every task has reached a terminal state.
   pub fn all_terminal(&self) -> bool {
     self.tasks.iter().all(|t| t.state.is_terminal())
   }
 }
 
-/// 进度快照（tick 事件与快照命令共用）。
+/// Progress snapshot shared by tick events and snapshot commands.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Progress {
@@ -187,31 +187,31 @@ pub struct Progress {
   pub state: TaskState,
   pub received: u64,
   pub total: u64,
-  /// 瞬时速度 EMA（bytes/s）。
+  /// Exponential moving average of the current speed in bytes per second.
   pub speed_bps: f64,
   pub eta_secs: Option<f64>,
 }
 
-/// 引擎配置。
+/// Engine configuration.
 #[derive(Debug, Clone)]
 pub struct EngineConfig {
-  /// 全局并发上限（worker 数）。
+  /// Global concurrency limit, expressed as the number of workers.
   pub concurrency: usize,
-  /// 同时激活的组数上限。
+  /// Maximum number of simultaneously active groups.
   pub max_active_groups: usize,
-  /// 进度事件合并周期。
+  /// Interval for coalescing progress events.
   pub emit_interval: Duration,
-  /// 调度轮询周期。
+  /// Scheduler polling interval.
   pub dispatch_interval: Duration,
-  /// worker 内进度回报节流。
+  /// Per-worker progress reporting interval.
   pub report_interval: Duration,
-  /// 瞬态错误自动重试次数上限。
+  /// Maximum automatic retry count for transient errors.
   pub max_retries: u32,
-  /// 自动重试退避基数（每次 ×2）。
+  /// Base automatic retry delay, doubled after each attempt.
   pub retry_backoff: Duration,
-  /// offset 落盘间隔（时间维度）。
+  /// Time interval for persisting offsets.
   pub offset_flush_interval: Duration,
-  /// offset 落盘间隔（字节维度）。
+  /// Byte interval for persisting offsets.
   pub offset_flush_bytes: u64,
 }
 
@@ -231,7 +231,7 @@ impl Default for EngineConfig {
   }
 }
 
-/// 引擎级错误（命令拒绝等）。
+/// Engine-level errors, such as rejected commands.
 #[derive(Debug, Error)]
 pub enum EngineError {
   #[error("未知组: {0}")]
@@ -246,22 +246,22 @@ pub enum EngineError {
   ChannelClosed,
 }
 
-/// 组内控制状态（actor 私有）。
+/// Actor-private control state for a task group.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CancelReason {
   Pause,
   Cancel,
 }
 
-/// task 排队标记：已 push 到 ready channel 等待 worker 领取。
+/// Marks a task pushed to the ready channel and waiting for a worker.
 #[derive(Debug, Clone)]
 pub(crate) struct RuntimeTask {
   pub start_token: tokio_util::sync::CancellationToken,
   pub run_token: tokio_util::sync::CancellationToken,
   pub queued: bool,
-  /// 每 task 的瞬时速度 EMA（actor 内计算）。
+  /// Per-task speed EMA calculated by the actor.
   pub speed_ema: f64,
-  /// 上一次 emit tick 时的 received（算速度用）。
+  /// Received byte count at the previous emit tick, used to calculate speed.
   pub prev_received: u64,
   pub prev_at: Option<std::time::Instant>,
 }
@@ -269,7 +269,7 @@ pub(crate) struct RuntimeTask {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct RuntimeGroup {
   pub cancel_reason: Option<CancelReason>,
-  /// 未持久化的运行期 task 运行时信息。
+  /// Non-persisted runtime state for each task.
   pub tasks: HashMap<String, RuntimeTask>,
 }
 

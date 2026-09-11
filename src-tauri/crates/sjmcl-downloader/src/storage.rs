@@ -1,7 +1,7 @@
-//! 状态持久化。trait 抽象：默认 SQLite 实现，测试可用内存实现。
+//! State persistence behind a trait, with SQLite by default and an in-memory test implementation.
 //!
-//! 写入策略：只在状态转换/关键节点写（低频）；offset 即 .part 文件大小，
-//! resume 时 stat 获得，无需高频落库。
+//! Writes occur only at state transitions and other key points. The `.part` file size is the
+//! offset and can be read when resuming, so it does not need frequent persistence.
 
 use std::path::Path;
 use std::sync::Mutex;
@@ -17,7 +17,7 @@ pub trait StateStore: Send + Sync {
   fn remove_group(&self, group_id: &str) -> Result<(), String>;
 }
 
-/// 内存实现（测试/无持久化场景）。
+/// In-memory implementation for tests and non-persistent use.
 #[derive(Default)]
 pub struct MemoryStore {
   groups: Mutex<Vec<TaskGroup>>,
@@ -57,7 +57,7 @@ impl StateStore for MemoryStore {
   }
 }
 
-/// SQLite 实现：单连接 + 互斥（写都是小事务，够用）。
+/// SQLite implementation using one mutex-protected connection for small transactions.
 pub struct SqliteStore {
   conn: Mutex<Connection>,
 }
@@ -78,7 +78,7 @@ impl SqliteStore {
              );",
       )
       .map_err(|e| e.to_string())?;
-    // 兼容旧版本数据库；重复列错误表示迁移已经执行过。
+    // Support older databases; a duplicate-column error means the migration already ran.
     let _ = conn.execute(
       "ALTER TABLE groups ADD COLUMN auto_resume INTEGER NOT NULL DEFAULT 0",
       [],
@@ -166,7 +166,7 @@ impl StateStore for SqliteStore {
     for row in rows {
       let (id, mut name, mut auto_resume, state, finish, tasks_json) =
         row.map_err(|e| e.to_string())?;
-      // 0.1 版本曾用名称前缀临时记录 auto_resume，迁移时恢复真实字段。
+      // Version 0.1 temporarily stored auto_resume in a name prefix. Restore the actual field.
       if !auto_resume {
         if let Some(original) = name.strip_prefix("[auto]") {
           name = original.to_string();
@@ -199,8 +199,8 @@ impl StateStore for SqliteStore {
   }
 }
 
-/// 重启恢复：普通组恢复为 Paused；开启 auto_resume 且崩溃前仍在运行/排队的组
-/// 恢复为 Queued，由 actor 按组并发上限重新激活。
+/// Restores regular groups as Paused after a restart. Groups with `auto_resume` that were active
+/// or queued before a crash are restored as Queued for the actor to reactivate within its limit.
 pub fn reconcile_after_restart(groups: &mut [TaskGroup]) {
   for g in groups.iter_mut() {
     let can_auto_resume =

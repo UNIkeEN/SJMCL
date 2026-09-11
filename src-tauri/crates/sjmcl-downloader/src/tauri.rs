@@ -1,6 +1,6 @@
-//! - Engine 放在 managed state
-//! - EventSink → `app.emit`（事件名见 event_name）
-//! - commands 封装 Engine 的异步方法
+//! - Stores the engine in managed state.
+//! - Maps `EventSink` to `app.emit` using the names in `event_name`.
+//! - Wraps asynchronous engine methods in commands.
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -15,11 +15,11 @@ use ::tauri::{AppHandle, Emitter, Manager, Runtime, State};
 
 pub struct EngineHandle(pub Engine);
 
-/// 引擎专属 tokio 运行时。tauri 的 setup 钩子不在 tokio 上下文里，
-/// `EngineBuilder::spawn()` 用 `tokio::spawn` 需要它；持有以防 drop 关闭。
+/// Dedicated Tokio runtime for the engine. Tauri's setup hook has no Tokio context, but
+/// `EngineBuilder::spawn()` uses `tokio::spawn`. Keeping this handle alive prevents shutdown.
 pub struct EngineRuntime(pub tokio::runtime::Runtime);
 
-/// EventSink 的 tauri 适配器：core 事件 → window.emit。
+/// Tauri `EventSink` adapter that forwards core events to `window.emit`.
 pub struct TauriSink<R: Runtime> {
   app: AppHandle<R>,
 }
@@ -45,22 +45,22 @@ impl<R: Runtime> EventSink for TauriSink<R> {
   }
 }
 
-/// 初始化插件：构造引擎（SQLite 持久化 + download executor）。
+/// Initializes the plugin with SQLite persistence and a download executor.
 pub fn init<R: Runtime>() -> ::tauri::plugin::TauriPlugin<R> {
   build_plugin(true, None)
 }
 
-/// 使用指定 SQLite 文件初始化插件，供集成测试或嵌入方隔离数据目录。
+/// Initializes the plugin with a specific SQLite file for integration tests or isolated storage.
 pub fn init_with_db_path<R: Runtime>(db_path: PathBuf) -> ::tauri::plugin::TauriPlugin<R> {
   build_plugin(true, Some(db_path))
 }
 
-/// 仅注册命令；嵌入方须在应用 setup 中调用 [`setup_engine`]。
+/// Registers commands only. The host must call [`setup_engine`] during application setup.
 pub fn commands<R: Runtime>() -> ::tauri::plugin::TauriPlugin<R> {
   build_plugin(false, None)
 }
 
-/// 使用宿主提供的配置、HTTP 客户端和数据库位置初始化引擎。
+/// Initializes the engine with host-provided configuration, HTTP client, and database path.
 pub fn setup_engine<R: Runtime>(
   app: &AppHandle<R>,
   db_path: PathBuf,
@@ -96,7 +96,7 @@ fn build_plugin<R: Runtime>(
   initialize: bool,
   db_path: Option<PathBuf>,
 ) -> ::tauri::plugin::TauriPlugin<R> {
-  ::tauri::plugin::Builder::new("download")
+  ::tauri::plugin::Builder::new("sjmcl-downloader")
     .setup(move |app, _api| {
       if !initialize {
         return Ok(());

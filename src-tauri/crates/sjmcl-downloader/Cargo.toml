@@ -1,8 +1,8 @@
 [package]
-name = "tauri-plugin-download"
-version = "0.1.0"
-edition = "2021"
-links = "tauri-plugin-download"
+name = "tauri-plugin-sjmcl-downloader"
+version.workspace = true
+edition.workspace = true
+links = "tauri-plugin-sjmcl-downloader"
 
 [lib]
 name = "sjmcl_downloader"

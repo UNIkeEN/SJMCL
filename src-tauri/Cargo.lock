@@ -57,7 +57,6 @@ dependencies = [
  "tauri-plugin-decorum",
  "tauri-plugin-deep-link",
  "tauri-plugin-dialog",
- "tauri-plugin-download",
  "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-log",
@@ -65,6 +64,7 @@ dependencies = [
  "tauri-plugin-os",
  "tauri-plugin-process",
  "tauri-plugin-single-instance",
+ "tauri-plugin-sjmcl-downloader",
  "tauri-plugin-window-state",
  "time",
  "tokio",
@@ -6099,29 +6099,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tauri-plugin-download"
-version = "0.1.0"
-dependencies = [
- "async-channel",
- "bytes",
- "futures-util",
- "reqwest 0.12.28",
- "rusqlite",
- "serde",
- "serde_json",
- "sha1",
- "sha2",
- "tauri",
- "tauri-build",
- "tauri-plugin",
- "thiserror 2.0.18",
- "tokio",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "tauri-plugin-fs"
 version = "2.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6255,6 +6232,29 @@ dependencies = [
  "tracing",
  "windows-sys 0.60.2",
  "zbus",
+]
+
+[[package]]
+name = "tauri-plugin-sjmcl-downloader"
+version = "1.3.0"
+dependencies = [
+ "async-channel",
+ "bytes",
+ "futures-util",
+ "reqwest 0.12.28",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
