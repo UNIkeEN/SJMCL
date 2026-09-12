@@ -1,15 +1,15 @@
-use comfy_table::{ContentArrangement, Table, presets::UTF8_FULL_CONDENSED};
+use comfy_table::{presets::UTF8_FULL_CONDENSED, ContentArrangement, Table};
 use indicatif::{ProgressBar, ProgressDrawTarget, ProgressStyle};
-use rmcp::ServiceExt;
 use rmcp::model::{CallToolRequestParams, Tool};
 use rmcp::service::{RoleClient, RunningService};
 use rmcp::transport::StreamableHttpClientTransport;
+use rmcp::ServiceExt;
 use serde_json::{Map, Value};
 use std::env;
 use std::ffi::OsString;
 use std::io::{self, IsTerminal};
 use std::process::Command;
-use tokio::time::{Instant, sleep};
+use tokio::time::{sleep, Instant};
 
 type LauncherClient = RunningService<RoleClient, ()>;
 
@@ -21,7 +21,8 @@ const EXPECTED_SERVER_NAME: &str = "sjmcl-mcp";
 const MCP_SERVER_HOST: &str = "127.0.0.1";
 const MCP_SERVER_PATH: &str = "/mcp";
 const RUN_SJMCL_DEEPLINK: &str = "sjmcl://run-silently";
-const ENABLE_MCP_HINT: &str = "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
+const ENABLE_MCP_HINT: &str =
+  "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
 
 #[derive(Clone)]
 struct CliOptions {
@@ -60,20 +61,20 @@ async fn run() -> Result<(), String> {
   match invocation.command {
     CliCommand::Help => {
       let (tools, hint) =
-        match with_spinner(async { connect_launcher(&invocation.options).await }).await {
-          Ok(client) => {
-            let tools = with_spinner(async {
-              client
-                .list_all_tools()
-                .await
-                .map_err(service_error_to_string)
-            })
-            .await?;
-            let _ = client.cancel().await;
-            (Some(tools), None)
-          }
-          Err(err) => (None, Some(err)),
-        };
+          match with_spinner(async { connect_launcher(&invocation.options).await }).await {
+            Ok(client) => {
+              let tools = with_spinner(async {
+                client
+                    .list_all_tools()
+                    .await
+                    .map_err(service_error_to_string)
+              })
+                  .await?;
+              let _ = client.cancel().await;
+              (Some(tools), None)
+            }
+            Err(err) => (None, Some(err)),
+          };
 
       print_help(tools.as_deref(), hint.as_deref());
       Ok(())
@@ -82,11 +83,11 @@ async fn run() -> Result<(), String> {
       let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
       let result = with_spinner(async {
         client
-          .call_tool(CallToolRequestParams::new(name.clone()).with_arguments(arguments))
-          .await
-          .map_err(service_error_to_string)
+            .call_tool(CallToolRequestParams::new(name.clone()).with_arguments(arguments))
+            .await
+            .map_err(service_error_to_string)
       })
-      .await?;
+          .await?;
       let _ = client.cancel().await;
 
       print_call_result(&result);
@@ -103,7 +104,7 @@ async fn run() -> Result<(), String> {
 impl CliInvocation {
   fn parse<I>(args: I) -> Result<Self, String>
   where
-    I: IntoIterator<Item = OsString>,
+      I: IntoIterator<Item = OsString>,
   {
     let mut args = args.into_iter();
     let _bin = args.next();
@@ -122,8 +123,8 @@ impl CliInvocation {
         }
         "-p" | "--port" => {
           let value = args
-            .next()
-            .ok_or_else(|| "missing value for --port".to_string())?;
+              .next()
+              .ok_or_else(|| "missing value for --port".to_string())?;
           options.port = parse_u16_option("--port", &os_string_to_string(value)?)?;
         }
         _ if arg.starts_with("-p=") => {
@@ -136,8 +137,8 @@ impl CliInvocation {
           rest.push(arg);
           rest.extend(
             args
-              .map(os_string_to_string)
-              .collect::<Result<Vec<_>, _>>()?,
+                .map(os_string_to_string)
+                .collect::<Result<Vec<_>, _>>()?,
           );
           break;
         }
@@ -188,13 +189,13 @@ async fn try_connect(port: u16) -> Result<LauncherClient, String> {
   let endpoint = mcp_endpoint(port);
   let transport = StreamableHttpClientTransport::from_uri(endpoint.clone());
   let client = ()
-    .serve(transport)
-    .await
-    .map_err(|err| format!("failed to initialize MCP client for {endpoint}: {err}"))?;
+      .serve(transport)
+      .await
+      .map_err(|err| format!("failed to initialize MCP client for {endpoint}: {err}"))?;
 
   let server_info = client
-    .peer_info()
-    .ok_or_else(|| format!("server at {endpoint} did not provide MCP server info"))?;
+      .peer_info()
+      .ok_or_else(|| format!("server at {endpoint} did not provide MCP server info"))?;
 
   if server_info.server_info.name != EXPECTED_SERVER_NAME {
     let actual_name = server_info.server_info.name.clone();
@@ -243,40 +244,40 @@ fn print_tool_list(tools: &[Tool]) {
 
 fn summarize_input_schema(tool: &Tool) -> String {
   let required = tool
-    .input_schema
-    .get("required")
-    .and_then(Value::as_array)
-    .map(|items| {
-      items
-        .iter()
-        .filter_map(Value::as_str)
-        .map(ToString::to_string)
-        .collect::<Vec<_>>()
-    })
-    .unwrap_or_default();
+      .input_schema
+      .get("required")
+      .and_then(Value::as_array)
+      .map(|items| {
+        items
+            .iter()
+            .filter_map(Value::as_str)
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+      })
+      .unwrap_or_default();
 
   let properties = tool
-    .input_schema
-    .get("properties")
-    .and_then(Value::as_object)
-    .map(|props| props.keys().cloned().collect::<Vec<_>>())
-    .unwrap_or_default();
+      .input_schema
+      .get("properties")
+      .and_then(Value::as_object)
+      .map(|props| props.keys().cloned().collect::<Vec<_>>())
+      .unwrap_or_default();
 
   if properties.is_empty() {
     return String::new();
   }
 
   properties
-    .into_iter()
-    .map(|name| {
-      if required.contains(&name) {
-        format!("<{name}>")
-      } else {
-        format!("[{name}]")
-      }
-    })
-    .collect::<Vec<_>>()
-    .join(" ")
+      .into_iter()
+      .map(|name| {
+        if required.contains(&name) {
+          format!("<{name}>")
+        } else {
+          format!("[{name}]")
+        }
+      })
+      .collect::<Vec<_>>()
+      .join(" ")
 }
 
 fn print_call_result(result: &rmcp::model::CallToolResult) {
@@ -312,11 +313,11 @@ fn parse_tool_arguments(args: &[String]) -> Result<Map<String, Value>, String> {
   }
 
   let value: Value = serde_json::from_str(&args[0])
-    .map_err(|err| format!("failed to parse tool arguments JSON: {err}"))?;
+      .map_err(|err| format!("failed to parse tool arguments JSON: {err}"))?;
   value
-    .as_object()
-    .cloned()
-    .ok_or_else(|| "tool arguments must be a JSON object".to_string())
+      .as_object()
+      .cloned()
+      .ok_or_else(|| "tool arguments must be a JSON object".to_string())
 }
 
 fn run_sjmcl_deeplink() -> Result<(), String> {
@@ -342,18 +343,18 @@ fn run_sjmcl_deeplink() -> Result<(), String> {
   };
 
   command
-    .status()
-    .map_err(|err| format!("failed to open deeplink `{RUN_SJMCL_DEEPLINK}`: {err}"))
-    .and_then(|status| {
-      if status.success() {
-        Ok(())
-      } else {
-        Err(format!(
-          "deeplink launcher exited with status {} for `{RUN_SJMCL_DEEPLINK}`",
-          status
-        ))
-      }
-    })
+      .status()
+      .map_err(|err| format!("failed to open deeplink `{RUN_SJMCL_DEEPLINK}`: {err}"))
+      .and_then(|status| {
+        if status.success() {
+          Ok(())
+        } else {
+          Err(format!(
+            "deeplink launcher exited with status {} for `{RUN_SJMCL_DEEPLINK}`",
+            status
+          ))
+        }
+      })
 }
 
 fn mcp_endpoint(port: u16) -> String {
@@ -362,10 +363,10 @@ fn mcp_endpoint(port: u16) -> String {
 
 fn parse_u16_option(flag: &str, value: &str) -> Result<u16, String> {
   value
-    .parse::<u16>()
-    .ok()
-    .filter(|port| *port > 0)
-    .ok_or_else(|| format!("invalid value for {flag}: `{value}`"))
+      .parse::<u16>()
+      .ok()
+      .filter(|port| *port > 0)
+      .ok_or_else(|| format!("invalid value for {flag}: `{value}`"))
 }
 
 fn service_error_to_string(err: rmcp::service::ServiceError) -> String {
@@ -374,7 +375,7 @@ fn service_error_to_string(err: rmcp::service::ServiceError) -> String {
 
 async fn with_spinner<F, T>(future: F) -> T
 where
-  F: std::future::Future<Output = T>,
+    F: std::future::Future<Output = T>,
 {
   if !io::stderr().is_terminal() {
     return future.await;
@@ -384,8 +385,8 @@ where
   spinner.set_draw_target(ProgressDrawTarget::stderr());
   spinner.set_style(
     ProgressStyle::with_template("{spinner}")
-      .unwrap()
-      .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]),
+        .unwrap()
+        .tick_strings(&["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]),
   );
   spinner.enable_steady_tick(std::time::Duration::from_millis(80));
 
@@ -396,6 +397,6 @@ where
 
 fn os_string_to_string(value: OsString) -> Result<String, String> {
   value
-    .into_string()
-    .map_err(|_| "non-UTF-8 CLI arguments are not supported".to_string())
+      .into_string()
+      .map_err(|_| "non-UTF-8 CLI arguments are not supported".to_string())
 }
