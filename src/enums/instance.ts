@@ -22,4 +22,10 @@ export enum ModLoaderType {
   Quilt = "Quilt",
 }
 
+export enum ForgeArtifactType {
+  Installer = "Installer",
+  Universal = "Universal",
+  Client = "Client",
+}
+
 export type ExportModpackFormat = "Modrinth" | "MultiMC";

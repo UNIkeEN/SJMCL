@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use strum_macros::{Display, EnumIter};
 
-use crate::instance::models::misc::ModLoaderType;
+use crate::instance::models::misc::{ForgeArtifactType, ModLoaderType};
 
 #[derive(Eq, Hash, PartialEq, Clone, Copy, Debug, EnumIter)]
 pub enum ResourceType {
@@ -187,6 +187,7 @@ pub struct ModLoaderResourceInfo {
   pub description: String,
   pub stable: Option<bool>,
   pub branch: Option<String>,
+  pub forge_artifact_type: Option<ForgeArtifactType>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

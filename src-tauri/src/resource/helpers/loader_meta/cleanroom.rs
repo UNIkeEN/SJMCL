@@ -32,6 +32,7 @@ async fn get_cleanroom_meta_by_game_version_official(
                 description: info.created_at,
                 stable: None,
                 branch: None,
+                forge_artifact_type: None,
               })
               .collect(),
           )

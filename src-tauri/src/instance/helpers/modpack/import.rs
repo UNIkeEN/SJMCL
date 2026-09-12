@@ -64,6 +64,7 @@ impl ModLoader {
     if let Some(version) = version_list.iter().find(|v| v.version == self.version) {
       return Ok(Self {
         branch: version.branch.clone(),
+        forge_artifact_type: version.forge_artifact_type,
         ..self.clone()
       });
     }

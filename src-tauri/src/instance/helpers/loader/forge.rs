@@ -16,7 +16,9 @@ use crate::instance::helpers::client_json::{
 };
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
-use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
+use crate::instance::models::misc::{
+  ForgeArtifactType, Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus,
+};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
@@ -24,11 +26,12 @@ use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 
-async fn fetch_bmcl_forge_installer_url(
+async fn fetch_bmcl_forge_artifact_url(
   root: Url,
   game_version: &str,
   loader_ver: &str,
   branch: Option<&str>,
+  artifact_type: ForgeArtifactType,
 ) -> Result<String, Error> {
   let client = Client::builder().redirect(Policy::limited(5)).build()?;
 
@@ -38,14 +41,43 @@ async fn fetch_bmcl_forge_installer_url(
       ("mcversion", game_version),
       ("version", loader_ver),
       ("branch", branch.unwrap_or("")),
-      ("category", "installer"),
-      ("format", "jar"),
+      ("category", artifact_type.category()),
+      ("format", artifact_type.extension()),
     ])
     .send()
     .await?;
 
   let final_url = response.url().to_string();
   Ok(final_url)
+}
+
+fn get_forge_full_version(game_version: &str, loader: &ModLoader) -> String {
+  [
+    game_version,
+    &loader.version,
+    loader.branch.as_deref().unwrap_or_default(),
+  ]
+  .into_iter()
+  .filter(|part| !part.is_empty())
+  .collect::<Vec<_>>()
+  .join("-")
+}
+
+fn get_forge_artifact_coord(
+  game_version: &str,
+  loader: &ModLoader,
+  artifact_type: ForgeArtifactType,
+) -> String {
+  if artifact_type == ForgeArtifactType::Installer {
+    format!("net.minecraftforge:forge:{}-installer", loader.version)
+  } else {
+    format!(
+      "net.minecraftforge:forge:{}:{}@{}",
+      get_forge_full_version(game_version, loader),
+      artifact_type.category(),
+      artifact_type.extension()
+    )
+  }
 }
 
 pub async fn install_forge_loader(
@@ -56,52 +88,50 @@ pub async fn install_forge_loader(
   task_params: &mut Vec<PTaskParam>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
+  let artifact_type = loader.forge_artifact_type.unwrap_or_default();
+  let full_ver = get_forge_full_version(game_version, loader);
 
-  let mut installer_url_opt: Option<Url> = None;
+  let mut artifact_url_opt: Option<Url> = None;
   for source_type in priority.iter() {
     if let Ok(root) = get_download_api(*source_type, ResourceType::ForgeInstall) {
       let url_res: SJMCLResult<Url> = match source_type {
         SourceType::Official => {
-          let full_ver = vec![
-            game_version,
-            loader_ver,
-            loader.branch.as_ref().unwrap_or(&"".to_string()),
-          ]
-          .into_iter()
-          .filter(|s| !s.is_empty())
-          .collect::<Vec<_>>()
-          .join("-");
-          Ok(root.join(&format!("{full_ver}/forge-{full_ver}-installer.jar"))?)
+          let category = artifact_type.category();
+          let extension = artifact_type.extension();
+          Ok(root.join(&format!(
+            "{full_ver}/forge-{full_ver}-{category}.{extension}"
+          ))?)
         }
         SourceType::BMCLAPIMirror => {
-          let s = fetch_bmcl_forge_installer_url(
+          let s = fetch_bmcl_forge_artifact_url(
             root,
             game_version,
             loader_ver,
             loader.branch.as_deref(),
+            artifact_type,
           )
           .await?;
           Ok(Url::parse(&s)?)
         }
       };
       if let Ok(url) = url_res {
-        installer_url_opt = Some(url);
+        artifact_url_opt = Some(url);
         break;
       }
     }
   }
 
-  let installer_url = installer_url_opt.ok_or(SJMCLError(
-    "failed to resolve Forge installer URL".to_string(),
+  let artifact_url = artifact_url_opt.ok_or(SJMCLError(
+    "failed to resolve Forge artifact URL".to_string(),
   ))?;
 
-  let installer_coord = format!("net.minecraftforge:forge:{}-installer", loader.version);
-  let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
-  let installer_path = lib_dir.join(&installer_rel);
+  let artifact_coord = get_forge_artifact_coord(game_version, loader, artifact_type);
+  let artifact_rel = convert_library_name_to_path(&artifact_coord, None)?;
+  let artifact_path = lib_dir.join(&artifact_rel);
 
   task_params.push(PTaskParam::Download(DownloadParam {
-    src: installer_url,
-    dest: installer_path.clone(),
+    src: artifact_url,
+    dest: artifact_path,
     filename: None,
     sha1: None,
   }));
@@ -112,7 +142,7 @@ pub async fn install_forge_loader(
 pub async fn download_forge_libraries(
   app: &AppHandle,
   priority: &[SourceType],
-  instance: &Instance,
+  instance: &mut Instance,
   client_info: &mut McClientInfo,
 ) -> SJMCLResult<()> {
   let subdirs = get_instance_subdir_paths(
@@ -126,12 +156,32 @@ pub async fn download_forge_libraries(
   };
   let mut task_params = vec![];
 
-  let installer_coord = format!(
-    "net.minecraftforge:forge:{}-installer",
-    instance.mod_loader.version
-  );
-  let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
-  let installer_path = lib_dir.join(&installer_rel);
+  let artifact_type = instance.mod_loader.forge_artifact_type.unwrap_or_default();
+  let artifact_coord =
+    get_forge_artifact_coord(&instance.version, &instance.mod_loader, artifact_type);
+  let artifact_path = lib_dir.join(convert_library_name_to_path(&artifact_coord, None)?);
+  if !artifact_path.exists() {
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
+
+  if artifact_type != ForgeArtifactType::Installer {
+    client_info.patches.push(McClientInfo {
+      id: "forge".to_string(),
+      version: Some(instance.mod_loader.version.clone()),
+      priority: Some(30000),
+      inherits_from: Some(instance.version.clone()),
+      libraries: vec![LibrariesValue {
+        name: artifact_coord,
+        ..Default::default()
+      }],
+      ..Default::default()
+    });
+    reset_fields_from_patches(client_info);
+    instance.mod_loader.status = ModLoaderStatus::Installed;
+    return Ok(());
+  }
+
+  let installer_path = artifact_path;
   let bin_patch = lib_dir.join(convert_library_name_to_path(
     &format!(
       "net.minecraftforge:forge:{}:clientdata@lzma",
@@ -139,9 +189,6 @@ pub async fn download_forge_libraries(
     ),
     None,
   )?);
-  if !installer_path.exists() {
-    return Err(InstanceError::LoaderInstallerNotFound.into());
-  }
   let file = File::open(&installer_path)?;
   let mut archive = ZipArchive::new(file)?;
 

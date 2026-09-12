@@ -37,6 +37,7 @@ async fn resolve_mod_loader(
       description: String::new(),
       stable: None,
       branch: None,
+      forge_artifact_type: None,
     });
   }
 

@@ -49,6 +49,7 @@ pub async fn get_fabric_meta_by_game_version(
                   // stable: info.loader.stable,
                   stable: None,
                   branch: None,
+                  forge_artifact_type: None,
                 })
                 .collect(),
             );

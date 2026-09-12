@@ -64,6 +64,7 @@ pub async fn get_quilt_meta_by_game_version(
                     description: String::new(),
                     stable: Some(stable),
                     branch: None,
+                    forge_artifact_type: None,
                   }
                 })
                 .collect(),

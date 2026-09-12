@@ -71,6 +71,31 @@ impl ModLoaderType {
   }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, Default)]
+pub enum ForgeArtifactType {
+  #[default]
+  Installer,
+  Universal,
+  Client,
+}
+
+impl ForgeArtifactType {
+  pub fn category(self) -> &'static str {
+    match self {
+      Self::Installer => "installer",
+      Self::Universal => "universal",
+      Self::Client => "client",
+    }
+  }
+
+  pub fn extension(self) -> &'static str {
+    match self {
+      Self::Installer => "jar",
+      Self::Universal | Self::Client => "zip",
+    }
+  }
+}
+
 #[derive(Debug, PartialEq, Eq, Deserialize, Clone, Serialize, Default)]
 pub enum ModLoaderStatus {
   NotDownloaded, // mod loader's library has not been downloaded
@@ -101,6 +126,7 @@ structstruck::strike! {
       pub loader_type: ModLoaderType,
       pub version: String,
       pub branch: Option<String>, // Optional branch name for mod loaders like Forge
+      pub forge_artifact_type: Option<ForgeArtifactType>,
     },
     pub optifine: Option<OptiFine>,
     // if true, use the spec_game_config, else use the global game config

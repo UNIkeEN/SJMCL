@@ -1,4 +1,8 @@
-import { ExportModpackFormat, ModLoaderType } from "@/enums/instance";
+import {
+  ExportModpackFormat,
+  ForgeArtifactType,
+  ModLoaderType,
+} from "@/enums/instance";
 import { OtherResourceSource } from "@/enums/resource";
 
 export enum ModLoaderStatus {
@@ -14,6 +18,7 @@ export interface ModLoader {
   loaderType: ModLoaderType;
   version?: string;
   branch?: string;
+  forgeArtifactType?: ForgeArtifactType;
 }
 
 export interface OptiFine {

@@ -1,4 +1,4 @@
-import { ModLoaderType } from "@/enums/instance";
+import { ForgeArtifactType, ModLoaderType } from "@/enums/instance";
 import {
   DependencyType,
   OtherResourceSource,
@@ -66,6 +66,7 @@ export interface ModLoaderResourceInfo {
   description: string;
   stable?: boolean;
   branch?: string;
+  forgeArtifactType?: ForgeArtifactType;
 }
 
 export const defaultModLoaderResourceInfo: ModLoaderResourceInfo = {

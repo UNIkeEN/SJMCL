@@ -4,7 +4,7 @@ use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-use crate::instance::models::misc::ModLoaderType;
+use crate::instance::models::misc::{ForgeArtifactType, ModLoaderType};
 use crate::resource::helpers::misc::get_download_api;
 use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
 
@@ -12,10 +12,30 @@ use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType
 struct ForgeMetaItem {
   pub branch: Option<Value>,
   pub build: i64,
-  pub files: Vec<Value>,
+  pub files: Vec<ForgeMetaFile>,
   pub mcversion: String,
   pub modified: String,
   pub version: String,
+}
+
+#[derive(Serialize, Deserialize, Default)]
+struct ForgeMetaFile {
+  category: String,
+  format: String,
+}
+
+fn select_forge_artifact(files: &[ForgeMetaFile]) -> Option<ForgeArtifactType> {
+  [
+    ForgeArtifactType::Installer,
+    ForgeArtifactType::Universal,
+    ForgeArtifactType::Client,
+  ]
+  .into_iter()
+  .find(|artifact| {
+    files
+      .iter()
+      .any(|file| file.category == artifact.category() && file.format == artifact.extension())
+  })
 }
 
 async fn get_forge_meta_by_game_version_bmcl(
@@ -34,13 +54,17 @@ async fn get_forge_meta_by_game_version_bmcl(
           Ok(
             manifest
               .into_iter()
-              .map(|info| ModLoaderResourceInfo {
-                loader_type: ModLoaderType::Forge,
-                version: info.version,
-                description: info.modified,
-                // stable: true,
-                stable: None,
-                branch: info.branch.and_then(|v| v.as_str().map(String::from)),
+              .filter_map(|info| {
+                let forge_artifact_type = select_forge_artifact(&info.files)?;
+                Some(ModLoaderResourceInfo {
+                  loader_type: ModLoaderType::Forge,
+                  version: info.version,
+                  description: info.modified,
+                  // stable: true,
+                  stable: None,
+                  branch: info.branch.and_then(|v| v.as_str().map(String::from)),
+                  forge_artifact_type: Some(forge_artifact_type),
+                })
               })
               .collect(),
           )

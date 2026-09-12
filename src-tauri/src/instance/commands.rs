@@ -1093,6 +1093,7 @@ pub async fn create_instance(
       },
       version: mod_loader.version.clone(),
       branch: mod_loader.branch.clone(),
+      forge_artifact_type: mod_loader.forge_artifact_type,
     },
     optifine: optifine_info,
     description,
@@ -1485,6 +1486,7 @@ pub async fn change_mod_loader(
       ModLoaderStatus::NotDownloaded
     },
     branch: new_mod_loader.branch.clone(),
+    forge_artifact_type: new_mod_loader.forge_artifact_type,
   };
 
   instance.mod_loader = mod_loader.clone();
@@ -1563,6 +1565,7 @@ pub async fn remove_mod_loader(app: AppHandle, instance_id: String) -> SJMCLResu
     version: String::new(),
     status: ModLoaderStatus::Installed,
     branch: None,
+    forge_artifact_type: None,
   };
 
   save_json_async(&version_info, &json_path).await?;

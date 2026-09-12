@@ -175,7 +175,8 @@ async fn refresh_instance(
           match cfg_read.mod_loader.loader_type {
             ModLoaderType::Forge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+              download_forge_libraries(app, &priority_list, &mut cfg_read, &mut client_data)
+                .await?;
             }
             ModLoaderType::Cleanroom => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
@@ -198,7 +199,7 @@ async fn refresh_instance(
         ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
           ModLoaderType::Forge => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
+            download_forge_libraries(app, &priority_list, &mut cfg_read, &mut client_data).await
           }
           ModLoaderType::Cleanroom => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
@@ -313,6 +314,7 @@ async fn refresh_instance(
         version: loader_version.unwrap_or_default(),
         status: ModLoaderStatus::Installed,
         branch: None,
+        forge_artifact_type: None,
       }
     },
     optifine: if !optifine_installed {
