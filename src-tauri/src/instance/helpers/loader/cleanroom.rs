@@ -162,17 +162,14 @@ pub async fn download_cleanroom_libraries(
     if args_map.contains_key(&format!("{{{key}}}")) {
       continue;
     }
-    let mut value_client = value.client.clone();
-    if value_client.starts_with('[') && value_client.ends_with(']') {
-      value_client = value_client
-        .trim_start_matches('[')
-        .trim_end_matches(']')
-        .to_string();
-      value_client = lib_dir
-        .join(convert_library_name_to_path(&value_client, None)?)
+    let value_client = if let Some(library) = value.client.strip_circumfix('[', ']') {
+      lib_dir
+        .join(convert_library_name_to_path(library, None)?)
         .to_string_lossy()
-        .to_string();
-    }
+        .into_owned()
+    } else {
+      value.client.clone()
+    };
     args_map.insert(format!("{{{key}}}"), value_client);
   }
 
@@ -205,15 +202,11 @@ pub async fn download_cleanroom_libraries(
     }
 
     for arg in processor.args.iter_mut() {
-      if arg.starts_with('[') && arg.ends_with(']') {
-        *arg = arg
-          .trim_start_matches('[')
-          .trim_end_matches(']')
-          .to_string();
+      if let Some(library) = arg.strip_circumfix('[', ']') {
         *arg = lib_dir
-          .join(convert_library_name_to_path(arg, None)?)
+          .join(convert_library_name_to_path(library, None)?)
           .to_string_lossy()
-          .to_string();
+          .into_owned();
       }
       for (key, value) in &args_map {
         *arg = arg.replace(key, value);
