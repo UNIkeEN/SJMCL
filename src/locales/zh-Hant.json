@@ -3067,10 +3067,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "任務建立失敗"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} 下載任務已開始",
           "Failed": "{{param}} 部分下載失敗，請重試",

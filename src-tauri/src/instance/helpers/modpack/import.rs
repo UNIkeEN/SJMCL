@@ -7,13 +7,13 @@ use std::path::Path;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
+use crate::download::PTaskParam;
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
 use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::commands::fetch_mod_loader_version_list;
 use crate::resource::models::OtherResourceSource;
-use crate::tasks::PTaskParam;
 
 #[async_trait]
 pub trait ModpackManifest {

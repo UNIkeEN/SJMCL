@@ -11,6 +11,9 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{
   LibrariesValue, McClientInfo, reset_fields_from_patches,
 };
@@ -20,9 +23,6 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 async fn fetch_bmcl_forge_installer_url(
   root: Url,
@@ -454,7 +454,7 @@ pub async fn download_forge_libraries(
     PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
   });
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app.clone(),
     format!("forge-libraries?{}", instance.id),
     task_params,

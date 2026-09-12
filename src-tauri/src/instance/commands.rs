@@ -16,6 +16,9 @@ use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{
   McClientInfo, remove_mod_loader_from_client_info, remove_optifine_from_client_info,
   replace_native_libraries,
@@ -71,9 +74,6 @@ use crate::resource::helpers::translation::{
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
 };
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 use crate::utils::fs::{
   RemoveDirGuard, copy_whole_dir, create_url_shortcut, generate_unique_filename,
   get_files_with_regex, get_files_with_regex_recursive, get_subdirectories,
@@ -1229,7 +1229,7 @@ pub async fn create_instance(
     extract_overrides(&file, &version_path)?;
   }
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app.clone(),
     match java_version_to_download {
       Some(java_version) => format!("game-client-w-java?{}&{}", name, java_version),
@@ -1506,7 +1506,7 @@ pub async fn change_mod_loader(
   }
 
   if !modloader_task_params.is_empty() {
-    schedule_progressive_task_group(
+    submit_download_group(
       app.clone(),
       format!(
         "change-mod-loader?{} {}",
@@ -1612,7 +1612,7 @@ pub async fn change_optifine(
   .await?;
 
   if !optifine_task_params.is_empty() {
-    schedule_progressive_task_group(
+    submit_download_group(
       app.clone(),
       format!("change-optifine?{}", new_optifine.filename),
       optifine_task_params,

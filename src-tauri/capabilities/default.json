@@ -21,6 +21,7 @@
     "dialog:default",
     "log:default",
     "os:default",
-    "process:default"
+    "process:default",
+    "sjmcl-downloader:default"
   ]
 }

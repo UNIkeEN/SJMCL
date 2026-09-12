@@ -3,6 +3,9 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
 use crate::instance::models::misc::{InstanceSubdirType, ModLoaderType};
@@ -28,9 +31,6 @@ use crate::resource::models::{
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
   OtherResourceSource, OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
 };
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 #[tauri::command]
 pub async fn fetch_game_version_list(app: AppHandle) -> SJMCLResult<Vec<GameClientResourceInfo>> {
@@ -149,7 +149,7 @@ pub async fn download_game_server(
     .get("server")
     .ok_or(ResourceError::ParseError)?;
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app,
     format!("game-server?{}", resource_info.id),
     vec![PTaskParam::Download(DownloadParam {
@@ -210,7 +210,7 @@ pub async fn update_mods(
     download_tasks.push(PTaskParam::Download(download_param));
   }
 
-  schedule_progressive_task_group(app, "mod-update".to_string(), download_tasks, true).await?;
+  submit_download_group(app, "mod-update".to_string(), download_tasks, true).await?;
 
   for query in &queries {
     let old_file_path = &query.old_file_path;

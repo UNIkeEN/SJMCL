@@ -4,13 +4,13 @@ use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::pin::Pin;
 use std::sync::Mutex;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_opener::reveal_item_in_dir;
 
+use crate::download::{has_active_downloads, submit_download_group};
 use crate::instance::helpers::misc::refresh_instances;
 use crate::launcher_config::helpers::graphics::supported_graphics_renderers;
 use crate::launcher_config::helpers::java::{
@@ -24,7 +24,6 @@ use crate::launcher_config::models::{
   BuildType, GameDirectory, GraphicsApi, JavaInfo, LauncherConfig, LauncherConfigError,
   VersionMetaInfo,
 };
-use crate::tasks::{commands::schedule_progressive_task_group, monitor::TaskMonitor};
 use crate::utils::fs::{generate_unique_filename, get_subdirectories};
 use crate::utils::string::camel_to_snake_case;
 
@@ -243,7 +242,7 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
 pub async fn download_mojang_java(app: AppHandle, version: String) -> SJMCLResult<()> {
   let download_params = build_mojang_java_download_params(&app, &version).await?;
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app,
     format!("mojang-java?{}", version),
     download_params,
@@ -315,9 +314,7 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
 #[tauri::command]
 pub async fn clear_download_cache(app: AppHandle) -> SJMCLResult<()> {
   let launcher_config = app.state::<Mutex<LauncherConfig>>();
-  let monitor = app.state::<Pin<Box<TaskMonitor>>>();
-
-  if monitor.has_active_download_tasks() {
+  if has_active_downloads(&app).await? {
     return Err(LauncherConfigError::HasActiveDownloadTasks.into());
   }
 

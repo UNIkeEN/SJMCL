@@ -9,7 +9,11 @@ edition.workspace = true
 rust-version.workspace = true
 
 [workspace]
-members = ["crates/sjmcl-macros", "crates/sjmcl-types"]
+members = [
+  "crates/sjmcl-downloader",
+  "crates/sjmcl-macros",
+  "crates/sjmcl-types",
+]
 resolver = "3"
 
 [workspace.package]
@@ -18,7 +22,6 @@ edition = "2024"
 rust-version = "1.91.0"
 
 [workspace.dependencies]
-async-speed-limit = "0.4.2"
 async-trait = "0.1.89"
 axum = "0.8.6"
 base64 = "0.22.1"
@@ -28,10 +31,9 @@ chrono = { version = "0.4.40", features = ["serde"] }
 config = { version = "0.15.18", default-features = false, features = ["ini"] }
 csv = "1.3"
 dotenvy = "0.15.7"
-flume = { version = "0.11.1", features = ["async", "select"] }
 font-loader = "0.11.0"
 futures = "0.3.31"
-glob = "0.3.2"
+futures-util = "0.3.31"
 hex = "0.4.3"
 image = { version = "0.25.5", default-features = false, features = [
   "serde",
@@ -50,7 +52,6 @@ log = "0.4"
 mc-server-status = "1.0.0"
 murmur2 = "0.1"
 native-dialog = "0.9.6"
-pin-project = "1.1.8"
 plist = "1"
 proc-macro2 = "1"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
@@ -59,17 +60,23 @@ rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
 reqwest-retry = "0.7.0"
+reqwest = { version = "0.12.28", default-features = false, features = [
+  "rustls-tls",
+  "stream",
+] }
 rmcp = { version = "1.7.0", features = [
   "server",
   "transport-streamable-http-server",
 ] }
 rsa = "0.9.10"
+rusqlite = { version = "0.37.0", features = ["bundled"] }
 sanitize-filename = "0.6.0"
 schemars = "1.0.4"
 semver = "1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_with = "3.12.0"
+sjmcl-downloader = { package = "tauri-plugin-sjmcl-downloader", path = "./crates/sjmcl-downloader" }
 sjmcl-macros = { path = "./crates/sjmcl-macros" }
 sjmcl-types = { path = "./crates/sjmcl-types" }
 sha1 = { version = "0.10.1", features = ["oid"] }
@@ -84,6 +91,7 @@ sysinfo = "0.36.0"
 systemstat = "0.2.3"
 tauri = { version = "2.11.1", features = ["protocol-asset", "image-png"] }
 tauri-build = { version = "2.6.1", features = [] }
+tauri-plugin = "2.6.2"
 tauri-plugin-clipboard-manager = "2.3.2"
 tauri-plugin-decorum = "1.1.1"
 tauri-plugin-deep-link = "2.4.9"
@@ -97,6 +105,7 @@ tauri-plugin-process = "2.3.1"
 tauri-plugin-single-instance = { version = "2.4.2", features = ["deep-link"] }
 tauri-plugin-window-state = "2.4.1"
 time = { version = "0.3", features = ["formatting", "local-offset"] }
+thiserror = "2.0.18"
 tokio = { version = "1", features = [
   "rt-multi-thread",
   "macros",
@@ -109,6 +118,7 @@ tokio = { version = "1", features = [
 tokio-util = { version = "0.7.13", features = ["compat"] }
 toml = "0.8"
 tower-http = { version = "0.6.6", features = ["cors"] }
+tracing = "0.1.44"
 url = "2.5.4"
 urlencoding = "2.1.3"
 uuid = { version = "1.11.0", features = [
@@ -164,7 +174,6 @@ lto = false
 expat-sys = { git = "https://github.com/SJMC-dev/libexpat.git" }
 
 [dependencies]
-async-speed-limit.workspace = true
 async-trait.workspace = true
 axum.workspace = true
 base64.workspace = true
@@ -173,10 +182,8 @@ chacha20poly1305.workspace = true
 chrono.workspace = true
 config.workspace = true
 csv.workspace = true
-flume.workspace = true
 font-loader.workspace = true
 futures.workspace = true
-glob.workspace = true
 hex.workspace = true
 image.workspace = true
 java-properties.workspace = true
@@ -186,7 +193,6 @@ log.workspace = true
 mc-server-status.workspace = true
 murmur2.workspace = true
 native-dialog.workspace = true
-pin-project.workspace = true
 quartz_nbt.workspace = true
 rand.workspace = true
 regex.workspace = true
@@ -200,6 +206,7 @@ semver.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
+sjmcl-downloader.workspace = true
 sjmcl-macros.workspace = true
 sjmcl-types.workspace = true
 sha1.workspace = true

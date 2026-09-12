@@ -3067,10 +3067,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "任務建立未成"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} 引任務已始",
           "Failed": "{{param}} 部分引之未成，請復試",

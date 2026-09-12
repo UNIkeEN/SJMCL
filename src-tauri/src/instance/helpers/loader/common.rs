@@ -6,6 +6,7 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
+use crate::download::PTaskParam;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
@@ -17,7 +18,6 @@ use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoade
 use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::models::SourceType;
-use crate::tasks::PTaskParam;
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,

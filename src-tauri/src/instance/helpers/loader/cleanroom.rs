@@ -1,3 +1,6 @@
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{McClientInfo, reset_fields_from_patches};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -6,9 +9,6 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use std::fs;
@@ -321,7 +321,7 @@ pub async fn download_cleanroom_libraries(
     PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
   });
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app.clone(),
     format!("cleanroom-libraries?{}", instance.id),
     task_params,
