@@ -1,3 +1,6 @@
+overrides:
+  mdast-util-gfm-autolink-literal: 2.0.0
+
 allowBuilds:
   sharp: true
   unrs-resolver: true
