@@ -107,6 +107,19 @@ export class LaunchService {
   }
 
   /**
+   * TERMINATE the game process.
+   * This command is usually called by the game-log window to terminate a running game process.
+   * @param {number} launchingId The id of the launching state to terminate.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("launch")
+  static async terminateGameProcess(
+    launchingId: number
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("terminate_game_process", { launchingId });
+  }
+
+  /**
    * EXPORT the game crash info to a zip file and reveal it in the file explorer.
    * This command is usually called by the game error window when game process crashed.
    * @param {number} launchingId The id of the launching state to export.

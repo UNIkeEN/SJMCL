@@ -169,6 +169,7 @@ pub async fn run() {
         launch::commands::open_game_log_window,
         launch::commands::retrieve_game_log,
         launch::commands::retrieve_game_launching_state,
+        launch::commands::terminate_game_process,
         launch::commands::export_game_crash_info,
         resource::commands::fetch_game_version_list,
         resource::commands::fetch_game_version_specific,
