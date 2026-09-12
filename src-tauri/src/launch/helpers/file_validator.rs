@@ -439,7 +439,7 @@ fn get_native_library_extract_dir(client_info: &McClientInfo, natives_dir: &Path
 pub async fn extract_native_libraries(
   client_info: &McClientInfo,
   library_path: &Path,
-  natives_dir: &PathBuf,
+  natives_dir: &Path,
   use_native_glfw: bool,
   use_native_openal: bool,
 ) -> SJMCLResult<()> {

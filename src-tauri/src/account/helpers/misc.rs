@@ -170,7 +170,7 @@ pub async fn oauth_polling(
     {
       let account_state = account_binding.lock()?;
       if !account_state.is_oauth_processing {
-        return Err(AccountError::Cancelled)?;
+        return Err(AccountError::Cancelled.into());
       }
     }
 
@@ -190,7 +190,7 @@ pub async fn oauth_polling(
       );
     } else {
       if response.status().as_u16() != 400 {
-        return Err(AccountError::NetworkError)?;
+        return Err(AccountError::NetworkError.into());
       }
 
       let error_response: OAuthErrorResponse = response
@@ -206,19 +206,19 @@ pub async fn oauth_polling(
           interval += 5;
         }
         "access_denied" => {
-          return Err(AccountError::Cancelled)?;
+          return Err(AccountError::Cancelled.into());
         }
         "expired_token" => {
-          return Err(AccountError::Expired)?;
+          return Err(AccountError::Expired.into());
         }
         _ => {
-          return Err(AccountError::NetworkError)?;
+          return Err(AccountError::NetworkError.into());
         }
       }
     }
 
     if start_time.elapsed().as_secs() >= auth_info.expires_in {
-      return Err(AccountError::Expired)?;
+      return Err(AccountError::Expired.into());
     }
 
     tokio::time::sleep(std::time::Duration::from_secs(interval)).await;

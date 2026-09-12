@@ -127,19 +127,18 @@ pub async fn apply_other_resource_enhancements(
 
   let translation_cache_key =
     ResourceTranslationsCache::cache_key(&resource_info.source, &resource_info.id);
-  if let Ok(cache) = app.state::<Mutex<ResourceTranslationsCache>>().lock() {
-    if let Some(entry) = cache.translations.get(&translation_cache_key)
-      && !entry.is_expired(RESOURCE_TRANSLATION_CACHE_EXPIRY_HOURS)
+  if let Ok(cache) = app.state::<Mutex<ResourceTranslationsCache>>().lock()
+    && let Some(entry) = cache.translations.get(&translation_cache_key)
+    && !entry.is_expired(RESOURCE_TRANSLATION_CACHE_EXPIRY_HOURS)
+  {
+    if let Some(translated_name) = &entry.translated_name
+      && resource_info.translated_name.is_none()
     {
-      if let Some(translated_name) = &entry.translated_name
-        && resource_info.translated_name.is_none()
-      {
-        resource_info.translated_name = Some(translated_name.clone());
-      }
-      if entry.translated_description.is_some() || entry.description_translated {
-        resource_info.translated_description = entry.translated_description.clone();
-        return Ok(());
-      }
+      resource_info.translated_name = Some(translated_name.clone());
+    }
+    if entry.translated_description.is_some() || entry.description_translated {
+      resource_info.translated_description = entry.translated_description.clone();
+      return Ok(());
     }
   }
 

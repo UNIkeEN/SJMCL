@@ -129,7 +129,7 @@ pub async fn refresh(
     .map_err(|_| AccountError::NetworkError)?;
 
   if !response.status().is_success() {
-    return Err(AccountError::Expired)?;
+    return Err(AccountError::Expired.into());
   }
 
   let content = response
