@@ -54,10 +54,12 @@ pub async fn refresh_and_update_javas(app: &AppHandle) {
       .parent()
       .unwrap_or_else(|| Path::new(""))
       .to_path_buf();
-    #[cfg(target_os = "windows")]
-    let is_jdk = java_bin_path.join("javac.exe").exists();
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
-    let is_jdk = java_bin_path.join("javac").exists();
+    let is_jdk = java_bin_path
+      .join(cfg_select! {
+        windows => "javac.exe",
+        _ => "javac",
+      })
+      .exists();
 
     let (major_version, is_lts) = parse_java_major_version(&full_version);
     let is_user_added = extra_java_paths.contains(&java_exec_path);
@@ -186,10 +188,10 @@ pub fn get_java_paths(app: &AppHandle) -> Vec<String> {
 }
 
 fn resolve_java_home(path: PathBuf) -> SJMCLResult<String> {
-  #[cfg(target_os = "windows")]
-  let java_bin = path.join(r"bin\java.exe");
-  #[cfg(not(target_os = "windows"))]
-  let java_bin = path.join("bin/java");
+  let java_bin = path.join(cfg_select! {
+    windows => r"bin\java.exe",
+    _ => "bin/java",
+  });
   Ok(fs::canonicalize(java_bin)?.to_string_lossy().into_owned())
 }
 

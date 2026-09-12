@@ -456,10 +456,10 @@ pub fn create_instance_shortcut_icon(
   let square = image::open(overlay)?.resize_exact(42, 42, image::imageops::FilterType::Lanczos3);
   image::imageops::overlay(&mut img, &square, 80, 80);
 
-  #[cfg(target_os = "windows")]
-  let icon_name = "icon.ico";
-  #[cfg(target_os = "linux")]
-  let icon_name = "icon.png";
+  let icon_name = cfg_select! {
+    windows => "icon.ico",
+    _ => "icon.png",
+  };
 
   let icon_path = instance.version_path.join(icon_name);
   img.save(&icon_path)?;
