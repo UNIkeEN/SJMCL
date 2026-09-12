@@ -56,8 +56,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { openGenericConfirmDialog } = useSharedModals();
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
-  const isCheckedRunCount = useRef(false);
-  const isCheckedLastRunStatus = useRef(false);
+  const isStartupFlowStarted = useRef(false);
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -71,95 +70,106 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
-  const openUnavailableExePathDialog = useCallback(() => {
-    openGenericConfirmDialog({
-      title: t("UnavailableExePathAlertDialog.dialog.title"),
-      body: t("UnavailableExePathAlertDialog.dialog.content"),
-      btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
-      onCancelCallback: () => update("runCount", config.runCount + 1), // because this dialog will skip the run count check
-      btnOK: t("General.exit"),
-      onOKCallback: () => exit(0),
-      footerLeft: (
-        <HStack spacing={2}>
-          <LuLanguages />
-          <LanguageMenu placement="top" />
-        </HStack>
-      ),
-      isAlert: true,
-      closeOnEsc: false,
-      closeOnOverlayClick: false,
-      showCloseBtn: false,
-    });
-  }, [config.runCount, openGenericConfirmDialog, update]);
+  const openUnavailableExePathDialog = useCallback(
+    (onContinue: () => void) => {
+      openGenericConfirmDialog({
+        title: t("UnavailableExePathAlertDialog.dialog.title"),
+        body: t("UnavailableExePathAlertDialog.dialog.content"),
+        btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
+        onCancelCallback: onContinue,
+        btnOK: t("General.exit"),
+        onOKCallback: () => exit(0),
+        footerLeft: (
+          <HStack spacing={2}>
+            <LuLanguages />
+            <LanguageMenu placement="top" />
+          </HStack>
+        ),
+        isAlert: true,
+        closeOnEsc: false,
+        closeOnOverlayClick: false,
+        showCloseBtn: false,
+      });
+    },
+    [openGenericConfirmDialog]
+  );
 
-  const openLastExitedAbnormallyDialog = useCallback(() => {
-    openGenericConfirmDialog({
-      title: t("LastExitedAbnormallyDialog.dialog.title"),
-      btnCancel: "",
-      showSuppressBtn: true,
-      suppressKey: "lastExitedAbnormally",
-      body: (
-        <Text color="gray.500">
-          <Trans
-            i18nKey="LastExitedAbnormallyDialog.dialog.content"
-            components={{
-              community: (
-                <Link
-                  color={`${primaryColor}.500`}
-                  onClick={() =>
-                    openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
-                  }
-                />
-              ),
-              github: (
-                <Link
-                  color={`${primaryColor}.500`}
-                  onClick={() =>
-                    openUrl("https://github.com/UNIkeEN/SJMCL/issues")
-                  }
-                />
-              ),
-            }}
-          />
-        </Text>
-      ),
-      footerLeft: (
-        <HStack>
-          <LuScrollText />
-          <Button
-            variant="link"
-            colorScheme={primaryColor}
-            onClick={async () => {
-              const _appLogDir = await appLogDir();
-              const launcherLogDir = await join(_appLogDir, "launcher");
-              await openPath(launcherLogDir);
-            }}
-          >
-            {t("LastExitedAbnormallyDialog.dialog.viewLog")}
-          </Button>
-        </HStack>
-      ),
-    });
-  }, [openGenericConfirmDialog, primaryColor]);
+  const openLastExitedAbnormallyDialog = useCallback(
+    (onContinue: () => void) => {
+      openGenericConfirmDialog({
+        title: t("LastExitedAbnormallyDialog.dialog.title"),
+        btnCancel: "",
+        showSuppressBtn: true,
+        suppressKey: "lastExitedAbnormally",
+        onOKCallback: onContinue,
+        onCancelCallback: onContinue,
+        body: (
+          <Text color="gray.500">
+            <Trans
+              i18nKey="LastExitedAbnormallyDialog.dialog.content"
+              components={{
+                community: (
+                  <Link
+                    color={`${primaryColor}.500`}
+                    onClick={() =>
+                      openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
+                    }
+                  />
+                ),
+                github: (
+                  <Link
+                    color={`${primaryColor}.500`}
+                    onClick={() =>
+                      openUrl("https://github.com/UNIkeEN/SJMCL/issues")
+                    }
+                  />
+                ),
+              }}
+            />
+          </Text>
+        ),
+        footerLeft: (
+          <HStack>
+            <LuScrollText />
+            <Button
+              variant="link"
+              colorScheme={primaryColor}
+              onClick={async () => {
+                const _appLogDir = await appLogDir();
+                const launcherLogDir = await join(_appLogDir, "launcher");
+                await openPath(launcherLogDir);
+              }}
+            >
+              {t("LastExitedAbnormallyDialog.dialog.viewLog")}
+            </Button>
+          </HStack>
+        ),
+      });
+    },
+    [openGenericConfirmDialog, primaryColor]
+  );
 
   useEffect(() => {
-    // running in unavailable path, show alert dialog.
-    if (!config.mocked && !config.basicInfo.isExePathAvailable) {
-      openUnavailableExePathDialog();
-      isCheckedRunCount.current = true; // skip run count check below
-    }
+    if (config.mocked || isStandAlone || isStartupFlowStarted.current) return;
+    isStartupFlowStarted.current = true;
 
     // update `last_run_exited_normally` to false, will be updated when this run ends with normal exit.
-    if (!config.mocked && !isCheckedLastRunStatus.current && !isStandAlone) {
-      if (!config.lastRunExitedNormally) {
-        openLastExitedAbnormallyDialog();
-      }
-      update("lastRunExitedNormally", false);
-      isCheckedLastRunStatus.current = true;
-    }
+    update("lastRunExitedNormally", false);
 
-    // update run count, conditionally show some modals.
-    if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
+    const handleStartup = async () => {
+      if (!config.basicInfo.isExePathAvailable) {
+        await new Promise<void>((resolve) => {
+          openUnavailableExePathDialog(resolve);
+        });
+      }
+
+      if (!config.lastRunExitedNormally) {
+        await new Promise<void>((resolve) => {
+          openLastExitedAbnormallyDialog(resolve);
+        });
+      }
+
+      // update run count, conditionally show some modals.
       if (!config.runCount) {
         setTimeout(() => {
           onWelcomeAndTermsModalOpen();
@@ -173,8 +183,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         }
         update("runCount", newCount);
       }
-      isCheckedRunCount.current = true;
-    }
+    };
+
+    handleStartup();
   }, [
     config.mocked,
     config.runCount,
