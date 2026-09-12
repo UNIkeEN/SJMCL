@@ -39,6 +39,7 @@ pub async fn fetch_auth_server_info(
       }
 
       Ok(AuthServerInfo {
+        server_name: None,
         auth_url: auth_url.clone(),
         client_id,
         metadata: json,
@@ -85,7 +86,13 @@ pub async fn refresh_and_update_auth_servers(app: &AppHandle) -> SJMCLResult<()>
   let mut refreshed_auth_server_info_list =
     futures::future::join_all(cloned_account_state.auth_servers.iter().map(|info| async {
       if let Ok(refreshed_info) = fetch_auth_server_info(app, info.auth_url.clone()).await {
-        refreshed_info
+        if let Some(ref server_name) = info.server_name {
+          let mut named_info = refreshed_info.clone();
+          named_info.server_name = Some(server_name.clone());
+          named_info
+        } else {
+          refreshed_info
+        }
       } else {
         info.clone()
       }
