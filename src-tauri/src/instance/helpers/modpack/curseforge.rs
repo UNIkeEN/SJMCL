@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -220,7 +220,7 @@ impl ModpackManifest for CurseForgeManifest {
     Ok(task_params)
   }
 
-  fn get_overrides_path(&self) -> String {
-    self.overrides.clone()
+  fn get_overrides_paths(&self) -> Vec<PathBuf> {
+    vec![PathBuf::from(&self.overrides)]
   }
 }
