@@ -1,15 +1,15 @@
-use comfy_table::{presets::UTF8_FULL_CONDENSED, ContentArrangement, Table};
+use comfy_table::{ContentArrangement, Table, presets::UTF8_FULL_CONDENSED};
 use indicatif::{ProgressBar, ProgressDrawTarget, ProgressStyle};
+use rmcp::ServiceExt;
 use rmcp::model::{CallToolRequestParams, Tool};
 use rmcp::service::{RoleClient, RunningService};
 use rmcp::transport::StreamableHttpClientTransport;
-use rmcp::ServiceExt;
 use serde_json::{Map, Value};
 use std::env;
 use std::ffi::OsString;
 use std::io::{self, IsTerminal};
 use std::process::Command;
-use tokio::time::{sleep, Instant};
+use tokio::time::{Instant, sleep};
 
 type LauncherClient = RunningService<RoleClient, ()>;
 
@@ -21,8 +21,7 @@ const EXPECTED_SERVER_NAME: &str = "sjmcl-mcp";
 const MCP_SERVER_HOST: &str = "127.0.0.1";
 const MCP_SERVER_PATH: &str = "/mcp";
 const RUN_SJMCL_DEEPLINK: &str = "sjmcl://run-silently";
-const ENABLE_MCP_HINT: &str =
-  "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
+const ENABLE_MCP_HINT: &str = "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
 
 #[derive(Clone)]
 struct CliOptions {
