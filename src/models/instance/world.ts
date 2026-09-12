@@ -19,10 +19,11 @@ export interface LevelData {
   borderSizeLerpTime?: number;
   borderWarningBlocks?: number;
   borderWarningTime?: number;
-  clearWeatherTime: number;
+  clearWeatherTime?: number;
   dataVersion: number;
-  daytime: number;
+  daytime?: number;
   difficulty?: number;
+  difficultySettings?: DifficultySettings;
   difficultyLocked?: boolean;
   gameRules: Record<string, string>;
   gameType: number;
@@ -31,21 +32,56 @@ export interface LevelData {
   lastPlayed: number;
   levelName: string;
   mapFeatures?: boolean;
-  player: PlayerData;
-  rainTime: number;
-  raining: boolean;
-  seed: number;
-  spawnX: number;
-  spawnY: number;
-  spawnZ: number;
-  thundering: number;
-  thunderTime: number;
+  player?: PlayerData;
+  rainTime?: number;
+  raining?: boolean;
+  seed?: number;
+  singleplayerUuid?: number[];
+  spawn?: SpawnData;
+  worldBorder?: WorldBorderData;
+  weather?: WeatherData;
+  spawnX?: number;
+  spawnY?: number;
+  spawnZ?: number;
+  thundering?: number;
+  thunderTime?: number;
   time: number;
   version: number;
   versionStruct: Version;
-  wanderingTraderSpawnChance: number;
-  wanderingTraderSpawnDelay: number;
+  wanderingTraderSpawnChance?: number;
+  wanderingTraderSpawnDelay?: number;
   wasModded: number;
+}
+
+export interface DifficultySettings {
+  difficulty?: string;
+  locked?: boolean;
+  hardcore?: boolean;
+}
+
+export interface SpawnData {
+  pos?: number[];
+  dimension?: string;
+}
+
+export interface WorldBorderData {
+  center_x?: number;
+  center_z?: number;
+  size?: number;
+  lerp_target?: number;
+  lerp_time?: number;
+  safe_zone?: number;
+  damage_per_block?: number;
+  warning_blocks?: number;
+  warning_time?: number;
+}
+
+export interface WeatherData {
+  thunder_time?: number;
+  thundering?: number;
+  clear_weather_time?: number;
+  raining?: boolean;
+  rain_time?: number;
 }
 
 export interface Version {

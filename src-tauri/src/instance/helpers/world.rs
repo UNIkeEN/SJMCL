@@ -1,10 +1,35 @@
 use quartz_nbt::io::Flavor;
 use quartz_nbt::serde::deserialize;
+use serde::Deserialize;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::path::{Path, PathBuf};
+use uuid::Uuid;
 
 use crate::instance::models::world::base::WorldInfo;
-use crate::instance::models::world::level::{Level, LevelData};
+use crate::instance::models::world::level::{Level, LevelData, WeatherData, WorldBorderData};
+use crate::instance::models::world::player::PlayerData;
+
+#[derive(Debug, Deserialize)]
+struct WorldGenSettingsFile {
+  data: WorldGenSettings,
+}
+
+#[derive(Debug, Deserialize, Default)]
+struct WorldGenSettings {
+  seed: Option<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+struct WorldBorderFile {
+  data: WorldBorderData,
+}
+
+#[derive(Debug, Deserialize)]
+struct WeatherFile {
+  data: WeatherData,
+}
+
+const DIFFICULTY_STR: [&str; 5] = ["peaceful", "easy", "normal", "hard", "hardcore"];
 
 pub async fn load_world_info_from_dir(
   path: &Path,
@@ -28,10 +53,63 @@ pub async fn load_world_info_from_dir(
   })
 }
 
-pub async fn load_level_data_from_nbt(path: &PathBuf) -> SJMCLResult<LevelData> {
+async fn load_nbt<T>(path: &Path) -> SJMCLResult<T>
+where
+  T: serde::de::DeserializeOwned,
+{
   let nbt_bytes = tokio::fs::read(path).await?;
-  let (level, _) = deserialize::<Level>(&nbt_bytes, Flavor::GzCompressed)?;
-  Ok(level.data)
+  let (value, _) = deserialize::<T>(&nbt_bytes, Flavor::GzCompressed)?;
+  Ok(value)
+}
+
+pub async fn load_level_data_from_nbt(path: &Path) -> SJMCLResult<LevelData> {
+  Ok(load_nbt::<Level>(path).await?.data)
+}
+
+pub async fn load_world_data_from_dir(path: &Path) -> SJMCLResult<LevelData> {
+  let mut data = load_level_data_from_nbt(&path.join("level.dat")).await?;
+
+  if data.player.is_none() {
+    if let Some(uuid_parts) = &data.singleplayer_uuid {
+      if let Some(player_path) = player_data_path(path, uuid_parts) {
+        data.player = load_nbt::<PlayerData>(&player_path).await.ok();
+      }
+    }
+  }
+
+  data.world_border = load_nbt::<WorldBorderFile>(
+    &path.join("dimensions/minecraft/overworld/data/minecraft/world_border.dat"),
+  )
+  .await
+  .ok()
+  .map(|f| f.data);
+
+  data.weather = load_nbt::<WeatherFile>(&path.join("data/minecraft/weather.dat"))
+    .await
+    .ok()
+    .map(|f| f.data);
+
+  data.seed = data.seed.or(
+    load_nbt::<WorldGenSettingsFile>(&path.join("data/minecraft/world_gen_settings.dat"))
+      .await
+      .ok()
+      .and_then(|f| f.data.seed),
+  );
+
+  Ok(data)
+}
+
+fn player_data_path(path: &Path, uuid_parts: &[i32]) -> Option<PathBuf> {
+  if uuid_parts.len() != 4 {
+    return None;
+  }
+  let most = ((uuid_parts[0] as u32 as u64) << 32) | (uuid_parts[1] as u32 as u64);
+  let least = ((uuid_parts[2] as u32 as u64) << 32) | (uuid_parts[3] as u32 as u64);
+  Some(
+    path
+      .join("players/data")
+      .join(format!("{}.dat", Uuid::from_u64_pair(most, least))),
+  )
 }
 
 fn level_data_to_world_info(data: &LevelData) -> SJMCLResult<(i64, String, String)> {
@@ -46,10 +124,9 @@ fn level_data_to_world_info(data: &LevelData) -> SJMCLResult<(i64, String, Strin
   if data.hardcore {
     difficulty = 4;
   }
-  const DIFFICULTY_STR: [&str; 5] = ["peaceful", "easy", "normal", "hard", "hardcore"];
   if difficulty >= DIFFICULTY_STR.len() as u8 {
     return Err(SJMCLError(format!(
-      "difficulty = {}, which is greater than 5",
+      "difficulty = {}, which is greater than 4",
       difficulty
     )));
   }
