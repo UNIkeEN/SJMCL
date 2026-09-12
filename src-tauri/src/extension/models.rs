@@ -15,6 +15,7 @@ structstruck::strike! {
     pub author: Option<String>,
     pub version: Option<String>,
     pub minimal_launcher_version: Option<String>,
+    pub repo_url: Option<String>,
     pub frontend: Option<pub struct ExtensionFrontend {
       pub entry: String,
     }>,
@@ -49,6 +50,12 @@ impl ExtensionMetadata {
         .filter(|version| Version::parse(version).is_ok())
         .unwrap_or_else(|| "0.0.0".to_string()),
     );
+    // repo_url is optional; trim it and drop empty values (validated lazily when used).
+    self.repo_url = self
+      .repo_url
+      .take()
+      .map(|url| url.trim().to_string())
+      .filter(|url| !url.is_empty());
 
     Ok(())
   }
@@ -93,9 +100,11 @@ pub enum ExtensionError {
   InvalidPackageFormat,
   InvalidIdentifier,
   InvalidName,
+  InvalidVersion,
   InvalidFrontendEntry,
   LauncherVersionTooLow,
   IdentifierMismatch,
+  VersionNotNewer,
   // DuplicateIdentifier,
   ExtensionNotFound,
 }

@@ -55,6 +55,8 @@ pub fn add_extension(
   app: AppHandle,
   path: String,
   expected_identifier: Option<String>,
+  expected_current_version: Option<String>,
+  require_newer_version: Option<bool>,
 ) -> SJMCLResult<ExtensionInfo> {
   let package_path = PathBuf::from(path);
   if !package_path.exists() || !package_path.is_file() {
@@ -77,6 +79,22 @@ pub fn add_extension(
       ExtensionMetadata::validate_identifier(identifier)?;
       if identifier != info.metadata.identifier {
         return Err(ExtensionError::IdentifierMismatch.into());
+      }
+    }
+
+    if require_newer_version.unwrap_or(false) {
+      let new_version = info
+        .metadata
+        .version
+        .as_deref()
+        .and_then(|version| Version::parse(version).ok())
+        .ok_or(ExtensionError::InvalidVersion)?;
+      if let Some(current_version) = expected_current_version.as_deref() {
+        let current_version =
+          Version::parse(current_version).map_err(|_| ExtensionError::InvalidVersion)?;
+        if new_version <= current_version {
+          return Err(ExtensionError::VersionNotNewer.into());
+        }
       }
     }
 

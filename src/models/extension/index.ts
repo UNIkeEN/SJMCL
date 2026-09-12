@@ -20,6 +20,7 @@ export interface ExtensionInfo {
   author?: string | null;
   version?: string | null;
   minimalLauncherVersion?: string | null;
+  repoUrl?: string | null;
   path: string;
   iconSrc: string;
   frontend?: ExtensionFrontend | null;
