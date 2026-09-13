@@ -18,7 +18,10 @@ import React, {
 import Editable from "@/components/common/editable";
 import { FormattedMCText } from "@/components/common/formatted-mc-text";
 import MarkdownContainer from "@/components/common/markdown-container";
-import { MenuSelector } from "@/components/common/menu-selector";
+import {
+  MenuSelector,
+  VirtualMenuSelector,
+} from "@/components/common/menu-selector";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import Segmented from "@/components/common/segmented";
@@ -70,6 +73,7 @@ interface ExtensionContextRegistrationApi {
     FormattedMCText: typeof FormattedMCText;
     MarkdownContainer: typeof MarkdownContainer;
     MenuSelector: typeof MenuSelector;
+    VirtualMenuSelector: typeof VirtualMenuSelector;
     OptionItem: typeof OptionItem;
     OptionItemGroup: typeof OptionItemGroup;
     Section: typeof Section;
@@ -1275,6 +1279,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
           FormattedMCText,
           MarkdownContainer,
           MenuSelector,
+          VirtualMenuSelector,
           OptionItem,
           OptionItemGroup,
           Section,
