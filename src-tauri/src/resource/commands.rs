@@ -1,4 +1,5 @@
 use sjmcl_types::error::SJMCLResult;
+use std::path::Path;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
@@ -198,12 +199,23 @@ pub async fn update_mods(
     None => return Ok(()),
   };
 
+  let updates = queries
+    .iter()
+    .map(|query| {
+      let old_file_path = Path::new(&query.old_file_path);
+      let target_dir = old_file_path
+        .parent()
+        .filter(|parent| parent.starts_with(&mods_dir))
+        .unwrap_or(&mods_dir);
+      (query, target_dir.join(&query.file_name))
+    })
+    .collect::<Vec<_>>();
+
   let mut download_tasks = Vec::new();
-  for query in &queries {
-    let file_path = mods_dir.join(&query.file_name);
+  for (query, file_path) in &updates {
     let download_param = DownloadParam {
       src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
-      dest: file_path,
+      dest: file_path.clone(),
       filename: None,
       sha1: Some(query.sha1.clone()),
     };
@@ -212,13 +224,12 @@ pub async fn update_mods(
 
   schedule_progressive_task_group(app, "mod-update".to_string(), download_tasks, true).await?;
 
-  for query in &queries {
-    let old_file_path = &query.old_file_path;
-    let new_file_path = mods_dir.join(&query.file_name);
+  for (query, new_file_path) in updates {
+    let old_file_path = Path::new(&query.old_file_path);
 
-    if old_file_path != &new_file_path.to_string_lossy().to_string() {
-      let old_backup_path = format!("{}.old", old_file_path);
-      if let Err(e) = std::fs::rename(old_file_path, &old_backup_path) {
+    if old_file_path != new_file_path {
+      let old_backup_path = format!("{}.old", old_file_path.to_string_lossy());
+      if let Err(e) = std::fs::rename(old_file_path, old_backup_path) {
         log::error!("Failed to rename old mod file: {}", e);
         return Err(ResourceError::FileOperationError.into());
       }

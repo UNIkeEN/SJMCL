@@ -560,7 +560,7 @@ const InstanceModsPage = () => {
           <OptionItemGroup
             items={filteredMods.map((mod) => (
               <OptionItem
-                key={mod.fileName} // unique
+                key={mod.filePath}
                 childrenOnHover
                 title={
                   <Text
