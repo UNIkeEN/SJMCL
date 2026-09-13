@@ -3111,6 +3111,7 @@
       "wave": "Wave"
     },
     "button": {
+      "saveToLocal": "Save Locally",
       "enableRotation": "Enable Rotation",
       "disableRotation": "Disable Rotation",
       "play": "Play",
@@ -3118,6 +3119,10 @@
     },
     "error": {
       "loadSkin": "Failed to load skin"
+    },
+    "toast": {
+      "error": "Failed to save skin locally",
+      "success": "Skin saved locally"
     }
   },
   "SpotlightSearchModal": {

@@ -3111,6 +3111,7 @@
       "wave": "揮手"
     },
     "button": {
+      "saveToLocal": "存於本地",
       "enableRotation": "啟旋轉",
       "disableRotation": "禁旋轉",
       "play": "播放",
@@ -3118,6 +3119,10 @@
     },
     "error": {
       "loadSkin": "載入外觀未成"
+    },
+    "toast": {
+      "error": "存外觀於本地未成",
+      "success": "已存外觀於本地"
     }
   },
   "SpotlightSearchModal": {
