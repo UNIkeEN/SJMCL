@@ -15,7 +15,7 @@ resolver = "3"
 [workspace.package]
 version = "1.3.0"
 edition = "2024"
-rust-version = "1.91.0"
+rust-version = "1.98.1"
 
 [workspace.dependencies]
 async-speed-limit = "0.4.2"

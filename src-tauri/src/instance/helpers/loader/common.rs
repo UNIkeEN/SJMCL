@@ -16,6 +16,7 @@ use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
+use crate::launch::helpers::misc::get_separator;
 use crate::resource::models::SourceType;
 use crate::tasks::PTaskParam;
 
@@ -131,10 +132,7 @@ pub async fn execute_processors(
     let mut classpath_arr = processor.classpath.clone();
     classpath_arr.push(processor_path.to_string_lossy().to_string());
 
-    #[cfg(target_os = "windows")]
-    let classpath = classpath_arr.join(";");
-    #[cfg(not(target_os = "windows"))]
-    let classpath = classpath_arr.join(":");
+    let classpath = classpath_arr.join(get_separator());
 
     let args = &processor.args;
 

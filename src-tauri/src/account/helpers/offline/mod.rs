@@ -37,7 +37,7 @@ pub async fn login(app: &AppHandle, username: String, raw_uuid: String) -> SJMCL
   } else {
     if !raw_uuid.is_empty() {
       // user uses custom UUID, but it's invalid
-      return Err(AccountError::Invalid)?;
+      return Err(AccountError::Invalid.into());
     }
     Uuid::new_v5(&Uuid::NAMESPACE_URL, name_with_prefix.as_bytes())
   };

@@ -492,11 +492,11 @@ pub fn export_game_crash_info(
 
   // full launch script
   let launch_script_path = app.path().resolve::<PathBuf>(
-    if cfg!(target_os = "windows") {
-      "launch.bat".into()
-    } else {
-      "launch.sh".into()
-    },
+    cfg_select! {
+      windows => "launch.bat",
+      _ => "launch.sh",
+    }
+    .into(),
     BaseDirectory::Temp,
   )?;
   fs::write(&launch_script_path, &launching.full_command)?;

@@ -574,13 +574,8 @@ pub fn export_full_launch_command(
     .collect::<Vec<_>>()
     .join(" ");
 
-  #[cfg(target_os = "windows")]
-  {
-    format!("set CLASSPATH=\"{}\" && {}", classpath_str, java_cmd)
-  }
-
-  #[cfg(not(target_os = "windows"))]
-  {
-    format!("CLASSPATH=\"{}\" {}", classpath_str, java_cmd)
+  cfg_select! {
+    windows => format!("set CLASSPATH=\"{}\" && {}", classpath_str, java_cmd),
+    _ => format!("CLASSPATH=\"{}\" {}", classpath_str, java_cmd),
   }
 }

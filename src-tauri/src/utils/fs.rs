@@ -307,13 +307,12 @@ pub fn create_url_shortcut(
     .desktop_dir()
     .map_err(|e| SJMCLError(format!("Failed to get desktop path: {}", e)))?;
 
-  #[cfg(target_os = "windows")]
-  let shortcut_ext = "url";
-  #[cfg(target_os = "macos")]
-  let shortcut_ext = "command";
-  // let shortcut_ext = "webloc";
-  #[cfg(target_os = "linux")]
-  let shortcut_ext = "desktop";
+  let shortcut_ext = cfg_select! {
+    target_os = "windows" => "url",
+    target_os = "macos" => "command",
+    // let shortcut_ext = "webloc";
+    target_os = "linux" => "desktop",
+  };
 
   let path = desktop.join(format!("{}.{}", name, shortcut_ext));
 
@@ -327,10 +326,10 @@ pub fn create_url_shortcut(
     Some(path) => path,
     None => {
       // Use default icon from resources
-      #[cfg(target_os = "windows")]
-      let icon_name = "icon.ico";
-      #[cfg(target_os = "linux")]
-      let icon_name = "icon.png";
+      let icon_name = cfg_select! {
+        windows => "icon.ico",
+        _ => "icon.png",
+      };
 
       let resource_icon = get_app_resource_filepath(app, &format!("assets/icons/{}", icon_name))
         .map_err(|e| SJMCLError(format!("Failed to resolve resource icon: {}", e)))?;
