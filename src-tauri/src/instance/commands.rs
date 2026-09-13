@@ -39,7 +39,8 @@ use crate::instance::helpers::modpack::import::{
   ModpackMetaInfo, extract_overrides, get_download_params,
 };
 use crate::instance::helpers::mods::common::{
-  check_potential_incompatibility, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+  check_potential_incompatibility, compress_icon, discover_mod_files, get_mod_info_from_dir,
+  get_mod_info_from_jar,
 };
 use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
@@ -591,19 +592,16 @@ pub async fn retrieve_local_mod_list(
   app: AppHandle,
   instance_id: String,
 ) -> SJMCLResult<Vec<LocalModInfo>> {
-  let (installed_loader_type, game_version) = {
+  let (loader_type, game_version) = {
     let binding = app.state::<Mutex<HashMap<String, Instance>>>();
     let state = binding.lock().unwrap();
     let instance = state
       .get(&instance_id)
       .ok_or(InstanceError::InstanceNotFoundByID)?;
 
-    let loader_type = instance.mod_loader.loader_type;
-    (
-      (loader_type != ModLoaderType::Unknown).then_some(loader_type),
-      instance.version.clone(),
-    )
+    (instance.mod_loader.loader_type, instance.version.clone())
   };
+  let installed_loader_type = (loader_type != ModLoaderType::Unknown).then_some(loader_type);
 
   let mods_dir = match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Mods)
   {
@@ -611,12 +609,7 @@ pub async fn retrieve_local_mod_list(
     None => return Ok(Vec::new()),
   };
 
-  let valid_extensions = RegexBuilder::new(r"\.(jar|zip)(\.disabled)*$")
-    .case_insensitive(true)
-    .build()
-    .unwrap();
-
-  let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
+  let mod_paths = discover_mod_files(&mods_dir, loader_type)?;
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
     std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
@@ -640,7 +633,9 @@ pub async fn retrieve_local_mod_list(
   #[cfg(debug_assertions)]
   {
     // mod information detection from folders is only used for debugging.
-    let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+    let mod_paths = get_subdirectories(&mods_dir)?
+      .into_iter()
+      .filter(|path| path.file_name().is_some_and(|name| name != ".connector"));
     for path in mod_paths {
       let permit = semaphore
         .clone()
@@ -696,13 +691,14 @@ pub async fn retrieve_local_mod_list(
   let local_mod_translations_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
-    if let Some(entry) = cache.translations.get(&info.file_name)
+    let cache_key = info.file_path.to_string_lossy().to_string();
+    if let Some(entry) = cache.translations.get(&cache_key)
       && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
     {
       continue;
     }
     cache.translations.insert(
-      info.file_name.clone(),
+      cache_key,
       LocalModTranslationEntry::new(
         info.translated_name.clone(),
         info.translated_description.clone(),

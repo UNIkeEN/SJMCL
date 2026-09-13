@@ -34,6 +34,11 @@ interface CheckModUpdateModalProps extends Omit<ModalProps, "children"> {
   localMods: LocalModInfo[];
 }
 
+interface ModUpdateCandidate {
+  mod: LocalModInfo;
+  update: ModUpdateRecord;
+}
+
 const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   summary,
   localMods,
@@ -46,10 +51,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.translatedFilenamePrefix;
 
-  const [selectedMods, setSelectedMods] = useState<ModUpdateRecord[]>([]);
+  const [selectedMods, setSelectedMods] = useState<ModUpdateCandidate[]>([]);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState<boolean>(true);
-  const [updateList, setUpdateList] = useState<ModUpdateRecord[]>([]);
-  const [modsToUpdate, setModsToUpdate] = useState<LocalModInfo[]>([]);
+  const [updateList, setUpdateList] = useState<ModUpdateCandidate[]>([]);
   const [checkingUpdateIndex, setCheckingUpdateIndex] = useState<number>(1);
 
   const headerBg = useColorModeValue("gray.50", "gray.800");
@@ -68,13 +72,17 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     }
   };
 
-  const handleModToggle = (mod: ModUpdateRecord) => {
+  const handleModToggle = (candidate: ModUpdateCandidate) => {
     setSelectedMods((prev) => {
-      const isSelected = prev.some((m) => m.name === mod.name);
+      const isSelected = prev.some(
+        (item) => item.mod.filePath === candidate.mod.filePath
+      );
       if (isSelected) {
-        return prev.filter((m) => m.name !== mod.name);
+        return prev.filter(
+          (item) => item.mod.filePath !== candidate.mod.filePath
+        );
       } else {
-        return [...prev, mod];
+        return [...prev, candidate];
       }
     });
   };
@@ -82,7 +90,6 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const onCheckUpdateModalClear = useCallback(() => {
     setIsCheckingUpdate(true);
     setUpdateList([]);
-    setModsToUpdate([]);
     setSelectedMods([]);
     setCheckingUpdateIndex(1);
   }, []);
@@ -249,8 +256,12 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
         (result): result is NonNullable<typeof result> => result !== null
       );
 
-      setModsToUpdate(validUpdates.map((item) => item.mod));
-      setUpdateList(validUpdates.map((item) => item.updateRecord));
+      setUpdateList(
+        validUpdates.map((item) => ({
+          mod: item.mod,
+          update: item.updateRecord,
+        }))
+      );
     } catch (error) {
       logger.error("Failed to check mod updates:", error);
     } finally {
@@ -261,35 +272,26 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const summaryId = summary?.id;
 
   const handleDownloadUpdatedMods = useCallback(
-    async (urlShaPairs: { url: string; sha1: string; fileName: string }[]) => {
-      let params: ModUpdateQuery[] = [];
+    async (candidates: ModUpdateCandidate[]) => {
+      const params: ModUpdateQuery[] = [];
       if (summaryId) {
-        for (const pair of urlShaPairs) {
-          const { url, sha1, fileName } = pair;
-          const oldMod = modsToUpdate.find((mod) =>
-            updateList.some(
-              (update) =>
-                update.fileName === fileName && update.name === mod.name
-            )
-          );
-          if (oldMod) {
-            const oldFilePath = oldMod.filePath;
-            const finalFileName =
-              addPrefix && oldMod.translatedName
-                ? `[${oldMod.translatedName}] ${fileName}`
-                : fileName;
-            params.push({
-              url,
-              sha1,
-              fileName: finalFileName,
-              oldFilePath,
-            });
-          }
+        for (const candidate of candidates) {
+          const { mod, update } = candidate;
+          const finalFileName =
+            addPrefix && mod.translatedName
+              ? `[${mod.translatedName}] ${update.fileName}`
+              : update.fileName;
+          params.push({
+            url: update.downloadUrl,
+            sha1: update.sha1,
+            fileName: finalFileName,
+            oldFilePath: mod.filePath,
+          });
         }
         ResourceService.updateMods(summaryId, params);
       }
     },
-    [summaryId, modsToUpdate, updateList, addPrefix]
+    [summaryId, addPrefix]
   );
 
   useEffect(() => {
@@ -409,9 +411,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 borderTopRadius="none"
               >
                 <VStack spacing={0} align="stretch">
-                  {updateList.map((mod, index) => (
+                  {updateList.map(({ mod: localMod, update: mod }, index) => (
                     <HStack
-                      key={mod.fileName} // unique
+                      key={localMod.filePath}
                       py={3}
                       px={4}
                       borderBottom={
@@ -420,13 +422,17 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                       borderColor={borderColor}
                       _hover={{ bg: hoverBg }}
                       cursor="pointer"
-                      onClick={() => handleModToggle(mod)}
+                      onClick={() =>
+                        handleModToggle({ mod: localMod, update: mod })
+                      }
                     >
                       <Checkbox
                         isChecked={selectedMods.some(
-                          (m) => m.name === mod.name
+                          (item) => item.mod.filePath === localMod.filePath
                         )}
-                        onChange={() => handleModToggle(mod)}
+                        onChange={() =>
+                          handleModToggle({ mod: localMod, update: mod })
+                        }
                         colorScheme={primaryColor}
                       />
                       <Box flex="2" minW="0">
@@ -489,13 +495,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               <Button
                 colorScheme={primaryColor}
                 onClick={() => {
-                  handleDownloadUpdatedMods(
-                    selectedMods.map((mod) => ({
-                      url: mod.downloadUrl,
-                      sha1: mod.sha1,
-                      fileName: mod.fileName,
-                    }))
-                  );
+                  handleDownloadUpdatedMods(selectedMods);
                   modalProps.onClose?.();
                 }}
                 isDisabled={selectedMods.length === 0}
