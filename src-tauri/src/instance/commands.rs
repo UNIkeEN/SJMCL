@@ -616,7 +616,34 @@ pub async fn retrieve_local_mod_list(
     .build()
     .unwrap();
 
-  let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
+  let supports_mod_subdirectories = matches!(
+    installed_loader_type,
+    Some(
+      ModLoaderType::Forge
+        | ModLoaderType::LegacyForge
+        | ModLoaderType::Cleanroom
+        | ModLoaderType::LiteLoader
+        | ModLoaderType::Quilt
+    )
+  );
+  let mod_paths = get_files_with_regex_recursive(
+    &mods_dir,
+    &valid_extensions,
+    Some(usize::from(supports_mod_subdirectories)),
+  )
+  .unwrap_or_default()
+  .into_iter()
+  .filter(|path| {
+    !path.strip_prefix(&mods_dir).is_ok_and(|relative| {
+      relative.components().next().is_some_and(|component| {
+        component
+          .as_os_str()
+          .to_string_lossy()
+          .eq_ignore_ascii_case(".connector")
+      })
+    })
+  })
+  .collect::<Vec<_>>();
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
     std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),

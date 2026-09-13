@@ -82,6 +82,7 @@ export interface OptiFineResourceInfo {
 
 export interface ModUpdateRecord {
   name: string;
+  oldFilePath: string;
   curVersion: string;
   newVersion: string;
   source: string;
