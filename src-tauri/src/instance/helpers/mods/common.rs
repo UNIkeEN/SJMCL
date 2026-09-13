@@ -156,6 +156,22 @@ impl ModLoaderType {
   }
 }
 
+fn mod_metadata_parser_priority(
+  prior_loader_type: Option<ModLoaderType>,
+) -> impl Iterator<Item = ModLoaderType> {
+  // Normalize loaders that share a parser before filtering the fallback list.
+  let preferred_loader = prior_loader_type.map(|loader| match loader {
+    ModLoaderType::NeoForge => ModLoaderType::Forge,
+    ModLoaderType::Cleanroom => ModLoaderType::LegacyForge,
+    loader => loader,
+  });
+  preferred_loader.into_iter().chain(
+    DEFAULT_MOD_LOADER_PRIORITY_LIST
+      .into_iter()
+      .filter(move |loader| Some(*loader) != preferred_loader),
+  )
+}
+
 pub async fn get_mod_info_from_jar(
   path: &PathBuf,
   prior_loader_type: Option<ModLoaderType>,
@@ -174,11 +190,8 @@ pub async fn get_mod_info_from_jar(
   let enabled = !file_name.ends_with(".disabled");
   let mut jar = ZipArchive::new(file)?;
 
-  for loader_type in prior_loader_type
-    .into_iter()
-    .chain(DEFAULT_MOD_LOADER_PRIORITY_LIST)
-  {
-    if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_jar(&mut jar) {
+  for parser in mod_metadata_parser_priority(prior_loader_type) {
+    if let Some(mut local_mod_info) = parser.parse_mod_info_from_jar(&mut jar) {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = file_stem.clone();
       local_mod_info.file_path = file_path.clone();
@@ -207,11 +220,8 @@ pub async fn get_mod_info_from_dir(
     .to_string();
   let enabled = !dir_name.ends_with(".disabled");
 
-  for loader_type in prior_loader_type
-    .into_iter()
-    .chain(DEFAULT_MOD_LOADER_PRIORITY_LIST)
-  {
-    if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_dir(path).await {
+  for parser in mod_metadata_parser_priority(prior_loader_type) {
+    if let Some(mut local_mod_info) = parser.parse_mod_info_from_dir(path).await {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = dir_stem.clone();
       local_mod_info.file_path = path.to_path_buf();
