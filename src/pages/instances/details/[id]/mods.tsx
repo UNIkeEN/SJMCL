@@ -175,11 +175,13 @@ const InstanceModsPage = () => {
       const filtered = localMods.filter((mod) => {
         const name = mod.name?.toLowerCase() || "";
         const fileName = mod.fileName?.toLowerCase() || "";
+        const relativePath = mod.relativePath?.toLowerCase() || "";
         const translatedName = mod.translatedName?.toLowerCase() || "";
         return keywords.some(
           (kw) =>
             name.includes(kw) ||
             fileName.includes(kw) ||
+            relativePath.includes(kw) ||
             translatedName.includes(kw)
         );
       });
@@ -602,7 +604,7 @@ const InstanceModsPage = () => {
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yellow.200" }}
                     >
-                      {mod.fileName}
+                      {mod.relativePath}
                     </Highlight>
                     {showZhTrans && mod.translatedDescription
                       ? `: ${mod.translatedDescription}`

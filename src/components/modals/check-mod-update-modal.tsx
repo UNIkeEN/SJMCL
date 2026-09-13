@@ -218,6 +218,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               updateRecord: {
                 name: mod.name,
                 oldFilePath: mod.filePath,
+                relativePath: mod.relativePath,
                 curVersion: mod.version,
                 newVersion: latestFile.name,
                 source: isCurseForgeNewer
@@ -437,10 +438,19 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                         <Text
                           fontSize="xs"
                           noOfLines={1}
-                          title={mod.name || mod.fileName}
+                          title={mod.name || mod.relativePath}
                           textAlign="center"
                         >
                           {mod.name || mod.fileName}
+                        </Text>
+                        <Text
+                          fontSize="xs"
+                          color={secondaryTextColor}
+                          noOfLines={1}
+                          title={mod.relativePath}
+                          textAlign="center"
+                        >
+                          {mod.relativePath}
                         </Text>
                       </Box>
                       <Box flex="2" minW="0">

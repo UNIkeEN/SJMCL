@@ -1,5 +1,6 @@
-use sjmcl_types::error::SJMCLResult;
-use std::path::Path;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
+use std::collections::HashSet;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
@@ -199,23 +200,13 @@ pub async fn update_mods(
     None => return Ok(()),
   };
 
-  let updates = queries
-    .iter()
-    .map(|query| {
-      let old_file_path = Path::new(&query.old_file_path);
-      let target_dir = old_file_path
-        .parent()
-        .filter(|parent| parent.starts_with(&mods_dir))
-        .unwrap_or(&mods_dir);
-      (query, target_dir.join(&query.file_name))
-    })
-    .collect::<Vec<_>>();
+  let update_paths = resolve_mod_update_paths(&mods_dir, &queries)?;
 
   let mut download_tasks = Vec::new();
-  for (query, file_path) in &updates {
+  for (query, (_, new_file_path)) in queries.iter().zip(&update_paths) {
     let download_param = DownloadParam {
       src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
-      dest: file_path.clone(),
+      dest: new_file_path.clone(),
       filename: None,
       sha1: Some(query.sha1.clone()),
     };
@@ -224,12 +215,10 @@ pub async fn update_mods(
 
   schedule_progressive_task_group(app, "mod-update".to_string(), download_tasks, true).await?;
 
-  for (query, new_file_path) in updates {
-    let old_file_path = Path::new(&query.old_file_path);
-
+  for (old_file_path, new_file_path) in update_paths {
     if old_file_path != new_file_path {
-      let old_backup_path = format!("{}.old", old_file_path.to_string_lossy());
-      if let Err(e) = std::fs::rename(old_file_path, old_backup_path) {
+      let old_backup_path = format!("{}.old", old_file_path.display());
+      if let Err(e) = std::fs::rename(&old_file_path, old_backup_path) {
         log::error!("Failed to rename old mod file: {}", e);
         return Err(ResourceError::FileOperationError.into());
       }
@@ -237,6 +226,78 @@ pub async fn update_mods(
   }
 
   Ok(())
+}
+
+fn resolve_mod_update_paths(
+  mods_dir: &Path,
+  queries: &[ModUpdateQuery],
+) -> SJMCLResult<Vec<(PathBuf, PathBuf)>> {
+  let canonical_mods_dir = mods_dir.canonicalize().map_err(|error| {
+    SJMCLError(format!(
+      "Failed to resolve mods directory {}: {}",
+      mods_dir.display(),
+      error
+    ))
+  })?;
+  let mut targets = HashSet::new();
+  let mut paths = Vec::with_capacity(queries.len());
+
+  for query in queries {
+    let old_file_path = PathBuf::from(&query.old_file_path);
+    if !old_file_path.is_file() {
+      return Err(SJMCLError(format!(
+        "Old mod file does not exist: {}",
+        old_file_path.display()
+      )));
+    }
+
+    let old_parent = old_file_path.parent().ok_or_else(|| {
+      SJMCLError(format!(
+        "Old mod file has no parent directory: {}",
+        old_file_path.display()
+      ))
+    })?;
+    let canonical_old_parent = old_parent.canonicalize().map_err(|error| {
+      SJMCLError(format!(
+        "Failed to resolve old mod directory {}: {}",
+        old_parent.display(),
+        error
+      ))
+    })?;
+    if !canonical_old_parent.starts_with(&canonical_mods_dir) {
+      return Err(SJMCLError(format!(
+        "Old mod file is outside the instance mods directory: {}",
+        old_file_path.display()
+      )));
+    }
+
+    let new_file_name = Path::new(&query.file_name);
+    if new_file_name.file_name() != Some(new_file_name.as_os_str()) {
+      return Err(SJMCLError(format!(
+        "Invalid mod update file name: {}",
+        query.file_name
+      )));
+    }
+
+    let new_file_path = old_parent.join(new_file_name);
+    let canonical_target = canonical_old_parent.join(new_file_name);
+    if !targets.insert(canonical_target) {
+      return Err(SJMCLError(format!(
+        "Duplicate mod update target: {}",
+        new_file_path.display()
+      )));
+    }
+    if new_file_path != old_file_path && new_file_path.exists() {
+      return Err(SJMCLError(format!(
+        "Mod update target already exists: {}",
+        new_file_path.display()
+      )));
+    }
+
+    paths.push((old_file_path, new_file_path));
+  }
+
+  Ok(paths)
 }
 
 #[tauri::command]

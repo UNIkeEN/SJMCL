@@ -14,6 +14,7 @@ use tauri_plugin_http::reqwest;
 use tokio;
 use tokio::sync::Semaphore;
 use url::Url;
+use walkdir::WalkDir;
 use zip::read::ZipArchive;
 
 use crate::instance::helpers::client_json::{
@@ -611,7 +612,7 @@ pub async fn retrieve_local_mod_list(
     None => return Ok(Vec::new()),
   };
 
-  let valid_extensions = RegexBuilder::new(r"\.(jar|zip)(\.disabled)*$")
+  let valid_extensions = RegexBuilder::new(r"\.(jar|zip|litemod)(\.disabled)*$")
     .case_insensitive(true)
     .build()
     .unwrap();
@@ -626,29 +627,43 @@ pub async fn retrieve_local_mod_list(
         | ModLoaderType::Quilt
     )
   );
-  let mod_paths = get_files_with_regex_recursive(
-    &mods_dir,
-    &valid_extensions,
-    Some(usize::from(supports_mod_subdirectories)),
-  )
-  .unwrap_or_default()
-  .into_iter()
-  .filter(|path| {
-    !path.strip_prefix(&mods_dir).is_ok_and(|relative| {
-      relative.components().next().is_some_and(|component| {
-        component
-          .as_os_str()
+  let max_depth = usize::from(supports_mod_subdirectories) + 1;
+  let mod_paths = WalkDir::new(&mods_dir)
+    .min_depth(1)
+    .max_depth(max_depth)
+    .into_iter()
+    .filter_entry(|entry| {
+      entry.depth() == 0
+        || !entry.file_type().is_dir()
+        || !entry
+          .file_name()
           .to_string_lossy()
           .eq_ignore_ascii_case(".connector")
-      })
     })
-  })
-  .collect::<Vec<_>>();
+    .filter_map(|entry| match entry {
+      Ok(entry)
+        if (entry.file_type().is_file()
+          || (entry.file_type().is_symlink() && entry.path().is_file()))
+          && entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| valid_extensions.is_match(name)) =>
+      {
+        Some(entry.into_path())
+      }
+      Ok(_) => None,
+      Err(error) => {
+        log::warn!("Skipping unreadable mod entry: {}", error);
+        None
+      }
+    })
+    .collect::<Vec<_>>();
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
     std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
   ));
   for path in mod_paths {
+    let relative_path = path.strip_prefix(&mods_dir).unwrap_or(&path).to_path_buf();
     let permit = semaphore
       .clone()
       .acquire_owned()
@@ -656,19 +671,28 @@ pub async fn retrieve_local_mod_list(
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
       log::debug!("Load mod info from jar: {}", path.display());
-      let info = get_mod_info_from_jar(&path, installed_loader_type)
+      let mut info = get_mod_info_from_jar(&path, installed_loader_type)
         .await
-        .ok();
+        .ok()?;
+      info.relative_path = relative_path;
       drop(permit);
-      info
+      Some(info)
     });
     tasks.push(task);
   }
   #[cfg(debug_assertions)]
   {
     // mod information detection from folders is only used for debugging.
-    let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+    let mod_paths = get_subdirectories(&mods_dir)
+      .unwrap_or_default()
+      .into_iter()
+      .filter(|path| {
+        path
+          .file_name()
+          .is_some_and(|name| !name.to_string_lossy().eq_ignore_ascii_case(".connector"))
+      });
     for path in mod_paths {
+      let relative_path = path.strip_prefix(&mods_dir).unwrap_or(&path).to_path_buf();
       let permit = semaphore
         .clone()
         .acquire_owned()
@@ -676,11 +700,12 @@ pub async fn retrieve_local_mod_list(
         .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
       let task = tokio::spawn(async move {
         log::debug!("Load mod info from dir: {}", path.display());
-        let info = get_mod_info_from_dir(&path, installed_loader_type)
+        let mut info = get_mod_info_from_dir(&path, installed_loader_type)
           .await
-          .ok();
+          .ok()?;
+        info.relative_path = relative_path;
         drop(permit);
-        info
+        Some(info)
       });
       tasks.push(task);
     }
@@ -723,13 +748,14 @@ pub async fn retrieve_local_mod_list(
   let local_mod_translations_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
-    if let Some(entry) = cache.translations.get(&info.file_name)
+    let cache_key = info.file_path.to_string_lossy().to_string();
+    if let Some(entry) = cache.translations.get(&cache_key)
       && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
     {
       continue;
     }
     cache.translations.insert(
-      info.file_name.clone(),
+      cache_key,
       LocalModTranslationEntry::new(
         info.translated_name.clone(),
         info.translated_description.clone(),
