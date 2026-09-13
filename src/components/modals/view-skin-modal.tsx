@@ -49,6 +49,7 @@ const ViewSkinModal: React.FC<ViewSkinModalProps> = ({
               width={416} // calculated from model content size
               height={310}
               showControlBar
+              showSaveButton={Boolean(skin && !skin.preset)}
               isCapeVisible={isCapeVisible}
               onCapeVisibilityChange={setIsCapeVisible}
             />

@@ -3111,6 +3111,7 @@
       "wave": "挥手"
     },
     "button": {
+      "saveToLocal": "保存到本地",
       "enableRotation": "启用旋转",
       "disableRotation": "禁用旋转",
       "play": "播放",
@@ -3118,6 +3119,10 @@
     },
     "error": {
       "loadSkin": "加载皮肤失败"
+    },
+    "toast": {
+      "error": "保存皮肤到本地失败",
+      "success": "已将皮肤保存到本地"
     }
   },
   "SpotlightSearchModal": {

@@ -3111,6 +3111,7 @@
       "wave": "Saluer"
     },
     "button": {
+      "saveToLocal": "Enregistrer localement",
       "enableRotation": "Activer la rotation",
       "disableRotation": "Désactiver la rotation",
       "play": "Lire",
@@ -3118,6 +3119,10 @@
     },
     "error": {
       "loadSkin": "加载皮肤失败"
+    },
+    "toast": {
+      "error": "Échec de l’enregistrement local du skin",
+      "success": "Skin enregistré localement"
     }
   },
   "SpotlightSearchModal": {

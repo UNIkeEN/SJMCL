@@ -3111,6 +3111,7 @@
       "wave": "Saludar"
     },
     "button": {
+      "saveToLocal": "Guardar localmente",
       "enableRotation": "Habilitar Rotación",
       "disableRotation": "Deshabilitar Rotación",
       "play": "Reproducir",
@@ -3118,6 +3119,10 @@
     },
     "error": {
       "loadSkin": "Error al cargar la skin"
+    },
+    "toast": {
+      "error": "No se pudo guardar la skin localmente",
+      "success": "Skin guardada localmente"
     }
   },
   "SpotlightSearchModal": {

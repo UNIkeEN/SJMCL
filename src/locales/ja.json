@@ -3111,6 +3111,7 @@
       "wave": "手を振る"
     },
     "button": {
+      "saveToLocal": "ローカルに保存",
       "enableRotation": "回転を有効化",
       "disableRotation": "回転を無効化",
       "play": "再生",
@@ -3118,6 +3119,10 @@
     },
     "error": {
       "loadSkin": "スキンのロードに失敗"
+    },
+    "toast": {
+      "error": "スキンのローカル保存に失敗しました",
+      "success": "スキンをローカルに保存しました"
     }
   },
   "SpotlightSearchModal": {
