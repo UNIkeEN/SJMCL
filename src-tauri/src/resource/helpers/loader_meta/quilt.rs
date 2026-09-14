@@ -12,6 +12,8 @@ use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType
 #[serde(rename_all = "camelCase")]
 struct QuiltMetaItem {
   pub loader: QuiltLoaderInfo,
+  // Quilt Meta may omit `intermediary` for Minecraft 26.1+ (#1937).
+  // pub intermediary: serde_json::Value,
 }
 
 #[derive(Serialize, Deserialize, Default)]
