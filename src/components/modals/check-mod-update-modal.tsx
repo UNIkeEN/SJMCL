@@ -264,28 +264,24 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
 
   const handleDownloadUpdatedMods = useCallback(
     async (queries: ModUpdateQuery[]) => {
+      if (!summaryId) return;
+
       const params: ModUpdateQuery[] = [];
-      if (summaryId) {
-        for (const query of queries) {
-          const { url, sha1, fileName, oldFilePath } = query;
-          const oldMod = modsToUpdate.find(
-            (mod) => mod.filePath === oldFilePath
-          );
-          if (oldMod) {
-            const finalFileName =
-              addPrefix && oldMod.translatedName
-                ? `[${oldMod.translatedName}] ${fileName}`
-                : fileName;
-            params.push({
-              url,
-              sha1,
-              fileName: finalFileName,
-              oldFilePath,
-            });
-          }
-        }
-        ResourceService.updateMods(summaryId, params);
+      for (const query of queries) {
+        const oldMod = modsToUpdate.find(
+          (mod) => mod.filePath === query.oldFilePath
+        );
+        if (!oldMod) continue;
+
+        params.push({
+          ...query,
+          fileName:
+            addPrefix && oldMod.translatedName
+              ? `[${oldMod.translatedName}] ${query.fileName}`
+              : query.fileName,
+        });
       }
+      ResourceService.updateMods(summaryId, params);
     },
     [summaryId, modsToUpdate, addPrefix]
   );

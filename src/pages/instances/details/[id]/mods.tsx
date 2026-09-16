@@ -230,16 +230,20 @@ const InstanceModsPage = () => {
               prevMods.map((prev) => {
                 if (prev.filePath === filePath) {
                   let newFilePath = prev.filePath;
+                  let newRelativePath = prev.relativePath;
                   if (enable && newFilePath.endsWith(".disabled")) {
                     newFilePath = newFilePath.slice(0, -9);
+                    newRelativePath = newRelativePath.slice(0, -9);
                   }
                   if (!enable && !newFilePath.endsWith(".disabled")) {
                     newFilePath = newFilePath + ".disabled";
+                    newRelativePath = newRelativePath + ".disabled";
                   }
 
                   return {
                     ...prev,
                     filePath: newFilePath,
+                    relativePath: newRelativePath,
                     enabled: enable,
                   };
                 }
