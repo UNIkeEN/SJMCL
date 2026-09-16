@@ -14,7 +14,6 @@ use tauri_plugin_http::reqwest;
 use tokio;
 use tokio::sync::Semaphore;
 use url::Url;
-use walkdir::WalkDir;
 use zip::read::ZipArchive;
 
 use crate::instance::helpers::client_json::{
@@ -40,7 +39,8 @@ use crate::instance::helpers::modpack::import::{
   ModpackMetaInfo, extract_overrides, get_download_params,
 };
 use crate::instance::helpers::mods::common::{
-  check_potential_incompatibility, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+  check_potential_incompatibility, compress_icon, discover_local_mod_paths, get_mod_info_from_dir,
+  get_mod_info_from_jar,
 };
 use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
@@ -612,52 +612,7 @@ pub async fn retrieve_local_mod_list(
     None => return Ok(Vec::new()),
   };
 
-  let valid_extensions = RegexBuilder::new(r"\.(jar|zip|litemod)(\.disabled)*$")
-    .case_insensitive(true)
-    .build()
-    .unwrap();
-
-  let supports_mod_subdirectories = matches!(
-    installed_loader_type,
-    Some(
-      ModLoaderType::Forge
-        | ModLoaderType::LegacyForge
-        | ModLoaderType::Cleanroom
-        | ModLoaderType::LiteLoader
-        | ModLoaderType::Quilt
-    )
-  );
-  let max_depth = usize::from(supports_mod_subdirectories) + 1;
-  let mod_paths = WalkDir::new(&mods_dir)
-    .min_depth(1)
-    .max_depth(max_depth)
-    .into_iter()
-    .filter_entry(|entry| {
-      entry.depth() == 0
-        || !entry.file_type().is_dir()
-        || !entry
-          .file_name()
-          .to_string_lossy()
-          .eq_ignore_ascii_case(".connector")
-    })
-    .filter_map(|entry| match entry {
-      Ok(entry)
-        if (entry.file_type().is_file()
-          || (entry.file_type().is_symlink() && entry.path().is_file()))
-          && entry
-            .file_name()
-            .to_str()
-            .is_some_and(|name| valid_extensions.is_match(name)) =>
-      {
-        Some(entry.into_path())
-      }
-      Ok(_) => None,
-      Err(error) => {
-        log::warn!("Skipping unreadable mod entry: {}", error);
-        None
-      }
-    })
-    .collect::<Vec<_>>();
+  let mod_paths = discover_local_mod_paths(&mods_dir, installed_loader_type);
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
     std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),

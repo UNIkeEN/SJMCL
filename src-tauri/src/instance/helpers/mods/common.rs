@@ -1,14 +1,69 @@
 use async_trait::async_trait;
 use image::imageops::FilterType;
+use regex::RegexBuilder;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::io::{Cursor, Read, Seek};
 use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
 use zip::ZipArchive;
 
 use crate::instance::constants::COMPRESSED_ICON_SIZE;
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::ImageWrapper;
+
+pub fn discover_local_mod_paths(
+  mods_dir: &Path,
+  installed_loader_type: Option<ModLoaderType>,
+) -> Vec<PathBuf> {
+  let valid_extensions = RegexBuilder::new(r"\.(jar|zip|litemod)(\.disabled)*$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+
+  let supports_mod_subdirectories = matches!(
+    installed_loader_type,
+    Some(
+      ModLoaderType::Forge
+        | ModLoaderType::LegacyForge
+        | ModLoaderType::Cleanroom
+        | ModLoaderType::LiteLoader
+        | ModLoaderType::Quilt
+    )
+  );
+  let max_depth = usize::from(supports_mod_subdirectories) + 1;
+
+  WalkDir::new(mods_dir)
+    .min_depth(1)
+    .max_depth(max_depth)
+    .into_iter()
+    .filter_entry(|entry| {
+      entry.depth() == 0
+        || !entry.file_type().is_dir()
+        || !entry
+          .file_name()
+          .to_string_lossy()
+          .eq_ignore_ascii_case(".connector")
+    })
+    .filter_map(|entry| match entry {
+      Ok(entry)
+        if (entry.file_type().is_file()
+          || (entry.file_type().is_symlink() && entry.path().is_file()))
+          && entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| valid_extensions.is_match(name)) =>
+      {
+        Some(entry.into_path())
+      }
+      Ok(_) => None,
+      Err(error) => {
+        log::warn!("Skipping unreadable mod entry: {}", error);
+        None
+      }
+    })
+    .collect()
+}
 
 pub fn compress_icon(wrapper: ImageWrapper) -> ImageWrapper {
   let resized_image = image::imageops::resize(
