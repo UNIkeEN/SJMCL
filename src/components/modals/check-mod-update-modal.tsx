@@ -263,18 +263,11 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const summaryId = summary?.id;
 
   const handleDownloadUpdatedMods = useCallback(
-    async (
-      urlShaPairs: {
-        url: string;
-        sha1: string;
-        fileName: string;
-        oldFilePath: string;
-      }[]
-    ) => {
-      let params: ModUpdateQuery[] = [];
+    async (queries: ModUpdateQuery[]) => {
+      const params: ModUpdateQuery[] = [];
       if (summaryId) {
-        for (const pair of urlShaPairs) {
-          const { url, sha1, fileName, oldFilePath } = pair;
+        for (const query of queries) {
+          const { url, sha1, fileName, oldFilePath } = query;
           const oldMod = modsToUpdate.find(
             (mod) => mod.filePath === oldFilePath
           );
