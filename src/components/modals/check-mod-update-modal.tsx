@@ -19,6 +19,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource } from "@/enums/resource";
 import { InstanceSummary, LocalModInfo } from "@/models/instance/misc";
@@ -40,6 +41,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   ...modalProps
 }) => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const addPrefix =
@@ -48,6 +50,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
 
   const [selectedMods, setSelectedMods] = useState<ModUpdateRecord[]>([]);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [updateList, setUpdateList] = useState<ModUpdateRecord[]>([]);
   const [modsToUpdate, setModsToUpdate] = useState<LocalModInfo[]>([]);
   const [checkingUpdateIndex, setCheckingUpdateIndex] = useState<number>(1);
@@ -259,6 +262,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   }, [summary, localMods, handleFetchLatestMod, onCheckUpdateModalClear]);
 
   const summaryId = summary?.id;
+  const { onClose } = modalProps;
 
   const handleDownloadUpdatedMods = useCallback(
     async (urlShaPairs: { url: string; sha1: string; fileName: string }[]) => {
@@ -286,10 +290,24 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
             });
           }
         }
-        ResourceService.updateMods(summaryId, params);
+        setIsLoading(true);
+        try {
+          const response = await ResourceService.updateMods(summaryId, params);
+          if (response.status === "error") {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          } else {
+            onClose();
+          }
+        } finally {
+          setIsLoading(false);
+        }
       }
     },
-    [summaryId, modsToUpdate, updateList, addPrefix]
+    [summaryId, modsToUpdate, updateList, addPrefix, toast, onClose]
   );
 
   useEffect(() => {
@@ -496,9 +514,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                       fileName: mod.fileName,
                     }))
                   );
-                  modalProps.onClose?.();
                 }}
                 isDisabled={selectedMods.length === 0}
+                isLoading={isLoading}
               >
                 {t("CheckModUpdateModal.button.update")}
               </Button>

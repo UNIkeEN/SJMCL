@@ -2721,7 +2721,7 @@
           }
         }
       },
-      "updateMod": {
+      "updateMods": {
         "error": {
           "title": "更新模組失敗",
           "description": {
