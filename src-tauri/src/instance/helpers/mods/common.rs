@@ -1,14 +1,69 @@
 use async_trait::async_trait;
 use image::imageops::FilterType;
+use regex::RegexBuilder;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::io::{Cursor, Read, Seek};
 use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
 use zip::ZipArchive;
 
 use crate::instance::constants::COMPRESSED_ICON_SIZE;
 use crate::instance::helpers::mods::{fabric, forge, legacy_forge, liteloader, quilt};
 use crate::instance::models::misc::{LocalModInfo, ModLoaderType};
 use crate::utils::image::ImageWrapper;
+
+pub fn discover_local_mod_paths(
+  mods_dir: &Path,
+  installed_loader_type: Option<ModLoaderType>,
+) -> Vec<PathBuf> {
+  let valid_extensions = RegexBuilder::new(r"\.(jar|zip|litemod)(\.disabled)*$")
+    .case_insensitive(true)
+    .build()
+    .unwrap();
+
+  let supports_mod_subdirectories = matches!(
+    installed_loader_type,
+    Some(
+      ModLoaderType::Forge
+        | ModLoaderType::LegacyForge
+        | ModLoaderType::Cleanroom
+        | ModLoaderType::LiteLoader
+        | ModLoaderType::Quilt
+    )
+  );
+  let max_depth = usize::from(supports_mod_subdirectories) + 1;
+
+  WalkDir::new(mods_dir)
+    .min_depth(1)
+    .max_depth(max_depth)
+    .into_iter()
+    .filter_entry(|entry| {
+      entry.depth() == 0
+        || !entry.file_type().is_dir()
+        || !entry
+          .file_name()
+          .to_string_lossy()
+          .eq_ignore_ascii_case(".connector")
+    })
+    .filter_map(|entry| match entry {
+      Ok(entry)
+        if (entry.file_type().is_file()
+          || (entry.file_type().is_symlink() && entry.path().is_file()))
+          && entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| valid_extensions.is_match(name)) =>
+      {
+        Some(entry.into_path())
+      }
+      Ok(_) => None,
+      Err(error) => {
+        log::warn!("Skipping unreadable mod entry: {}", error);
+        None
+      }
+    })
+    .collect()
+}
 
 pub fn compress_icon(wrapper: ImageWrapper) -> ImageWrapper {
   let resized_image = image::imageops::resize(
@@ -156,6 +211,22 @@ impl ModLoaderType {
   }
 }
 
+fn mod_metadata_parser_priority(
+  prior_loader_type: Option<ModLoaderType>,
+) -> impl Iterator<Item = ModLoaderType> {
+  // Normalize loaders that share a parser before filtering the fallback list.
+  let preferred_loader = prior_loader_type.map(|loader| match loader {
+    ModLoaderType::NeoForge => ModLoaderType::Forge,
+    ModLoaderType::Cleanroom => ModLoaderType::LegacyForge,
+    loader => loader,
+  });
+  preferred_loader.into_iter().chain(
+    DEFAULT_MOD_LOADER_PRIORITY_LIST
+      .into_iter()
+      .filter(move |loader| Some(*loader) != preferred_loader),
+  )
+}
+
 pub async fn get_mod_info_from_jar(
   path: &PathBuf,
   prior_loader_type: Option<ModLoaderType>,
@@ -174,11 +245,8 @@ pub async fn get_mod_info_from_jar(
   let enabled = !file_name.ends_with(".disabled");
   let mut jar = ZipArchive::new(file)?;
 
-  for loader_type in prior_loader_type
-    .into_iter()
-    .chain(DEFAULT_MOD_LOADER_PRIORITY_LIST)
-  {
-    if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_jar(&mut jar) {
+  for parser in mod_metadata_parser_priority(prior_loader_type) {
+    if let Some(mut local_mod_info) = parser.parse_mod_info_from_jar(&mut jar) {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = file_stem.clone();
       local_mod_info.file_path = file_path.clone();
@@ -207,11 +275,8 @@ pub async fn get_mod_info_from_dir(
     .to_string();
   let enabled = !dir_name.ends_with(".disabled");
 
-  for loader_type in prior_loader_type
-    .into_iter()
-    .chain(DEFAULT_MOD_LOADER_PRIORITY_LIST)
-  {
-    if let Some(mut local_mod_info) = loader_type.parse_mod_info_from_dir(path).await {
+  for parser in mod_metadata_parser_priority(prior_loader_type) {
+    if let Some(mut local_mod_info) = parser.parse_mod_info_from_dir(path).await {
       local_mod_info.enabled = enabled;
       local_mod_info.file_name = dir_stem.clone();
       local_mod_info.file_path = path.to_path_buf();

@@ -73,9 +73,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
 
   const handleModToggle = (mod: ModUpdateRecord) => {
     setSelectedMods((prev) => {
-      const isSelected = prev.some((m) => m.name === mod.name);
+      const isSelected = prev.some((m) => m.oldFilePath === mod.oldFilePath);
       if (isSelected) {
-        return prev.filter((m) => m.name !== mod.name);
+        return prev.filter((m) => m.oldFilePath !== mod.oldFilePath);
       } else {
         return [...prev, mod];
       }
@@ -220,6 +220,8 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               mod,
               updateRecord: {
                 name: mod.name,
+                oldFilePath: mod.filePath,
+                relativePath: mod.relativePath,
                 curVersion: mod.version,
                 newVersion: latestFile.name,
                 source: isCurseForgeNewer
@@ -265,49 +267,41 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const { onClose } = modalProps;
 
   const handleDownloadUpdatedMods = useCallback(
-    async (urlShaPairs: { url: string; sha1: string; fileName: string }[]) => {
-      let params: ModUpdateQuery[] = [];
-      if (summaryId) {
-        for (const pair of urlShaPairs) {
-          const { url, sha1, fileName } = pair;
-          const oldMod = modsToUpdate.find((mod) =>
-            updateList.some(
-              (update) =>
-                update.fileName === fileName && update.name === mod.name
-            )
-          );
-          if (oldMod) {
-            const oldFilePath = oldMod.filePath;
-            const finalFileName =
-              addPrefix && oldMod.translatedName
-                ? `[${oldMod.translatedName}] ${fileName}`
-                : fileName;
-            params.push({
-              url,
-              sha1,
-              fileName: finalFileName,
-              oldFilePath,
-            });
-          }
+    async (queries: ModUpdateQuery[]) => {
+      if (!summaryId) return;
+
+      const params: ModUpdateQuery[] = [];
+      for (const query of queries) {
+        const oldMod = modsToUpdate.find(
+          (mod) => mod.filePath === query.oldFilePath
+        );
+        if (!oldMod) continue;
+
+        params.push({
+          ...query,
+          fileName:
+            addPrefix && oldMod.translatedName
+              ? `[${oldMod.translatedName}] ${query.fileName}`
+              : query.fileName,
+        });
+      }
+      setIsLoading(true);
+      try {
+        const response = await ResourceService.updateMods(summaryId, params);
+        if (response.status === "error") {
+          toast({
+            title: response.message,
+            description: response.details,
+            status: "error",
+          });
+        } else {
+          onClose();
         }
-        setIsLoading(true);
-        try {
-          const response = await ResourceService.updateMods(summaryId, params);
-          if (response.status === "error") {
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-          } else {
-            onClose();
-          }
-        } finally {
-          setIsLoading(false);
-        }
+      } finally {
+        setIsLoading(false);
       }
     },
-    [summaryId, modsToUpdate, updateList, addPrefix, toast, onClose]
+    [summaryId, modsToUpdate, addPrefix, toast, onClose]
   );
 
   useEffect(() => {
@@ -429,7 +423,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                 <VStack spacing={0} align="stretch">
                   {updateList.map((mod, index) => (
                     <HStack
-                      key={mod.fileName} // unique
+                      key={mod.oldFilePath}
                       py={3}
                       px={4}
                       borderBottom={
@@ -442,7 +436,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                     >
                       <Checkbox
                         isChecked={selectedMods.some(
-                          (m) => m.name === mod.name
+                          (m) => m.oldFilePath === mod.oldFilePath
                         )}
                         onChange={() => handleModToggle(mod)}
                         colorScheme={primaryColor}
@@ -451,10 +445,19 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                         <Text
                           fontSize="xs"
                           noOfLines={1}
-                          title={mod.name || mod.fileName}
+                          title={mod.name || mod.relativePath}
                           textAlign="center"
                         >
                           {mod.name || mod.fileName}
+                        </Text>
+                        <Text
+                          fontSize="xs"
+                          color={secondaryTextColor}
+                          noOfLines={1}
+                          title={mod.relativePath}
+                          textAlign="center"
+                        >
+                          {mod.relativePath}
                         </Text>
                       </Box>
                       <Box flex="2" minW="0">
@@ -512,6 +515,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                       url: mod.downloadUrl,
                       sha1: mod.sha1,
                       fileName: mod.fileName,
+                      oldFilePath: mod.oldFilePath,
                     }))
                   );
                 }}

@@ -17,7 +17,7 @@ use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version
 use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::optifine::get_optifine_meta_by_game_version;
 use crate::resource::helpers::loader_meta::quilt::get_quilt_meta_by_game_version;
-use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::misc::{get_source_priority_list, resolve_mod_update_paths};
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
   fetch_resource_list_by_name_modrinth, fetch_resource_version_packs_modrinth,
@@ -198,12 +198,13 @@ pub async fn update_mods(
     None => return Ok(()),
   };
 
+  let update_paths = resolve_mod_update_paths(&mods_dir, &queries)?;
+
   let mut download_tasks = Vec::new();
-  for query in &queries {
-    let file_path = mods_dir.join(&query.file_name);
+  for (query, (_, new_file_path)) in queries.iter().zip(&update_paths) {
     let download_param = DownloadParam {
       src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
-      dest: file_path,
+      dest: new_file_path.clone(),
       filename: None,
       sha1: Some(query.sha1.clone()),
     };
@@ -212,13 +213,10 @@ pub async fn update_mods(
 
   schedule_progressive_task_group(app, "mod-update".to_string(), download_tasks, true).await?;
 
-  for query in &queries {
-    let old_file_path = &query.old_file_path;
-    let new_file_path = mods_dir.join(&query.file_name);
-
-    if old_file_path != &new_file_path.to_string_lossy().to_string() {
-      let old_backup_path = format!("{}.old", old_file_path);
-      if let Err(e) = std::fs::rename(old_file_path, &old_backup_path) {
+  for (old_file_path, new_file_path) in update_paths {
+    if old_file_path != new_file_path {
+      let old_backup_path = format!("{}.old", old_file_path.display());
+      if let Err(e) = std::fs::rename(&old_file_path, old_backup_path) {
         log::error!("Failed to rename old mod file: {}", e);
         return Err(ResourceError::FileOperationError.into());
       }

@@ -39,7 +39,8 @@ use crate::instance::helpers::modpack::import::{
   ModpackMetaInfo, extract_overrides, get_download_params,
 };
 use crate::instance::helpers::mods::common::{
-  check_potential_incompatibility, compress_icon, get_mod_info_from_dir, get_mod_info_from_jar,
+  check_potential_incompatibility, compress_icon, discover_local_mod_paths, get_mod_info_from_dir,
+  get_mod_info_from_jar,
 };
 use crate::instance::helpers::options_txt::get_minecraft_lang_tag;
 use crate::instance::helpers::resourcepack::{
@@ -611,17 +612,13 @@ pub async fn retrieve_local_mod_list(
     None => return Ok(Vec::new()),
   };
 
-  let valid_extensions = RegexBuilder::new(r"\.(jar|zip)(\.disabled)*$")
-    .case_insensitive(true)
-    .build()
-    .unwrap();
-
-  let mod_paths = get_files_with_regex(&mods_dir, &valid_extensions).unwrap_or_default();
+  let mod_paths = discover_local_mod_paths(&mods_dir, installed_loader_type);
   let mut tasks = Vec::new();
   let semaphore = Arc::new(Semaphore::new(
     std::thread::available_parallelism().map_or(1, std::num::NonZeroUsize::get),
   ));
   for path in mod_paths {
+    let relative_path = path.strip_prefix(&mods_dir).unwrap_or(&path).to_path_buf();
     let permit = semaphore
       .clone()
       .acquire_owned()
@@ -629,19 +626,28 @@ pub async fn retrieve_local_mod_list(
       .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
     let task = tokio::spawn(async move {
       log::debug!("Load mod info from jar: {}", path.display());
-      let info = get_mod_info_from_jar(&path, installed_loader_type)
+      let mut info = get_mod_info_from_jar(&path, installed_loader_type)
         .await
-        .ok();
+        .ok()?;
+      info.relative_path = relative_path;
       drop(permit);
-      info
+      Some(info)
     });
     tasks.push(task);
   }
   #[cfg(debug_assertions)]
   {
     // mod information detection from folders is only used for debugging.
-    let mod_paths = get_subdirectories(&mods_dir).unwrap_or_default();
+    let mod_paths = get_subdirectories(&mods_dir)
+      .unwrap_or_default()
+      .into_iter()
+      .filter(|path| {
+        path
+          .file_name()
+          .is_some_and(|name| !name.to_string_lossy().eq_ignore_ascii_case(".connector"))
+      });
     for path in mod_paths {
+      let relative_path = path.strip_prefix(&mods_dir).unwrap_or(&path).to_path_buf();
       let permit = semaphore
         .clone()
         .acquire_owned()
@@ -649,11 +655,12 @@ pub async fn retrieve_local_mod_list(
         .map_err(|_| InstanceError::SemaphoreAcquireFailed)?;
       let task = tokio::spawn(async move {
         log::debug!("Load mod info from dir: {}", path.display());
-        let info = get_mod_info_from_dir(&path, installed_loader_type)
+        let mut info = get_mod_info_from_dir(&path, installed_loader_type)
           .await
-          .ok();
+          .ok()?;
+        info.relative_path = relative_path;
         drop(permit);
-        info
+        Some(info)
       });
       tasks.push(task);
     }
@@ -696,13 +703,14 @@ pub async fn retrieve_local_mod_list(
   let local_mod_translations_cache_state = app.state::<Mutex<LocalModTranslationsCache>>();
   let mut cache = local_mod_translations_cache_state.lock()?;
   for info in mod_infos.iter() {
-    if let Some(entry) = cache.translations.get(&info.file_name)
+    let cache_key = info.file_path.to_string_lossy().to_string();
+    if let Some(entry) = cache.translations.get(&cache_key)
       && !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS)
     {
       continue;
     }
     cache.translations.insert(
-      info.file_name.clone(),
+      cache_key,
       LocalModTranslationEntry::new(
         info.translated_name.clone(),
         info.translated_description.clone(),

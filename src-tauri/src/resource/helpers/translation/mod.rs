@@ -40,7 +40,7 @@ pub async fn add_local_mod_translations(
 
     cache
       .translations
-      .get(&file_name)
+      .get(&file_path)
       .filter(|entry| !entry.is_expired(LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS))
       .cloned()
   };

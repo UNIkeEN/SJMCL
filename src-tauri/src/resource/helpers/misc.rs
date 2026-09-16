@@ -1,11 +1,14 @@
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::cmp::Ordering;
+use std::collections::HashSet;
+use std::path::{Path, PathBuf};
 use strum::IntoEnumIterator;
 use url::Url;
 
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::models::{
-  OtherResourceInfo, OtherResourceVersionPack, ResourceError, ResourceType, SourceType,
+  ModUpdateQuery, OtherResourceInfo, OtherResourceVersionPack, ResourceError, ResourceType,
+  SourceType,
 };
 use crate::utils::string::contains_chinese;
 
@@ -295,4 +298,76 @@ pub fn sort_localized_search_results(list: &mut Vec<OtherResourceInfo>, search_q
 
   list.extend(translated_results);
   list.extend(untranslated_results);
+}
+
+pub fn resolve_mod_update_paths(
+  mods_dir: &Path,
+  queries: &[ModUpdateQuery],
+) -> SJMCLResult<Vec<(PathBuf, PathBuf)>> {
+  let canonical_mods_dir = mods_dir.canonicalize().map_err(|error| {
+    SJMCLError(format!(
+      "Failed to resolve mods directory {}: {}",
+      mods_dir.display(),
+      error
+    ))
+  })?;
+  let mut targets = HashSet::new();
+  let mut paths = Vec::with_capacity(queries.len());
+
+  for query in queries {
+    let old_file_path = PathBuf::from(&query.old_file_path);
+    if !old_file_path.is_file() {
+      return Err(SJMCLError(format!(
+        "Old mod file does not exist: {}",
+        old_file_path.display()
+      )));
+    }
+
+    let old_parent = old_file_path.parent().ok_or_else(|| {
+      SJMCLError(format!(
+        "Old mod file has no parent directory: {}",
+        old_file_path.display()
+      ))
+    })?;
+    let canonical_old_parent = old_parent.canonicalize().map_err(|error| {
+      SJMCLError(format!(
+        "Failed to resolve old mod directory {}: {}",
+        old_parent.display(),
+        error
+      ))
+    })?;
+    if !canonical_old_parent.starts_with(&canonical_mods_dir) {
+      return Err(SJMCLError(format!(
+        "Old mod file is outside the instance mods directory: {}",
+        old_file_path.display()
+      )));
+    }
+
+    let new_file_name = Path::new(&query.file_name);
+    if new_file_name.file_name() != Some(new_file_name.as_os_str()) {
+      return Err(SJMCLError(format!(
+        "Invalid mod update file name: {}",
+        query.file_name
+      )));
+    }
+
+    let new_file_path = old_parent.join(new_file_name);
+    let canonical_target = canonical_old_parent.join(new_file_name);
+    if !targets.insert(canonical_target) {
+      return Err(SJMCLError(format!(
+        "Duplicate mod update target: {}",
+        new_file_path.display()
+      )));
+    }
+    if new_file_path != old_file_path && new_file_path.exists() {
+      return Err(SJMCLError(format!(
+        "Mod update target already exists: {}",
+        new_file_path.display()
+      )));
+    }
+
+    paths.push((old_file_path, new_file_path));
+  }
+
+  Ok(paths)
 }
