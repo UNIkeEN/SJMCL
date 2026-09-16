@@ -2721,7 +2721,7 @@
           }
         }
       },
-      "updateMod": {
+      "updateMods": {
         "error": {
           "title": "モッドの更新に失敗",
           "description": {

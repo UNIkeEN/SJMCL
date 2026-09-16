@@ -2721,7 +2721,7 @@
           }
         }
       },
-      "updateMod": {
+      "updateMods": {
         "error": {
           "title": "Échec de la mise à jour du mod",
           "description": {

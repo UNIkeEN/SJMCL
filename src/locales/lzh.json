@@ -2721,7 +2721,7 @@
           }
         }
       },
-      "updateMod": {
+      "updateMods": {
         "error": {
           "title": "迭更改囊未成",
           "description": {
