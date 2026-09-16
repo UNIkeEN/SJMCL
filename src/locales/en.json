@@ -2721,7 +2721,7 @@
           }
         }
       },
-      "updateMod": {
+      "updateMods": {
         "error": {
           "title": "Failed to download latest mod",
           "description": {
