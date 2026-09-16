@@ -60,6 +60,8 @@ import { UtilsService } from "@/services/utils";
 import { parseModLoaderVersion } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
 
+const MOD_FILE_EXTENSIONS = ["jar", "zip", "litemod", "disabled"];
+
 const InstanceModsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
@@ -195,7 +197,7 @@ const InstanceModsPage = () => {
   }, [isSearching]);
 
   useFileDnD({
-    extensions: ["jar", "disabled"],
+    extensions: MOD_FILE_EXTENSIONS,
     multiple: true,
     titleKey: "InstanceModsPage.fileDnD.title",
     descKey: "InstanceModsPage.fileDnD.desc",
@@ -203,7 +205,7 @@ const InstanceModsPage = () => {
     onDrop: async (paths) => {
       handleImportResources({
         filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
-        filterExt: ["jar", "disabled"],
+        filterExt: MOD_FILE_EXTENSIONS,
         tgtDirType: InstanceSubdirType.Mods,
         paths,
         multiple: true,
@@ -326,7 +328,7 @@ const InstanceModsPage = () => {
       onClick: () => {
         handleImportResources({
           filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
-          filterExt: ["zip", "jar", "disabled"],
+          filterExt: MOD_FILE_EXTENSIONS,
           tgtDirType: InstanceSubdirType.Mods,
           multiple: true,
           onSuccessCallback: () => {
