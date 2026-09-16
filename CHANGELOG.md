@@ -2,6 +2,22 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.3.1
+
+`2026-09-16`
+
+- 🌟 Support managing mods in subfolders for compatibility with certain mod loaders. #1960 #1962 @xunying123 @w1049 @UNIkeEN
+- 🌟 Support saving skins locally while previewing them. #1961 @UNIkeEN
+- 🐛 Fix an issue where resource pack information was incorrectly cleared when retrieving the save list failed. #1945 @VhahahaV
+- 🐛 Fix metadata parsing failures when downloading Quilt. #1946 @VhahahaV @xunying123 @UNIkeEN
+- 🐛 Fix an issue where the Quilt loader could not be detected when importing Modrinth modpacks. #1947 @w1049
+- 🐛 Fix incorrect modal display order during launcher startup. #1949 @UNIkeEN
+- 🐛 Fix several logic and text display issues in the mod update modal. #1968 @UNIkeEN
+- ⚡️ Streamline dependencies related to configuration parsing and Deeplink to reduce build overhead. #1943 #1944 @VhahahaV
+- 💄 Refactor parts of the codebase for better code style and maintainability.
+- 📦 Update the frontend dependency `next` to a patch version. #1955 @dependabot[bot]
+- 📦 Update the project's minimum supported Rust version to 1.98.1. #1958 @ToolmanP @UNIkeEN @w1049
+
 ## 1.3.0
 
 `2026-09-07`
