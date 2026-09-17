@@ -140,7 +140,7 @@ pub async fn query_servers_online(
       if let Ok(_) = sem.acquire_owned().await {
         let result = lite_mc_ping::ping(&address_clone, &options)
           .await
-          .map_err(|_| SJMCLError("Can not resolve ping action".to_string()));
+          .map_err(|e| SJMCLError(format!("Can not resolve ping action: {e}")));
         (idx, address_clone, result)
       } else {
         (
