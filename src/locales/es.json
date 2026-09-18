@@ -1032,6 +1032,7 @@
       "gameLogs": "Registros del Juego",
       "help": "Ayuda"
     },
+    "autoCloseCountdown": "Esta ventana se cerrará automáticamente en {{seconds}} segundos",
     "bottomAlert": "Exporta y envía el reporte de error en lugar de una captura de pantalla de esta página para obtener ayuda.",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
@@ -1357,6 +1358,12 @@
         },
         "displayGameLog": {
           "title": "Mostrar Registros del Juego"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "Cierre automático de la ventana de fallo",
+          "disabled": "No cerrar automáticamente",
+          "tenSeconds": "Cerrar después de 10 segundos",
+          "thirtySeconds": "Cerrar después de 30 segundos"
         },
         "advancedOptions": {
           "title": "Opciones de Inicio Avanzadas",
