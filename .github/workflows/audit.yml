@@ -1,6 +1,9 @@
 name: Security audit
 
 on:
+  schedule:
+    # Mondays 00:00 UTC
+    - cron: "0 0 * * 1"
   workflow_dispatch:
   push:
     paths:
