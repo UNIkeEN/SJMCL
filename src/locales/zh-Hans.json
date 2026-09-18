@@ -1032,7 +1032,7 @@
       "gameLogs": "游戏日志",
       "help": "帮助"
     },
-    "autoCloseCountdown": "窗口将在 {{seconds}} 秒后自动关闭",
+    "autoCloseCountdown": "窗口将在 {{seconds}} 秒后自动关闭（点击窗口任意位置可取消）",
     "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {

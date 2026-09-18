@@ -1032,7 +1032,7 @@
       "gameLogs": "Registros del Juego",
       "help": "Ayuda"
     },
-    "autoCloseCountdown": "Esta ventana se cerrará automáticamente en {{seconds}} segundos",
+    "autoCloseCountdown": "Esta ventana se cerrará automáticamente en {{seconds}} segundos (haz clic en cualquier lugar de la ventana para cancelar)",
     "bottomAlert": "Exporta y envía el reporte de error en lugar de una captura de pantalla de esta página para obtener ayuda.",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {

@@ -182,7 +182,7 @@ const GameErrorPage: React.FC = () => {
   };
 
   return (
-    <Flex direction="column" h="100%">
+    <Flex direction="column" h="100%" onClickCapture={cancelAutoClose}>
       <Alert status="error">
         <AlertIcon />
         <AlertTitle fontSize="md">{t("GameErrorPage.title")}</AlertTitle>
@@ -254,7 +254,15 @@ const GameErrorPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <HStack mt="auto" p={4} onClickCapture={cancelAutoClose}>
+      {autoCloseSeconds !== null && (
+        <Text fontSize="xs-sm" color="orange.500" px={4} pt={2}>
+          {t("GameErrorPage.autoCloseCountdown", {
+            seconds: autoCloseSeconds,
+          })}
+        </Text>
+      )}
+
+      <HStack mt="auto" p={4} pt={autoCloseSeconds !== null ? 2 : 4}>
         <Button
           colorScheme={primaryColor}
           variant="solid"
@@ -291,20 +299,10 @@ const GameErrorPage: React.FC = () => {
             size="sm" // keep default size
           />
         ))}
-        {autoCloseSeconds !== null ? (
-          <Text fontSize="xs-sm" color="orange.500" ml="auto">
-            {t("GameErrorPage.autoCloseCountdown", {
-              seconds: autoCloseSeconds,
-            })}
-          </Text>
-        ) : (
-          <>
-            <Icon ml={2} as={LuCircleAlert} color="red.500" />
-            <Text fontSize="xs-sm" color="red.500">
-              {t("GameErrorPage.bottomAlert")}
-            </Text>
-          </>
-        )}
+        <Icon ml={2} as={LuCircleAlert} color="red.500" />
+        <Text fontSize="xs-sm" color="red.500">
+          {t("GameErrorPage.bottomAlert")}
+        </Text>
       </HStack>
     </Flex>
   );
