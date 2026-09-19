@@ -1,0 +1,34 @@
+name: Security audit
+
+on:
+  schedule:
+    # Mondays 00:00 UTC
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+
+jobs:
+  audit:
+    name: cargo audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write # create issue
+      checks: write # create check
+
+    strategy:
+      fail-fast: false
+      matrix:
+        path:
+          - src-tauri
+          - cli
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: ${{ matrix.path }}
