@@ -16,8 +16,10 @@ pub struct PlayerData {
   pub score: Option<i64>,
   pub dimension: Value, // good mojang
   pub on_ground: bool,
+  #[serde(rename = "fall_distance", alias = "FallDistance")]
   pub fall_distance: f32,
-  pub motion: Vec<f64>,   // [f64; 3]
+  pub motion: Vec<f64>, // [f64; 3]
+  #[serde(rename = "Pos")]
   pub position: Vec<f64>, // [f64; 3]
   pub rotation: Vec<f32>, // [f32; 2]
   pub spawn_x: i32,
@@ -37,6 +39,7 @@ pub struct PlayerData {
   // pub health: i16,
   // #[serde(rename = "HealF")]
   // // pub heal: Option<f32>,
+  #[serde(rename = "foodLevel")]
   pub food_level: i32,
   #[serde(rename = "foodTickTimer")]
   pub food_tick_timer: i32,
@@ -54,7 +57,7 @@ pub struct PlayerData {
   pub xp_seed: Option<i32>,
 
   pub inventory: Vec<InventoryEntry>,
-  pub ender_items: Vec<u8>,
+  pub ender_items: Vec<InventoryEntry>,
 
   pub selected_item_slot: Option<i32>,
   pub selected_item: Option<InventoryEntry>,
@@ -62,7 +65,9 @@ pub struct PlayerData {
   pub uuid_least: Option<i64>,
   #[serde(rename = "UUIDMost")]
   pub uuid_most: Option<i64>,
+  #[serde(rename = "AbsorptionAmount", alias = "AbsorbtionAmount")]
   pub absorbtion_amount: Option<f32>,
+  #[serde(rename = "attributes", alias = "Attributes")]
   pub attributes: Option<Vec<AttributeEntry>>,
   pub active_effects: Option<Vec<ActiveEffect>>,
 }
@@ -93,6 +98,7 @@ pub struct AttributeEntry {
 #[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "PascalCase", default)]
 pub struct InventoryEntry {
+  #[serde(rename = "id")]
   pub id: String,
   pub slot: Option<u8>,
   pub count: u8,
