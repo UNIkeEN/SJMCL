@@ -7,7 +7,7 @@ interface PlayerAvatarProps extends BoxProps {
 
 const PlayerAvatar: React.FC<PlayerAvatarProps> = ({ avatar, ...props }) => {
   return (
-    <Box position="relative" display="inline-block" flexShrink={0} {...props}>
+    <Box position="relative" display="inline-block" {...props} flexShrink={0}>
       {!!avatar[0] && (
         <Image
           src={base64ImgSrc(avatar[0])}
