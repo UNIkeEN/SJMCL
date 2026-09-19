@@ -1,5 +1,7 @@
 # Contributing
 
+**English** · [简体中文](docs/CONTRIBUTING.zh-Hans.md)
+
 We warmly welcome all forms of contributions to SJMCL, including issues, new features, documentation, and more. 🥰
 
 The following is a set of guidelines for contributing to SJMCL. Please take a few minutes to review these guidelines before submitting an issue or pull request.
@@ -74,14 +76,10 @@ Alternatively, to manually check and fix formatting issues, run the following co
 pnpm eslint "src/**/*.{js,jsx,ts,tsx}" --no-fix    # check
 pnpm eslint "src/**/*.{js,jsx,ts,tsx}" --fix       # fix
 
-# For backend part (For Linux, macOS or Git Bash on Windows)
-rustfmt --check src-tauri/src/**/*.rs              # check
-rustfmt src-tauri/src/**/*.rs                      # fix
-
-# For backend part (For Windows PowerShell)
+# For backend part
 cd src-tauri
-cargo fmt -- --check src/**/*.rs                   # check
-cargo fmt -- src/**/*.rs                           # fix
+cargo fmt --all -- --check                         # check
+cargo fmt --all                                    # fix
 ```
 
 If you use VS Code for developing this project, we recommend setting `rust-analyzer.check.command` to `clippy` in your workspace settings for stricter code checking.

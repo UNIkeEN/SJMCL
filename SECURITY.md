@@ -1,5 +1,7 @@
 # Security Policy
 
+**English** · [简体中文](docs/SECURITY.zh-Hans.md)
+
 ## Supported Versions
 
 The following releases of SJMCL are currently supported.
