@@ -1,11 +1,21 @@
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
   Grid,
   GridItem,
   HStack,
   Icon,
   IconButton,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   Tooltip,
   VStack,
@@ -13,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import router from "next/router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuCirclePlus,
@@ -23,6 +33,7 @@ import {
   LuLayoutGrid,
   LuLayoutList,
   LuLink2Off,
+  LuPenLine,
   LuPlus,
   LuServer,
   LuServerOff,
@@ -56,6 +67,7 @@ const AccountsPage = () => {
   const [selectedPlayerType, setSelectedPlayerType] = useState<string>("all");
   const [playerList, setPlayerList] = useState<Player[]>([]);
   const [authServerList, setAuthServerList] = useState<AuthServer[]>([]);
+  const [editingServerName, setEditingServerName] = useState("");
 
   const {
     isOpen: isAddPlayerModalOpen,
@@ -67,6 +79,12 @@ const AccountsPage = () => {
     isOpen: isImportAccountInfoModalOpen,
     onOpen: onImportAccountInfoModalOpen,
     onClose: onImportAccountInfoModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditServerNameModalOpen,
+    onOpen: onEditServerNameModalOpen,
+    onClose: onEditServerNameModalClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -178,6 +196,38 @@ const AccountsPage = () => {
     closeSharedModal("generic-confirm");
   };
 
+  const handleOpenEditServerNameModal = () => {
+    const server = authServerList.find(
+      (server) => server.authUrl === selectedPlayerType
+    );
+    if (server) {
+      setEditingServerName(server.name);
+      onEditServerNameModalOpen();
+    }
+  };
+
+  const handleSaveServerName = () => {
+    AccountService.renameAuthServer(selectedPlayerType, editingServerName).then(
+      (response) => {
+        if (response.status === "success") {
+          getAuthServerList(true);
+          toast({
+            title: t("AccountsPage.renameServer.success"),
+            status: "success",
+          });
+        } else {
+          toast({
+            title: t("AccountsPage.renameServer.error"),
+            description: response.details,
+            status: "error",
+          });
+        }
+      }
+    );
+
+    onEditServerNameModalClose();
+  };
+
   return (
     <>
       <Grid templateColumns="1fr 3fr" gap={4} h="100%">
@@ -240,6 +290,20 @@ const AccountsPage = () => {
             }
             headExtra={
               <HStack spacing={2} alignItems="flex-start">
+                {!["all", "offline", "microsoft"].includes(
+                  selectedPlayerType
+                ) && (
+                  <Tooltip label={t("AccountsPage.button.rename")}>
+                    <IconButton
+                      aria-label="rename"
+                      size="xs"
+                      fontSize="sm"
+                      variant="ghost"
+                      icon={<LuPenLine />}
+                      onClick={handleOpenEditServerNameModal}
+                    />
+                  </Tooltip>
+                )}
                 {!["all", "offline", "microsoft"].includes(
                   selectedPlayerType
                 ) && (
@@ -329,6 +393,42 @@ const AccountsPage = () => {
           </Section>
         </GridItem>
       </Grid>
+
+      <Modal
+        isOpen={isEditServerNameModalOpen}
+        onClose={onEditServerNameModalClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t("AccountsPage.renameServer.title")}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl isRequired>
+              <FormLabel>{t("AccountsPage.renameServer.label")}</FormLabel>
+              <Input
+                value={editingServerName}
+                onChange={(e) => setEditingServerName(e.target.value)}
+                autoFocus
+              />
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" onClick={onEditServerNameModalClose}>
+              {t("General.cancel")}
+            </Button>
+            <Button
+              colorScheme={primaryColor}
+              type={"submit"}
+              mr={3}
+              onClick={handleSaveServerName}
+              isDisabled={!editingServerName.trim()}
+            >
+              {t("Editable.save")}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       <AddPlayerModal
         isOpen={isAddPlayerModalOpen}
         onClose={onAddPlayerModalClose}
