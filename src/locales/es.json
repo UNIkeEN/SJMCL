@@ -3067,10 +3067,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "Error al crear la tarea"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "La descarga de {{param}} ha comenzado",
           "Failed": "La descarga de {{param}} falló parcialmente, por favor intente de nuevo",

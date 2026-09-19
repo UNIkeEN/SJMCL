@@ -6,6 +6,9 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
+use crate::download::DownloadParam;
+use crate::download::PTaskParam;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{ArgumentsItem, LaunchArgumentTemplate};
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
@@ -15,9 +18,6 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 pub async fn download_optifine_installer(
   game_version: &str,
@@ -261,7 +261,7 @@ pub async fn download_optifine_libraries(
     return Ok(());
   }
 
-  schedule_progressive_task_group(
+  submit_download_group(
     app.clone(),
     format!("optifine-libraries?{}", instance.id),
     task_params,

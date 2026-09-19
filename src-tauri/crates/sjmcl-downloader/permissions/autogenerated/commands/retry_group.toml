@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-retry-group"
+description = "Enables the retry_group command without any pre-configured scope."
+commands.allow = ["retry_group"]
+
+[[permission]]
+identifier = "deny-retry-group"
+description = "Denies the retry_group command without any pre-configured scope."
+commands.deny = ["retry_group"]

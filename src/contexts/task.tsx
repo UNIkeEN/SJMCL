@@ -5,6 +5,8 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,44 +16,146 @@ import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { OtherResourceType } from "@/enums/resource";
 import {
-  CreatedPTaskEventStatus,
-  FailedPTaskEventStatus,
-  GTaskEventPayload,
-  GTaskEventStatusEnums,
-  InProgressPTaskEventStatus,
-  PTaskEventPayload,
-  PTaskEventStatusEnums,
-  StartedPTaskEventStatus,
-  TaskDesc,
-  TaskDescStatusEnums,
-  TaskGroupDesc,
-  TaskParam,
-} from "@/models/task";
+  DownloadFinishKind,
+  DownloadFinishedEvent,
+  DownloadGroup,
+  DownloadGroupState,
+  DownloadGroupStats,
+  DownloadGroupSummary,
+  DownloadTask,
+  DownloadTaskError,
+  DownloadTaskState,
+  SubmitDownloadTask,
+} from "@/models/download";
 import { ConfigService } from "@/services/config";
+import { DownloadService } from "@/services/download";
 import {
   EXTENSION_REFRESH_EVENT,
   ExtensionService,
 } from "@/services/extension";
 import { InstanceService } from "@/services/instance";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
-import { TaskService } from "@/services/task";
 
 interface TaskContextType {
-  tasks: TaskGroupDesc[];
-  generalPercent: number | undefined; // General progress percentage for all tasks
-  handleScheduleProgressiveTaskGroup: (
-    taskGroup: string,
-    params: TaskParam[]
+  tasks: DownloadGroup[];
+  generalPercent: number | undefined;
+  handleSubmitDownloadGroup: (
+    name: string,
+    tasks: SubmitDownloadTask[]
   ) => void;
-  handleCancelProgressiveTaskGroup: (taskGroup: string) => void;
-  handleStopProgressiveTaskGroup: (taskGroup: string) => void;
-  handleResumeProgressiveTaskGroup: (taskGroup: string) => void;
-  handleClearHistoryTaskGroups: () => void;
+  handleCancelDownloadGroup: (groupId: string) => void;
+  handlePauseDownloadGroup: (groupId: string) => void;
+  handleResumeDownloadGroup: (groupId: string) => void;
+  handleRetryDownloadGroup: (groupId: string) => void;
+  handleClearDownloadHistory: () => void;
 }
 
 export const TaskContext = createContext<TaskContextType | undefined>(
   undefined
 );
+
+const taskErrorText = (error: DownloadTaskError | null): string | undefined => {
+  if (!error) return undefined;
+  if ("Http" in error) return `HTTP ${error.Http}`;
+  if ("Checksum" in error) {
+    return `Checksum mismatch: ${error.Checksum.actual}`;
+  }
+  return Object.values(error)[0];
+};
+
+const deriveStats = (tasks: DownloadTask[]): DownloadGroupStats => ({
+  total: tasks.length,
+  done: tasks.filter((task) => task.state === DownloadTaskState.Done).length,
+  failed: tasks.filter((task) => task.state === DownloadTaskState.Failed)
+    .length,
+  cancelled: tasks.filter((task) => task.state === DownloadTaskState.Cancelled)
+    .length,
+  downloading: tasks.filter(
+    (task) =>
+      task.state === DownloadTaskState.Downloading ||
+      task.state === DownloadTaskState.Verifying
+  ).length,
+  pending: tasks.filter(
+    (task) =>
+      task.state === DownloadTaskState.Pending ||
+      task.state === DownloadTaskState.Paused
+  ).length,
+  verified: tasks.filter((task) => task.verified).length,
+});
+
+const taskOrder = (state: DownloadTaskState): number => {
+  switch (state) {
+    case DownloadTaskState.Failed:
+      return 0;
+    case DownloadTaskState.Downloading:
+    case DownloadTaskState.Verifying:
+      return 1;
+    case DownloadTaskState.Pending:
+      return 2;
+    case DownloadTaskState.Done:
+      return 4;
+    default:
+      return 3;
+  }
+};
+
+const deriveGroup = (
+  summary: DownloadGroupSummary,
+  tasks: DownloadTask[]
+): DownloadGroup => {
+  const derivedTasks = tasks
+    .map((task) => ({
+      ...task,
+      progress: task.total ? (task.received * 100) / task.total : 0,
+    }))
+    .sort((left, right) => taskOrder(left.state) - taskOrder(right.state));
+  const known = derivedTasks.filter((task) => task.total > 0);
+  const knownTotal = known.reduce((total, task) => total + task.total, 0);
+  const knownReceived = known.reduce((total, task) => total + task.received, 0);
+  const estimatedTotal = known.length
+    ? knownTotal +
+      (derivedTasks.length - known.length) * (knownTotal / known.length)
+    : 0;
+  const progress =
+    summary.finish === DownloadFinishKind.Completed
+      ? 100
+      : estimatedTotal
+        ? (knownReceived * 100) / estimatedTotal
+        : 0;
+  const etaSecs = derivedTasks
+    .filter(
+      (task) =>
+        task.state === DownloadTaskState.Downloading && task.etaSecs != null
+    )
+    .reduce<
+      number | undefined
+    >((longest, task) => Math.max(longest ?? 0, task.etaSecs ?? 0), undefined);
+
+  return {
+    ...summary,
+    tasks: derivedTasks,
+    stats: deriveStats(derivedTasks),
+    progress,
+    etaSecs,
+    error: taskErrorText(
+      derivedTasks.find((task) => task.error)?.error ?? null
+    ),
+  };
+};
+
+const mergeRuntimeProgress = (
+  tasks: DownloadTask[],
+  previous?: DownloadGroup
+): DownloadTask[] =>
+  tasks.map((task) => {
+    const oldTask = previous?.tasks.find((item) => item.id === task.id);
+    return {
+      ...oldTask,
+      ...task,
+      speedBps: oldTask?.speedBps,
+      etaSecs: oldTask?.etaSecs,
+    };
+  });
 
 export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -61,642 +165,457 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const { getInstanceList } = useGlobalData();
   const { config, getJavaInfos } = useLauncherConfig();
   const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
-  const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
-  const [generalPercent, setGeneralPercent] = useState<number>();
+  const [tasks, setTasks] = useState<DownloadGroup[]>([]);
+  const tasksRef = useRef<DownloadGroup[]>([]);
   const { t } = useTranslation();
-  const modLoaderLoadingToastRef = React.useRef<ToastId | null>(null);
-  const optifineLoadingToastRef = React.useRef<ToastId | null>(null);
-
-  const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
-    if (group.status === GTaskEventStatusEnums.Completed) {
-      group.taskDescs.forEach((t) => {
-        t.status = TaskDescStatusEnums.Completed;
-        t.current = t.total; // Ensure current is set to total for completed tasks
-      });
-    }
-
-    group.finishedCount = group.taskDescs.filter(
-      (t) => t.status === TaskDescStatusEnums.Completed
-    ).length;
-
-    let knownTotalArr = group.taskDescs.filter((t) => t.total && t.total > 0);
-    let knownTotal = knownTotalArr.reduce((acc, t) => acc + t.total, 0);
-    let knownCurrent = knownTotalArr.reduce(
-      (acc, t) => acc + (t.current || 0),
-      0
-    );
-    let estimatedTotal;
-    if (knownTotalArr.length > 0) {
-      estimatedTotal =
-        knownTotal +
-        (group.taskDescs.length - knownTotalArr.length) *
-          (knownTotal / knownTotalArr.length); // Estimate unknown task's size based on known tasks' average size
-    } else {
-      estimatedTotal = knownTotal; // Fallback when no known tasks exist
-    }
-
-    group.progress = estimatedTotal ? (knownCurrent * 100) / estimatedTotal : 0;
-
-    group.estimatedTime = undefined;
-    group.taskDescs.forEach((t) => {
-      if (t.status === TaskDescStatusEnums.InProgress && t.estimatedTime) {
-        if (
-          !group.estimatedTime ||
-          group.estimatedTime.secs < t.estimatedTime.secs
-        ) {
-          group.estimatedTime = t.estimatedTime;
-        }
-      }
-      t.progress = t.total ? (t.current * 100) / t.total : 0;
-    });
-    group.taskDescs.sort((a, b) => {
-      let level = (desc: TaskDesc) => {
-        switch (desc.status) {
-          case TaskDescStatusEnums.Failed:
-            return 0;
-          case TaskDescStatusEnums.InProgress:
-            return 1;
-          case TaskDescStatusEnums.Waiting:
-            return 2;
-          case TaskDescStatusEnums.Completed:
-            return 4;
-          default:
-            return 3;
-        }
-      };
-      return level(a) - level(b);
-    });
-  }, []);
-
-  const handleRetrieveProgressTasks = useCallback(() => {
-    TaskService.retrieveProgressiveTaskList().then((response) => {
-      if (response.status === "success") {
-        logger.info("Retrieved progressive tasks:", response.data);
-        // info(JSON.stringify(response.data));
-        setTasks((prevTasks) => {
-          let tasks = response.data
-            .map((group) => {
-              let prevGroup = prevTasks?.find(
-                (t) => t.taskGroup === group.taskGroup
-              );
-              if (prevGroup) return prevGroup;
-              updateGroupInfo(group);
-              return group;
-            })
-            .filter(
-              (group) => group.status !== GTaskEventStatusEnums.Cancelled
-            );
-          tasks.sort((a, b) => {
-            let { timestamp: aTime } = parseTaskGroup(a.taskGroup);
-            let { timestamp: bTime } = parseTaskGroup(b.taskGroup);
-            return bTime - aTime; // Sort by timestamp descending
-          });
-          return tasks;
-        });
-      } else {
-        toast({
-          title: response.message,
-          description: response.details,
-          status: "error",
-        });
-      }
-    });
-  }, [toast, updateGroupInfo]);
+  const refreshSequence = useRef(0);
+  const modLoaderLoadingToastRef = useRef<ToastId | null>(null);
+  const optifineLoadingToastRef = useRef<ToastId | null>(null);
 
   useEffect(() => {
-    handleRetrieveProgressTasks();
-  }, [handleRetrieveProgressTasks]);
+    tasksRef.current = tasks;
+  }, [tasks]);
 
-  const handleScheduleProgressiveTaskGroup = useCallback(
-    (taskGroup: string, params: TaskParam[]) => {
-      TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
-        (response) => {
-          // success toast will now be called by task context group listener
-          if (response.status !== "success") {
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-          }
-        }
+  const showCommandError = useCallback(
+    (error: unknown) => {
+      toast({
+        title: t("Services.task.submitDownloadGroup.error"),
+        description: String(error),
+        status: "error",
+      });
+    },
+    [t, toast]
+  );
+
+  const loadGroup = useCallback(
+    async (
+      summary: DownloadGroupSummary,
+      previous?: DownloadGroup
+    ): Promise<DownloadGroup> => {
+      const groupTasks = await DownloadService.listTasks(summary.id);
+      return deriveGroup(summary, mergeRuntimeProgress(groupTasks, previous));
+    },
+    []
+  );
+
+  const refreshDownloadGroups = useCallback(async () => {
+    const sequence = ++refreshSequence.current;
+    try {
+      const summaries = await DownloadService.snapshot();
+      const previous = tasksRef.current;
+      const groups = await Promise.all(
+        summaries.map((summary) =>
+          loadGroup(
+            summary,
+            previous.find((group) => group.id === summary.id)
+          )
+        )
       );
-    },
-    [toast]
-  );
-
-  const handleCancelProgressiveTaskGroup = useCallback(
-    (taskGroup: string) => {
-      TaskService.cancelProgressiveTaskGroup(taskGroup).then((response) => {
-        if (response.status !== "success") {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-        }
-      });
-    },
-    [toast]
-  );
-
-  const handleStopProgressiveTaskGroup = useCallback(
-    (taskGroup: string) => {
-      TaskService.stopProgressiveTaskGroup(taskGroup).then((response) => {
-        if (response.status !== "success") {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-        }
-      });
-    },
-    [toast]
-  );
-
-  const handleResumeProgressiveTaskGroup = useCallback(
-    (taskGroup: string) => {
-      TaskService.resumeProgressiveTaskGroup(taskGroup).then((response) => {
-        if (response.status !== "success") {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-        }
-      });
-    },
-    [toast]
-  );
-
-  const isActiveGroup = (t: TaskGroupDesc) =>
-    t.status === GTaskEventStatusEnums.Started ||
-    t.status === GTaskEventStatusEnums.Stopped;
-
-  const handleClearHistoryTaskGroups = useCallback(() => {
-    setTasks((prev) => {
-      prev
-        .filter((t) => !isActiveGroup(t))
-        .forEach((group) => {
-          TaskService.deleteProgressiveTaskGroup(group.taskGroup);
-        });
-      return prev.filter(isActiveGroup);
-    });
-  }, []);
+      if (sequence !== refreshSequence.current) return;
+      groups.sort(
+        (left, right) =>
+          Number(right.id.replace(/^\D+/, "")) -
+          Number(left.id.replace(/^\D+/, ""))
+      );
+      setTasks(groups);
+    } catch (error) {
+      showCommandError(error);
+    }
+  }, [loadGroup, showCommandError]);
 
   useEffect(() => {
-    const unlisten = TaskService.onProgressiveTaskUpdate(
-      (payload: PTaskEventPayload) => {
-        // info(
-        //   `Received task update: ${payload.id}, status: ${payload.event.status}`
-        // );
-        setTasks((prevTasks) => {
-          const group = prevTasks?.find(
-            (t) => t.taskGroup === payload.taskGroup
-          );
+    void refreshDownloadGroups();
+  }, [refreshDownloadGroups]);
 
-          switch (payload.event.status) {
-            case PTaskEventStatusEnums.Created: {
-              if (group) {
-                if (group.taskDescs.some((t) => t.taskId === payload.id)) {
-                  // info(
-                  //   `Task ${payload.id} already exists in group ${payload.taskGroup}`
-                  // );
-                } else if (
-                  group.taskDescs.some(
-                    (t) =>
-                      t.payload.dest ===
-                      (payload.event as CreatedPTaskEventStatus).desc.payload
-                        .dest
-                  )
-                ) {
-                  // It' a retrial task emitted from the backend
-                  group.taskDescs = group.taskDescs.map((t) => {
-                    if (
-                      t.payload.dest ===
-                      (payload.event as CreatedPTaskEventStatus).desc.payload
-                        .dest
-                    ) {
-                      t = (payload.event as CreatedPTaskEventStatus).desc;
-                    }
-                    return t;
-                  });
-                } else {
-                  group.taskDescs.unshift(payload.event.desc);
-                  // info(`Added task ${payload.id} to group ${payload.taskGroup}`);
-                  updateGroupInfo(group);
-                }
-              } else {
-                // info(`Creating new task group ${payload.taskGroup}`);
-                // Create a new task group if it doesn't exist
-                let newGroup: TaskGroupDesc = {
-                  status: GTaskEventStatusEnums.Started,
-                  taskGroup: payload.taskGroup,
-                  taskDescs: [payload.event.desc],
-                };
-                updateGroupInfo(newGroup);
-                return [newGroup, ...(prevTasks || [])];
-              }
-              break;
-            }
+  const handleSubmitDownloadGroup = useCallback(
+    (name: string, groupTasks: SubmitDownloadTask[]) => {
+      DownloadService.submitGroup({
+        name,
+        tasks: groupTasks,
+        autoResume: true,
+      })
+        .then(() => refreshDownloadGroups())
+        .catch(showCommandError);
+    },
+    [refreshDownloadGroups, showCommandError]
+  );
 
-            case PTaskEventStatusEnums.Started: {
-              if (!group) return prevTasks;
-              group.taskDescs = group.taskDescs.map((t) => {
-                if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.InProgress;
-                  t.total = (payload.event as StartedPTaskEventStatus).total;
-                }
-                return t;
-              });
-              updateGroupInfo(group);
-              break;
-            }
+  const runGroupCommand = useCallback(
+    (command: (groupId: string) => Promise<void>, groupId: string) => {
+      command(groupId).catch(showCommandError);
+    },
+    [showCommandError]
+  );
 
-            case PTaskEventStatusEnums.Completed: {
-              if (!group) return prevTasks;
-              group.taskDescs = group.taskDescs.map((t) => {
-                if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Completed;
-                  t.current = t.total;
-                }
-                return t;
-              });
-              // info(`Task ${payload.id} completed in group ${payload.taskGroup}`);
-              updateGroupInfo(group);
-              break;
-            }
+  const handleCancelDownloadGroup = useCallback(
+    (groupId: string) => runGroupCommand(DownloadService.cancelGroup, groupId),
+    [runGroupCommand]
+  );
+  const handlePauseDownloadGroup = useCallback(
+    (groupId: string) => runGroupCommand(DownloadService.pauseGroup, groupId),
+    [runGroupCommand]
+  );
+  const handleResumeDownloadGroup = useCallback(
+    (groupId: string) => runGroupCommand(DownloadService.resumeGroup, groupId),
+    [runGroupCommand]
+  );
+  const handleRetryDownloadGroup = useCallback(
+    (groupId: string) => runGroupCommand(DownloadService.retryGroup, groupId),
+    [runGroupCommand]
+  );
 
-            case PTaskEventStatusEnums.Stopped: {
-              if (!group) return prevTasks;
-              group.taskDescs = group.taskDescs.map((t) => {
-                if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Stopped;
-                }
-                return t;
-              });
-              updateGroupInfo(group);
-              break;
-            }
-
-            case PTaskEventStatusEnums.Cancelled: {
-              if (!group) return prevTasks;
-              group.taskDescs = group.taskDescs.map((t) => {
-                if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Cancelled;
-                }
-                return t;
-              });
-              updateGroupInfo(group);
-              // info(`Task ${payload.id} cancelled in group ${payload.taskGroup}`);
-              break;
-            }
-
-            case PTaskEventStatusEnums.InProgress: {
-              if (!group) return prevTasks;
-              group.taskDescs = group.taskDescs.map((t) => {
-                if (t.taskId === payload.id) {
-                  t.current = (
-                    payload.event as InProgressPTaskEventStatus
-                  ).current;
-                  t.status = TaskDescStatusEnums.InProgress;
-                  t.estimatedTime = (
-                    payload.event as InProgressPTaskEventStatus
-                  ).estimatedTime;
-                  t.speed = (payload.event as InProgressPTaskEventStatus).speed;
-                }
-                return t;
-              });
-              updateGroupInfo(group);
-              // info(
-              //   `Task ${payload.id} in progress in group ${payload.taskGroup}`
-              // );
-              break;
-            }
-
-            case PTaskEventStatusEnums.Failed: {
-              logger.error(
-                `Task ${payload.id} failed in group ${payload.taskGroup}: ${
-                  (payload.event as FailedPTaskEventStatus).reason
-                }`
-              );
-              if (!group) return prevTasks;
-              group.taskDescs = group.taskDescs.map((t) => {
-                if (t.taskId === payload.id) {
-                  t.status = TaskDescStatusEnums.Failed;
-                  t.reason = (payload.event as FailedPTaskEventStatus).reason;
-                }
-                return t;
-              });
-              updateGroupInfo(group);
-              // info(`Task ${payload.id} failed in group ${payload.taskGroup}`);
-              break;
-            }
-
-            default:
-              break;
-          }
-
-          return [...prevTasks];
-        });
-      }
+  const handleClearDownloadHistory = useCallback(() => {
+    const finished = tasks.filter(
+      (group) => group.state === DownloadGroupState.Finished
     );
+    Promise.all(finished.map((group) => DownloadService.removeGroup(group.id)))
+      .then(() => {
+        setTasks((current) =>
+          current.filter((group) => group.state !== DownloadGroupState.Finished)
+        );
+      })
+      .catch(showCommandError);
+  }, [showCommandError, tasks]);
 
-    return () => {
-      unlisten();
-    };
-  }, [t, toast, updateGroupInfo]);
-
-  useEffect(() => {
-    const unlisten = TaskService.onTaskGroupUpdate(
-      (payload: GTaskEventPayload) => {
-        logger.info(`Received task group update: ${payload.event}`);
-        setTasks((prevTasks) => {
-          let newTasks = prevTasks.map((task) => {
-            if (task.taskGroup === payload.taskGroup) {
-              task.status = payload.event;
-              if (payload.event === GTaskEventStatusEnums.Completed) {
-                task.taskDescs.forEach((t) => {
-                  if (
-                    t.status === TaskDescStatusEnums.Waiting ||
-                    t.status === TaskDescStatusEnums.InProgress
-                  ) {
-                    t.status = TaskDescStatusEnums.Completed;
-                    t.current = t.total;
-                  } else if (t.status === TaskDescStatusEnums.Failed) {
-                    task.status = GTaskEventStatusEnums.Failed;
-                    payload.event = GTaskEventStatusEnums.Failed;
-                  }
+  const handleCompletedGroup = useCallback(
+    (group: DownloadGroup) => {
+      const { name, params } = parseTaskGroup(group.name);
+      switch (name) {
+        case "game-client":
+        case "change-mod-loader":
+        case "change-optifine":
+          getInstanceList(true);
+          break;
+        case "game-client-w-java":
+          getInstanceList(true);
+          getJavaInfos(true);
+          break;
+        case "forge-libraries":
+        case "cleanroom-libraries":
+        case "neoforge-libraries": {
+          const instanceId = params.param || params.param1;
+          if (!instanceId || modLoaderLoadingToastRef.current) break;
+          const instanceName = getInstanceList()?.find(
+            (instance) => instance.id === instanceId
+          )?.name;
+          modLoaderLoadingToastRef.current = toast({
+            title: t("Services.instance.finishModLoaderInstall.loading", {
+              instanceName,
+            }),
+            status: "loading",
+          });
+          InstanceService.finishModLoaderInstall(instanceId).then(
+            (response) => {
+              if (modLoaderLoadingToastRef.current) {
+                closeToast(modLoaderLoadingToastRef.current);
+                modLoaderLoadingToastRef.current = null;
+              }
+              if (response.status === "success") {
+                getInstanceList(true);
+                toast({ title: response.message, status: "success" });
+              } else {
+                toast({
+                  title: response.message,
+                  description: response.details,
+                  status: "error",
                 });
               }
             }
-            return task;
+          );
+          break;
+        }
+        case "optifine-libraries": {
+          const instanceId = params.param || params.param1;
+          if (!instanceId || optifineLoadingToastRef.current) break;
+          const instanceName = getInstanceList()?.find(
+            (instance) => instance.id === instanceId
+          )?.name;
+          optifineLoadingToastRef.current = toast({
+            title: t("Services.instance.finishOptiFineLoaderInstall.loading", {
+              instanceName,
+            }),
+            status: "loading",
           });
+          InstanceService.finishOptiFineLoaderInstall(instanceId).then(
+            (response) => {
+              if (optifineLoadingToastRef.current) {
+                closeToast(optifineLoadingToastRef.current);
+                optifineLoadingToastRef.current = null;
+              }
+              if (response.status === "success") {
+                getInstanceList(true);
+                toast({ title: response.message, status: "success" });
+              } else {
+                toast({
+                  title: response.message,
+                  description: response.details,
+                  status: "error",
+                });
+              }
+            }
+          );
+          break;
+        }
+        case "mod":
+        case "mod-update":
+          emit(RESOURCE_REFRESH_EVENT, OtherResourceType.Mod);
+          break;
+        case "resourcepack":
+          emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ResourcePack);
+          break;
+        case "shader":
+          emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ShaderPack);
+          break;
+        case "modpack":
+          if (group.tasks[0]) {
+            openSharedModal("import-modpack", { path: group.tasks[0].dest });
+          }
+          break;
+        case "launcher-update":
+          if (group.tasks[0]) {
+            const task = group.tasks[0];
+            const isWinInstaller =
+              config.basicInfo.osType === "windows" &&
+              !config.basicInfo.isPortable;
+            openGenericConfirmDialog({
+              title: t("RestartForUpdateConfirmDialog.title"),
+              body: t(
+                `RestartForUpdateConfirmDialog.${isWinInstaller ? "bodyWinInstaller" : "body"}`
+              ),
+              btnOK: t(
+                `RestartForUpdateConfirmDialog.button.${isWinInstaller ? "install" : "restart"}`
+              ),
+              btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
+              onOKCallback: () => {
+                ConfigService.installLauncherUpdate(task.name, true).then(
+                  (response) => {
+                    if (response.status !== "success") {
+                      toast({
+                        title: response.message,
+                        description: response.details,
+                        status: "error",
+                      });
+                    }
+                  }
+                );
+              },
+              onCancelCallback: () => {
+                ConfigService.installLauncherUpdate(task.name, false).then(
+                  (response) => {
+                    if (response.status !== "success") {
+                      toast({
+                        title: response.message,
+                        description: response.details,
+                        status: "error",
+                      });
+                    }
+                  }
+                );
+              },
+            });
+          }
+          break;
+        case "extension-update": {
+          const task = group.tasks[0];
+          const expectedIdentifier = params.param1;
+          const newVersion = params.param2 || "";
+          if (task && expectedIdentifier) {
+            openGenericConfirmDialog({
+              title: t("ExtensionUpdateConfirmDialog.title"),
+              body: t("ExtensionUpdateConfirmDialog.body", {
+                identifier: expectedIdentifier,
+                version: newVersion,
+                src: task.spec.url,
+              }),
+              onOKCallback: () => {
+                ExtensionService.addExtension(
+                  task.dest,
+                  expectedIdentifier
+                ).then((response) => {
+                  if (response.status === "success") {
+                    toast({ title: response.message, status: "success" });
+                    emit(EXTENSION_REFRESH_EVENT);
+                  } else {
+                    toast({
+                      title: response.message,
+                      description: response.details,
+                      status: "error",
+                    });
+                  }
+                });
+              },
+            });
+          }
+          break;
+        }
+        case "mojang-java":
+          getJavaInfos(true);
+          break;
+      }
+    },
+    [
+      closeToast,
+      config.basicInfo.isPortable,
+      config.basicInfo.osType,
+      getInstanceList,
+      getJavaInfos,
+      openGenericConfirmDialog,
+      openSharedModal,
+      t,
+      toast,
+    ]
+  );
 
-          const { name, params } = parseTaskGroup(payload.taskGroup);
-
+  useEffect(() => {
+    const stopTick = DownloadService.onTick((updates) => {
+      setTasks((groups) =>
+        groups.map((group) => {
+          const relevant = updates.filter(
+            (progress) => progress.groupId === group.id
+          );
+          if (!relevant.length) return group;
+          const nextTasks = group.tasks.map((task) => {
+            const progress = relevant.find((item) => item.taskId === task.id);
+            return progress
+              ? {
+                  ...task,
+                  state: progress.state,
+                  received: progress.received,
+                  total: progress.total,
+                  speedBps: progress.speedBps,
+                  etaSecs: progress.etaSecs ?? undefined,
+                }
+              : task;
+          });
+          return deriveGroup(group, nextTasks);
+        })
+      );
+    });
+    const stopState = DownloadService.onState((event) => {
+      if (event.kind === "group_submitted") {
+        void refreshDownloadGroups();
+        return;
+      }
+      setTasks((groups) =>
+        groups.map((group) => {
+          if (group.id !== event.groupId) return group;
+          if (event.kind === "group_state_changed") {
+            return deriveGroup({ ...group, state: event.new }, group.tasks);
+          }
+          return deriveGroup(
+            group,
+            group.tasks.map((task) =>
+              task.id === event.taskId ? { ...task, state: event.new } : task
+            )
+          );
+        })
+      );
+      if (event.kind === "group_state_changed") {
+        void refreshDownloadGroups();
+      }
+    });
+    const stopError = DownloadService.onError((event) => {
+      logger.error(
+        `Download ${event.taskId} in group ${event.groupId} failed: ${taskErrorText(event.error)}`
+      );
+      setTasks((groups) =>
+        groups.map((group) =>
+          group.id === event.groupId
+            ? deriveGroup(
+                group,
+                group.tasks.map((task) =>
+                  task.id === event.taskId
+                    ? {
+                        ...task,
+                        state: DownloadTaskState.Failed,
+                        error: event.error,
+                      }
+                    : task
+                )
+              )
+            : group
+        )
+      );
+    });
+    const stopVerified = DownloadService.onVerified((event) => {
+      setTasks((groups) =>
+        groups.map((group) =>
+          group.id === event.groupId
+            ? deriveGroup(
+                group,
+                group.tasks.map((task) =>
+                  task.id === event.taskId ? { ...task, verified: true } : task
+                )
+              )
+            : group
+        )
+      );
+    });
+    const stopFinished = DownloadService.onFinished(
+      async (event: DownloadFinishedEvent) => {
+        try {
+          const summary = (await DownloadService.snapshot()).find(
+            (group) => group.id === event.groupId
+          );
+          if (!summary) return;
+          const group = await loadGroup(summary);
+          setTasks((groups) => [
+            group,
+            ...groups.filter((item) => item.id !== group.id),
+          ]);
+          const statusKey =
+            event.finish === DownloadFinishKind.Completed
+              ? "Completed"
+              : event.finish === DownloadFinishKind.Failed
+                ? "Failed"
+                : "Cancelled";
+          const parsed = parseTaskGroup(group.name);
           toast({
             status:
-              payload.event === GTaskEventStatusEnums.Failed
-                ? "error"
-                : "success",
+              event.finish === DownloadFinishKind.Failed ? "error" : "success",
             title: t(
-              `Services.task.onTaskGroupUpdate.status.${payload.event}`,
+              `Services.task.onDownloadGroupUpdate.status.${statusKey}`,
               {
-                param: t(`DownloadTasksPage.task.${name}`, params),
+                param: t(
+                  `DownloadTasksPage.task.${parsed.name}`,
+                  parsed.params
+                ),
               }
             ),
           });
-
-          if (payload.event === GTaskEventStatusEnums.Completed) {
-            switch (name) {
-              case "game-client":
-              case "change-mod-loader":
-                getInstanceList(true);
-                break;
-              case "change-optifine":
-                getInstanceList(true);
-                break;
-              case "game-client-w-java":
-                getInstanceList(true);
-                getJavaInfos(true);
-                break;
-              case "forge-libraries":
-              case "cleanroom-libraries":
-              case "neoforge-libraries":
-                if (params.param || params.param1) {
-                  const instanceId = params.param || params.param1;
-                  let instanceName = getInstanceList()?.find(
-                    (i) => i.id === instanceId
-                  )?.name;
-                  if (modLoaderLoadingToastRef.current) return newTasks;
-                  modLoaderLoadingToastRef.current = toast({
-                    title: t(
-                      "Services.instance.finishModLoaderInstall.loading",
-                      {
-                        instanceName,
-                      }
-                    ),
-                    status: "loading",
-                  });
-                  InstanceService.finishModLoaderInstall(instanceId).then(
-                    (response) => {
-                      if (modLoaderLoadingToastRef.current) {
-                        closeToast(modLoaderLoadingToastRef.current);
-                        modLoaderLoadingToastRef.current = null;
-                      }
-                      if (response.status === "success") {
-                        getInstanceList(true);
-                        toast({
-                          title: response.message,
-                          status: "success",
-                        });
-                      } else {
-                        toast({
-                          title: response.message,
-                          description: response.details,
-                          status: "error",
-                        });
-                      }
-                    }
-                  );
-                }
-                break;
-              case "optifine-libraries":
-                if (params.param || params.param1) {
-                  const instanceId = params.param || params.param1;
-                  let instanceName = getInstanceList()?.find(
-                    (i) => i.id === instanceId
-                  )?.name;
-                  if (optifineLoadingToastRef.current) return newTasks;
-                  optifineLoadingToastRef.current = toast({
-                    title: t(
-                      "Services.instance.finishOptiFineLoaderInstall.loading",
-                      {
-                        instanceName,
-                      }
-                    ),
-                    status: "loading",
-                  });
-                  InstanceService.finishOptiFineLoaderInstall(instanceId).then(
-                    (response) => {
-                      if (optifineLoadingToastRef.current) {
-                        closeToast(optifineLoadingToastRef.current);
-                        optifineLoadingToastRef.current = null;
-                      }
-                      if (response.status === "success") {
-                        getInstanceList(true);
-                        toast({
-                          title: response.message,
-                          status: "success",
-                        });
-                      } else {
-                        toast({
-                          title: response.message,
-                          description: response.details,
-                          status: "error",
-                        });
-                      }
-                    }
-                  );
-                }
-                break;
-              case "mod":
-              case "mod-update":
-                emit(RESOURCE_REFRESH_EVENT, OtherResourceType.Mod);
-                break;
-              case "resourcepack":
-                emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ResourcePack);
-                break;
-              case "shader":
-                emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ShaderPack);
-                break;
-              case "modpack": {
-                let group = newTasks.find(
-                  (t) => t.taskGroup === payload.taskGroup
-                );
-                if (group && group.taskDescs.length > 0) {
-                  openSharedModal("import-modpack", {
-                    path: group.taskDescs[0].payload.dest,
-                  });
-                }
-                break;
-              }
-              case "launcher-update": {
-                let group = newTasks.find(
-                  (t) => t.taskGroup === payload.taskGroup
-                );
-                if (group && group.taskDescs.length > 0) {
-                  const isWinInstaller =
-                    config.basicInfo.osType === "windows" &&
-                    !config.basicInfo.isPortable;
-                  openGenericConfirmDialog({
-                    title: t("RestartForUpdateConfirmDialog.title"),
-                    body: t(
-                      `RestartForUpdateConfirmDialog.${isWinInstaller ? "bodyWinInstaller" : "body"}`
-                    ),
-                    btnOK: t(
-                      `RestartForUpdateConfirmDialog.button.${isWinInstaller ? "install" : "restart"}`
-                    ),
-                    btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
-                    onOKCallback: () => {
-                      ConfigService.installLauncherUpdate(
-                        group.taskDescs[0].payload.filename || "",
-                        true
-                      ).then((response) => {
-                        if (response.status !== "success") {
-                          toast({
-                            title: response.message,
-                            description: response.details,
-                            status: "error",
-                          });
-                        }
-                      });
-                    },
-                    onCancelCallback: () => {
-                      ConfigService.installLauncherUpdate(
-                        group.taskDescs[0].payload.filename || "",
-                        false
-                      ).then((response) => {
-                        if (response.status !== "success") {
-                          toast({
-                            title: response.message,
-                            description: response.details,
-                            status: "error",
-                          });
-                        }
-                      });
-                    },
-                  });
-                }
-                break;
-              }
-              case "extension-update": {
-                let group = newTasks.find(
-                  (t) => t.taskGroup === payload.taskGroup
-                );
-                const task = group?.taskDescs[0];
-                const expectedIdentifier = params.param1;
-                const newVersion = params.param2 || "";
-
-                if (task && expectedIdentifier) {
-                  openGenericConfirmDialog({
-                    title: t("ExtensionUpdateConfirmDialog.title"),
-                    body: t("ExtensionUpdateConfirmDialog.body", {
-                      identifier: expectedIdentifier,
-                      version: newVersion,
-                      src: task.payload.src,
-                    }),
-                    onOKCallback: () => {
-                      ExtensionService.addExtension(
-                        task.payload.dest,
-                        expectedIdentifier
-                      ).then((response) => {
-                        if (response.status === "success") {
-                          toast({
-                            title: response.message,
-                            status: "success",
-                          });
-                          emit(EXTENSION_REFRESH_EVENT);
-                        } else {
-                          toast({
-                            title: response.message,
-                            description: response.details,
-                            status: "error",
-                          });
-                        }
-                      });
-                    },
-                  });
-                }
-                break;
-              }
-              case "mojang-java":
-                getJavaInfos(true);
-                break;
-              default:
-                break;
-            }
+          if (event.finish === DownloadFinishKind.Completed) {
+            handleCompletedGroup(group);
           }
-
-          return newTasks;
-        });
+        } catch (error) {
+          showCommandError(error);
+        }
       }
     );
     return () => {
-      unlisten();
+      stopTick();
+      stopState();
+      stopError();
+      stopVerified();
+      stopFinished();
     };
   }, [
+    handleCompletedGroup,
+    loadGroup,
+    refreshDownloadGroups,
+    showCommandError,
     t,
     toast,
-    closeToast,
-    getInstanceList,
-    updateGroupInfo,
-    getJavaInfos,
-    openSharedModal,
-    openGenericConfirmDialog,
-    config.basicInfo.osType,
-    config.basicInfo.isPortable,
   ]);
 
-  useEffect(() => {
-    if (!tasks || !tasks.length) setGeneralPercent(undefined);
-    else {
-      let filteredTasks = tasks.filter(
-        (t) => t.status === GTaskEventStatusEnums.Started
-      );
-
-      if (filteredTasks.length === 0) setGeneralPercent(undefined);
-      else {
-        setGeneralPercent(
-          filteredTasks.reduce(
-            (acc, group) => acc + (group.progress ?? 0) / filteredTasks.length,
-            0
-          )
-        );
-      }
-    }
+  const generalPercent = useMemo(() => {
+    const active = tasks.filter(
+      (group) => group.state === DownloadGroupState.Active
+    );
+    if (!active.length) return undefined;
+    return active.reduce(
+      (total, group) => total + (group.progress ?? 0) / active.length,
+      0
+    );
   }, [tasks]);
 
   return (
@@ -704,11 +623,12 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         tasks,
         generalPercent,
-        handleScheduleProgressiveTaskGroup,
-        handleCancelProgressiveTaskGroup,
-        handleStopProgressiveTaskGroup,
-        handleResumeProgressiveTaskGroup,
-        handleClearHistoryTaskGroups,
+        handleSubmitDownloadGroup,
+        handleCancelDownloadGroup,
+        handlePauseDownloadGroup,
+        handleResumeDownloadGroup,
+        handleRetryDownloadGroup,
+        handleClearDownloadHistory,
       }}
     >
       {children}
@@ -729,25 +649,14 @@ export const parseTaskGroup = (
 ): {
   name: string;
   params: Record<string, string>;
-  timestamp: number;
   isRetry: boolean;
   rawName: string;
 } => {
-  const lastAtIndex = taskGroup.lastIndexOf("@");
-  let rawName: string;
-  let timestamp: number;
-
-  if (lastAtIndex === -1) {
-    rawName = taskGroup;
-    timestamp = Date.now();
-  } else {
-    rawName = taskGroup.substring(0, lastAtIndex);
-    timestamp = parseInt(taskGroup.substring(lastAtIndex + 1));
-  }
-
+  const rawName = taskGroup.includes("@")
+    ? taskGroup.substring(0, taskGroup.lastIndexOf("@"))
+    : taskGroup;
   const [name, paramString] = rawName.split("?");
   const params = paramString ? paramString.split("&") : [];
-
   return {
     name: name.replace(/^retry-/, ""),
     params:
@@ -757,7 +666,6 @@ export const parseTaskGroup = (
             params.map((param, index) => [`param${index + 1}`, param])
           ),
     isRetry: name.startsWith("retry-"),
-    timestamp: timestamp,
     rawName,
   };
 };
