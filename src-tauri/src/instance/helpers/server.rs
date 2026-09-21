@@ -163,7 +163,7 @@ pub async fn query_servers_online(
       servers[idx].latency = info.latency.map(|x| x.as_millis() as u64);
       servers[idx].players_online = info.status.players.online as usize;
       servers[idx].players_max = info.status.players.max as usize;
-      servers[idx].description = info.status.description.as_str().unwrap_or("").to_string();
+      servers[idx].description = info.status.description;
       if let Some(ico) = info.status.favicon {
         servers[idx].icon_src = ico;
       }
