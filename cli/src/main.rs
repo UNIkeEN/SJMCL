@@ -1,15 +1,15 @@
-use comfy_table::{presets::UTF8_FULL_CONDENSED, ContentArrangement, Table};
+use comfy_table::{ContentArrangement, Table, presets::UTF8_FULL_CONDENSED};
 use indicatif::{ProgressBar, ProgressDrawTarget, ProgressStyle};
+use rmcp::ServiceExt;
 use rmcp::model::{CallToolRequestParams, Tool};
 use rmcp::service::{RoleClient, RunningService};
 use rmcp::transport::StreamableHttpClientTransport;
-use rmcp::ServiceExt;
 use serde_json::{Map, Value};
 use std::env;
 use std::ffi::OsString;
 use std::io::{self, IsTerminal};
 use std::process::Command;
-use tokio::time::{sleep, Instant};
+use tokio::time::{Instant, sleep};
 
 type LauncherClient = RunningService<RoleClient, ()>;
 
@@ -21,8 +21,7 @@ const EXPECTED_SERVER_NAME: &str = "sjmcl-mcp";
 const MCP_SERVER_HOST: &str = "127.0.0.1";
 const MCP_SERVER_PATH: &str = "/mcp";
 const RUN_SJMCL_DEEPLINK: &str = "sjmcl://run-silently";
-const ENABLE_MCP_HINT: &str =
-  "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
+const ENABLE_MCP_HINT: &str = "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
 
 #[derive(Clone)]
 struct CliOptions {
@@ -197,8 +196,11 @@ async fn try_connect(port: u16) -> Result<LauncherClient, String> {
     .peer_info()
     .ok_or_else(|| format!("server at {endpoint} did not provide MCP server info"))?;
 
-  if server_info.server_info.name != EXPECTED_SERVER_NAME {
-    let actual_name = server_info.server_info.name.clone();
+  let actual_name = server_info
+    .server_info
+    .as_ref()
+    .map_or_else(|| "<missing>".to_string(), |info| info.name.clone());
+  if actual_name != EXPECTED_SERVER_NAME {
     let _ = client.cancel().await;
     return Err(format!(
       "endpoint {endpoint} is not the SJMCL MCP server (got `{actual_name}`)"
@@ -295,7 +297,7 @@ fn print_call_result(result: &rmcp::model::CallToolResult) {
   }
 
   for content in &result.content {
-    if let Some(text) = content.raw.as_text() {
+    if let Some(text) = content.as_text() {
       println!("{}", text.text);
     } else if let Ok(json) = serde_json::to_string_pretty(content) {
       println!("{json}");
