@@ -6,17 +6,15 @@ import {
   HStack,
   Link,
   Text,
-  useColorMode,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir, appLogDir, join } from "@tauri-apps/api/path";
+import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
 import { exit } from "@tauri-apps/plugin-process";
 import { t } from "i18next";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
 import {
   LuGrid2X2Plus,
@@ -48,14 +46,10 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const isStandAlone = router.pathname.startsWith("/standalone");
-  const { config, update } = useLauncherConfig();
+  const { config, update, bgImageSrc, isBgDarken } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { colorMode } = useColorMode();
-  const isDarkenBg =
-    colorMode === "dark" && config.appearance.background.autoDarken;
   const { openGenericConfirmDialog } = useSharedModals();
 
-  const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isStartupFlowStarted = useRef(false);
 
   const {
@@ -199,25 +193,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     update,
   ]);
 
-  // construct background img src url from config.
-  useEffect(() => {
-    const constructBgImgSrc = async () => {
-      const bgKey = config.appearance.background.choice;
-      if (bgKey.startsWith("%built-in:")) {
-        const builtInKey = bgKey.replace("%built-in:", "");
-        setBgImgSrc(`/images/backgrounds/${builtInKey}-${colorMode}.jpg`);
-      } else {
-        const _appDataDir = await appDataDir();
-        setBgImgSrc(
-          convertFileSrc(`${_appDataDir}/UserContent/Backgrounds/${bgKey}`) +
-            `?t=${Date.now()}`
-        );
-      }
-    };
-
-    constructBgImgSrc();
-  }, [colorMode, config.appearance.background.choice]);
-
   // update font family to body CSS by config.
   useEffect(() => {
     const body = document.body;
@@ -312,12 +287,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     <Flex
       direction="column"
       h="100vh"
-      bgImg={`url('${bgImgSrc}')`}
+      bgImg={`url('${bgImageSrc}')`}
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
-      bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
-      bgBlendMode={isDarkenBg ? "darken" : "normal"}
+      bgColor={isBgDarken ? "rgba(0,0,0,0.45)" : "transparent"}
+      bgBlendMode={isBgDarken ? "darken" : "normal"}
       {...(config.basicInfo.osType === "linux" && linuxBorderStyle)}
       overflow="hidden"
       style={getGlobalExtraStyle(config)}
