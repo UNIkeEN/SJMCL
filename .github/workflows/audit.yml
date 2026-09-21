@@ -9,6 +9,8 @@ on:
     paths:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
+      - '.cargo/audit.toml'
+      - '.github/workflows/audit.yml'
 
 jobs:
   audit:
