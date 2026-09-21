@@ -111,7 +111,7 @@ pub async fn save_servers_to_nbt(path: &Path, servers: &[GameServerInfo]) -> SJM
 }
 
 pub async fn query_servers_online(
-  servers: Vec<GameServerInfo>,
+  mut servers: Vec<GameServerInfo>,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   if servers.is_empty() {
     return Ok(servers);
@@ -137,7 +137,7 @@ pub async fn query_servers_online(
     let address_clone = address.clone();
 
     set.spawn(async move {
-      if let Ok(_) = sem.acquire_owned().await {
+      if let Ok(_permit) = sem.acquire_owned().await {
         let result = lite_mc_ping::ping(&address_clone, &options)
           .await
           .map_err(|e| SJMCLError(format!("Can not resolve ping action: {e}")));
@@ -152,12 +152,10 @@ pub async fn query_servers_online(
     });
   }
 
-  let mut servers = servers;
   while let Some(joined) = set.join_next().await {
     let Ok((idx, _addr, result)) = joined else {
       continue;
     };
-    servers[idx].is_queried = true;
     if let Ok(info) = result {
       servers[idx].online = true;
       servers[idx].latency = info.latency.map(|x| x.as_millis() as u64);
@@ -168,6 +166,10 @@ pub async fn query_servers_online(
         servers[idx].icon_src = ico;
       }
     }
+  }
+
+  for server in &mut servers {
+    server.is_queried = true;
   }
 
   Ok(servers)
