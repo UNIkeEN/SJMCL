@@ -232,7 +232,7 @@ macro_rules! mcp_tool {
             .map_err(|e| rmcp::ErrorData::internal_error(e.to_string(), None))?;
 
           Ok(rmcp::model::CallToolResult::success(vec![
-            rmcp::model::Content::text(format!("Opened deeplink: {deeplink}")),
+            rmcp::model::ContentBlock::text(format!("Opened deeplink: {deeplink}")),
           ]))
         }
         .boxed()
@@ -263,7 +263,7 @@ macro_rules! mcp_tool {
             .map_err(|e| rmcp::ErrorData::internal_error(e.to_string(), None))?;
 
           Ok(rmcp::model::CallToolResult::success(vec![
-            rmcp::model::Content::text(format!("Opened deeplink: {deeplink}")),
+            rmcp::model::ContentBlock::text(format!("Opened deeplink: {deeplink}")),
           ]))
         }
         .boxed()
