@@ -147,7 +147,8 @@
   },
   "AddGameServerModal": {
     "header": {
-      "title": "Agregar Servidor de Juego"
+      "title": "Agregar Servidor de Juego",
+      "editTitle": "Editar Servidor de Juego"
     },
     "serverAddrRequired": "La dirección del servidor es obligatoria",
     "label": {
@@ -1157,6 +1158,8 @@
     "import": "Importar",
     "launch": "Iniciar",
     "more": "Más",
+    "moveDown": "Mover hacia abajo",
+    "moveUp": "Mover hacia arriba",
     "new": "Nuevo",
     "next": "Siguiente",
     "notice": "Aviso",
@@ -2851,14 +2854,21 @@
           }
         }
       },
+      "queryGameServerOnlineStatus": {
+        "error": {
+          "title": "Error al consultar el estado del servidor",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat puede haber sido corrupto"
+          }
+        }
+      },
       "addGameServer": {
         "success": "Servidor del juego agregado exitosamente",
         "error": {
           "title": "Error al agregar el servidor del juego",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
-            "FILE_OPERATION_ERROR": "Error al escribir la información del servidor",
-            "DUPLICATE_SERVER": "El servidor ya existe"
+            "FILE_OPERATION_ERROR": "Error al escribir la información del servidor"
           }
         }
       },
@@ -2866,6 +2876,27 @@
         "success": "Servidor del juego eliminado exitosamente",
         "error": {
           "title": "Error al eliminar el servidor del juego",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "FILE_OPERATION_ERROR": "Error al escribir la información del servidor",
+            "SERVER_NOT_FOUND": "Servidor no encontrado"
+          }
+        }
+      },
+      "moveGameServer": {
+        "error": {
+          "title": "Error al mover el servidor del juego",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
+            "FILE_OPERATION_ERROR": "Error al escribir la información del servidor",
+            "SERVER_NOT_FOUND": "Servidor no encontrado"
+          }
+        }
+      },
+      "updateGameServer": {
+        "success": "Servidor del juego actualizado exitosamente",
+        "error": {
+          "title": "Error al actualizar el servidor del juego",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
             "FILE_OPERATION_ERROR": "Error al escribir la información del servidor",

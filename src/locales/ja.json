@@ -147,7 +147,8 @@
   },
   "AddGameServerModal": {
     "header": {
-      "title": "ゲームサーバーを追加"
+      "title": "ゲームサーバーを追加",
+      "editTitle": "ゲームサーバーを編集"
     },
     "serverAddrRequired": "サーバーアドレスは必須です",
     "label": {
@@ -1157,6 +1158,8 @@
     "import": "インポート",
     "launch": "起動",
     "more": "もっと",
+    "moveDown": "下へ移動",
+    "moveUp": "上へ移動",
     "new": "新着",
     "next": "次へ",
     "notice": "通知",
@@ -2851,14 +2854,21 @@
           }
         }
       },
+      "queryGameServerOnlineStatus": {
+        "error": {
+          "title": "サーバー状態の取得に失敗しました",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat が破損している可能性がある"
+          }
+        }
+      },
       "addGameServer": {
         "success": "ゲームサーバーを追加しました",
         "error": {
           "title": "ゲームサーバーの追加に失敗しました",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
-            "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました",
-            "DUPLICATE_SERVER": "サーバーは既に存在します"
+            "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました"
           }
         }
       },
@@ -2866,6 +2876,27 @@
         "success": "ゲームサーバーを削除しました",
         "error": {
           "title": "ゲームサーバーの削除に失敗しました",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました",
+            "SERVER_NOT_FOUND": "サーバーが見つかりません"
+          }
+        }
+      },
+      "moveGameServer": {
+        "error": {
+          "title": "ゲームサーバーの並べ替えに失敗しました",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
+            "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました",
+            "SERVER_NOT_FOUND": "サーバーが見つかりません"
+          }
+        }
+      },
+      "updateGameServer": {
+        "success": "ゲームサーバーを更新しました",
+        "error": {
+          "title": "ゲームサーバーの更新に失敗しました",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
             "FILE_OPERATION_ERROR": "サーバー情報の書き込みに失敗しました",
