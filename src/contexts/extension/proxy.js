@@ -3,6 +3,15 @@
  * @returns {string}
  */
 export const buildProxiedExtensionScript = (source) => {
+  // The proxy intentionally shadows `eval`. A strict-mode directive at the
+  // beginning of a bundled extension would make that parameter a syntax
+  // error before the extension can register, so consume only that leading
+  // directive while preserving strict directives inside nested functions.
+  const compatibleSource = source.replace(
+    /^(?:\uFEFF)?(?:"use strict"|'use strict');\s*/,
+    ""
+  );
+
   return `;((__sjmclRealWindow, __sjmclRealDocument) => {
   const __sjmclBlockedGlobalNames = new Set(["__TAURI__", "__TAURI_INTERNALS__"]);
   const __sjmclBlockedPropertyNames = new Set(["constructor"]);
@@ -124,6 +133,6 @@ export const buildProxiedExtensionScript = (source) => {
   const __TAURI__ = __sjmclTauriStub;
   const __TAURI_INTERNALS__ = __sjmclTauriStub;
 
-  ((eval, Function) => {${source}\n})(undefined, undefined);
+  ((eval, Function) => {${compatibleSource}\n})(undefined, undefined);
 })(window, document);`;
 };

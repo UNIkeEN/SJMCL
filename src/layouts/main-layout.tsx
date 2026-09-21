@@ -48,6 +48,8 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const isStandAlone = router.pathname.startsWith("/standalone");
+  const isExtensionOverlay =
+    router.pathname === "/standalone/extension" && router.query.overlay === "1";
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { colorMode } = useColorMode();
@@ -57,6 +59,18 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   const [bgImgSrc, setBgImgSrc] = useState<string>("");
   const isStartupFlowStarted = useRef(false);
+
+  useEffect(() => {
+    if (!isExtensionOverlay) return;
+    const htmlBackground = document.documentElement.style.background;
+    const bodyBackground = document.body.style.background;
+    document.documentElement.style.background = "transparent";
+    document.body.style.background = "transparent";
+    return () => {
+      document.documentElement.style.background = htmlBackground;
+      document.body.style.background = bodyBackground;
+    };
+  }, [isExtensionOverlay]);
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -279,6 +293,14 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     borderColor: "gray.500",
     borderRadius: "lg",
   };
+
+  if (isExtensionOverlay) {
+    return (
+      <Box w="100vw" h="100vh" overflow="hidden" bg="transparent">
+        {children}
+      </Box>
+    );
+  }
 
   if (isStandAlone) {
     return (

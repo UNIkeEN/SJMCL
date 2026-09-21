@@ -1,6 +1,28 @@
 import * as ChakraUI from "@chakra-ui/react";
 import { convertFileSrc, invoke as tauriInvoke } from "@tauri-apps/api/core";
+import {
+  CheckMenuItem,
+  Menu,
+  MenuItem,
+  PredefinedMenuItem,
+  Submenu,
+} from "@tauri-apps/api/menu";
 import { join } from "@tauri-apps/api/path";
+import {
+  LogicalSize,
+  PhysicalPosition,
+  Window,
+  availableMonitors,
+  currentMonitor,
+  getAllWindows,
+  getCurrentWindow,
+  primaryMonitor,
+} from "@tauri-apps/api/window";
+import {
+  confirm as confirmDialog,
+  message as messageDialog,
+  open as openDialog,
+} from "@tauri-apps/plugin-dialog";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { t } from "i18next";
@@ -36,11 +58,14 @@ import {
   ExtensionAbilityApi,
   ExtensionAbilityData,
   ExtensionAbilityState,
+  ExtensionContextMenuItem,
   ExtensionContributionRegistration,
   ExtensionHomeWidgetContribution,
+  ExtensionImportedFile,
   ExtensionInfo,
   ExtensionModalContribution,
   ExtensionPageContribution,
+  ExtensionRuntimeContext,
   ExtensionSettingsPageContribution,
   ExtensionSlotContextMap,
   ExtensionSlotContributionRegistry,
@@ -49,6 +74,7 @@ import {
   ExtensionSlotRegistry,
 } from "@/models/extension";
 import { TaskTypeEnums } from "@/models/task";
+import { ConfigService } from "@/services/config";
 import { ExtensionService } from "@/services/extension";
 import { TaskService } from "@/services/task";
 import { UtilsService } from "@/services/utils";
@@ -78,6 +104,7 @@ interface ExtensionContextRegistrationApi {
     WrapCardGroup: typeof WrapCardGroup;
   };
   identifier: string;
+  runtime: ExtensionRuntimeContext;
   resolveAssetUrl: (path: string) => string;
   getHostContext: () => ExtensionAbilityApi;
   useHostData: () => ExtensionAbilityData;
@@ -325,6 +352,100 @@ const parseRouteQuery = (): ExtensionAbilityData["routeQuery"] => {
   return routeQuery;
 };
 
+const EXTENSION_OVERLAY_WINDOW_PREFIX = "extension_overlay_";
+
+const encodeWindowLabelPart = (value: string) =>
+  Array.from(value.trim())
+    .map((character) => character.codePointAt(0)!.toString(16))
+    .join("-");
+
+const getOverlayWindowLabel = (extensionIdentifier: string, key: string) =>
+  `${EXTENSION_OVERLAY_WINDOW_PREFIX}${encodeWindowLabelPart(extensionIdentifier)}_${encodeWindowLabelPart(key)}`;
+
+const getExtensionRuntimeContext = (): ExtensionRuntimeContext => {
+  if (typeof window === "undefined") {
+    return { window: { kind: "main", label: "main" } };
+  }
+  const label = getCurrentWindow().label;
+  const isOverlay = label.startsWith(EXTENSION_OVERLAY_WINDOW_PREFIX);
+  const isStandalone = window.location.pathname.startsWith("/standalone/");
+
+  return {
+    window: {
+      kind: isOverlay ? "overlay" : isStandalone ? "standalone" : "main",
+      label,
+    },
+  };
+};
+
+const addOverlayRouteFlag = (route: string) => {
+  const url = new URL(route, "https://launcher.local");
+  url.searchParams.set("overlay", "1");
+  return `${url.pathname}${url.search}`;
+};
+
+const createNativeContextMenuItems = async (
+  items: ExtensionContextMenuItem[],
+  idPrefix: string,
+  onSelect: (id: string) => void,
+  seenIds = new Set<string>(),
+  depth = 0
+): Promise<Array<MenuItem | CheckMenuItem | PredefinedMenuItem | Submenu>> => {
+  if (depth > 4) {
+    throw new Error("Context menu nesting is too deep");
+  }
+
+  const nativeItems: Array<
+    MenuItem | CheckMenuItem | PredefinedMenuItem | Submenu
+  > = [];
+
+  for (const item of items) {
+    if (item.type === "separator") {
+      nativeItems.push(await PredefinedMenuItem.new({ item: "Separator" }));
+      continue;
+    }
+
+    const id = item.id.trim();
+    if (!id || seenIds.has(id)) {
+      throw new Error(`Invalid or duplicate context menu id: ${item.id}`);
+    }
+    seenIds.add(id);
+    const nativeId = `${idPrefix}:${encodeWindowLabelPart(id)}`;
+
+    if (item.type === "submenu") {
+      nativeItems.push(
+        await Submenu.new({
+          id: nativeId,
+          text: item.label,
+          enabled: item.enabled ?? true,
+          items: await createNativeContextMenuItems(
+            item.items,
+            idPrefix,
+            onSelect,
+            seenIds,
+            depth + 1
+          ),
+        })
+      );
+      continue;
+    }
+
+    const options = {
+      id: nativeId,
+      text: item.label,
+      enabled: item.enabled ?? true,
+      action: () => onSelect(id),
+    };
+    nativeItems.push(
+      item.type === "check"
+        ? await CheckMenuItem.new({ ...options, checked: item.checked })
+        : await MenuItem.new(options)
+    );
+  }
+
+  return nativeItems;
+};
+
 /**
  * Extension host architecture overview:
  * 1) The host loads installed extension metadata from backend and filters the
@@ -365,6 +486,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const router = useRouter();
+  const runtime = useMemo(() => getExtensionRuntimeContext(), []);
   const { config, update } = useLauncherConfig();
   const { selectedPlayer, selectedInstance, getPlayerList, getInstanceList } =
     useGlobalData();
@@ -392,6 +514,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
   const [pageMap, setPageMap] = useState<
     Record<string, ExtensionPageContribution[]>
   >({});
+  const pageMapRef = useRef(pageMap);
   const [customModalMap, setCustomModalMap] = useState<
     Record<string, ExtensionModalContribution[]>
   >({});
@@ -447,6 +570,9 @@ const ActiveExtensionHostContextProvider: React.FC<{
           "delete_directory",
           "read_file",
           "write_file",
+          "create_window",
+          "import_extension_file",
+          "open_extension_file",
           "schedule_progressive_task_group",
           "add_extension",
           "delete_extension",
@@ -505,6 +631,404 @@ const ActiveExtensionHostContextProvider: React.FC<{
       });
     },
     []
+  );
+
+  const assertOwnedOverlayWindow = useCallback(
+    (extension: ExtensionInfo) => {
+      const expectedPrefix = `${EXTENSION_OVERLAY_WINDOW_PREFIX}${encodeWindowLabelPart(extension.identifier)}_`;
+      if (
+        runtime.window.kind !== "overlay" ||
+        !runtime.window.label.startsWith(expectedPrefix)
+      ) {
+        throw new Error(
+          "This action is only available in the extension's overlay window"
+        );
+      }
+      return getCurrentWindow();
+    },
+    [runtime]
+  );
+
+  const openOverlayWindow = useCallback(
+    async (
+      extension: ExtensionInfo,
+      route: string,
+      options: { key: string; width: number; height: number }
+    ) => {
+      if (runtime.window.kind !== "main") {
+        throw new Error(
+          "Overlay windows can only be opened from the main launcher window"
+        );
+      }
+      if (
+        hostDataSnapshotRef.current.config.basicInfo.osType.toLowerCase() !==
+        "windows"
+      ) {
+        throw new Error(
+          "Extension overlay windows are currently supported on Windows only"
+        );
+      }
+
+      const key = options.key.trim();
+      const width = Math.round(options.width);
+      const height = Math.round(options.height);
+      if (
+        !/^[a-zA-Z0-9_-]+$/.test(key) ||
+        key.length > 64 ||
+        width < 32 ||
+        height < 32
+      ) {
+        throw new Error("Invalid overlay window options");
+      }
+      if (width > 2048 || height > 2048) {
+        throw new Error(
+          "Overlay window dimensions must not exceed 2048 pixels"
+        );
+      }
+
+      const routeUrl = new URL(
+        stripParentPathSegments(route.trim().replace(/\\/g, "/")),
+        "https://launcher.local"
+      );
+      const routePrefix = `/standalone/extension/${extension.identifier}/`;
+      const routePath = normalizeExtensionRelativePath(
+        routeUrl.pathname.startsWith(routePrefix)
+          ? routeUrl.pathname.slice(routePrefix.length)
+          : undefined
+      );
+      const ownsRoute = pageMapRef.current[extension.identifier]?.some(
+        (page) => page.isStandAlone && page.routePath === routePath
+      );
+      const nextRoute = ownsRoute
+        ? resolveExtensionNavigationRoute(extension, route, true)
+        : undefined;
+      if (!nextRoute) {
+        throw new Error(`Invalid overlay route: ${route}`);
+      }
+
+      const label = getOverlayWindowLabel(extension.identifier, key);
+      const existing = await Window.getByLabel(label);
+      if (existing) {
+        await existing.show();
+        return;
+      }
+
+      const monitor = await currentMonitor();
+      const scaleFactor = monitor?.scaleFactor || 1;
+      const workArea = monitor?.workArea;
+      const x = workArea
+        ? (workArea.position.x + workArea.size.width) / scaleFactor - width - 24
+        : undefined;
+      const y = workArea
+        ? (workArea.position.y + workArea.size.height) / scaleFactor -
+          height -
+          24
+        : undefined;
+
+      const response = await UtilsService.createWindow(
+        {
+          label,
+          url: addOverlayRouteFlag(nextRoute),
+          title: extension.name,
+          width,
+          height,
+          x,
+          y,
+          transparent: true,
+          decorations: false,
+          alwaysOnTop: true,
+          skipTaskbar: true,
+          shadow: false,
+          resizable: false,
+          maximizable: false,
+          minimizable: false,
+          fullscreen: false,
+          focus: false,
+          visible: false,
+          preventOverflow: { width: 24, height: 24 },
+          dragDropEnabled: false,
+        },
+        false
+      );
+      if (response.status === "error") {
+        throw response.raw_error || response.details || response.message;
+      }
+    },
+    [runtime]
+  );
+
+  const closeExtensionOverlayWindows = useCallback(
+    async (identifier: string) => {
+      const prefix = `${EXTENSION_OVERLAY_WINDOW_PREFIX}${encodeWindowLabelPart(identifier)}_`;
+      const windows = await getAllWindows();
+      await Promise.all(
+        windows
+          .filter((window) => window.label.startsWith(prefix))
+          .map((window) => window.close().catch(() => undefined))
+      );
+    },
+    []
+  );
+
+  const showCurrentWindow = useCallback(
+    async (extension: ExtensionInfo) => {
+      const currentWindow = assertOwnedOverlayWindow(extension);
+      const [position, size, monitors] = await Promise.all([
+        currentWindow.outerPosition(),
+        currentWindow.outerSize(),
+        availableMonitors(),
+      ]);
+      const minimumVisiblePixels = 32;
+      const isVisible = monitors.some((monitor) => {
+        const workArea = monitor.workArea;
+        return (
+          position.x + size.width >=
+            workArea.position.x + minimumVisiblePixels &&
+          position.x <=
+            workArea.position.x + workArea.size.width - minimumVisiblePixels &&
+          position.y + size.height >=
+            workArea.position.y + minimumVisiblePixels &&
+          position.y <=
+            workArea.position.y + workArea.size.height - minimumVisiblePixels
+        );
+      });
+      if (!isVisible) {
+        const monitor = (await primaryMonitor()) ?? monitors[0];
+        if (monitor) {
+          const margin = Math.round(24 * monitor.scaleFactor);
+          await currentWindow.setPosition(
+            new PhysicalPosition(
+              monitor.workArea.position.x +
+                monitor.workArea.size.width -
+                size.width -
+                margin,
+              monitor.workArea.position.y +
+                monitor.workArea.size.height -
+                size.height -
+                margin
+            )
+          );
+        }
+      }
+      await currentWindow.show();
+    },
+    [assertOwnedOverlayWindow]
+  );
+
+  const closeCurrentWindow = useCallback(
+    async (extension: ExtensionInfo) => {
+      await assertOwnedOverlayWindow(extension).close();
+    },
+    [assertOwnedOverlayWindow]
+  );
+
+  const startDraggingCurrentWindow = useCallback(
+    async (extension: ExtensionInfo) => {
+      await assertOwnedOverlayWindow(extension).startDragging();
+    },
+    [assertOwnedOverlayWindow]
+  );
+
+  const resizeCurrentWindow = useCallback(
+    async (
+      extension: ExtensionInfo,
+      options: {
+        width: number;
+        height: number;
+        anchor?: "topLeft" | "bottomLeft";
+      }
+    ) => {
+      const currentWindow = assertOwnedOverlayWindow(extension);
+      const width = Math.round(options.width);
+      const height = Math.round(options.height);
+      if (width < 32 || height < 32 || width > 2048 || height > 2048) {
+        throw new Error(
+          "Overlay window dimensions must be between 32 and 2048 pixels"
+        );
+      }
+
+      if (options.anchor === "bottomLeft") {
+        const [position, size, scaleFactor] = await Promise.all([
+          currentWindow.outerPosition(),
+          currentWindow.outerSize(),
+          currentWindow.scaleFactor(),
+        ]);
+        await currentWindow.setSize(new LogicalSize(width, height));
+        const nextHeight = Math.round(height * scaleFactor);
+        await currentWindow.setPosition(
+          new PhysicalPosition(
+            position.x,
+            position.y + size.height - nextHeight
+          )
+        );
+        return;
+      }
+
+      await currentWindow.setSize(new LogicalSize(width, height));
+    },
+    [assertOwnedOverlayWindow]
+  );
+
+  const resetCurrentWindowPosition = useCallback(
+    async (extension: ExtensionInfo) => {
+      const currentWindow = assertOwnedOverlayWindow(extension);
+      const [current, primary, size] = await Promise.all([
+        currentMonitor(),
+        primaryMonitor(),
+        currentWindow.outerSize(),
+      ]);
+      const monitor = current ?? primary;
+      if (!monitor) return;
+      const margin = Math.round(24 * monitor.scaleFactor);
+      await currentWindow.setPosition(
+        new PhysicalPosition(
+          monitor.workArea.position.x +
+            monitor.workArea.size.width -
+            size.width -
+            margin,
+          monitor.workArea.position.y +
+            monitor.workArea.size.height -
+            size.height -
+            margin
+        )
+      );
+    },
+    [assertOwnedOverlayWindow]
+  );
+
+  const showContextMenu = useCallback(
+    async (extension: ExtensionInfo, items: ExtensionContextMenuItem[]) => {
+      const currentWindow = assertOwnedOverlayWindow(extension);
+      const countItems = (values: ExtensionContextMenuItem[]): number =>
+        values.reduce(
+          (count, item) =>
+            count + 1 + (item.type === "submenu" ? countItems(item.items) : 0),
+          0
+        );
+      if (items.length === 0 || countItems(items) > 100) {
+        throw new Error("Context menus must contain between 1 and 100 items");
+      }
+
+      let selectedId: string | null = null;
+      const nativeItems = await createNativeContextMenuItems(
+        items,
+        `${encodeWindowLabelPart(extension.identifier)}:${Date.now()}`,
+        (id) => {
+          selectedId = id;
+        }
+      );
+      const menu = await Menu.new({ items: nativeItems });
+      try {
+        await menu.popup(undefined, currentWindow);
+        return selectedId;
+      } finally {
+        await menu.close();
+      }
+    },
+    [assertOwnedOverlayWindow]
+  );
+
+  const importFile = useCallback(
+    async (
+      extension: ExtensionInfo,
+      options: {
+        extensions: string[];
+        targetPath: string;
+        maxBytes: number;
+      }
+    ): Promise<ExtensionImportedFile | null> => {
+      const extensions = options.extensions.map((value) =>
+        value.trim().replace(/^\./, "").toLowerCase()
+      );
+      if (
+        extensions.length === 0 ||
+        extensions.some((value) => !/^[a-z0-9]+$/.test(value)) ||
+        !Number.isSafeInteger(options.maxBytes) ||
+        options.maxBytes <= 0 ||
+        options.maxBytes > 256 * 1024 * 1024
+      ) {
+        throw new Error("Invalid file import options");
+      }
+
+      const targetPath = normalizeExtensionRelativePath(options.targetPath);
+      if (!targetPath) {
+        throw new Error("Invalid import target path");
+      }
+      const selected = await openDialog({
+        multiple: false,
+        directory: false,
+        filters: [{ name: extension.name, extensions }],
+      });
+      if (!selected || Array.isArray(selected)) return null;
+
+      return await tauriInvoke<ExtensionImportedFile>("import_extension_file", {
+        extensionIdentifier: extension.identifier,
+        sourcePath: selected,
+        targetPath,
+        allowedExtensions: extensions,
+        maxBytes: options.maxBytes,
+      });
+    },
+    []
+  );
+
+  const showMessageDialog = useCallback(
+    async (options: {
+      title: string;
+      message: string;
+      kind?: "info" | "warning" | "error";
+      confirm?: boolean;
+      okLabel?: string;
+      cancelLabel?: string;
+    }) => {
+      if (options.confirm) {
+        return await confirmDialog(options.message, {
+          title: options.title,
+          kind: options.kind,
+          okLabel: options.okLabel,
+          cancelLabel: options.cancelLabel,
+        });
+      }
+      await messageDialog(options.message, {
+        title: options.title,
+        kind: options.kind,
+        okLabel: options.okLabel,
+      });
+      return true;
+    },
+    []
+  );
+
+  const openExtensionFile = useCallback(
+    async (extension: ExtensionInfo, path: string) => {
+      const relativePath = normalizeExtensionRelativePath(path);
+      if (!relativePath || !relativePath.toLowerCase().endsWith(".txt")) {
+        throw new Error("Only extension text documents can be opened");
+      }
+      await tauriInvoke("open_extension_file", {
+        extensionIdentifier: extension.identifier,
+        relativePath,
+      });
+    },
+    []
+  );
+
+  const disableSelf = useCallback(
+    async (extension: ExtensionInfo) => {
+      const enabled =
+        hostDataSnapshotRef.current.config.extension.enabled.filter(
+          (identifier) => identifier !== extension.identifier
+        );
+      const response = await ConfigService.updateLauncherConfig(
+        "extension.enabled",
+        enabled
+      );
+      if (response.status === "error") {
+        throw response.raw_error || response.details || response.message;
+      }
+      await closeExtensionOverlayWindows(extension.identifier);
+    },
+    [closeExtensionOverlayWindows]
   );
 
   const openExternalLink = useCallback(
@@ -866,6 +1390,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
     setPageMap((prev) => {
       const next = { ...prev };
       delete next[identifier];
+      pageMapRef.current = next;
       return next;
     });
     setCustomModalMap((prev) => {
@@ -1058,6 +1583,22 @@ const ActiveExtensionHostContextProvider: React.FC<{
       navBack: () => router.back(),
       openWindow: (route: string, title: string) =>
         openWindow(extension, route, title),
+      openOverlayWindow: async (route, options) =>
+        await openOverlayWindow(extension, route, options),
+      showCurrentWindow: async () => await showCurrentWindow(extension),
+      closeCurrentWindow: async () => await closeCurrentWindow(extension),
+      startDraggingCurrentWindow: async () =>
+        await startDraggingCurrentWindow(extension),
+      resizeCurrentWindow: async (options) =>
+        await resizeCurrentWindow(extension, options),
+      resetCurrentWindowPosition: async () =>
+        await resetCurrentWindowPosition(extension),
+      showContextMenu: async (items) => await showContextMenu(extension, items),
+      importFile: async (options) => await importFile(extension, options),
+      showMessageDialog,
+      openExtensionFile: async (path) =>
+        await openExtensionFile(extension, path),
+      disableSelf: async () => await disableSelf(extension),
       openExternalLink: async (url: string) =>
         await openExternalLink(extension, url),
       openSharedModal: (key, params) =>
@@ -1100,15 +1641,26 @@ const ActiveExtensionHostContextProvider: React.FC<{
     }),
     [
       toast,
+      closeCurrentWindow,
+      importFile,
       invoke,
       navigate,
       openExternalLink,
+      openOverlayWindow,
       openWindow,
+      resetCurrentWindowPosition,
+      resizeCurrentWindow,
       router,
       request,
       requestText,
       runExtensionFileCommand,
       scheduleExtensionUpdate,
+      showContextMenu,
+      showCurrentWindow,
+      showMessageDialog,
+      openExtensionFile,
+      disableSelf,
+      startDraggingCurrentWindow,
       updateHomeWidgetTitle,
       reloadExtension,
     ]
@@ -1283,6 +1835,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
           WrapCardGroup,
         },
         identifier: extension.identifier,
+        runtime,
         resolveAssetUrl: (path: string) => getAssetUrl(extension, path),
         getHostContext: () => getExtensionHostContext(extension),
         useHostData,
@@ -1369,23 +1922,23 @@ const ActiveExtensionHostContextProvider: React.FC<{
         });
 
         if (pages.length > 0) {
-          setPageMap((prev) => ({
-            ...prev,
+          const next = {
+            ...pageMapRef.current,
             [extension.identifier]: pages,
-          }));
+          };
+          pageMapRef.current = next;
+          setPageMap(next);
         } else {
-          setPageMap((prev) => {
-            const next = { ...prev };
-            delete next[extension.identifier];
-            return next;
-          });
+          const next = { ...pageMapRef.current };
+          delete next[extension.identifier];
+          pageMapRef.current = next;
+          setPageMap(next);
         }
       } else {
-        setPageMap((prev) => {
-          const next = { ...prev };
-          delete next[extension.identifier];
-          return next;
-        });
+        const next = { ...pageMapRef.current };
+        delete next[extension.identifier];
+        pageMapRef.current = next;
+        setPageMap(next);
       }
 
       // ------- custom-modal -------
@@ -1484,7 +2037,13 @@ const ActiveExtensionHostContextProvider: React.FC<{
         signature,
       };
     },
-    [getAssetUrl, getExtensionHostContext, loadExtensionFactory, useHostData]
+    [
+      getAssetUrl,
+      getExtensionHostContext,
+      loadExtensionFactory,
+      runtime,
+      useHostData,
+    ]
   );
 
   const deactivateExtension = useCallback(
@@ -1514,8 +2073,9 @@ const ActiveExtensionHostContextProvider: React.FC<{
       delete activeExtensionsRef.current[identifier];
       delete extensionHostContextRef.current[identifier];
       removeExtensionContributionState(identifier);
+      void closeExtensionOverlayWindows(identifier);
     },
-    [removeExtensionContributionState]
+    [closeExtensionOverlayWindows, removeExtensionContributionState]
   );
 
   // Core runtime sync: activate/reload/deactivate extensions based on enabled list.

@@ -78,7 +78,7 @@ pub async fn run() {
               | tauri_plugin_window_state::StateFlags::SIZE
               | tauri_plugin_window_state::StateFlags::MAXIMIZED,
           )
-          .with_filter(|label| label == "main")
+          .with_filter(|label| label == "main" || label.starts_with("extension_overlay_"))
           .build(),
       );
 
@@ -183,6 +183,8 @@ pub async fn run() {
         discover::commands::fetch_news_sources_info,
         discover::commands::fetch_news_post_summaries,
         extension::commands::retrieve_extension_list,
+        extension::commands::import_extension_file,
+        extension::commands::open_extension_file,
         extension::commands::add_extension,
         extension::commands::delete_extension,
         tasks::commands::schedule_progressive_task_group,

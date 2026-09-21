@@ -72,6 +72,14 @@ pub struct ExtensionInfo {
   pub icon_src: ImageWrapper,
 }
 
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtensionImportedFile {
+  pub name: String,
+  pub path: String,
+  pub size: u64,
+}
+
 impl ExtensionInfo {
   pub fn new(metadata: ExtensionMetadata, path: String, icon_src: ImageWrapper) -> Self {
     Self {

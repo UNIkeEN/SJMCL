@@ -35,6 +35,73 @@ export interface ExtensionAbilityData {
   routeQuery: Record<string, string | string[] | undefined>; // current route query parameters
 }
 
+export type ExtensionWindowKind = "main" | "standalone" | "overlay";
+
+export interface ExtensionRuntimeContext {
+  window: {
+    kind: ExtensionWindowKind;
+    label: string;
+  };
+}
+
+export interface ExtensionOverlayWindowOptions {
+  key: string;
+  width: number;
+  height: number;
+}
+
+export interface ExtensionWindowResizeOptions {
+  width: number;
+  height: number;
+  anchor?: "topLeft" | "bottomLeft";
+}
+
+export type ExtensionContextMenuItem =
+  | {
+      type?: "item";
+      id: string;
+      label: string;
+      enabled?: boolean;
+    }
+  | {
+      type: "check";
+      id: string;
+      label: string;
+      checked: boolean;
+      enabled?: boolean;
+    }
+  | {
+      type: "separator";
+    }
+  | {
+      type: "submenu";
+      id: string;
+      label: string;
+      enabled?: boolean;
+      items: ExtensionContextMenuItem[];
+    };
+
+export interface ExtensionFileImportOptions {
+  extensions: string[];
+  targetPath: string;
+  maxBytes: number;
+}
+
+export interface ExtensionImportedFile {
+  name: string;
+  path: string;
+  size: number;
+}
+
+export interface ExtensionMessageDialogOptions {
+  title: string;
+  message: string;
+  kind?: "info" | "warning" | "error";
+  confirm?: boolean;
+  okLabel?: string;
+  cancelLabel?: string;
+}
+
 // stable runtime abilities exposed by the host to extension scripts.
 export interface ExtensionAbilityApi {
   actions: ExtensionAbilityActions;
@@ -50,6 +117,26 @@ export interface ExtensionAbilityActions {
   navigate: (route: string) => Promise<void>;
   navBack: () => void;
   openWindow: (route: string, title: string) => void;
+  openOverlayWindow: (
+    route: string,
+    options: ExtensionOverlayWindowOptions
+  ) => Promise<void>;
+  showCurrentWindow: () => Promise<void>;
+  closeCurrentWindow: () => Promise<void>;
+  startDraggingCurrentWindow: () => Promise<void>;
+  resizeCurrentWindow: (options: ExtensionWindowResizeOptions) => Promise<void>;
+  resetCurrentWindowPosition: () => Promise<void>;
+  showContextMenu: (
+    items: ExtensionContextMenuItem[]
+  ) => Promise<string | null>;
+  importFile: (
+    options: ExtensionFileImportOptions
+  ) => Promise<ExtensionImportedFile | null>;
+  showMessageDialog: (
+    options: ExtensionMessageDialogOptions
+  ) => Promise<boolean>;
+  openExtensionFile: (path: string) => Promise<void>;
+  disableSelf: () => Promise<void>;
   openExternalLink: (url: string) => Promise<void>;
   openSharedModal: (key: string, params?: any) => void;
   openCustomModal: (key: string, params?: any) => void;

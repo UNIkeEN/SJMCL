@@ -3,10 +3,11 @@
   "identifier": "default",
   "description": "enables the default permissions",
   "windows": [
-    "main", 
-    "game_log*", 
-    "game_error*", 
-    "extension_standalone*"
+    "main",
+    "game_log*",
+    "game_error*",
+    "extension_standalone*",
+    "extension_overlay*"
   ],
   "permissions": [
     "clipboard-manager:allow-write-text",
@@ -15,6 +16,15 @@
     "core:event:default",
     "core:webview:allow-create-webview-window",
     "core:window:allow-show",
+    "core:window:allow-close",
+    "core:window:allow-available-monitors",
+    "core:window:allow-current-monitor",
+    "core:window:allow-outer-position",
+    "core:window:allow-outer-size",
+    "core:window:allow-primary-monitor",
+    "core:window:allow-scale-factor",
+    "core:window:allow-set-position",
+    "core:window:allow-set-size",
     "core:window:allow-start-dragging",
     "core:window:allow-set-title",
     "deep-link:default",
