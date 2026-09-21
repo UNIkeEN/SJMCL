@@ -1,19 +1,28 @@
+import { useMediaQuery } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useId, useRef, useState } from "react";
 import { useLauncherConfig } from "@/contexts/config";
 import styles from "@/styles/liquid-glass.module.css";
 
+type LiquidGlassEffectProps = {
+  isDark?: boolean;
+};
+
 // Smooth displacement inspired by rdev/liquid-glass-react/src/shader-utils.ts.
 // https://github.com/rdev/liquid-glass-react
 // Filter a painted copy of the wallpaper: WebKit cannot displace a backdrop.
-const LiquidGlassEffect = () => {
-  const id = `glass-${useId().replace(/:/g, "")}`;
-  const layerRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState("");
+const LiquidGlassEffect = ({ isDark = false }: LiquidGlassEffectProps) => {
   const { bgImageSrc, isBgDarken } = useLauncherConfig();
   const router = useRouter();
-  const hasWallpaper =
-    !router.pathname.startsWith("/standalone") && Boolean(bgImageSrc);
+  const [reduceTransparency] = useMediaQuery(
+    "(prefers-reduced-transparency: reduce)",
+    { fallback: true }
+  );
+
+  const id = `glass-${useId().replace(/:/g, "")}`;
+  const layerRef = useRef<HTMLDivElement>(null);
+
+  const [map, setMap] = useState("");
   const [bounds, setBounds] = useState({
     width: 0,
     height: 0,
@@ -23,7 +32,12 @@ const LiquidGlassEffect = () => {
     viewportHeight: 0,
   });
 
+  const hasWallpaper =
+    !router.pathname.startsWith("/standalone") && Boolean(bgImageSrc);
+  const useRefraction = hasWallpaper && !reduceTransparency;
+
   useEffect(() => {
+    if (!useRefraction) return;
     const layer = layerRef.current;
     const card = layer?.parentElement;
     if (!layer || !card) return;
@@ -33,25 +47,26 @@ const LiquidGlassEffect = () => {
     const update = () => {
       frame = 0;
       const rect = layer.getBoundingClientRect();
+      const width = Math.ceil(rect.width);
+      const height = Math.ceil(rect.height);
       const nextBounds = {
-        width: Math.ceil(rect.width),
-        height: Math.ceil(rect.height),
+        width,
+        height,
         x: -rect.left,
         y: -rect.top,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
       };
       setBounds((previous) =>
-        Object.keys(nextBounds).every(
-          (key) =>
-            previous[key as keyof typeof previous] ===
-            nextBounds[key as keyof typeof nextBounds]
-        )
+        previous.width === nextBounds.width &&
+        previous.height === nextBounds.height &&
+        previous.x === nextBounds.x &&
+        previous.y === nextBounds.y &&
+        previous.viewportWidth === nextBounds.viewportWidth &&
+        previous.viewportHeight === nextBounds.viewportHeight
           ? previous
           : nextBounds
       );
-      const width = Math.ceil(rect.width);
-      const height = Math.ceil(rect.height);
       const radius = Math.min(
         parseFloat(getComputedStyle(card).borderTopLeftRadius) || 0,
         width / 2,
@@ -108,31 +123,41 @@ const LiquidGlassEffect = () => {
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    const handleScroll = (event: Event) => {
+      if (event.target instanceof Node && event.target.contains(card)) {
+        schedule();
+      }
+    };
+    const handleTransitionEnd = (event: TransitionEvent) => {
+      // Paint-only transitions cannot change the wallpaper's alignment.
+      if (/(color|shadow)$|^opacity$/.test(event.propertyName)) return;
+      schedule();
+    };
     const observer = new ResizeObserver(schedule);
     observer.observe(card);
     window.addEventListener("resize", schedule);
-    document.addEventListener("scroll", schedule, true);
+    document.addEventListener("scroll", handleScroll, true);
     // Navigation cards can move after their width transition finishes.
-    document.addEventListener("transitionend", schedule, true);
+    document.addEventListener("transitionend", handleTransitionEnd, true);
     update();
     return () => {
       observer.disconnect();
       cancelAnimationFrame(frame);
       window.removeEventListener("resize", schedule);
-      document.removeEventListener("scroll", schedule, true);
-      document.removeEventListener("transitionend", schedule, true);
+      document.removeEventListener("scroll", handleScroll, true);
+      document.removeEventListener("transitionend", handleTransitionEnd, true);
     };
-  }, []);
+  }, [useRefraction]);
 
   return (
     <>
       <div
         ref={layerRef}
         className={styles.effect}
-        data-wallpaper={Boolean(hasWallpaper && map)}
+        data-wallpaper={Boolean(useRefraction && map)}
         aria-hidden="true"
       >
-        {hasWallpaper && map && (
+        {useRefraction && map && (
           <svg className={styles.refraction} width="100%" height="100%">
             <defs>
               <filter
@@ -197,7 +222,11 @@ const LiquidGlassEffect = () => {
           </svg>
         )}
       </div>
-      <div className={styles.shine} aria-hidden="true" />
+      <div
+        className={styles.shine}
+        data-theme={isDark ? "dark" : undefined}
+        aria-hidden="true"
+      />
     </>
   );
 };
