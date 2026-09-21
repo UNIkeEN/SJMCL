@@ -1,0 +1,8 @@
+[advisories]
+ignore = [
+  # RSA is used for local signing and JWT verification; no decryption. No upstream fix is available yet.
+  "RUSTSEC-2023-0071",
+
+  # rkyv is unused with current features; reassess if features change.
+  "RUSTSEC-2026-0235",
+]
