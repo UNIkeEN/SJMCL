@@ -47,7 +47,7 @@ jsonwebtoken = { version = "10.3.0", default-features = false, features = [
 ] }
 lazy_static = "1.5"
 log = "0.4"
-mc-server-status = "1.0.0"
+lite-mc-ping = "0.2"
 murmur2 = "0.1"
 native-dialog = "0.9.6"
 pin-project = "1.1.8"
@@ -183,7 +183,7 @@ java-properties.workspace = true
 jsonwebtoken.workspace = true
 lazy_static.workspace = true
 log.workspace = true
-mc-server-status.workspace = true
+lite-mc-ping.workspace = true
 murmur2.workspace = true
 native-dialog.workspace = true
 pin-project.workspace = true

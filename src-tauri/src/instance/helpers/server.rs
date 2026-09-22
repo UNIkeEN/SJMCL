@@ -1,11 +1,12 @@
-use mc_server_status::{McClient, ServerData, ServerStatus};
+use lite_mc_ping::{PingOptions, PingResult, ServerAddress};
 use quartz_nbt::io::Flavor;
 use serde::{self, Deserialize, Serialize};
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::path::{Path, PathBuf};
-use std::time::Duration;
-use tauri::async_runtime;
+use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
+use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 
 use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
 use crate::instance::models::misc::InstanceSubdirType;
@@ -128,74 +129,94 @@ pub fn to_visible_servers_with_index(servers: Vec<GameServerInfo>) -> Vec<GameSe
     .collect()
 }
 
-/// Ping Java servers in parallel via `mc-server-status`. Emits `GAME_SERVER_STATUS_EVENT`
-/// as each unique address finishes.
+/// Ping Java servers in parallel via `lite-mc-ping`.
+/// Emits `GAME_SERVER_STATUS_EVENT` as each server finishes when `app` is set.
 pub async fn query_servers_online(
-  servers: Vec<GameServerInfo>,
+  mut servers: Vec<GameServerInfo>,
   app: Option<AppHandle>,
 ) -> SJMCLResult<Vec<GameServerInfo>> {
   if servers.is_empty() {
     return Ok(servers);
   }
 
-  use futures::stream::{self, StreamExt};
-  use std::sync::{Arc, Mutex};
+  const MAX_PARALLEL: usize = 10;
+  let sem = Arc::new(Semaphore::new(MAX_PARALLEL));
+  let options = Arc::new(PingOptions {
+    measure_latency: true,
+    use_srv: true,
+    ..PingOptions::default()
+  });
 
-  let shared = Arc::new(Mutex::new(servers));
-  let mut unique_addrs: Vec<String> = Vec::new();
-  {
-    let guard = shared.lock().unwrap();
-    for s in guard.iter() {
-      if !unique_addrs.iter().any(|a| a == &s.ip) {
-        unique_addrs.push(s.ip.clone());
+  let mut set: JoinSet<(usize, ServerAddress, SJMCLResult<PingResult>)> = JoinSet::new();
+  let mut parse_failed: Vec<usize> = Vec::new();
+
+  for (idx, sv) in servers.iter().enumerate() {
+    let address = match sv.ip.parse::<ServerAddress>() {
+      Ok(a) => a,
+      Err(_) => {
+        parse_failed.push(idx);
+        continue;
       }
+    };
+    let sem = sem.clone();
+    let options = options.clone();
+    let address_clone = address.clone();
+
+    set.spawn(async move {
+      if let Ok(_permit) = sem.acquire_owned().await {
+        let result = lite_mc_ping::ping(&address_clone, &options)
+          .await
+          .map_err(|e| SJMCLError(format!("Can not resolve ping action: {e}")));
+        (idx, address_clone, result)
+      } else {
+        (
+          idx,
+          address_clone,
+          Err(SJMCLError("Semaphore error".to_string())),
+        )
+      }
+    });
+  }
+
+  while let Some(joined) = set.join_next().await {
+    let Ok((idx, _addr, result)) = joined else {
+      continue;
+    };
+    match result {
+      Ok(info) => {
+        servers[idx].online = true;
+        servers[idx].latency = info.latency.map(|x| x.as_millis() as u64);
+        servers[idx].players_online = info.status.players.online as usize;
+        servers[idx].players_max = info.status.players.max as usize;
+        servers[idx].description = info.status.description;
+        if let Some(ico) = info.status.favicon {
+          servers[idx].icon_src = ico;
+        }
+      }
+      Err(_) => {
+        mark_offline(&mut servers[idx]);
+      }
+    }
+    servers[idx].is_queried = true;
+    if let Some(app) = &app {
+      let _ = app.emit(GAME_SERVER_STATUS_EVENT, &servers[idx]);
     }
   }
 
-  stream::iter(unique_addrs)
-    .map(|addr| {
-      let shared = Arc::clone(&shared);
-      let app = app.clone();
-      async move {
-        let addr_for_ping = addr.clone();
-        let ping_result = async_runtime::spawn_blocking(move || {
-          let rt = tokio::runtime::Runtime::new().unwrap();
-          rt.block_on(async {
-            let client = McClient::new()
-              .with_timeout(Duration::from_secs(5))
-              .with_max_parallel(1);
-            client.ping_java(&addr_for_ping).await
-          })
-        })
-        .await;
+  for idx in parse_failed {
+    mark_offline(&mut servers[idx]);
+    servers[idx].is_queried = true;
+    if let Some(app) = &app {
+      let _ = app.emit(GAME_SERVER_STATUS_EVENT, &servers[idx]);
+    }
+  }
 
-        let status = match ping_result {
-          Ok(Ok(status)) => Some(status),
-          _ => None,
-        };
-
-        let mut guard = shared.lock().unwrap();
-        for server in guard.iter_mut() {
-          if server.ip != addr {
-            continue;
-          }
-          match &status {
-            Some(st) => apply_crate_status(server, st),
-            None => mark_offline(server),
-          }
-          if let Some(app) = &app {
-            let _ = app.emit(GAME_SERVER_STATUS_EVENT, &*server);
-          }
-        }
-      }
-    })
-    .buffer_unordered(10)
-    .collect::<Vec<()>>()
-    .await;
-
-  let servers = Arc::try_unwrap(shared)
-    .map(|m| m.into_inner().unwrap())
-    .unwrap_or_else(|arc| arc.lock().unwrap().clone());
+  for server in &mut servers {
+    if !server.is_queried {
+      mark_offline(server);
+      server.is_queried = true;
+    }
+  }
 
   Ok(servers)
 }
@@ -245,25 +266,8 @@ pub async fn persist_server_icons_to_nbt(
 }
 
 fn mark_offline(server: &mut GameServerInfo) {
-  server.is_queried = true;
   server.online = false;
   server.latency = None;
   server.players_online = 0;
   server.players_max = 0;
-}
-
-fn apply_crate_status(server: &mut GameServerInfo, status: &ServerStatus) {
-  server.is_queried = true;
-  if let ServerData::Java(sv) = &status.data {
-    server.online = true;
-    server.latency = Some(status.latency.round() as u64);
-    server.players_online = sv.players.online as usize;
-    server.players_max = sv.players.max as usize;
-    server.description = sv.description.clone();
-    if let Some(favicon) = &sv.favicon {
-      server.icon_src = favicon.clone();
-    }
-  } else {
-    mark_offline(server);
-  }
 }
