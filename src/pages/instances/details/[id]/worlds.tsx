@@ -119,6 +119,21 @@ const InstanceWorldsPage = () => {
     return base64ImgSrc(raw);
   };
 
+  const applyPingStatus = (
+    base: GameServerInfo,
+    status: GameServerInfo
+  ): GameServerInfo => ({
+    // Keep the freshly loaded entry (and its servers.dat index / identity).
+    ...base,
+    isQueried: true,
+    online: status.online,
+    latency: status.latency,
+    playersOnline: status.playersOnline,
+    playersMax: status.playersMax,
+    description: status.description,
+    iconSrc: status.iconSrc || base.iconSrc,
+  });
+
   const applyQueriedServers = useCallback((queried: GameServerInfo[]) => {
     if (!queried.length) return;
     setGameServers((prev) => {
@@ -126,7 +141,7 @@ const InstanceWorldsPage = () => {
       return prev.map((s) => {
         const hit = map.get(s.index);
         if (!hit || hit.ip !== s.ip) return s;
-        return hit;
+        return applyPingStatus(s, hit);
       });
     });
   }, []);
@@ -150,14 +165,23 @@ const InstanceWorldsPage = () => {
             return;
           }
           setGameServers((prev) => {
-            const statusMap = new Map(
-              prev
-                .filter((s) => s.isQueried)
-                .map((s) => [s.ip + "|" + s.name, s] as const)
-            );
+            // Queue by identity so duplicate (ip, name) pairs are matched in order
+            // instead of collapsing into one map key.
+            const statusQueues = new Map<string, GameServerInfo[]>();
+            for (const s of prev) {
+              if (!s.isQueried) continue;
+              const key = s.ip + "|" + s.name;
+              const queue = statusQueues.get(key);
+              if (queue) {
+                queue.push(s);
+              } else {
+                statusQueues.set(key, [s]);
+              }
+            }
             return next.map((s) => {
-              const hit = statusMap.get(s.ip + "|" + s.name);
-              return hit ? hit : s;
+              const queue = statusQueues.get(s.ip + "|" + s.name);
+              const hit = queue?.shift();
+              return hit ? applyPingStatus(s, hit) : s;
             });
           });
         }
