@@ -21,7 +21,9 @@ use crate::instance::helpers::client_json::{
   replace_native_libraries,
 };
 use crate::instance::helpers::game_version::{build_game_version_cmp_fn, compare_game_versions};
-use crate::instance::helpers::loader::common::{execute_processors, install_mod_loader};
+use crate::instance::helpers::loader::common::{
+  execute_processors, install_mod_loader, remove_install_profile,
+};
 use crate::instance::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::loader::optifine::{
@@ -1317,12 +1319,11 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
       };
 
       let install_profile_dir = instance.version_path.join("install_profile.json");
-      if instance.mod_loader.loader_type == ModLoaderType::Cleanroom {
-        // Cleanroom has no processors, but a previous loader may leave a profile behind.
-        if install_profile_dir.exists() {
-          fs::remove_file(&install_profile_dir)?;
-        }
-      } else if install_profile_dir.exists() {
+      if matches!(
+        instance.mod_loader.loader_type,
+        ModLoaderType::Forge | ModLoaderType::NeoForge
+      ) && install_profile_dir.exists()
+      {
         let install_profile = load_json_async::<InstallProfile>(&install_profile_dir).await?;
         execute_processors(&app, &instance, &client_info, &install_profile).await?;
       }
@@ -1518,6 +1519,8 @@ pub async fn change_mod_loader(
     .await?;
   }
 
+  remove_install_profile(&instance)?;
+
   if !modloader_task_params.is_empty() {
     schedule_progressive_task_group(
       app.clone(),
@@ -1571,6 +1574,7 @@ pub async fn remove_mod_loader(app: AppHandle, instance_id: String) -> SJMCLResu
   }
 
   remove_mod_loader_from_client_info(&mut version_info, instance.mod_loader.loader_type);
+  remove_install_profile(&instance)?;
   instance.mod_loader = ModLoader {
     loader_type: ModLoaderType::Unknown,
     version: String::new(),
