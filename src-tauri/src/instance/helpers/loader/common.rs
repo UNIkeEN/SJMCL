@@ -1,5 +1,5 @@
 use sjmcl_types::error::SJMCLResult;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Read;
 use std::path::PathBuf;
 use std::process::Command;
@@ -85,6 +85,14 @@ pub async fn install_mod_loader(
     }
     _ => Err(InstanceError::UnsupportedModLoader.into()),
   }
+}
+
+pub fn remove_install_profile(instance: &Instance) -> SJMCLResult<()> {
+  let path = instance.version_path.join("install_profile.json");
+  if path.exists() {
+    fs::remove_file(path)?;
+  }
+  Ok(())
 }
 
 pub async fn execute_processors(
