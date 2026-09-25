@@ -1032,6 +1032,7 @@
       "gameLogs": "遊戲日誌",
       "help": "幫助"
     },
+    "autoCloseCountdown": "視窗將在 {{seconds}} 秒後自動關閉（點擊視窗任意位置可取消）",
     "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
@@ -1357,6 +1358,12 @@
         },
         "displayGameLog": {
           "title": "顯示遊戲日誌"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "崩潰視窗自動關閉",
+          "disabled": "不自動關閉",
+          "tenSeconds": "10 秒後自動關閉",
+          "thirtySeconds": "30 秒後自動關閉"
         },
         "advancedOptions": {
           "title": "高階啟動設定",
