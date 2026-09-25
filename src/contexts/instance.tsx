@@ -1,5 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
+import { exists } from "@tauri-apps/plugin-fs";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { t } from "i18next";
 import { useRouter } from "next/router";
 import React, {
   createContext,
@@ -172,18 +174,44 @@ export const InstanceContextProvider: React.FC<{
   );
 
   useEffect(() => {
+    if (instanceId === undefined) return;
     // get summary
     const instanceList = getInstanceList() || [];
-    if (instanceId !== undefined) {
-      const summary = instanceList.find(
-        (instance) => instance.id === instanceId
-      );
-      if (summary && summary?.id) {
-        setInstanceSummary(summary);
-        handleRetrieveInstanceGameConfig(instanceId);
-      }
+    const summary = instanceList.find((instance) => instance.id === instanceId);
+
+    const handleMissing = () => {
+      toast({
+        title: t(
+          "Services.instance.retrieveInstanceGameConfig.error.description.INSTANCE_NOT_FOUND_BY_ID"
+        ),
+        status: "error",
+      });
+      getInstanceList(true);
+      router.replace("/instances/list");
+    };
+
+    if (!summary?.id) {
+      handleMissing();
+      return;
     }
-  }, [instanceId, getInstanceList, handleRetrieveInstanceGameConfig]);
+
+    exists(summary.versionPath)
+      .then((dirExists) => {
+        if (dirExists) {
+          setInstanceSummary(summary);
+          handleRetrieveInstanceGameConfig(instanceId);
+        } else {
+          handleMissing();
+        }
+      })
+      .catch(handleMissing);
+  }, [
+    instanceId,
+    getInstanceList,
+    handleRetrieveInstanceGameConfig,
+    router,
+    toast,
+  ]);
 
   const handleRetrieveInstanceSubdirPath = useCallback(
     (dirType: InstanceSubdirType): Promise<string | null> => {
