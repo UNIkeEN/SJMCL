@@ -161,8 +161,8 @@ impl ModpackManifest for MultiMcManifest {
     Ok(Vec::new())
   }
 
-  fn get_overrides_path(&self) -> String {
-    format!("{}.minecraft/", self.base_path)
+  fn get_overrides_paths(&self) -> Vec<PathBuf> {
+    vec![PathBuf::from(format!("{}.minecraft", self.base_path))]
   }
 }
 
