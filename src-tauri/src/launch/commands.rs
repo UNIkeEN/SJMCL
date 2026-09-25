@@ -462,6 +462,19 @@ pub fn retrieve_game_launching_state(
 }
 
 #[tauri::command]
+pub fn terminate_game_process(
+  launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  launching_id: u64,
+) -> SJMCLResult<()> {
+  let launching_queue = launching_queue_state.lock()?;
+  if let Some(launching) = launching_queue.iter().find(|l| l.id == launching_id) {
+    kill_process(launching.pid)
+  } else {
+    Err(LaunchError::LaunchingStateNotFound.into())
+  }
+}
+
+#[tauri::command]
 pub fn export_game_crash_info(
   app: AppHandle,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
