@@ -124,6 +124,7 @@ pub async fn run() {
         account::commands::fetch_auth_server,
         account::commands::add_auth_server,
         account::commands::delete_auth_server,
+        account::commands::rename_auth_server,
         account::commands::retrieve_other_launcher_account_info,
         account::commands::import_external_account_info,
         instance::commands::retrieve_instance_list,
