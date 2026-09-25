@@ -76,10 +76,14 @@ pnpm lint-staged
 pnpm eslint "src/**/*.{js,jsx,ts,tsx}" --no-fix    # 检查
 pnpm eslint "src/**/*.{js,jsx,ts,tsx}" --fix       # 修复
 
-# 后端部分
+# 后端部分（Linux、macOS 或 Windows 上的 Git Bash）
+rustfmt --check src-tauri/src/**/*.rs              # 检查
+rustfmt src-tauri/src/**/*.rs                      # 修复
+
+# 后端部分（Windows PowerShell）
 cd src-tauri
-cargo fmt --all -- --check                         # 检查
-cargo fmt --all                                    # 修复
+cargo fmt -- --check src/**/*.rs                   # 检查
+cargo fmt -- src/**/*.rs                           # 修复
 ```
 
 如果使用 VS Code 开发本项目，我们建议在工作区设置中将 `rust-analyzer.check.command` 设为 `clippy`，以进行更严格的代码检查。
