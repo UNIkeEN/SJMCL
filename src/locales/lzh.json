@@ -147,7 +147,8 @@
   },
   "AddGameServerModal": {
     "header": {
-      "title": "增戲伺服器"
+      "title": "增戲伺服器",
+      "editTitle": "改戲伺服器"
     },
     "serverAddrRequired": "伺服器址不可空",
     "label": {
@@ -1157,6 +1158,8 @@
     "import": "導入",
     "launch": "啟",
     "more": "餘",
+    "moveDown": "下移",
+    "moveUp": "上移",
     "new": "新",
     "next": "次步",
     "notice": "注",
@@ -2851,14 +2854,21 @@
           }
         }
       },
+      "queryGameServerOnlineStatus": {
+        "error": {
+          "title": "問伺服器狀態未成",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat 或已損壞"
+          }
+        }
+      },
       "addGameServer": {
         "success": "戲伺服器增既成",
         "error": {
           "title": "增戲伺服器未成",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "例ID無",
-            "FILE_OPERATION_ERROR": "寫入伺服器資訊未成",
-            "DUPLICATE_SERVER": "伺服器已存在"
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊未成"
           }
         }
       },
@@ -2866,6 +2876,27 @@
         "success": "戲伺服器刪既成",
         "error": {
           "title": "刪戲伺服器未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例ID無",
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊未成",
+            "SERVER_NOT_FOUND": "伺服器無"
+          }
+        }
+      },
+      "moveGameServer": {
+        "error": {
+          "title": "移戲伺服器未成",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "例ID無",
+            "FILE_OPERATION_ERROR": "寫入伺服器資訊未成",
+            "SERVER_NOT_FOUND": "伺服器無"
+          }
+        }
+      },
+      "updateGameServer": {
+        "success": "戲伺服器改既成",
+        "error": {
+          "title": "改戲伺服器未成",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "例ID無",
             "FILE_OPERATION_ERROR": "寫入伺服器資訊未成",

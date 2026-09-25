@@ -147,7 +147,8 @@
   },
   "AddGameServerModal": {
     "header": {
-      "title": "Add Game Server"
+      "title": "Add Game Server",
+      "editTitle": "Edit Game Server"
     },
     "serverAddrRequired": "Server address is required",
     "label": {
@@ -1157,6 +1158,8 @@
     "import": "Import",
     "launch": "Launch",
     "more": "More",
+    "moveDown": "Move Down",
+    "moveUp": "Move Up",
     "new": "New",
     "next": "Next",
     "notice": "Notice",
@@ -2851,14 +2854,21 @@
           }
         }
       },
+      "queryGameServerOnlineStatus": {
+        "error": {
+          "title": "Failed to query server status",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat may have been corrupted"
+          }
+        }
+      },
       "addGameServer": {
         "success": "Game server added successfully",
         "error": {
           "title": "Failed to add game server",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "FILE_OPERATION_ERROR": "Failed to write server info",
-            "DUPLICATE_SERVER": "Server already exists"
+            "FILE_OPERATION_ERROR": "Failed to write server info"
           }
         }
       },
@@ -2866,6 +2876,27 @@
         "success": "Game server deleted successfully",
         "error": {
           "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
+          }
+        }
+      },
+      "moveGameServer": {
+        "error": {
+          "title": "Failed to move game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
+          }
+        }
+      },
+      "updateGameServer": {
+        "success": "Game server updated successfully",
+        "error": {
+          "title": "Failed to update game server",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "FILE_OPERATION_ERROR": "Failed to write server info",

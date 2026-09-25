@@ -48,7 +48,8 @@ use crate::instance::helpers::resourcepack::{
 };
 use crate::instance::helpers::server::{
   GameServerInfo, get_servers_nbt_path_by_instance_id, load_servers_info_from_nbt,
-  query_servers_online, save_servers_to_nbt,
+  persist_server_icons_to_nbt, query_servers_online, save_servers_to_nbt,
+  to_visible_servers_with_index,
 };
 use crate::instance::helpers::world::{load_level_data_from_nbt, load_world_info_from_dir};
 use crate::instance::models::misc::{
@@ -519,17 +520,16 @@ pub async fn retrieve_game_server_list(
     Some(path) => path,
     None => return Ok(Vec::new()),
   };
-  let mut game_servers = match load_servers_info_from_nbt(&nbt_path).await {
+  let nbt_servers = match load_servers_info_from_nbt(&nbt_path).await {
     Ok(servers) => servers,
     Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
   };
 
-  // skip hidden servers
-  game_servers.retain(|server| !server.hidden);
+  let mut game_servers = to_visible_servers_with_index(nbt_servers);
 
-  // query_online is true, amend query and return player count and online status
   if query_online {
-    game_servers = query_servers_online(game_servers).await?;
+    game_servers = query_servers_online(game_servers, None).await?;
+    let _ = persist_server_icons_to_nbt(&nbt_path, &game_servers).await;
   }
 
   Ok(game_servers)
@@ -539,7 +539,7 @@ pub async fn retrieve_game_server_list(
 pub async fn delete_game_server(
   app: AppHandle,
   instance_id: String,
-  server_addr: String,
+  index: usize,
 ) -> SJMCLResult<()> {
   let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
     Some(path) => path,
@@ -547,7 +547,11 @@ pub async fn delete_game_server(
   };
   let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
 
-  existing_servers.retain(|server| server.ip != server_addr);
+  if index >= existing_servers.len() {
+    return Err(InstanceError::ServerNotFound.into());
+  }
+
+  existing_servers.remove(index);
   save_servers_to_nbt(&nbt_path, &existing_servers)
     .await
     .map_err(|_| InstanceError::FileOperationError)?;
@@ -555,10 +559,72 @@ pub async fn delete_game_server(
   Ok(())
 }
 
+/// Append a server entry like vanilla multiplayer "Add Server" (no IP dedup).
+/// Returns the servers.dat index of the new entry.
 #[tauri::command]
 pub async fn add_game_server(
   app: AppHandle,
   instance_id: String,
+  server_addr: String,
+  server_name: String,
+) -> SJMCLResult<usize> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
+
+  existing_servers.push(GameServerInfo {
+    ip: server_addr,
+    name: server_name,
+    ..Default::default()
+  });
+  let index = existing_servers.len() - 1;
+  save_servers_to_nbt(&nbt_path, &existing_servers)
+    .await
+    .map_err(|_| InstanceError::FileOperationError)?;
+
+  Ok(index)
+}
+
+/// Ping selected visible servers. `indexes` of `None` means all visible entries.
+/// Returns only the queried entries (with status filled); frontend merges by `index`.
+#[tauri::command]
+pub async fn query_game_server_online_status(
+  app: AppHandle,
+  instance_id: String,
+  indexes: Option<Vec<usize>>,
+) -> SJMCLResult<Vec<GameServerInfo>> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Ok(Vec::new()),
+  };
+  let nbt_servers = match load_servers_info_from_nbt(&nbt_path).await {
+    Ok(servers) => servers,
+    Err(_) => return Err(InstanceError::ServerNbtReadError.into()),
+  };
+
+  let visible = to_visible_servers_with_index(nbt_servers);
+  let targets: Vec<GameServerInfo> = match indexes {
+    Some(indexes) => visible
+      .into_iter()
+      .filter(|server| indexes.contains(&server.index))
+      .collect(),
+    None => visible,
+  };
+
+  let queried = query_servers_online(targets, Some(app.clone())).await?;
+  let _ = persist_server_icons_to_nbt(&nbt_path, &queried).await;
+
+  Ok(queried)
+}
+
+/// Update name/address of an existing server entry (by servers.dat index).
+#[tauri::command]
+pub async fn update_game_server(
+  app: AppHandle,
+  instance_id: String,
+  index: usize,
   server_addr: String,
   server_name: String,
 ) -> SJMCLResult<()> {
@@ -568,18 +634,60 @@ pub async fn add_game_server(
   };
   let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
 
-  if existing_servers
-    .iter()
-    .any(|server| server.ip == server_addr)
-  {
-    return Err(InstanceError::DuplicateServer.into());
+  let Some(server) = existing_servers.get_mut(index) else {
+    return Err(InstanceError::ServerNotFound.into());
+  };
+
+  server.ip = server_addr;
+  if !server_name.trim().is_empty() {
+    server.name = server_name;
   }
 
-  existing_servers.push(GameServerInfo {
-    ip: server_addr,
-    name: server_name,
-    ..Default::default()
-  });
+  save_servers_to_nbt(&nbt_path, &existing_servers)
+    .await
+    .map_err(|_| InstanceError::FileOperationError)?;
+
+  Ok(())
+}
+
+/// Reorder one visible server entry, swapping with the adjacent visible one (vanilla arrows).
+#[tauri::command]
+pub async fn move_game_server(
+  app: AppHandle,
+  instance_id: String,
+  index: usize,
+  move_up: bool,
+) -> SJMCLResult<()> {
+  let nbt_path = match get_servers_nbt_path_by_instance_id(&app, &instance_id) {
+    Some(path) => path,
+    None => return Err(InstanceError::InstanceNotFoundByID.into()),
+  };
+  let mut existing_servers = load_servers_info_from_nbt(&nbt_path).await?;
+
+  if index >= existing_servers.len() {
+    return Err(InstanceError::ServerNotFound.into());
+  }
+
+  let visible_indices: Vec<usize> = existing_servers
+    .iter()
+    .enumerate()
+    .filter(|(_, server)| !server.hidden)
+    .map(|(i, _)| i)
+    .collect();
+  let pos = visible_indices
+    .iter()
+    .position(|&i| i == index)
+    .ok_or(InstanceError::ServerNotFound)?;
+
+  let Some(next_pos) = (if move_up {
+    pos.checked_sub(1)
+  } else {
+    (pos + 1 < visible_indices.len()).then_some(pos + 1)
+  }) else {
+    return Ok(());
+  };
+
+  existing_servers.swap(index, visible_indices[next_pos]);
   save_servers_to_nbt(&nbt_path, &existing_servers)
     .await
     .map_err(|_| InstanceError::FileOperationError)?;
