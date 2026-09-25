@@ -169,6 +169,10 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
                 }))
                 .map(buildOptionItems)
             );
+            if (res.data.length > 0) {
+              onSelectModLoader(res.data[0]);
+              setSelectedId(res.data[0].version);
+            }
           } else {
             setVersionList([]);
             toast({
@@ -180,7 +184,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
         })
         .finally(() => setIsLoading(false));
     },
-    [selectedGameVersion.id, buildOptionItems, t, toast]
+    [selectedGameVersion.id, buildOptionItems, onSelectModLoader, t, toast]
   );
 
   const handleFetchOptiFineVersionList = useCallback(() => {
