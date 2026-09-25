@@ -49,7 +49,10 @@ import {
   ExtensionSlotRegistry,
 } from "@/models/extension";
 import { TaskTypeEnums } from "@/models/task";
-import { ExtensionService } from "@/services/extension";
+import {
+  ExtensionService,
+  ExtensionUpdateCheckFailureReason,
+} from "@/services/extension";
 import { TaskService } from "@/services/task";
 import { UtilsService } from "@/services/utils";
 import { logger } from "@/utils/logging";
@@ -140,6 +143,44 @@ interface ExtensionHostActionRefs {
   openSharedModal: (key: string, params?: any) => void;
 }
 
+export type ExtensionUpdateItemStatus =
+  | "checking"
+  | "queued"
+  | "downloading"
+  | "installing"
+  | "upToDate"
+  | "updated"
+  | "skipped"
+  | "failed";
+
+export type ExtensionUpdateFailureReason =
+  | ExtensionUpdateCheckFailureReason
+  | "downloadFailed"
+  | "installFailed"
+  | "checkFailed"
+  | "cancelled";
+
+export interface ExtensionUpdateItem {
+  identifier: string;
+  name: string;
+  status: ExtensionUpdateItemStatus;
+  currentVersion?: string | null;
+  latestVersion?: string;
+  progress: number;
+  // already-localized message describing why an update failed; set when status === "failed".
+  failureMessage?: string;
+}
+
+export interface ExtensionUpdateState {
+  phase: "idle" | "checking" | "updating" | "completed";
+  running: boolean;
+  current: number;
+  total: number;
+  progress: number;
+  startedAt?: number; // timestamp the batch update was started, shown beside failures
+  items: ExtensionUpdateItem[];
+}
+
 interface ExtensionHostContextType {
   // host internals used to build ExtensionContextValue for each extension.
   data: Omit<ExtensionAbilityData, "routeQuery">;
@@ -164,11 +205,24 @@ interface ExtensionHostContextType {
   // host control methods.
   getExtensionList: (sync?: boolean) => ExtensionInfo[] | undefined;
   handleAddExtension: (path: string) => Promise<void>;
+  extensionUpdateState: ExtensionUpdateState;
+  handleUpdateExtensions: () => Promise<void>;
+  cancelExtensionUpdate: () => void;
+  resetExtensionUpdateState: () => void;
 }
 
 const ExtensionHostContext = createContext<
   ExtensionHostContextType | undefined
 >(undefined);
+
+const initialExtensionUpdateState: ExtensionUpdateState = {
+  phase: "idle",
+  running: false,
+  current: 0,
+  total: 0,
+  progress: 0,
+  items: [],
+};
 
 export const normalizeExtensionRelativePath = (
   path: string | string[] | undefined
@@ -373,6 +427,8 @@ const ActiveExtensionHostContextProvider: React.FC<{
 
   const [extensionList, setExtensionList] = useState<ExtensionInfo[]>();
   const [extensionListVersion, setExtensionListVersion] = useState(0);
+  const [extensionUpdateState, setExtensionUpdateState] =
+    useState<ExtensionUpdateState>(initialExtensionUpdateState);
   const [extensionRuntimeVersionMap, setExtensionRuntimeVersionMap] = useState<
     Record<string, number>
   >({}); // bump this to trigger reload for a specific extension.
@@ -432,6 +488,11 @@ const ActiveExtensionHostContextProvider: React.FC<{
     updateConfig: update,
     openSharedModal,
   });
+  const extensionUpdateRunningRef = useRef(false);
+  // cancellation signal + the task group of the download currently in flight
+  // (so the user can interrupt the whole batch from the settings page).
+  const extensionUpdateCancelRef = useRef(false);
+  const extensionUpdateTaskGroupRef = useRef<string | undefined>(undefined);
 
   const extensionIdentifierList = useMemo(
     () =>
@@ -625,6 +686,282 @@ const ActiveExtensionHostContextProvider: React.FC<{
     },
     [getExtensionList, router, toast]
   );
+
+  // Build a localized message for a failure reason, falling back to "unknown".
+  const describeUpdateFailure = useCallback(
+    (reason: ExtensionUpdateFailureReason, details?: string): string =>
+      t(`ExtensionSettingsPage.update.reasons.${reason}`, {
+        details: details || t("ExtensionSettingsPage.update.reasons.unknown"),
+      }),
+    []
+  );
+
+  const handleUpdateExtensions = useCallback(async () => {
+    const installedExtensions = extensionList || [];
+    if (extensionUpdateRunningRef.current || installedExtensions.length === 0) {
+      return;
+    }
+
+    extensionUpdateRunningRef.current = true;
+    extensionUpdateCancelRef.current = false;
+    extensionUpdateTaskGroupRef.current = undefined;
+    const startedAt = Date.now();
+
+    // items are mutated in place during the run; each publish clones them for React.
+    const items: ExtensionUpdateItem[] = installedExtensions.map(
+      (extension) => ({
+        identifier: extension.identifier,
+        name: extension.name,
+        status: "checking",
+        currentVersion: extension.version,
+        progress: 0,
+      })
+    );
+
+    const publish = (
+      patch: Omit<ExtensionUpdateState, "items" | "startedAt">
+    ) => {
+      setExtensionUpdateState({
+        ...patch,
+        startedAt,
+        items: items.map((item) => ({ ...item })),
+      });
+    };
+
+    publish({
+      phase: "checking",
+      running: true,
+      current: 0,
+      total: installedExtensions.length,
+      progress: 0,
+    });
+
+    const summarize = () => ({
+      updated: items.filter((i) => i.status === "updated").length,
+      upToDate: items.filter((i) => i.status === "upToDate").length,
+      skipped: items.filter((i) => i.status === "skipped").length,
+      failed: items.filter((i) => i.status === "failed").length,
+    });
+
+    try {
+      const checkResult = await ExtensionService.checkExtensionUpdates(
+        installedExtensions,
+        (current, total) =>
+          publish({
+            phase: "checking",
+            running: true,
+            current,
+            total,
+            progress: total > 0 ? (current / total) * 100 : 0,
+          })
+      );
+
+      const candidateMap = new Map(
+        checkResult.candidates.map((c) => [c.identifier, c])
+      );
+      const failureMap = new Map(
+        checkResult.failures.map((f) => [f.identifier, f])
+      );
+      const upToDateSet = new Set(checkResult.upToDateIdentifiers);
+      const skippedSet = new Set(checkResult.skippedIdentifiers);
+
+      for (const item of items) {
+        const candidate = candidateMap.get(item.identifier);
+        const failure = failureMap.get(item.identifier);
+        if (candidate) {
+          item.status = "queued";
+          item.latestVersion = candidate.latestVersion;
+        } else if (failure) {
+          item.status = "failed";
+          item.progress = 100;
+          item.failureMessage = describeUpdateFailure(
+            failure.reason,
+            failure.details
+          );
+        } else if (upToDateSet.has(item.identifier)) {
+          item.status = "upToDate";
+          item.progress = 100;
+        } else if (skippedSet.has(item.identifier)) {
+          // no repoUrl configured; nothing to check
+          item.status = "skipped";
+          item.progress = 100;
+        }
+      }
+
+      const candidates = checkResult.candidates;
+      const updateProgress = (index: number, partial = 0) =>
+        ((index + partial) / candidates.length) * 100;
+
+      publish({
+        phase: candidates.length > 0 ? "updating" : "completed",
+        running: candidates.length > 0,
+        current: 0,
+        total: candidates.length,
+        progress: candidates.length > 0 ? 0 : 100,
+      });
+
+      for (const [index, candidate] of candidates.entries()) {
+        // honor a cancel requested between downloads
+        if (extensionUpdateCancelRef.current) break;
+
+        const item = items.find((i) => i.identifier === candidate.identifier);
+        if (!item) continue;
+
+        const taskGroup = `extension-update-all?${encodeURIComponent(
+          candidate.identifier
+        )}&${encodeURIComponent(candidate.latestVersion)}`;
+        extensionUpdateTaskGroupRef.current = taskGroup;
+        item.status = "downloading";
+        item.progress = 0;
+        publish({
+          phase: "updating",
+          running: true,
+          current: index + 1,
+          total: candidates.length,
+          progress: updateProgress(index),
+        });
+
+        const downloadResult = await ExtensionService.downloadExtensionUpdate(
+          candidate,
+          config.download.cache.directory,
+          taskGroup,
+          (percent) => {
+            item.progress = percent;
+            publish({
+              phase: "updating",
+              running: true,
+              current: index + 1,
+              total: candidates.length,
+              progress: updateProgress(
+                index,
+                Math.min(Math.max(percent, 0), 100) / 100
+              ),
+            });
+          }
+        );
+
+        if (downloadResult.cancelled || extensionUpdateCancelRef.current) {
+          item.status = "failed";
+          item.progress = 100;
+          item.failureMessage = t(
+            "ExtensionSettingsPage.update.reasons.cancelled"
+          );
+          continue;
+        }
+        if (!downloadResult.path) {
+          item.status = "failed";
+          item.progress = 100;
+          item.failureMessage = describeUpdateFailure(
+            "downloadFailed",
+            downloadResult.error
+          );
+          continue;
+        }
+
+        item.status = "installing";
+        item.progress = 100;
+        publish({
+          phase: "updating",
+          running: true,
+          current: index + 1,
+          total: candidates.length,
+          progress: updateProgress(index + 1),
+        });
+
+        const response = await ExtensionService.addExtension(
+          downloadResult.path,
+          candidate.identifier,
+          item.currentVersion || undefined,
+          true
+        );
+        if (response.status === "success") {
+          item.status = "updated";
+          item.latestVersion = response.data.version || candidate.latestVersion;
+        } else if (String(response.raw_error) === "VERSION_NOT_NEWER") {
+          item.status = "upToDate";
+          item.latestVersion = item.currentVersion || candidate.latestVersion;
+        } else {
+          item.status = "failed";
+          item.failureMessage = describeUpdateFailure(
+            String(response.raw_error) === "INVALID_VERSION"
+              ? "invalidVersion"
+              : "installFailed",
+            response.details || response.message
+          );
+        }
+      }
+
+      handleRetrieveExtensionList();
+
+      const { updated, upToDate, skipped, failed } = summarize();
+      publish({
+        phase: "completed",
+        running: false,
+        current: candidates.length,
+        total: candidates.length,
+        progress: 100,
+      });
+      toast({
+        title: t("ExtensionSettingsPage.update.completed", {
+          updated,
+          upToDate,
+          skipped,
+          failed,
+        }),
+        status: failed > 0 ? "error" : "success",
+      });
+    } catch (error) {
+      const failureDetails =
+        error instanceof Error ? error.message : String(error);
+      for (const item of items) {
+        if (
+          item.status !== "updated" &&
+          item.status !== "upToDate" &&
+          item.status !== "skipped"
+        ) {
+          item.status = "failed";
+          item.progress = 100;
+          item.failureMessage = describeUpdateFailure(
+            "checkFailed",
+            failureDetails
+          );
+        }
+      }
+      publish({
+        phase: "completed",
+        running: false,
+        current: 0,
+        total: 0,
+        progress: 100,
+      });
+      toast({
+        title: t("ExtensionSettingsPage.update.checkFailed"),
+        description: failureDetails,
+        status: "error",
+      });
+    } finally {
+      extensionUpdateRunningRef.current = false;
+      extensionUpdateTaskGroupRef.current = undefined;
+    }
+  }, [
+    config.download.cache.directory,
+    describeUpdateFailure,
+    extensionList,
+    handleRetrieveExtensionList,
+    toast,
+  ]);
+
+  const cancelExtensionUpdate = useCallback(() => {
+    if (!extensionUpdateRunningRef.current) return;
+    extensionUpdateCancelRef.current = true;
+    const taskGroup = extensionUpdateTaskGroupRef.current;
+    if (taskGroup) TaskService.cancelProgressiveTaskGroup(taskGroup);
+  }, []);
+
+  const resetExtensionUpdateState = useCallback(() => {
+    if (extensionUpdateRunningRef.current) return; // never reset while running
+    setExtensionUpdateState(initialExtensionUpdateState);
+  }, []);
 
   // reload single extension
   const reloadExtension = useCallback(
@@ -1651,6 +1988,10 @@ const ActiveExtensionHostContextProvider: React.FC<{
       getExtensionSlotItems,
       getExtensionList,
       handleAddExtension,
+      extensionUpdateState,
+      handleUpdateExtensions,
+      cancelExtensionUpdate,
+      resetExtensionUpdateState,
     }),
     [
       config,
@@ -1669,6 +2010,10 @@ const ActiveExtensionHostContextProvider: React.FC<{
       getExtensionSlotItems,
       getExtensionList,
       handleAddExtension,
+      extensionUpdateState,
+      handleUpdateExtensions,
+      cancelExtensionUpdate,
+      resetExtensionUpdateState,
     ]
   );
 
