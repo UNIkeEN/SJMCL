@@ -8,6 +8,7 @@ use tauri::AppHandle;
 use zip::ZipArchive;
 
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
+use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
 use crate::instance::helpers::loader::forge::{InstallProfile, install_forge_loader};
@@ -76,7 +77,10 @@ pub async fn install_mod_loader(
       .await
     }
     ModLoaderType::Forge => {
-      if Version::parse(game_version)?.lt(&Version::new(1, 6, 0)) {
+      if compare_game_versions(&app, game_version, "1.6.0", false)
+        .await
+        .is_lt()
+      {
         install_universal_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params)
           .await
       } else {
