@@ -10,14 +10,14 @@ use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
 use crate::tasks::download::DownloadParam;
 use crate::utils::fs::get_app_resource_filepath;
-use reqwest_middleware::reqwest::redirect::Policy;
-use reqwest_middleware::reqwest::{Client, Error, StatusCode};
 use serde::Deserialize;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 use tauri::AppHandle;
+use tauri_plugin_http::reqwest::redirect::Policy;
+use tauri_plugin_http::reqwest::{Client, Error, StatusCode};
 use url::Url;
 
 async fn fetch_bmcl_forge_universal_url(
@@ -195,7 +195,7 @@ pub async fn download_universal_forge_libraries(
       src: Url::parse(
         format!("https://files.prismlauncher.org/fmllibs/{}", lib.filename).as_str(),
       )?,
-      dest: root_dir.join("libs").join(&lib.filename),
+      dest: root_dir.join("lib").join(&lib.filename),
       filename: None,
       sha1: lib.checksum.clone(),
     }));
