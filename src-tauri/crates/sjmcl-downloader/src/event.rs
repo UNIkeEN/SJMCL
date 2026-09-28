@@ -37,7 +37,7 @@ pub enum EngineEvent {
     failed_tasks: Vec<String>,
     summary: crate::GroupStats,
   },
-  /// Report task failures immediately when they are observed.
+  /// Report a task failure only when no automatic retry is scheduled.
   TaskFailed {
     group_id: String,
     task_id: String,

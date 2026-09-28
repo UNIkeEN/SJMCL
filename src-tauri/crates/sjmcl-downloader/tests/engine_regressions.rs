@@ -1,17 +1,57 @@
-use std::sync::Arc;
-use std::time::Duration;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 
 use sjmcl_downloader::executor::BoxFuture;
 use sjmcl_downloader::storage::MemoryStore;
 use sjmcl_downloader::{
-  Engine, EngineConfig, EventSink, FinishKind, GroupState, StateStore, SubmitGroup, SubmitTask,
-  Task, TaskError, TaskExecutor, TaskGroup, TaskOutcome, TaskReport, TaskState,
+  Engine, EngineConfig, EngineEvent, EventSink, FinishKind, GroupState, StateStore, SubmitGroup,
+  SubmitTask, Task, TaskError, TaskExecutor, TaskGroup, TaskOutcome, TaskReport, TaskState,
 };
 
 struct NoopSink;
 
 impl EventSink for NoopSink {
   fn emit(&self, _event: &sjmcl_downloader::EngineEvent) {}
+}
+
+#[derive(Default)]
+struct RecordingSink(Mutex<Vec<EngineEvent>>);
+
+impl EventSink for RecordingSink {
+  fn emit(&self, event: &EngineEvent) {
+    self.0.lock().unwrap().push(event.clone());
+  }
+}
+
+struct FailTwiceThenComplete(Arc<Mutex<Vec<Instant>>>);
+
+impl TaskExecutor for FailTwiceThenComplete {
+  fn name(&self) -> &'static str {
+    "test"
+  }
+
+  fn run(&self, ctx: sjmcl_downloader::ExecContext) -> BoxFuture<'static, Result<(), TaskError>> {
+    let calls = self.0.clone();
+    Box::pin(async move {
+      let attempt = {
+        let mut calls = calls.lock().unwrap();
+        calls.push(Instant::now());
+        calls.len()
+      };
+      if attempt < 3 {
+        return Err(TaskError::Http(403));
+      }
+      ctx
+        .report
+        .send(TaskReport::Outcome {
+          task_id: ctx.task_id,
+          outcome: TaskOutcome::Done { verified: false },
+        })
+        .await
+        .unwrap();
+      Ok(())
+    })
+  }
 }
 
 struct CompleteImmediately;
@@ -305,6 +345,54 @@ async fn fail_fast_does_not_revive_a_cancelled_task() {
       .state,
     TaskState::Cancelled
   );
+}
+
+#[tokio::test]
+async fn transient_http_failure_retries_with_exponential_backoff() {
+  let mut cfg = config();
+  cfg.max_retries = 2;
+  cfg.retry_backoff = Duration::from_millis(50);
+  let calls = Arc::new(Mutex::new(Vec::new()));
+  let sink = Arc::new(RecordingSink::default());
+  let mut builder = Engine::builder(cfg, sink.clone(), Arc::new(MemoryStore::default()));
+  builder.register(Arc::new(FailTwiceThenComplete(calls.clone())));
+  let (engine, _handle) = builder.spawn();
+  let group_id = engine
+    .submit_group(SubmitGroup {
+      name: "retry-backoff".into(),
+      tasks: vec![submit_task("one")],
+      auto_resume: false,
+    })
+    .await
+    .unwrap();
+
+  let deadline = tokio::time::Instant::now() + Duration::from_secs(2);
+  loop {
+    let group = engine
+      .snapshot()
+      .await
+      .unwrap()
+      .into_iter()
+      .find(|group| group.id == group_id)
+      .unwrap();
+    if group.state == GroupState::Finished {
+      assert_eq!(group.finish, Some(FinishKind::Completed));
+      break;
+    }
+    assert!(tokio::time::Instant::now() < deadline);
+    tokio::time::sleep(Duration::from_millis(5)).await;
+  }
+
+  let calls = calls.lock().unwrap();
+  assert_eq!(calls.len(), 3);
+  assert!(calls[1].duration_since(calls[0]) >= Duration::from_millis(50));
+  assert!(calls[2].duration_since(calls[1]) >= Duration::from_millis(100));
+  assert!(sink
+    .0
+    .lock()
+    .unwrap()
+    .iter()
+    .all(|event| !matches!(event, EngineEvent::TaskFailed { .. })));
 }
 
 #[tokio::test]

@@ -65,11 +65,11 @@ pub enum TaskError {
 }
 
 impl TaskError {
-  /// Network errors and HTTP 5xx responses are eligible for backoff retries.
+  /// Transient errors eligible for backoff retries: network errors and recoverable HTTP responses.
   pub fn is_transient(&self) -> bool {
     match self {
       TaskError::Network(_) => true,
-      TaskError::Http(code) => (500..=599).contains(code),
+      TaskError::Http(code) => matches!(*code, 403 | 408 | 429 | 500..=599),
       _ => false,
     }
   }

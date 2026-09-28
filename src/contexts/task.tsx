@@ -138,7 +138,8 @@ const deriveGroup = (
     progress,
     etaSecs,
     error: taskErrorText(
-      derivedTasks.find((task) => task.error)?.error ?? null
+      derivedTasks.find((task) => task.retriesExhausted && task.error)?.error ??
+        null
     ),
   };
 };
@@ -529,6 +530,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                         ...task,
                         state: DownloadTaskState.Failed,
                         error: event.error,
+                        retriesExhausted: true,
                       }
                     : task
                 )

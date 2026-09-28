@@ -738,17 +738,7 @@ impl EngineActor {
         task_id: task_id.into(),
       });
     }
-    // Report task errors as they occur.
-    if emit_failed {
-      if let Some(e) = &task_error {
-        self.emit(EngineEvent::TaskFailed {
-          group_id: gid.clone(),
-          task_id: task_id.into(),
-          error: e.clone(),
-        });
-      }
-    }
-    // Decide whether the task can retry or the group must drain.
+    // Retry transient failures before treating them as terminal group failures.
     let (attempts, transient, group_active) = {
       let t = &self.state.groups[gi].tasks[ti];
       (
@@ -766,12 +756,22 @@ impl EngineActor {
     } else if new_state == TaskState::Failed {
       self.state.groups[gi].tasks[ti].retries_exhausted = true;
     }
+    // Keep intermediate failures in task state, but emit TaskFailed only when no retry remains.
+    if emit_failed && !schedule_retry {
+      if let Some(e) = &task_error {
+        self.emit(EngineEvent::TaskFailed {
+          group_id: gid.clone(),
+          task_id: task_id.into(),
+          error: e.clone(),
+        });
+      }
+    }
     self.persist_group(&gid);
 
     if schedule_retry {
       let attempts = self.state.groups[gi].tasks[ti].attempts;
-      // The first retry waits twice the base interval; later delays keep doubling.
-      let delay = self.cfg.retry_backoff * 2u32.pow(attempts.min(6));
+      // The first retry waits one base interval; later delays double up to a 64x cap.
+      let delay = self.cfg.retry_backoff * 2u32.pow(attempts.saturating_sub(1).min(6));
       let tx = self.self_tx.clone();
       let (gid2, tid2) = (gid.clone(), task_id.to_string());
       tokio::spawn(async move {

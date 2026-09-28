@@ -258,25 +258,31 @@ export const DownloadTasksPage = () => {
                       }
                     >
                       {task.state !== DownloadTaskState.Done &&
-                        task.state !== DownloadTaskState.Failed && (
+                        (task.state !== DownloadTaskState.Failed ||
+                          !task.retriesExhausted) && (
                           <Progress
                             w={36}
                             size="xs"
                             value={task.progress}
                             colorScheme={primaryColor}
                             isIndeterminate={
-                              task.state === DownloadTaskState.Pending
+                              task.state === DownloadTaskState.Pending ||
+                              (task.state === DownloadTaskState.Failed &&
+                                !task.retriesExhausted) ||
+                              (task.state === DownloadTaskState.Downloading &&
+                                task.total === 0)
                             }
                             borderRadius="sm"
                           />
                         )}
-                      {task.state === DownloadTaskState.Failed && (
-                        <Tooltip label={JSON.stringify(task.error)}>
-                          <Text color="red.600" fontSize="xs">
-                            {t("DownloadTasksPage.label.error")}
-                          </Text>
-                        </Tooltip>
-                      )}
+                      {task.state === DownloadTaskState.Failed &&
+                        task.retriesExhausted && (
+                          <Tooltip label={JSON.stringify(task.error)}>
+                            <Text color="red.600" fontSize="xs">
+                              {t("DownloadTasksPage.label.error")}
+                            </Text>
+                          </Tooltip>
+                        )}
                       {task.state === DownloadTaskState.Done && (
                         <CommonIconButton
                           icon="revealFile"
