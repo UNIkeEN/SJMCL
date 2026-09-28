@@ -50,7 +50,7 @@ export class InstanceService {
    * @param {boolean} [isInstallFabricApi] - Optional flag to indicate whether to install Fabric API (only valid when modLoader is Fabric).
    * @param {boolean} [isInstallQfApi] - Optional flag to indicate whether to install QFAPI / QSL (only valid when modLoader is Quilt).
    * @param {string} [modpackVersion] - Optional modpack version to use.
-   * @returns {Promise<InvokeResponse<null>>}
+   * @returns {Promise<InvokeResponse<string>>} The initial download task group ID.
    */
   @responseHandler("instance")
   static async createInstance(
@@ -65,7 +65,7 @@ export class InstanceService {
     isInstallFabricApi?: boolean,
     isInstallQfApi?: boolean,
     modpackVersion?: string
-  ): Promise<InvokeResponse<null>> {
+  ): Promise<InvokeResponse<string>> {
     return await invoke("create_instance", {
       directory,
       name,

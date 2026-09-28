@@ -1052,7 +1052,7 @@ pub async fn create_instance(
   mut is_install_fabric_api: Option<bool>,
   mut is_install_qf_api: Option<bool>,
   modpack_version: Option<String>,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<String> {
   let client = app.state::<reqwest::Client>();
   let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
   // Get priority list
@@ -1264,7 +1264,7 @@ pub async fn create_instance(
     .await
     .map_err(|_| InstanceError::FileCreationFailed)?;
 
-  submit_instance_download_group(
+  let group_id = submit_instance_download_group(
     app.clone(),
     match java_version_to_download {
       Some(java_version) => format!("game-client-w-java?{}&{}", name, java_version),
@@ -1276,7 +1276,7 @@ pub async fn create_instance(
   .await?;
 
   dir_guard.commit();
-  Ok(())
+  Ok(group_id)
 }
 
 #[tauri::command]
