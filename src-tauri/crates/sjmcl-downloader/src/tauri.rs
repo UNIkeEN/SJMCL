@@ -6,10 +6,11 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use crate::{
+  Engine, EngineEvent, GroupSummary, SubmitGroup,
   download::DownloadExecutor,
   event::EventSink,
+  executor::TaskExecutor,
   model::{EngineConfig, Task},
-  Engine, EngineEvent, GroupSummary, SubmitGroup,
 };
 use ::tauri::{AppHandle, Emitter, Manager, Runtime, State};
 
@@ -67,6 +68,17 @@ pub fn setup_engine<R: Runtime>(
   config: EngineConfig,
   executor: DownloadExecutor,
 ) -> Result<(), String> {
+  setup_engine_with_executors(app, db_path, config, executor, Vec::new())
+}
+
+/// Initialize the engine with additional host-specific executors.
+pub fn setup_engine_with_executors<R: Runtime>(
+  app: &AppHandle<R>,
+  db_path: PathBuf,
+  config: EngineConfig,
+  executor: DownloadExecutor,
+  extra_executors: Vec<Arc<dyn TaskExecutor>>,
+) -> Result<(), String> {
   if let Some(parent) = db_path.parent() {
     std::fs::create_dir_all(parent).map_err(|error| error.to_string())?;
   }
@@ -74,6 +86,9 @@ pub fn setup_engine<R: Runtime>(
   let store = Arc::new(crate::storage::SqliteStore::open(&db_path)?);
   let mut builder = Engine::builder(config, sink, store);
   builder.register(Arc::new(executor));
+  for executor in extra_executors {
+    builder.register(executor);
+  }
   let runtime = tokio::runtime::Builder::new_multi_thread()
     .enable_all()
     .worker_threads(2)

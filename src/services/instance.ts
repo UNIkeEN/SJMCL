@@ -451,34 +451,6 @@ export class InstanceService {
   }
 
   /**
-   * FINISH the mod loader installation.
-   * @param {string} instanceId - The ID of the instance to mark the mod loader as installed.
-   * @returns {Promise<InvokeResponse<void>>}
-   */
-  @responseHandler("instance")
-  static async finishModLoaderInstall(
-    instanceId: string
-  ): Promise<InvokeResponse<void>> {
-    return await invoke("finish_mod_loader_install", {
-      instanceId,
-    });
-  }
-
-  /**
-   * FINISH the OptiFine loader installation.
-   * @param {string} instanceId - The ID of the instance to mark OptiFine as installed.
-   * @returns {Promise<InvokeResponse<void>>}
-   */
-  @responseHandler("instance")
-  static async finishOptiFineLoaderInstall(
-    instanceId: string
-  ): Promise<InvokeResponse<void>> {
-    return await invoke("finish_optifine_loader_install", {
-      instanceId,
-    });
-  }
-
-  /**
    * CHECK whether the given instance supports mod loader change.
    * @param {string} instanceId - The instance ID to check.
    * @returns {Promise<InvokeResponse<boolean>>}

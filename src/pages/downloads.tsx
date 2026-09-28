@@ -243,7 +243,11 @@ export const DownloadTasksPage = () => {
                 ? group.tasks.map((task) => (
                     <OptionItem
                       key={`${task.id}-detail`}
-                      title={task.name}
+                      title={
+                        task.executor === "download"
+                          ? task.name
+                          : t(`DownloadTasksPage.postprocess.${task.executor}`)
+                      }
                       description={
                         (task.state === DownloadTaskState.Downloading ||
                           task.state === DownloadTaskState.Verifying) && (
@@ -283,13 +287,13 @@ export const DownloadTasksPage = () => {
                             </Text>
                           </Tooltip>
                         )}
-                      {task.state === DownloadTaskState.Done && (
+                      {task.state === DownloadTaskState.Done && task.dest && (
                         <CommonIconButton
                           icon="revealFile"
                           size="xs"
                           fontSize="sm"
                           h={21}
-                          onClick={() => revealItemInDir(task.dest)}
+                          onClick={() => revealItemInDir(task.dest!)}
                         />
                       )}
                     </OptionItem>

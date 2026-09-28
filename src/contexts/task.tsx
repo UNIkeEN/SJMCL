@@ -1,4 +1,3 @@
-import { ToastId, useToast as useChakraToast } from "@chakra-ui/react";
 import { emit } from "@tauri-apps/api/event";
 import React, {
   createContext,
@@ -33,7 +32,6 @@ import {
   EXTENSION_REFRESH_EVENT,
   ExtensionService,
 } from "@/services/extension";
-import { InstanceService } from "@/services/instance";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
 
 interface TaskContextType {
@@ -60,6 +58,7 @@ const taskErrorText = (error: DownloadTaskError | null): string | undefined => {
   if ("Checksum" in error) {
     return `Checksum mismatch: ${error.Checksum.actual}`;
   }
+  if ("CorruptFiles" in error) return error.CorruptFiles.join(", ");
   return Object.values(error)[0];
 };
 
@@ -157,7 +156,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const toast = useToast();
-  const { close: closeToast } = useChakraToast();
   const { getInstanceList } = useGlobalData();
   const { config, getJavaInfos } = useLauncherConfig();
   const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
@@ -165,8 +163,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const tasksRef = useRef<DownloadGroup[]>([]);
   const { t } = useTranslation();
   const refreshSequence = useRef(0);
-  const modLoaderLoadingToastRef = useRef<ToastId | null>(null);
-  const optifineLoadingToastRef = useRef<ToastId | null>(null);
 
   useEffect(() => {
     tasksRef.current = tasks;
@@ -280,78 +276,16 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         case "game-client":
         case "change-mod-loader":
         case "change-optifine":
+        case "forge-libraries":
+        case "cleanroom-libraries":
+        case "neoforge-libraries":
+        case "optifine-libraries":
           getInstanceList(true);
           break;
         case "game-client-w-java":
           getInstanceList(true);
           getJavaInfos(true);
           break;
-        case "forge-libraries":
-        case "cleanroom-libraries":
-        case "neoforge-libraries": {
-          const instanceId = params.param || params.param1;
-          if (!instanceId || modLoaderLoadingToastRef.current) break;
-          const instanceName = getInstanceList()?.find(
-            (instance) => instance.id === instanceId
-          )?.name;
-          modLoaderLoadingToastRef.current = toast({
-            title: t("Services.instance.finishModLoaderInstall.loading", {
-              instanceName,
-            }),
-            status: "loading",
-          });
-          InstanceService.finishModLoaderInstall(instanceId).then(
-            (response) => {
-              if (modLoaderLoadingToastRef.current) {
-                closeToast(modLoaderLoadingToastRef.current);
-                modLoaderLoadingToastRef.current = null;
-              }
-              if (response.status === "success") {
-                getInstanceList(true);
-                toast({ title: response.message, status: "success" });
-              } else {
-                toast({
-                  title: response.message,
-                  description: response.details,
-                  status: "error",
-                });
-              }
-            }
-          );
-          break;
-        }
-        case "optifine-libraries": {
-          const instanceId = params.param || params.param1;
-          if (!instanceId || optifineLoadingToastRef.current) break;
-          const instanceName = getInstanceList()?.find(
-            (instance) => instance.id === instanceId
-          )?.name;
-          optifineLoadingToastRef.current = toast({
-            title: t("Services.instance.finishOptiFineLoaderInstall.loading", {
-              instanceName,
-            }),
-            status: "loading",
-          });
-          InstanceService.finishOptiFineLoaderInstall(instanceId).then(
-            (response) => {
-              if (optifineLoadingToastRef.current) {
-                closeToast(optifineLoadingToastRef.current);
-                optifineLoadingToastRef.current = null;
-              }
-              if (response.status === "success") {
-                getInstanceList(true);
-                toast({ title: response.message, status: "success" });
-              } else {
-                toast({
-                  title: response.message,
-                  description: response.details,
-                  status: "error",
-                });
-              }
-            }
-          );
-          break;
-        }
         case "mod":
         case "mod-update":
           emit(RESOURCE_REFRESH_EVENT, OtherResourceType.Mod);
@@ -363,7 +297,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           emit(RESOURCE_REFRESH_EVENT, OtherResourceType.ShaderPack);
           break;
         case "modpack":
-          if (group.tasks[0]) {
+          if (group.tasks[0]?.dest) {
             openSharedModal("import-modpack", { path: group.tasks[0].dest });
           }
           break;
@@ -415,7 +349,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           const task = group.tasks[0];
           const expectedIdentifier = params.param1;
           const newVersion = params.param2 || "";
-          if (task && expectedIdentifier) {
+          if (task?.dest && "url" in task.spec && expectedIdentifier) {
             openGenericConfirmDialog({
               title: t("ExtensionUpdateConfirmDialog.title"),
               body: t("ExtensionUpdateConfirmDialog.body", {
@@ -425,7 +359,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               }),
               onOKCallback: () => {
                 ExtensionService.addExtension(
-                  task.dest,
+                  task.dest!,
                   expectedIdentifier
                 ).then((response) => {
                   if (response.status === "success") {
@@ -450,7 +384,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     },
     [
-      closeToast,
       config.basicInfo.isPortable,
       config.basicInfo.osType,
       getInstanceList,

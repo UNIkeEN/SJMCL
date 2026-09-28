@@ -1,8 +1,12 @@
 use std::path::PathBuf;
+use std::time::Duration;
 
 use sjmcl_downloader::{EngineError, EngineHandle, GroupState, SubmitGroup, SubmitTask};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::{AppHandle, Manager, Url};
+
+use crate::instance::helpers::loader::postprocess::{InstallKind, InstallSpec, PrepareSpec};
+use crate::instance::models::misc::Instance;
 
 #[derive(Debug, Clone)]
 pub struct DownloadTask {
@@ -53,6 +57,85 @@ pub async fn submit_download_group(
       name,
       tasks: tasks.into_iter().map(Into::into).collect(),
       auto_resume,
+    })
+    .await
+    .map_err(engine_error)
+}
+
+pub async fn submit_instance_download_group(
+  app: AppHandle,
+  name: String,
+  tasks: Vec<PTaskParam>,
+  instance: &Instance,
+) -> SJMCLResult<String> {
+  let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
+  tasks.push(SubmitTask {
+    name: "Prepare installation".into(),
+    executor: "prepare_install".into(),
+    spec: serde_json::to_value(PrepareSpec {
+      instance_id: instance.id.clone(),
+      version_path: instance.version_path.clone(),
+    })?,
+    dest: None,
+    sha1: None,
+    sha256: None,
+  });
+  app
+    .state::<EngineHandle>()
+    .0
+    .submit_group(SubmitGroup {
+      name,
+      tasks,
+      auto_resume: true,
+    })
+    .await
+    .map_err(engine_error)
+}
+
+pub async fn submit_install_group(
+  app: AppHandle,
+  name: String,
+  tasks: Vec<PTaskParam>,
+  instance: &Instance,
+  kind: InstallKind,
+) -> SJMCLResult<String> {
+  let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
+  let spec = serde_json::to_value(InstallSpec {
+    instance_id: instance.id.clone(),
+    version_path: instance.version_path.clone(),
+    kind,
+  })?;
+  tasks.push(SubmitTask {
+    name: "Install".into(),
+    executor: "install".into(),
+    spec: spec.clone(),
+    dest: None,
+    sha1: None,
+    sha256: None,
+  });
+  tasks.push(SubmitTask {
+    name: "Verify".into(),
+    executor: "verify".into(),
+    spec,
+    dest: None,
+    sha1: None,
+    sha256: None,
+  });
+  let mut engine = app.try_state::<EngineHandle>();
+  for _ in 0..100 {
+    if engine.is_some() {
+      break;
+    }
+    tokio::time::sleep(Duration::from_millis(10)).await;
+    engine = app.try_state::<EngineHandle>();
+  }
+  engine
+    .ok_or_else(|| SJMCLError("download engine is not initialized".into()))?
+    .0
+    .submit_group(SubmitGroup {
+      name,
+      tasks,
+      auto_resume: true,
     })
     .await
     .map_err(engine_error)

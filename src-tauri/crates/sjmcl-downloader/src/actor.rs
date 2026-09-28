@@ -17,12 +17,12 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use tokio::sync::{mpsc, oneshot};
-use tokio::time::{interval, MissedTickBehavior};
+use tokio::time::{MissedTickBehavior, interval};
 use tokio_util::sync::CancellationToken;
 
 use crate::command::{Command, Reply};
 use crate::event::{EngineEvent, EventSink};
-use crate::executor::{spawn_worker_pool, ExecutorRegistry, Job, Registry};
+use crate::executor::{ExecutorRegistry, Job, Registry, spawn_worker_pool};
 use crate::model::{
   CancelReason, EngineConfig, EngineError, FinishKind, GroupState, RuntimeGroup, RuntimeTask, Task,
   TaskError, TaskGroup, TaskState,
@@ -514,6 +514,47 @@ impl EngineActor {
         "只有 Finished(Failed) 组可 retry".into(),
       ));
     }
+    let corrupt_paths: Vec<_> = self.state.groups[gi]
+      .tasks
+      .iter()
+      .filter_map(|task| match &task.error {
+        Some(TaskError::CorruptFiles(paths)) => Some(paths.as_slice()),
+        _ => None,
+      })
+      .flatten()
+      .cloned()
+      .collect();
+    if !corrupt_paths.is_empty() {
+      let mut first_postprocess = false;
+      for task in self.state.groups[gi].tasks.iter_mut() {
+        if task.executor == "download"
+          && task
+            .dest
+            .as_ref()
+            .is_some_and(|dest| corrupt_paths.contains(dest))
+        {
+          task.state = TaskState::Pending;
+          task.error = None;
+          task.verified = false;
+          task.offset = 0;
+          task.received = 0;
+          first_postprocess = true;
+        }
+      }
+      if first_postprocess {
+        for task in self.state.groups[gi].tasks.iter_mut() {
+          if self
+            .executors
+            .get(&task.executor)
+            .is_some_and(|ex| ex.postprocess_order() > 0)
+          {
+            task.state = TaskState::Pending;
+            task.error = None;
+            task.verified = false;
+          }
+        }
+      }
+    }
     if let Some(rtg) = self.state.runtime.get_mut(group_id) {
       rtg.cancel_reason = None;
     }
@@ -768,6 +809,18 @@ impl EngineActor {
     }
     self.persist_group(&gid);
 
+    if new_state == TaskState::Done
+      && self.state.groups[gi].tasks.iter().any(|task| {
+        task.state == TaskState::Pending
+          && self
+            .executors
+            .get(&task.executor)
+            .is_some_and(|executor| executor.postprocess_order() > 0)
+      })
+    {
+      self.enqueue_group(&gid);
+    }
+
     if schedule_retry {
       let attempts = self.state.groups[gi].tasks[ti].attempts;
       // The first retry waits one base interval; later delays double up to a 64x cap.
@@ -967,10 +1020,30 @@ impl EngineActor {
     let Some(gi) = self.state.groups.iter().position(|g| g.id == group_id) else {
       return;
     };
+    let next_order = self.state.groups[gi]
+      .tasks
+      .iter()
+      .filter(|task| task.state != TaskState::Done)
+      .map(|task| {
+        self
+          .executors
+          .get(&task.executor)
+          .map_or(0, |executor| executor.postprocess_order())
+      })
+      .min();
     let tids: Vec<String> = self.state.groups[gi]
       .tasks
       .iter()
-      .filter(|t| t.state == TaskState::Pending)
+      .filter(|t| {
+        t.state == TaskState::Pending
+          && next_order.is_some_and(|order| {
+            self
+              .executors
+              .get(&t.executor)
+              .map_or(0, |ex| ex.postprocess_order())
+              == order
+          })
+      })
       .map(|t| t.id.clone())
       .collect();
     for tid in tids {

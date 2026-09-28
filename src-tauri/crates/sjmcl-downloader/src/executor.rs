@@ -17,6 +17,10 @@ pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 /// - observe ctx.run_token and report Interrupted with the written offset.
 pub trait TaskExecutor: Send + Sync {
   fn name(&self) -> &'static str;
+  /// Higher stages start after every task in the preceding stages succeeds.
+  fn postprocess_order(&self) -> u32 {
+    0
+  }
   fn run(&self, ctx: ExecContext) -> BoxFuture<'static, Result<(), TaskError>>;
 }
 

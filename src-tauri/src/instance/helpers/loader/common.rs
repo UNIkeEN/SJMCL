@@ -1,4 +1,4 @@
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -107,20 +107,22 @@ pub async fn execute_processors(
   .await?;
 
   for processor in &install_profile.processors {
-    let mut archive = ZipArchive::new(File::open(processor.jar.clone())?)?;
-    let mut manifest = archive.by_name("META-INF/MANIFEST.MF")?;
-    let mut manifest_content = String::new();
-    manifest.read_to_string(&mut manifest_content)?;
-    let main_class = manifest_content
-      .lines()
-      .find_map(|line| {
-        if line.starts_with("Main-Class: ") {
-          Some(line.trim_start_matches("Main-Class: ").trim())
-        } else {
-          None
-        }
-      })
-      .ok_or(InstanceError::MainClassNotFound)?;
+    let main_class = {
+      let mut archive = ZipArchive::new(File::open(processor.jar.clone())?)?;
+      let mut manifest = archive.by_name("META-INF/MANIFEST.MF")?;
+      let mut manifest_content = String::new();
+      manifest.read_to_string(&mut manifest_content)?;
+      manifest_content
+        .lines()
+        .find_map(|line| {
+          if line.starts_with("Main-Class: ") {
+            Some(line.trim_start_matches("Main-Class: ").trim().to_string())
+          } else {
+            None
+          }
+        })
+        .ok_or(InstanceError::MainClassNotFound)?
+    };
     let mut cmd_base = Command::new(selected_java.exec_path.clone());
     #[cfg(target_os = "windows")]
     {
@@ -136,13 +138,15 @@ pub async fn execute_processors(
 
     let args = &processor.args;
 
-    cmd_base.arg("-cp").arg(&classpath).arg(main_class);
+    cmd_base.arg("-cp").arg(&classpath).arg(&main_class);
 
     for arg in args {
       cmd_base.arg(arg);
     }
 
-    let output = cmd_base.output()?;
+    let output = tokio::task::spawn_blocking(move || cmd_base.output())
+      .await
+      .map_err(|error| SJMCLError(error.to_string()))??;
 
     if !output.status.success() {
       eprintln!(

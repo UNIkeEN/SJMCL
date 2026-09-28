@@ -60,6 +60,8 @@ pub enum TaskError {
   Io(String),
   #[error("校验失败: 期望 {expected}, 实际 {actual}")]
   Checksum { expected: String, actual: String },
+  #[error("文件损坏: {0:?}")]
+  CorruptFiles(Vec<PathBuf>),
   #[error("未知: {0}")]
   Other(String),
 }

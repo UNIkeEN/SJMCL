@@ -76,6 +76,197 @@ impl TaskExecutor for CompleteImmediately {
   }
 }
 
+struct PhaseExecutor {
+  name: &'static str,
+  order: u32,
+  calls: Arc<Mutex<Vec<&'static str>>>,
+  fail_once: Option<TaskError>,
+}
+
+impl TaskExecutor for PhaseExecutor {
+  fn name(&self) -> &'static str {
+    self.name
+  }
+
+  fn postprocess_order(&self) -> u32 {
+    self.order
+  }
+
+  fn run(&self, ctx: sjmcl_downloader::ExecContext) -> BoxFuture<'static, Result<(), TaskError>> {
+    let name = self.name;
+    let calls = self.calls.clone();
+    let fail_once = self.fail_once.clone();
+    Box::pin(async move {
+      let first_call = {
+        let mut calls = calls.lock().unwrap();
+        let first = !calls.contains(&name);
+        calls.push(name);
+        first
+      };
+      if first_call {
+        if let Some(error) = fail_once {
+          return Err(error);
+        }
+      }
+      ctx
+        .report
+        .send(TaskReport::Outcome {
+          task_id: ctx.task_id,
+          outcome: TaskOutcome::Done { verified: false },
+        })
+        .await
+        .unwrap();
+      Ok(())
+    })
+  }
+}
+
+async fn postprocess_retry_calls(fail_stage: &'static str, error: TaskError) -> Vec<&'static str> {
+  let calls = Arc::new(Mutex::new(Vec::new()));
+  let mut builder = Engine::builder(
+    config(),
+    Arc::new(NoopSink),
+    Arc::new(MemoryStore::default()),
+  );
+  for (name, order) in [("download", 0), ("install", 1), ("verify", 2)] {
+    builder.register(Arc::new(PhaseExecutor {
+      name,
+      order,
+      calls: calls.clone(),
+      fail_once: (name == fail_stage).then(|| error.clone()),
+    }));
+  }
+  let (engine, _handle) = builder.spawn();
+  let path = std::path::PathBuf::from("downloaded.jar");
+  let group_id = engine
+    .submit_group(SubmitGroup {
+      name: "install".into(),
+      tasks: ["download", "install", "verify"]
+        .into_iter()
+        .map(|name| SubmitTask {
+          name: name.into(),
+          executor: name.into(),
+          spec: serde_json::json!({}),
+          dest: (name == "download").then(|| path.clone()),
+          sha1: None,
+          sha256: None,
+        })
+        .collect(),
+      auto_resume: true,
+    })
+    .await
+    .unwrap();
+  for finish in [FinishKind::Failed, FinishKind::Completed] {
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(2);
+    loop {
+      let group = engine
+        .snapshot()
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|group| group.id == group_id)
+        .unwrap();
+      if group.finish == Some(finish) {
+        break;
+      }
+      assert!(tokio::time::Instant::now() < deadline);
+      tokio::time::sleep(Duration::from_millis(5)).await;
+    }
+    if finish == FinishKind::Failed {
+      engine.retry(group_id.clone()).await.unwrap();
+    }
+  }
+  let result = calls.lock().unwrap().clone();
+  result
+}
+
+#[tokio::test]
+async fn retries_postprocessing_without_redownloading_unless_files_are_corrupt() {
+  assert_eq!(
+    postprocess_retry_calls("install", TaskError::Other("processor failed".into())).await,
+    ["download", "install", "install", "verify"]
+  );
+  assert_eq!(
+    postprocess_retry_calls("verify", TaskError::Other("verification failed".into())).await,
+    ["download", "install", "verify", "verify"]
+  );
+  assert_eq!(
+    postprocess_retry_calls(
+      "verify",
+      TaskError::CorruptFiles(vec!["downloaded.jar".into()])
+    )
+    .await,
+    [
+      "download", "install", "verify", "download", "install", "verify"
+    ]
+  );
+  assert_eq!(
+    postprocess_retry_calls(
+      "install",
+      TaskError::CorruptFiles(vec!["downloaded.jar".into()])
+    )
+    .await,
+    ["download", "install", "download", "install", "verify"]
+  );
+}
+
+#[tokio::test]
+async fn auto_resume_continues_from_install_after_downloads_finish() {
+  let store = Arc::new(MemoryStore::default());
+  let calls = Arc::new(Mutex::new(Vec::new()));
+  let tasks: Vec<Task> = ["download", "install", "verify"]
+    .into_iter()
+    .enumerate()
+    .map(|(index, name)| {
+      let mut task = Task::new(
+        format!("t{}", index + 2),
+        "g1".into(),
+        &SubmitTask {
+          name: name.into(),
+          executor: name.into(),
+          spec: serde_json::json!({}),
+          dest: None,
+          sha1: None,
+          sha256: None,
+        },
+      );
+      if name == "download" {
+        task.state = TaskState::Done;
+      }
+      task
+    })
+    .collect();
+  store
+    .save_group(&TaskGroup {
+      id: "g1".into(),
+      name: "resume-install".into(),
+      auto_resume: true,
+      state: GroupState::Active,
+      finish: None,
+      tasks,
+    })
+    .unwrap();
+  let mut builder = Engine::builder(config(), Arc::new(NoopSink), store);
+  for (name, order) in [("download", 0), ("install", 1), ("verify", 2)] {
+    builder.register(Arc::new(PhaseExecutor {
+      name,
+      order,
+      calls: calls.clone(),
+      fail_once: None,
+    }));
+  }
+  let (engine, _handle) = builder.spawn();
+  let deadline = tokio::time::Instant::now() + Duration::from_secs(2);
+  loop {
+    if engine.snapshot().await.unwrap()[0].finish == Some(FinishKind::Completed) {
+      break;
+    }
+    assert!(tokio::time::Instant::now() < deadline);
+    tokio::time::sleep(Duration::from_millis(5)).await;
+  }
+  assert_eq!(*calls.lock().unwrap(), ["install", "verify"]);
+}
+
 struct WaitForCancellation;
 
 impl TaskExecutor for WaitForCancellation {
@@ -387,12 +578,14 @@ async fn transient_http_failure_retries_with_exponential_backoff() {
   assert_eq!(calls.len(), 3);
   assert!(calls[1].duration_since(calls[0]) >= Duration::from_millis(50));
   assert!(calls[2].duration_since(calls[1]) >= Duration::from_millis(100));
-  assert!(sink
-    .0
-    .lock()
-    .unwrap()
-    .iter()
-    .all(|event| !matches!(event, EngineEvent::TaskFailed { .. })));
+  assert!(
+    sink
+      .0
+      .lock()
+      .unwrap()
+      .iter()
+      .all(|event| !matches!(event, EngineEvent::TaskFailed { .. }))
+  );
 }
 
 #[tokio::test]
@@ -429,10 +622,12 @@ async fn removes_only_finished_groups() {
   }
 
   engine.remove(group_id.clone()).await.unwrap();
-  assert!(engine
-    .snapshot()
-    .await
-    .unwrap()
-    .iter()
-    .all(|group| group.id != group_id));
+  assert!(
+    engine
+      .snapshot()
+      .await
+      .unwrap()
+      .iter()
+      .all(|group| group.id != group_id)
+  );
 }

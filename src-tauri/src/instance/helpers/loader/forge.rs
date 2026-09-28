@@ -13,7 +13,6 @@ use zip::ZipArchive;
 
 use crate::download::DownloadParam;
 use crate::download::PTaskParam;
-use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{
   LibrariesValue, McClientInfo, reset_fields_from_patches,
 };
@@ -114,7 +113,7 @@ pub async fn download_forge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<Vec<PTaskParam>> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -447,15 +446,7 @@ pub async fn download_forge_libraries(
     PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
   });
 
-  submit_download_group(
-    app.clone(),
-    format!("forge-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(task_params)
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

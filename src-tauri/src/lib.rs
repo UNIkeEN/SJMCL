@@ -23,7 +23,7 @@ use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
 use resource::helpers::translation::LocalModTranslationsCache;
 use resource::helpers::translation::cache::ResourceTranslationsCache;
 use sjmcl_downloader::download::DownloadExecutor;
-use sjmcl_downloader::{EngineConfig, TokenBucket};
+use sjmcl_downloader::{EngineConfig, TaskExecutor, TokenBucket};
 use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -153,8 +153,6 @@ pub async fn run() {
         instance::commands::retrieve_screenshot_list,
         instance::commands::toggle_mod_by_extension,
         instance::commands::create_launch_desktop_shortcut,
-        instance::commands::finish_mod_loader_install,
-        instance::commands::finish_optifine_loader_install,
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
         instance::commands::change_optifine,
@@ -247,6 +245,7 @@ pub async fn run() {
 
         let instances: HashMap<String, Instance> = HashMap::new();
         app.manage(Mutex::new(instances));
+        app.manage(instance::helpers::misc::InstanceRefreshLock::default());
 
         let javas: Vec<JavaInfo> = vec![];
         app.manage(Mutex::new(javas));
@@ -280,7 +279,7 @@ pub async fn run() {
           ..DownloadExecutor::default()
         };
         app.manage(client);
-        sjmcl_downloader::setup_engine(
+        sjmcl_downloader::setup_engine_with_executors(
           app.handle(),
           APP_DATA_DIR.get().unwrap().join("downloads.db"),
           EngineConfig {
@@ -288,6 +287,17 @@ pub async fn run() {
             ..EngineConfig::default()
           },
           download_executor,
+          vec![
+            Arc::new(instance::helpers::loader::postprocess::PrepareExecutor {
+              app: app.handle().clone(),
+            }) as Arc<dyn TaskExecutor>,
+            Arc::new(instance::helpers::loader::postprocess::InstallExecutor {
+              app: app.handle().clone(),
+            }) as Arc<dyn TaskExecutor>,
+            Arc::new(instance::helpers::loader::postprocess::VerifyExecutor {
+              app: app.handle().clone(),
+            }) as Arc<dyn TaskExecutor>,
+          ],
         )
         .map_err(std::io::Error::other)?;
 

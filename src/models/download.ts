@@ -27,10 +27,22 @@ export type DownloadTaskError =
   | { Http: number }
   | { Io: string }
   | { Checksum: { expected: string; actual: string } }
+  | { CorruptFiles: string[] }
   | { Other: string };
 
 export interface DownloadSpec {
   url: string;
+}
+
+export interface InstallSpec {
+  instanceId: string;
+  versionPath: string;
+  kind: "mod_loader" | "optifine";
+}
+
+export interface PrepareSpec {
+  instanceId: string;
+  versionPath: string;
 }
 
 export interface SubmitDownloadTask {
@@ -48,7 +60,13 @@ export interface SubmitDownloadGroup {
   autoResume: boolean;
 }
 
-export interface DownloadTask extends SubmitDownloadTask {
+export interface DownloadTask extends Omit<
+  SubmitDownloadTask,
+  "executor" | "spec" | "dest"
+> {
+  executor: "download" | "prepare_install" | "install" | "verify";
+  spec: DownloadSpec | PrepareSpec | InstallSpec;
+  dest: string | null;
   id: string;
   groupId: string;
   state: DownloadTaskState;

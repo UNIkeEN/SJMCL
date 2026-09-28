@@ -1,4 +1,4 @@
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
@@ -8,7 +8,6 @@ use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
 use crate::download::DownloadParam;
 use crate::download::PTaskParam;
-use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{ArgumentsItem, LaunchArgumentTemplate};
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
@@ -54,7 +53,7 @@ pub async fn download_optifine_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<Vec<PTaskParam>> {
   let optifine = instance
     .optifine
     .as_ref()
@@ -257,19 +256,7 @@ pub async fn download_optifine_libraries(
     client_info.main_class = Some(lw_main.clone());
   }
 
-  if task_params.is_empty() {
-    return Ok(());
-  }
-
-  submit_download_group(
-    app.clone(),
-    format!("optifine-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(task_params)
 }
 
 async fn run_optifine_patcher(
@@ -310,7 +297,9 @@ async fn run_optifine_patcher(
     .arg(installer_jar)
     .arg(out_optifine_jar);
 
-  let output = cmd.output()?;
+  let output = tokio::task::spawn_blocking(move || cmd.output())
+    .await
+    .map_err(|error| SJMCLError(error.to_string()))??;
 
   if !output.status.success() {
     return Err(InstanceError::ProcessorExecutionFailed.into());

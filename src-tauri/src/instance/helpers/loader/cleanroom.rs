@@ -1,6 +1,5 @@
 use crate::download::DownloadParam;
 use crate::download::PTaskParam;
-use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{McClientInfo, reset_fields_from_patches};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -61,7 +60,7 @@ pub async fn download_cleanroom_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<Vec<PTaskParam>> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -314,13 +313,5 @@ pub async fn download_cleanroom_libraries(
     PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
   });
 
-  submit_download_group(
-    app.clone(),
-    format!("cleanroom-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(task_params)
 }

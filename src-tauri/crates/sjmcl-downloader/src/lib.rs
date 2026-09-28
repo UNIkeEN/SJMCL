@@ -27,7 +27,10 @@ pub use model::{
 };
 pub use rate::TokenBucket;
 pub use storage::StateStore;
-pub use tauri::{commands, init, init_with_db_path, setup_engine, EngineHandle, EngineRuntime};
+pub use tauri::{
+  EngineHandle, EngineRuntime, commands, init, init_with_db_path, setup_engine,
+  setup_engine_with_executors,
+};
 
 /// Summary returned by engine queries, including the initial frontend snapshot.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
