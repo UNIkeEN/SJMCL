@@ -106,22 +106,17 @@ const deriveGroup = (
   const derivedTasks = tasks
     .map((task) => ({
       ...task,
-      progress: task.total ? (task.received * 100) / task.total : 0,
+      progress:
+        task.state === DownloadTaskState.Done
+          ? 100
+          : task.total
+            ? (task.received * 100) / task.total
+            : 0,
     }))
     .sort((left, right) => taskOrder(left.state) - taskOrder(right.state));
-  const known = derivedTasks.filter((task) => task.total > 0);
-  const knownTotal = known.reduce((total, task) => total + task.total, 0);
-  const knownReceived = known.reduce((total, task) => total + task.received, 0);
-  const estimatedTotal = known.length
-    ? knownTotal +
-      (derivedTasks.length - known.length) * (knownTotal / known.length)
-    : 0;
-  const progress =
-    summary.finish === DownloadFinishKind.Completed
-      ? 100
-      : estimatedTotal
-        ? (knownReceived * 100) / estimatedTotal
-        : 0;
+  const stats = deriveStats(derivedTasks);
+  // Group progress counts completed tasks so files with unknown sizes contribute equally.
+  const progress = stats.total ? (stats.done * 100) / stats.total : 0;
   const etaSecs = derivedTasks
     .filter(
       (task) =>
@@ -134,7 +129,7 @@ const deriveGroup = (
   return {
     ...summary,
     tasks: derivedTasks,
-    stats: deriveStats(derivedTasks),
+    stats,
     progress,
     etaSecs,
     error: taskErrorText(
