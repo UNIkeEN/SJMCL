@@ -4,8 +4,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -49,7 +48,7 @@ pub async fn install_quilt_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
   is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
@@ -137,12 +136,12 @@ pub async fn install_quilt_loader(
             name
           )))?;
 
-          task_params.push(PTaskParam::Download(DownloadParam {
+          task_params.push(DownloadTask {
             src,
             dest: lib_dir.join(&rel),
             filename: None,
             sha1: None,
-          }));
+          });
         }
       }
     }
@@ -174,12 +173,12 @@ pub async fn install_quilt_loader(
       path
     )))?;
 
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(DownloadTask {
       src,
       dest: lib_dir.join(&rel),
       filename: None,
       sha1: None,
-    }));
+    });
   }
 
   if is_install_qf_api.unwrap_or(true)
@@ -192,7 +191,7 @@ pub async fn install_quilt_loader(
     )
     .await
   {
-    task_params.push(PTaskParam::Download(qfapi_download));
+    task_params.push(qfapi_download);
   }
 
   Ok(())

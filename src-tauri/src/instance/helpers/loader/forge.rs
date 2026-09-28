@@ -11,8 +11,7 @@ use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{
   LibrariesValue, McClientInfo, reset_fields_from_patches,
 };
@@ -52,7 +51,7 @@ pub async fn install_forge_loader(
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
@@ -98,12 +97,12 @@ pub async fn install_forge_loader(
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(DownloadTask {
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
     sha1: None,
-  }));
+  });
 
   Ok(())
 }
@@ -113,7 +112,7 @@ pub async fn download_forge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -232,12 +231,12 @@ pub async fn download_forge_libraries(
         if let Some(mojmaps) = args_map.get("{MOJMAPS}")
           && let Some(client_mappings) = client_info.downloads.get("client_mappings")
         {
-          task_params.push(PTaskParam::Download(DownloadParam {
+          task_params.push(DownloadTask {
             src: client_mappings.url.parse()?,
             dest: lib_dir.join(mojmaps),
             filename: None,
             sha1: Some(client_mappings.sha1.clone()),
-          }));
+          });
         }
         processor.args.clear();
         continue;
@@ -300,7 +299,7 @@ pub async fn download_forge_libraries(
         continue;
       }
 
-      task_params.push(PTaskParam::Download(DownloadParam {
+      task_params.push(DownloadTask {
         src: convert_url_to_target_source(
           &Url::parse(url)?,
           &[
@@ -313,7 +312,7 @@ pub async fn download_forge_libraries(
         dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
         filename: None,
         sha1: None,
-      }));
+      });
     }
 
     let arguments = forge_info.arguments.clone();
@@ -349,7 +348,7 @@ pub async fn download_forge_libraries(
       }
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
-      task_params.push(PTaskParam::Download(DownloadParam {
+      task_params.push(DownloadTask {
         src: convert_url_to_target_source(
           &Url::parse(url)?,
           &[
@@ -362,7 +361,7 @@ pub async fn download_forge_libraries(
         dest: lib_dir.join(&rel),
         filename: None,
         sha1: None,
-      }));
+      });
     }
   } else {
     // It's legacy version Forge installer
@@ -429,12 +428,12 @@ pub async fn download_forge_libraries(
         ],
         &priority[0],
       )?;
-      task_params.push(PTaskParam::Download(DownloadParam {
+      task_params.push(DownloadTask {
         src,
         dest: lib_dir.join(&rel),
         filename: None,
         sha1: None,
-      }));
+      });
     }
     client_info.patches.push(new_patch);
   }
@@ -442,9 +441,7 @@ pub async fn download_forge_libraries(
   reset_fields_from_patches(client_info);
 
   let mut seen = std::collections::HashSet::new();
-  task_params.retain(|param| match param {
-    PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
-  });
+  task_params.retain(|param| seen.insert(param.dest.clone()));
 
   Ok(task_params)
 }

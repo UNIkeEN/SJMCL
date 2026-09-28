@@ -16,8 +16,7 @@ use tokio::sync::Semaphore;
 use url::Url;
 use zip::read::ZipArchive;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::download::submit_instance_download_group;
 use crate::instance::helpers::client_json::{
   McClientInfo, remove_mod_loader_from_client_info, remove_optifine_from_client_info,
@@ -1131,7 +1130,7 @@ pub async fn create_instance(
   vanilla_patch.priority = Some(0);
   version_info.patches.push(vanilla_patch);
 
-  let mut task_params = Vec::<PTaskParam>::new();
+  let mut task_params = Vec::<DownloadTask>::new();
 
   // auto download recommended java if needed
   let mut java_version_to_download: Option<String> = None;
@@ -1158,13 +1157,13 @@ pub async fn create_instance(
     .get("client")
     .ok_or(InstanceError::ClientJsonParseError)?;
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(DownloadTask {
     src: Url::parse(&client_download_info.url.clone())
       .map_err(|_| InstanceError::ClientJsonParseError)?,
     dest: instance.version_path.join(format!("{}.jar", name)),
     filename: None,
     sha1: Some(client_download_info.sha1.clone()),
-  }));
+  });
   let subdirs = get_instance_subdir_paths(
     &app,
     &instance,
@@ -1363,7 +1362,7 @@ pub async fn change_mod_loader(
   let mut version_info = current_info.clone();
   remove_mod_loader_from_client_info(&mut version_info, instance.mod_loader.loader_type);
 
-  let mut modloader_task_params: Vec<PTaskParam> = Vec::new();
+  let mut modloader_task_params: Vec<DownloadTask> = Vec::new();
 
   let mod_loader = ModLoader {
     loader_type: new_mod_loader.loader_type,
@@ -1494,7 +1493,7 @@ pub async fn change_optifine(
 
   instance.optifine = Some(optifine_info);
 
-  let mut optifine_task_params: Vec<PTaskParam> = Vec::new();
+  let mut optifine_task_params: Vec<DownloadTask> = Vec::new();
   download_optifine_installer(
     &instance.version,
     &new_optifine,

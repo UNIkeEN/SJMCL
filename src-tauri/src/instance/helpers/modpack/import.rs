@@ -7,7 +7,7 @@ use std::path::Path;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
@@ -27,7 +27,7 @@ pub trait ModpackManifest {
     &self,
     app: &AppHandle,
     instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>>;
+  ) -> SJMCLResult<Vec<DownloadTask>>;
   fn get_overrides_path(&self) -> String;
 }
 
@@ -99,7 +99,7 @@ pub async fn get_download_params(
   app: &AppHandle,
   file: &File,
   instance_path: &Path,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   for parser in get_parsers() {
     if let Ok(manifest) = parser(file) {
       return manifest.get_download_params(app, instance_path).await;

@@ -16,16 +16,8 @@ pub struct DownloadTask {
   pub sha1: Option<String>,
 }
 
-pub type DownloadParam = DownloadTask;
-
-#[derive(Debug, Clone)]
-pub enum PTaskParam {
-  Download(DownloadTask),
-}
-
-impl From<PTaskParam> for SubmitTask {
-  fn from(task: PTaskParam) -> Self {
-    let PTaskParam::Download(task) = task;
+impl From<DownloadTask> for SubmitTask {
+  fn from(task: DownloadTask) -> Self {
     let name = task.filename.unwrap_or_else(|| {
       task
         .dest
@@ -47,7 +39,7 @@ impl From<PTaskParam> for SubmitTask {
 pub async fn submit_download_group(
   app: AppHandle,
   name: String,
-  tasks: Vec<PTaskParam>,
+  tasks: Vec<DownloadTask>,
   auto_resume: bool,
 ) -> SJMCLResult<String> {
   let engine = app.state::<EngineHandle>();
@@ -65,7 +57,7 @@ pub async fn submit_download_group(
 pub async fn submit_instance_download_group(
   app: AppHandle,
   name: String,
-  tasks: Vec<PTaskParam>,
+  tasks: Vec<DownloadTask>,
   instance: &Instance,
 ) -> SJMCLResult<String> {
   let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
@@ -95,7 +87,7 @@ pub async fn submit_instance_download_group(
 pub async fn submit_install_group(
   app: AppHandle,
   name: String,
-  tasks: Vec<PTaskParam>,
+  tasks: Vec<DownloadTask>,
   instance: &Instance,
   kind: InstallKind,
 ) -> SJMCLResult<String> {

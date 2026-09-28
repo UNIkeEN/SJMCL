@@ -3,8 +3,7 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Manager, State};
 use tauri_plugin_http::reqwest;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
@@ -152,12 +151,12 @@ pub async fn download_game_server(
   submit_download_group(
     app,
     format!("game-server?{}", resource_info.id),
-    vec![PTaskParam::Download(DownloadParam {
+    vec![DownloadTask {
       src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
       dest: dest.clone().into(),
       filename: None,
       sha1: Some(download_info.sha1.clone()),
-    })],
+    }],
     true,
   )
   .await?;
@@ -202,13 +201,13 @@ pub async fn update_mods(
 
   let mut download_tasks = Vec::new();
   for (query, (_, new_file_path)) in queries.iter().zip(&update_paths) {
-    let download_param = DownloadParam {
+    let download_param = DownloadTask {
       src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
       dest: new_file_path.clone(),
       filename: None,
       sha1: Some(query.sha1.clone()),
     };
-    download_tasks.push(PTaskParam::Download(download_param));
+    download_tasks.push(download_param);
   }
 
   submit_download_group(app, "mod-update".to_string(), download_tasks, true).await?;

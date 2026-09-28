@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use tauri::AppHandle;
 use zip::ZipArchive;
 
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
@@ -156,7 +156,7 @@ impl ModpackManifest for MultiMcManifest {
     &self,
     _app: &AppHandle,
     _instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>> {
+  ) -> SJMCLResult<Vec<DownloadTask>> {
     // MultiMC Manifests do not include download parameters
     Ok(Vec::new())
   }

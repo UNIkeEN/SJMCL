@@ -6,7 +6,7 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
@@ -41,7 +41,7 @@ pub async fn install_mod_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
   is_install_fabric_api: Option<bool>,
   is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {

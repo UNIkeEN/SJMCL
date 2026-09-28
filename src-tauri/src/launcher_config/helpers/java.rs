@@ -11,7 +11,7 @@ use tauri_plugin_http::reqwest;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-use crate::download::{DownloadParam, PTaskParam};
+use crate::download::DownloadTask;
 use crate::launcher_config::models::{JavaInfo, LauncherConfig};
 use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
 use crate::resource::models::ResourceType;
@@ -484,7 +484,7 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
 pub async fn build_mojang_java_download_params(
   app: &AppHandle,
   version: &str,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let client = app.state::<reqwest::Client>();
 
@@ -537,12 +537,12 @@ pub async fn build_mojang_java_download_params(
       let raw = info["downloads"]["raw"].as_object()?;
       let (url, sha1) = (raw["url"].as_str()?, raw["sha1"].as_str()?);
 
-      Some(PTaskParam::Download(DownloadParam {
+      Some(DownloadTask {
         src: url.parse().ok()?,
         dest: runtime_dir.join(path),
         filename: None,
         sha1: Some(sha1.into()),
-      }))
+      })
     })
     .collect();
 

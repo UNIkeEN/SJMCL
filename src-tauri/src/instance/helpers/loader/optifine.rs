@@ -6,8 +6,7 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{ArgumentsItem, LaunchArgumentTemplate};
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
@@ -22,7 +21,7 @@ pub async fn download_optifine_installer(
   game_version: &str,
   optifine: &OptiFineResourceInfo,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
   // only have BMCLAPI source
   let root = get_download_api(SourceType::BMCLAPIMirror, ResourceType::OptiFine)?;
@@ -38,12 +37,12 @@ pub async fn download_optifine_installer(
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(DownloadTask {
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
     sha1: None,
-  }));
+  });
 
   Ok(())
 }
@@ -53,7 +52,7 @@ pub async fn download_optifine_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let optifine = instance
     .optifine
     .as_ref()
@@ -69,7 +68,7 @@ pub async fn download_optifine_libraries(
     return Err(InstanceError::InvalidSourcePath.into());
   };
 
-  let mut task_params: Vec<PTaskParam> = vec![];
+  let mut task_params: Vec<DownloadTask> = vec![];
   let installer_coord = format!(
     "net.minecraftforge:optifine:{}-installer",
     optifine.filename
@@ -145,12 +144,12 @@ pub async fn download_optifine_libraries(
     &priority[0],
   )?;
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(DownloadTask {
     src,
     dest: lw_dest,
     filename: None,
     sha1: None,
-  }));
+  });
 
   if !has_launchwrapper {
     lw_coord = "net.minecraft:launchwrapper:1.12".to_string();

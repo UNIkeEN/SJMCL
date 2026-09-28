@@ -8,8 +8,7 @@ use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::download::submit_download_group;
 use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
 
@@ -144,12 +143,12 @@ pub async fn download_target_version(
       submit_download_group(
         app.clone(),
         format!("launcher-update?{}", fname),
-        vec![PTaskParam::Download(DownloadParam {
+        vec![DownloadTask {
           src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
           dest: download_cache_dir.join(&fname),
           filename: Some(fname),
           sha1: None,
-        })],
+        }],
         true,
       )
       .await?;

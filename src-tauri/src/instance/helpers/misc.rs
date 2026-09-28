@@ -10,7 +10,7 @@ use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-use crate::download::{PTaskParam, submit_install_group};
+use crate::download::{DownloadTask, submit_install_group};
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
 use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
@@ -168,7 +168,7 @@ async fn refresh_instance(
   .await
   .unwrap_or_default();
 
-  let mut install_groups: Vec<(String, Vec<PTaskParam>, InstallKind)> = Vec::new();
+  let mut install_groups: Vec<(String, Vec<DownloadTask>, InstallKind)> = Vec::new();
 
   if prepare_install && cfg_read.mod_loader.status == ModLoaderStatus::NotDownloaded {
     let priority_list = {

@@ -13,8 +13,7 @@ use tauri::AppHandle;
 use tokio::sync::Semaphore;
 use zip::ZipArchive;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
@@ -127,7 +126,7 @@ impl ModpackManifest for ModrinthManifest {
     &self,
     _app: &AppHandle,
     instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>> {
+  ) -> SJMCLResult<Vec<DownloadTask>> {
     self
       .files
       .iter()
@@ -136,12 +135,12 @@ impl ModpackManifest for ModrinthManifest {
           .downloads
           .first()
           .ok_or(InstanceError::InvalidSourcePath)?;
-        Ok(PTaskParam::Download(DownloadParam {
+        Ok(DownloadTask {
           src: url::Url::parse(download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
           sha1: Some(file.hashes.sha1.clone()),
           dest: instance_path.join(&file.path),
           filename: None,
-        }))
+        })
       })
       .collect::<SJMCLResult<Vec<_>>>()
   }

@@ -7,8 +7,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::download::DownloadParam;
-use crate::download::PTaskParam;
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -28,7 +27,7 @@ pub async fn install_fabric_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
   is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
@@ -111,12 +110,12 @@ pub async fn install_fabric_loader(
       }
     }
     if let Some(src) = src_opt {
-      task_params.push(PTaskParam::Download(DownloadParam {
+      task_params.push(DownloadTask {
         src,
         dest: lib_dir.join(&rel),
         filename: None,
         sha1: None,
-      }));
+      });
     }
     Ok(())
   };
@@ -149,7 +148,7 @@ pub async fn install_fabric_loader(
     )
     .await
   {
-    task_params.push(PTaskParam::Download(fabric_api_download));
+    task_params.push(fabric_api_download);
   }
 
   Ok(())
