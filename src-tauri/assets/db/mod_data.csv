@@ -29909,3 +29909,303 @@
 29908,infinite-lava-cell-ae2,,Infinite Lava Cell (AE2),,ILC
 29909,tiny-cells-ae2,,Tiny Cells (AE2),,
 29910,custom-attack,,自定义袭击,Custom Attack,
+29911,create-buddycards,create-buddycards,Create Buddycards,,
+29912,kindred,kindred,Kindred,,
+29913,combateventfix,combateventfix,战斗事件修复,CombatEventFix,CEF
+29914,strata-rock-bursts,,Strata,,STA
+29915,,coordinate-record-book,坐标记录簿,Coordinate Record Book,CRB
+29916,sophisticated-atm-tiers,,Sophisticated ATM Tiers,,
+29917,apothenchantmentmenu-java-apotheosis,,Enchanted Pearl - Apotheosis Fix,,
+29918,more-create-burners-with-ember-burner,more-create-burners-with-ember-burner,More Create Burners With Ember Burner,,
+29919,ntge-bobfluidtranslator,,NTGE BobFluidTranslator,,
+29920,create-transit,create-transit,机械动力：跨境转运,Create: Transit,
+29921,,-titanium-,钛,Titanium,
+29922,,,Mob Pearls,,
+29923,,,Pudelhund's Dimension API,,
+29924,power-gems-mod,,Power Gems Mod,,
+29925,sortscroller,sort-scroller,Sort Scroller,,
+29926,gt-exoskeleton-legs,,GT Exoskeleton Legs,,
+29927,,,Cake725的合集模组,Cake's Collection Mod,CCM
+29928,halfmasa,halfmasa,Halfmasa,,Hasa
+29929,recasting2,,重铸2,Recasting 2,
+29930,wings-2,,翅膀 2,Wings 2,
+29931,,dabaojianspracticaltools,大宝剑的实用工具（dabaojian's practical tools）,,
+29932,confluence-lootr,,汇流来世Lootr兼容,Confluence Lootr,CL
+29933,poopsky-flyimpact,,空中厕所：蝇趴,PoopSky: Flyimpact,
+29934,,,一键空置域,ChunkDevourer,CDR
+29935,gothening-gothenings-not-yet-eat-all,gothenings-not-yet-eat-all,Gothening的一键吃,Gothening's Not Yet Eat All,GNYEA
+29936,tfc-debark,tfc-debark,TFC Debark,,
+29937,nbs-player,,NBS Player,,
+29938,create-routes,create-routes,机械动力：路線,Create: Routes,
+29939,,,神秘遗物暴食附属,,BSYZ
+29940,,,Pool and Billiards,,
+29941,,,异天庄的科技枪拓展,Teamytz TGCE Addon,TTGCA
+29942,ender-chest-persistence,ender-chest-persistence,Ender Chest Persistence,,
+29943,adventure-item-names,adventureitemnames,Adventure Item Names,,
+29944,adventure-item-stats,adventure-items-stats,Adventure Item Stats,,
+29945,genesis-an-origins-addon,,Genesis An Origins Addon,,
+29946,create-lift-n-load,create-lift-n-load,Create: Lift n' Load,,
+29947,create-overpressure,createoverpressure,机械动力：气动物流,Create: OverPressure,
+29948,big-tires,big-tires,Big Tires,,
+29949,create-rolling-tones,create-rolling-tones,Create: Rolling Tones,,
+29950,,,Mod29950(failed),,
+29951,emf-compat-immersive-melodies,emf-compat-immersive-melodies,实体模型特性兼容：沉浸式奏乐,EMF Compat: Immersive Melodies,
+29952,emf-compat-not-enough-animations,not-enough-animations-emf-compat,实体模型特性兼容：更多动画,EMF Compat: Not Enough Animations,
+29953,emf-compat-irons-spells-n-spellbooks,emf-compat-irons-spells-n-spellbooks,实体模型特性兼容：Iron的法术与魔法书,EMF Compat: Iron's Spells 'n Spellbooks,
+29954,emf-compat-supplementaries,emf-compat-supplementaries,实体模型特性兼容：锦致装饰,EMF Compat: Supplementaries,
+29955,aeronautics-modernui-compat,aeronautics-modernui-compat,航空学：现代化UI兼容,Aeronautics: ModernUI Compat,
+29956,emf-compat-exposure,emf-compat-exposure,EMF Compat: Exposure,,
+29957,emf-compat-carry-on,emf-compat-carry-on,实体模型特性兼容：搬运,EMF Compat: Carry On,
+29958,emf-compat-quark,emf-compat-quark,实体模型特性兼容：夸克,EMF Compat: Quark,
+29959,create-cosmonautics-expansion,create-cosmonautics-expansion,Create Cosmonautics Expansion,,
+29960,create-aeronautics-discovery,create-aeronautics-discovery,Create Aeronautics Discovery,,
+29961,emf-compat-exposure,emf-compat-exposure,实体模型特性兼容：拾光定影,EMF Compat: Exposure,
+29962,emf-compat-watut,emf-compat-watut,实体模型特性兼容：WATUT,EMF Compat: WATUT,
+29963,emf-compat-tacz,emf-compat-tacz,实体模型特性兼容：永恒枪械工坊零,EMF Compat: TACZ,
+29964,create-parallel-tracks,,Create: Parallel Tracks,,
+29965,create-liberate,create-liberate,机械动力：解放斗士,Create: Liberate,
+29966,create-heat-pipe,,机械动力：导热管,Create: Heat Pipe,
+29967,createbettercoal,createbetter-coal,机械动力：更好的煤炭,Create: Better Coal,
+29968,create-schematicannon-auto-cutting,,机械动力：蓝图炮自动切石,Create: Schematicannon Auto Cutting,CSAC
+29969,functional-storage-js,,Functional Storage JS,,
+29970,create-railway-automation,,机械动力：铁道智行,Create: Railway Automation,CRA
+29971,,,机械动力：下界合金升级,Create Netherite,
+29972,create-steam-ages,,"机械动力：""蒸汽""时代","Create: ""Steam"" Ages",
+29973,create-big-cannon-autogun-revolution,create-big-cannon-autogun-re,机械动力火炮：机炮革命,,CBCAR
+29974,create-overpressure,createoverpressure,机械动力：气动物流,Create: OverPressure,
+29975,rollingcats-transit-expansion,rollingcats-transit-expansion,滚猫交通扩展,Rollingcats Transit Expansion,RTE
+29976,,,TaCZ：特战英雄武器包,AC Hero Gun Pack,ACH
+29977,,,畅聊,async-chat-1.20.4,
+29978,,,更好的速度显示,BetterSpeedHUD,
+29979,touhou-little-maid-senju,,车万女仆:千手女仆,Touhou Little maid:senju,Senju
+29980,piggyback-legacy,,Piggyback Legacy,,
+29981,,,让头颅飞,Head Off,
+29982,,,矿物世界,Mineral World,
+29983,macaws-betters,macaws-betters,Macaw's Betters,,
+29984,,dimension-locker,维度锁,Dimension Locker,
+29985,,PG1zrN9b,Wither Ascension,,
+29986,the-joy-of-tinkering,the-joy-of-tinkering,The Joy Of Tinkering,,
+29987,world-alive,world-alive,World Alive,,
+29988,,,Minecraft Infinite / Infdev+,,
+29989,twilight-boss-respawn,,暮色Boss重生,Twilight Boss Respawn,TBR
+29990,alphaprotocol,alpha-protocol,Alpha Protocol,,AP
+29991,,vertical-half-brick,竖半砖！,KC Vertical Half Brick,VHB
+29992,colored-redstone-reborn,colored-redstone-reborn,Colored Redstone Reborn,,
+29993,thaumic-energistics-interaction,,神秘能源交互,Thaumic Energistics Interaction,TEI
+29994,better-removal,,Better Removal,,
+29995,netmusic-kugou,netmusic_kugou,网络音乐机：酷狗概念版,NetMusicNeedKuGou,
+29996,perfect-plushies,perfect-plushies,Perfect Plushies,,
+29997,epiphany-journal,epiphany-journal,Epiphany Journal,,
+29998,,nti-modern-impression-lerian-nature,NTI-现代印象-灵耶自然,NTI-Modern Impression-lerian nature,NTI
+29999,realistic-world-gen-revived,,真实的世界生成：重生,Realistic World Gen: Revived,RWGR
+30000,,,百科玩偶,MCMOD Doll,
+30001,railcraft-reborn,railcraft-reborn,Railcraft Reborn,,
+30002,,,群青游玩手册,Ultramarine Patchouli Guide,
+30003,,,Slimes Everywhere,,
+30004,web-slinger,,Web Slinger,,
+30005,wandscape,,魔法小镇,Wandscape,
+30006,goety-owned-null-guard-fix,,诡厄巫法召唤物崩溃补丁,Goety Owned Null Guard Fix,
+30007,pattern-checker,,样板检测工具,Pattern Checker,
+30008,slashexpansion,,SlashExpansion,,
+30009,,,The Flash Light Mod,,
+30010,decorblock,,DecorBlock,,
+30011,starfall-core,,沉星行旅,StarFall: Core,
+30012,mekanism-me-integration,,Mekanism ME Integration,,
+30013,hextech-augments,,海克斯强化,Hextech Augments,HA
+30014,general-tools,general-tools,通用工具,General Tools,
+30015,dungeons-content-addon,dungeons-content-plus,Dungeons Content Plus,,DCP
+30016,natrium-mob-naming-utilities,,Natrium生物命名实用,Natrium Mob Naming Utilities,
+30017,,,音效重复播放修复,Sound Repeat Fix,
+30018,actinium-1-12-2-optimization,,Actinium,,
+30019,kamitesque,,Kamitesque (Thaumic Divinity),,
+30020,vibrancy,vibrancy,Vibrancy,,
+30021,purification-totem,,净化图腾,Purification Totem,PT
+30022,,ae2-vm,AE2 合成虚拟机,AE2 VM,ae2vm
+30023,,,块室,The Blockrooms,BLR
+30024,gui-commands,,Gui Commands,,
+30025,ae2-texture-updater,,AE2 Texture Updater,,AE2TU
+30026,maid-restaurant-storage,maid-restaruant-storage,女仆餐厅：储存,Maid Restaurant: Storage,MRS
+30027,reneighborly,reneighborly,ReNeighborly,,
+30028,astral-dice,astral-dice,星之骰戏,Astral Dice,AD
+30029,,fungal-infection-cataclysm,真菌感染：灾变,Fungal Infection: Cataclysm,
+30030,kaleidoscope-immersive-eating,immersive-eating,森罗物语: 沉浸式品尝,Kaleidoscope: Immersive Eating,ImmEat
+30031,mcr-blocks-fix,,F***ing MCR Block,,
+30032,,better-wither,Better Wither,,
+30033,crazyae-nyonification,,疯狂的AE桥接器,CrazyAE Nyonification,CAEN
+30034,,,AE2UEL Plus,,AE2+
+30035,,,抓住他们,Catch'Em All,
+30036,custom-apotheosis-bosses,,自定义神化BOSS,Icy Apotheosis Boss,
+30037,,particledrawing,粒子绘制器,ParticleDrawing,
+30038,zconfig,zconfig,ZConfig,,
+30039,souls-combat-hud,souls-combat-hud,Souls Combat HUD,,
+30040,revo-ui,,焕新UI,Revo UI,RUI
+30041,,big-shot-lib,Big Shot Rendering Library,,
+30042,buff-particle-remover,,第一人称药水粒子效果移除,Buff Particle Remover,
+30043,,worldreset-fabric,World Reset,,
+30044,jade-tetra,,Jade Tetra,,
+30045,,fmbautofishing,FMB 自动钓鱼,FMB Auto Fishing,FMBAF
+30046,,,配分语显示辅助,pefonLanguageDisplayAid,
+30047,kubejs-assets-override,,KubeJS 客户端资源覆盖,KubeJS Assets Override,
+30048,modern-morph,modern-morph,Modern Morph,,
+30049,alliance-netherite-monstrosity,alliance-netherite-monstrosity,Alliance Netherite Monstrosity,,
+30050,fungal-infection-spore-ai,,真菌感染：孢子  AI接入,Spore AI,
+30051,,,特摄英雄补完计划：技能轮盘,THIP Skill Wheel,TSW
+30052,mekanism-magic,,通用魔法,Mekanism Magic,
+30053,,better-pie-chart,Better Pie Chart,,
+30054,,custom-client-brand,Custom Client Brand,,
+30055,,old-name-tags,Old Name Tags,,
+30056,,no-chat-clear,No Chat Clear,,
+30057,,map-rendering-disabler,Map Rendering Disabler,,
+30058,,resource-pack-profiler,Resource Pack Profiler,,
+30059,,no-see-through-text-displays,No See Through Text Displays,,
+30060,kings-monsters,,Kings & Monsters,,
+30061,,,Faster Happy Ghast x Vanilla Backport,,
+30062,mmce-more-bus,mmce-more-bus,MMCE：更多总线,MMCE More Bus,MMCEMB
+30063,simple-structure-desert,,Simple Structures: Desert,,
+30064,goety-invasion,,诡厄侵扰,Goety & Invasion,GIN
+30065,respawn-recap,,Respawn Recap,,
+30066,,,七宗罪,Seven Deadly Sins,
+30067,iron-tanks-community-edition,irontanks-community-edition,更多储罐社区版,Iron Tanks Community Edition,
+30068,buildcraft-community-edition-localizations,buildcraft-community-edition-localizations,建筑社区版：本地化,BuildCraft Community Edition: Localizations,
+30069,,mob-rate,生物倍率,Mob Rate,
+30070,souls-like-bosses,souls-like-bosses,Souls Like Bosses,,
+30071,deadly-guardians,,Deadly Guardians,,
+30072,exp-ores-kots,,经验矿石-耕云钓月版,Exp Ores KOTS,
+30073,third-person-death-effect,third-person-death-effect,Third Person Death Effect,,
+30074,player-hurt-number,,玩家受伤数字显示,Player Hurt Number,
+30075,conflux-map,,Conflux Map,,CM
+30076,polymorph-pages,,多态合成翻页支持,Polymorph Pages,
+30077,laser-eyes,laser-eyes,Laser Eyes,,
+30078,symbiote-a-bonding-experience,symbiote-a-bonding-experience,Symbiote: A Bonding Experience,,
+30079,,tp-players,TP Players,,TPP
+30080,beyond-craftlines,,超越维度：合成链,Beyond Craftlines,
+30081,,water-in-nether,Water In Nether,,
+30082,,,武器等级,Weapon Level,WL
+30083,holy-crusade,,神圣征伐,Holy Crusade,
+30084,ultimateminepiece,,UltimateMinePiece,,UMP
+30085,maid-restaurant-now-open,maid-restaurant-business,女仆餐厅：营业中,Maid Restaurant: Now Open,
+30086,range-harvest,range-harvest,快速丰收,Range Harvest,
+30087,,afk-camera,AFK Camera,,
+30088,,anvilcraft-fe-grid,铁砧工艺：FE电网,AnvilCraft FE Grid,ACFG
+30089,confluence-infernum,confluence-infernum,Confluence: Infernum,,
+30090,dlss-style,,DLSS STYLE,,
+30091,modern-baby-animals,,现代宝宝,Modern Baby Animals,
+30092,darys-decoratives-curtains,,Dary's Decoratives: Curtains,,
+30093,totem-expansion,,Totem Expansion,,
+30094,ae2-emi-shift-craft,,AE2 EMI SHIFT CRAFT,,AEST
+30095,initial-dim-choice,,初始维度选单,Initial Dim Choice,
+30096,,,AE2 样板管理器,AE2 Pattern Manager,AE2PM
+30097,,,猎杀对决：暗域,Hunt: Showdown - Dark Sight,
+30098,,,更好的标记,Better Marker,
+30099,fix-experience-bug,fix-experience-bug,Fix Experience Bug,,
+30100,fresh-armor-bar,fresh-armor-bar,Fresh Armor Bar,,
+30101,,strinova-hud,卡拉彼丘HUD,Strinova (CalabiYau) HUD,
+30102,cgm-ununofficial,,MrCrayfish的枪：非非官方版,MrCrayfish's Gun Mod: UnUnofficial,CGMuu
+30103,irons-spells-light-pollution,irons-spells-light-pollution,铁魔法：光污染,Iron's Spells: Light Pollution,ISLP
+30104,twilightteleport,twilightteleport,TwilightTeleport,,
+30105,scp-610-flesh-that-hates,"scp-610,-flesh-that-hates","SCP-610, Flesh that Hates",,
+30106,adventurebags,,冒险背包,AdventureBags,
+30107,greedbundle,,贪婪之袋,GreedBundle,
+30108,big-xp-drops,,Big Xp Drops,,
+30109,talisman-jackiechan,talisman-jackiechan,符咒,Talisman Jackiechan,tjc
+30110,calendar,,日历,Calendar Mod,CLM
+30111,et-futurum-requiem-reforged,,把未来带回现实：重铸版,Et Futurum Requiem Reforged,
+30112,,,本地音乐唱片,Local Music Disc,
+30113,ender-terg,,Ender Terg,,
+30114,,,重生！重生！,Respawn!Reborn!,RR
+30115,farmers-delight-meal-mastery,farmers-delight-meal-mastery,Farmer's Delight: Meal Mastery,,
+30116,nfu-library,,NFU Library,,
+30117,text-display-pen,,自定义文本展示实体,Text Display Editor,
+30118,see-through-my-mount,,See Through My Mount,,
+30119,,,TirituMOD,,
+30120,,progression-reshuffled,Progression Reshuffled,,
+30121,,,MineClient Bridge,,
+30122,,,我的联盟,RiftArsenal,
+30123,embers-re-ignited,embers-re-ignited,余烬再复刻版,Embers Re-Ignited,
+30124,,client-recipe-fix,客户端配方修复,Client Recipe Fix,
+30125,,,TACZ勋章,TACZMedal,TAM
+30126,rustic-pipes,,Rustic Pipes,,
+30127,cosmiclib,,CosmicLib,,
+30128,touhou-shrine-maiden,touhou-shrine-maiden,幻想巫女祭,Touhou Shrine Maiden,
+30129,,,Beasts Of Elements,,
+30130,,,运输矿车GUI,Chest Minecart GUI,CMGUI
+30131,reflyky-addon-aot,,Addon AOT,,
+30132,,,特摄英雄补完计划-补完,Tokusatsu Hero Instrumentality Project-Completion,
+30133,,,我的世界拼豆投影,Pixel Art Builder,
+30134,,,简易村民交易刷新锁定,Simple Villager Trade Refresh Lock,
+30135,,dismantle-table,拆解台,Dismantle Table,
+30136,momentum-limit,,除其速势,Momentum Limit,
+30137,,,宝库重用,Reusable Vault,
+30138,,sprintable,Sprintable,,
+30139,,,百科闪烁标语Rd,McmodSplashRd,
+30140,,jsonwrangler,JsonWrangler,,
+30141,,,SkijaLibRd,,
+30142,,,ModernMouseKey (rd-132211),,MMH
+30143,mekanical-create,mekanical-create,通用动力,Mekanical Create,
+30144,,,游戏菜单移除,Game Menu Remove,
+30145,bren-reforged-unofficial,bren-reforged-unofficial,Bren-Reforged Unofficial,,
+30146,more-lectern-variants-unofficial,,更多讲台非官方移植,More Lectern Variants Unofficial,
+30147,exp-ores,exp-ores,经验矿石,Exp Ores,
+30148,opencomputers-ii-modern,,OpenComputers II: Modern,,
+30149,echostruct,,残墟遗响,Echostruct,
+30150,neighborly,neighborly,Neighborly,,
+30151,sarkazs-furnace-side-fables,,无终奇语,Sarkaz's Furnace Side Fables,
+30152,ink-scale,,墨鳞,Ink Scale,
+30153,mob-horde,,游荡集群,Mob Horde,
+30154,,,更真实的钓鱼 - 水产业/水产品 数据包,Fishing Real - Aquaculture Datapack,
+30155,,,锈蚀者,The Rusted,TR
+30156,spice-of-overhaul,spice-of-overhaul,Spice of Overhaul,,
+30157,radium-re-reforged,,Radium Re Reforged,,
+30158,show-dimension-in-name,,Show Dimension In Name,,
+30159,jei-malum,,JEI 灵灾,JEI Malum,
+30160,spider-overhaul,spider-overhaul,Spider Overhaul,,
+30161,,,Extras Dungeons,,
+30162,,,Extras Bigger Caves,,
+30163,asian-wildlife,,Asian Wildlife,,
+30164,south-american-wildlife,,South American Wildlife,,
+30165,north-american-wildlife,,North American Wildlife,,
+30166,,,CampingCraft,,CPC
+30167,,,诡秘之主同人模组,Lord of Mysteries,
+30168,dreamshift,dreamshift,Dreamshift,,
+30169,aeronautics-gravity-visualization,,航空学：重力可视化,Aeronautics:Gravity Visualization,
+30170,cannibalvillages,cannibal-villages,Cannibal Villages: Tropical Exploration,,
+30171,,,TirituMod (1.6.4~1.7.10),,
+30172,interactivestuff,interactivestuff,InteractiveStuff,,
+30173,lib-5555ff,,Lib 5555ff / 5555ff-lib,,
+30174,narwhal-mod,,Narwhal Mod,,
+30175,digital-storage-cloud,,汤姆的简易存储：云上加仓,Digital Storage Cloud,DSC
+30176,,,星粒,Starbits,
+30177,building-gadgets2-ae2-addon,,建筑小帮手AE2插件,Building Gadgets2 AE2 Addon,
+30178,sporeai,,孢子AI,SporeAI,
+30179,fis-cordyceps,,真菌感染:孢子 虫草,FIS Cordyceps,
+30180,nenus-pop-plushies,,Nenu's Pop Plushies,,
+30181,,,得一即无限背包,SN Infinite Pack,SNInfP
+30182,thermal-more-integral-components,thermal-more-integral-components,Thermal: More Integral Components,,
+30183,recipehandlerragecraftedition,,合成冲突消除：重铸版,No More Recipe Conflict Reforged,
+30184,keymap-viewer,,Keymap Viewer,,
+30185,,,拆解台附属,Uncraft Everything Enhanced,
+30186,,,随身铁傀儡,Pocket Iron Golem,
+30187,,,Mod30187(failed),,
+30188,multitools-enhanced,multitool-enhanced,Multitools Enhanced,,
+30189,,,Enchaintment,,
+30190,cc-my-peripheral-extender,cc-my-peripheral-extender,外设扩展器,Peripheral Extender,CC:PE
+30191,hbmtweaks,,HBMtweaks,,
+30192,,,乱界核心,ChaosWorld-Core,
+30193,pinyin-search-for-sophisticated-backpacks,,精妙背包拼音搜索,Sophisticated Backpacks Pinyin,
+30194,relog-health-fix,,退出重进血量修复,Relog Health Fix,
+30195,snow-imprints,snow-imprints,Soft Imprints,,
+30196,more-difficult-wither-storm,,更难的凋灵风暴,More Difficult Wither Storm,MDWS
+30197,jcraft-additions,jcraft-additions,JCraft Additions,,
+30198,,,村民意识,The Awakening of the Villagers,AV
+30199,farmers-delight-26-neo-ver,,农夫乐事 26 Neo 版,Farmer's Delight 26 Neo Ver,
+30200,flans-mod-ultimate-2,,Flan's Mod Ultimate 2,,
+30201,calamitymeter,,灾厄怒气与肾上腺素,Calamity Meter,CM
+30202,,,禁止多人游戏,Single Player Only,SPO
+30203,,,背景图快速切换,Panoramas Switcher,
+30204,,,工程备忘录,ProjectMemo,PM
+30205,,,Fiercer Battles,,
+30206,mixauth,,MixAuth,,
+30207,,,更多锤子,MaceV,
+30208,just-enough-drops,,想查就查,Just Enough Drops,
+30209,stopcheat,,stopcheat,,
+30210,,item-editor,Item Editor,,IE
