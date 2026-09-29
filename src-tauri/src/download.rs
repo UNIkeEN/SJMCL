@@ -1,12 +1,92 @@
 use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use sjmcl_downloader::{EngineError, EngineHandle, GroupState, SubmitGroup, SubmitTask};
+use sjmcl_downloader::download::DownloadExecutor;
+use sjmcl_downloader::{
+  EngineConfig, EngineError, EngineHandle, EngineSetup, GroupState, SubmitGroup, SubmitTask,
+  TaskExecutor, TokenBucket,
+};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::{AppHandle, Manager, Url};
 
+use crate::APP_DATA_DIR;
 use crate::instance::helpers::loader::postprocess::{InstallKind, InstallSpec, PrepareSpec};
 use crate::instance::models::misc::Instance;
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::curseforge::misc::{
+  CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
+};
+use crate::utils::web::build_sjmcl_client;
+
+pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
+  sjmcl_downloader::init_with_setup(|app| {
+    let launcher_config = app.state::<Mutex<LauncherConfig>>();
+    let launcher_config = launcher_config.lock().map_err(|error| error.to_string())?;
+    let download_concurrency = if launcher_config.download.transmission.auto_concurrent {
+      std::thread::available_parallelism()
+        .map(usize::from)
+        .unwrap_or(1)
+    } else {
+      launcher_config
+        .download
+        .transmission
+        .concurrent_count
+        .max(1)
+    };
+    let speed_limit = launcher_config
+      .download
+      .transmission
+      .enable_speed_limit
+      .then_some(
+        (launcher_config.download.transmission.speed_limit_value as u64).saturating_mul(1024),
+      );
+    drop(launcher_config);
+
+    let client = build_sjmcl_client(app, true);
+    let executor = DownloadExecutor {
+      client: client.clone(),
+      limiter: speed_limit
+        .map(|bytes_per_second| Arc::new(TokenBucket::new(bytes_per_second, bytes_per_second))),
+      request_decorator: Some(Arc::new(
+        |raw_url: &str, request: tauri_plugin_http::reqwest::RequestBuilder| {
+          if raw_url
+            .parse()
+            .is_ok_and(|url| is_curseforge_authenticated_url(&url))
+          {
+            request.header("x-api-key", CURSEFORGE_API_KEY.as_str())
+          } else {
+            request
+          }
+        },
+      )),
+      ..DownloadExecutor::default()
+    };
+    app.manage(client);
+
+    Ok(EngineSetup {
+      db_path: APP_DATA_DIR
+        .get()
+        .ok_or_else(|| "APP_DATA_DIR is not initialized".to_string())?
+        .join("downloads.db"),
+      config: EngineConfig {
+        concurrency: download_concurrency,
+        ..EngineConfig::default()
+      },
+      executor,
+      extra_executors: vec![
+        Arc::new(
+          crate::instance::helpers::loader::postprocess::PrepareExecutor { app: app.clone() },
+        ) as Arc<dyn TaskExecutor>,
+        Arc::new(
+          crate::instance::helpers::loader::postprocess::InstallExecutor { app: app.clone() },
+        ) as Arc<dyn TaskExecutor>,
+        Arc::new(crate::instance::helpers::loader::postprocess::VerifyExecutor { app: app.clone() })
+          as Arc<dyn TaskExecutor>,
+      ],
+    })
+  })
+}
 
 #[derive(Debug, Clone)]
 pub struct DownloadTask {

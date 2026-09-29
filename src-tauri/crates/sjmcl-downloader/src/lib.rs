@@ -28,8 +28,8 @@ pub use model::{
 pub use rate::TokenBucket;
 pub use storage::StateStore;
 pub use tauri::{
-  EngineHandle, EngineRuntime, commands, init, init_with_db_path, setup_engine,
-  setup_engine_with_executors,
+  EngineHandle, EngineRuntime, EngineSetup, commands, init, init_with_db_path, init_with_setup,
+  setup_engine, setup_engine_with_executors,
 };
 
 /// Summary returned by engine queries, including the initial frontend snapshot.

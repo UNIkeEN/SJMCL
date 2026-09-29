@@ -20,6 +20,14 @@ pub struct EngineHandle(pub Engine);
 /// and EngineBuilder::spawn uses tokio::spawn. Retain the runtime so it stays alive.
 pub struct EngineRuntime(pub tokio::runtime::Runtime);
 
+/// Host-provided settings used when the plugin initializes its engine.
+pub struct EngineSetup {
+  pub db_path: PathBuf,
+  pub config: EngineConfig,
+  pub executor: DownloadExecutor,
+  pub extra_executors: Vec<Arc<dyn TaskExecutor>>,
+}
+
 /// Tauri EventSink adapter: emit core events through the AppHandle.
 pub struct TauriSink<R: Runtime> {
   app: AppHandle<R>,
@@ -48,17 +56,43 @@ impl<R: Runtime> EventSink for TauriSink<R> {
 
 /// Initialize the plugin with SQLite persistence and the download executor.
 pub fn init<R: Runtime>() -> ::tauri::plugin::TauriPlugin<R> {
-  build_plugin(true, None)
+  init_with_setup(|app| {
+    Ok(EngineSetup {
+      db_path: app
+        .path()
+        .app_data_dir()
+        .map_err(|error| error.to_string())?
+        .join("downloads.db"),
+      config: EngineConfig::default(),
+      executor: DownloadExecutor::default(),
+      extra_executors: Vec::new(),
+    })
+  })
 }
 
 /// Initialize the plugin with a specified SQLite path for tests or embedded hosts.
 pub fn init_with_db_path<R: Runtime>(db_path: PathBuf) -> ::tauri::plugin::TauriPlugin<R> {
-  build_plugin(true, Some(db_path))
+  init_with_setup(move |_| {
+    Ok(EngineSetup {
+      db_path,
+      config: EngineConfig::default(),
+      executor: DownloadExecutor::default(),
+      extra_executors: Vec::new(),
+    })
+  })
 }
 
 /// Register commands only; the host must call setup_engine during application setup.
 pub fn commands<R: Runtime>() -> ::tauri::plugin::TauriPlugin<R> {
-  build_plugin(false, None)
+  build_plugin(|_| Ok(None))
+}
+
+/// Initialize the plugin from host settings once the host state is available.
+pub fn init_with_setup<R: Runtime, F>(configure: F) -> ::tauri::plugin::TauriPlugin<R>
+where
+  F: FnOnce(&AppHandle<R>) -> Result<EngineSetup, String> + Send + 'static,
+{
+  build_plugin(move |app| configure(app).map(Some))
 }
 
 /// Initialize the engine with host-provided configuration, HTTP client, and database path.
@@ -107,30 +141,22 @@ pub fn setup_engine_with_executors<R: Runtime>(
   Ok(())
 }
 
-fn build_plugin<R: Runtime>(
-  initialize: bool,
-  db_path: Option<PathBuf>,
-) -> ::tauri::plugin::TauriPlugin<R> {
+fn build_plugin<R: Runtime, F>(configure: F) -> ::tauri::plugin::TauriPlugin<R>
+where
+  F: FnOnce(&AppHandle<R>) -> Result<Option<EngineSetup>, String> + Send + 'static,
+{
   ::tauri::plugin::Builder::new("download")
     .setup(move |app, _api| {
-      if !initialize {
-        return Ok(());
+      if let Some(setup) = configure(app)? {
+        setup_engine_with_executors(
+          app,
+          setup.db_path,
+          setup.config,
+          setup.executor,
+          setup.extra_executors,
+        )?;
       }
-      let db_path = match &db_path {
-        Some(path) => path.clone(),
-        None => app
-          .path()
-          .app_data_dir()
-          .expect("app data dir")
-          .join("downloads.db"),
-      };
-      setup_engine(
-        &app.clone(),
-        db_path,
-        EngineConfig::default(),
-        DownloadExecutor::default(),
-      )
-      .map_err(Into::into)
+      Ok(())
     })
     .invoke_handler(tauri::generate_handler![
       submit_group,

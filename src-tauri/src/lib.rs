@@ -18,19 +18,15 @@ use launch::models::LaunchingState;
 use launcher_config::helpers::java::refresh_and_update_javas;
 use launcher_config::helpers::misc::auto_clear_download_cache;
 use launcher_config::models::{JavaInfo, LauncherConfig};
-use resource::helpers::curseforge::misc::{CURSEFORGE_API_KEY, is_curseforge_authenticated_url};
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
 use resource::helpers::translation::LocalModTranslationsCache;
 use resource::helpers::translation::cache::ResourceTranslationsCache;
-use sjmcl_downloader::download::DownloadExecutor;
-use sjmcl_downloader::{EngineConfig, TaskExecutor, TokenBucket};
 use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, LazyLock, Mutex, OnceLock};
+use std::sync::{LazyLock, Mutex, OnceLock};
 use tauri::Manager;
 use utils::portable::is_portable;
-use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
@@ -55,7 +51,6 @@ pub async fn run() {
       .plugin(tauri_plugin_clipboard_manager::init())
       .plugin(tauri_plugin_deep_link::init())
       .plugin(tauri_plugin_dialog::init())
-      .plugin(sjmcl_downloader::commands())
       .plugin(tauri_plugin_fs::init())
       .plugin(tauri_plugin_http::init())
       .plugin(tauri_plugin_opener::init())
@@ -216,24 +211,6 @@ pub async fn run() {
         let exe_sha256 = launcher_config.basic_info.exe_sha256.clone();
         let auto_purge_launcher_logs = launcher_config.general.advanced.auto_purge_launcher_logs;
         let launcher_mcp_config = launcher_config.intelligence.mcp_server.launcher.clone();
-        let download_concurrency = if launcher_config.download.transmission.auto_concurrent {
-          std::thread::available_parallelism()
-            .map(usize::from)
-            .unwrap_or(1)
-        } else {
-          launcher_config
-            .download
-            .transmission
-            .concurrent_count
-            .max(1)
-        };
-        let speed_limit = launcher_config
-          .download
-          .transmission
-          .enable_speed_limit
-          .then_some(
-            (launcher_config.download.transmission.speed_limit_value as u64).saturating_mul(1024),
-          );
         app.manage(Mutex::new(launcher_config));
 
         let account_info = AccountInfo::load().unwrap_or_default();
@@ -259,47 +236,7 @@ pub async fn run() {
         let resource_translations = ResourceTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(resource_translations));
 
-        let client = build_sjmcl_client(app.handle(), true);
-        let download_executor = DownloadExecutor {
-          client: client.clone(),
-          limiter: speed_limit
-            .map(|bytes_per_second| Arc::new(TokenBucket::new(bytes_per_second, bytes_per_second))),
-          request_decorator: Some(Arc::new(
-            |raw_url: &str, request: tauri_plugin_http::reqwest::RequestBuilder| {
-              if raw_url
-                .parse()
-                .is_ok_and(|url| is_curseforge_authenticated_url(&url))
-              {
-                request.header("x-api-key", CURSEFORGE_API_KEY.as_str())
-              } else {
-                request
-              }
-            },
-          )),
-          ..DownloadExecutor::default()
-        };
-        app.manage(client);
-        sjmcl_downloader::setup_engine_with_executors(
-          app.handle(),
-          APP_DATA_DIR.get().unwrap().join("downloads.db"),
-          EngineConfig {
-            concurrency: download_concurrency,
-            ..EngineConfig::default()
-          },
-          download_executor,
-          vec![
-            Arc::new(instance::helpers::loader::postprocess::PrepareExecutor {
-              app: app.handle().clone(),
-            }) as Arc<dyn TaskExecutor>,
-            Arc::new(instance::helpers::loader::postprocess::InstallExecutor {
-              app: app.handle().clone(),
-            }) as Arc<dyn TaskExecutor>,
-            Arc::new(instance::helpers::loader::postprocess::VerifyExecutor {
-              app: app.handle().clone(),
-            }) as Arc<dyn TaskExecutor>,
-          ],
-        )
-        .map_err(std::io::Error::other)?;
+        app.handle().plugin(download::init_plugin())?;
 
         let launching_queue = Vec::<LaunchingState>::new();
         app.manage(Mutex::new(launching_queue));
