@@ -7,6 +7,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -14,8 +15,6 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth;
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::download::DownloadParam;
 use crate::utils::fs::get_files_with_regex;
 
 const FABRIC_API_MOD_ID_MODRINTH: &str = "P7dR8mSH";
@@ -28,7 +27,7 @@ pub async fn install_fabric_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
   is_install_fabric_api: Option<bool>,
 ) -> SJMCLResult<()> {
   let client = app.state::<reqwest::Client>();
@@ -111,12 +110,12 @@ pub async fn install_fabric_loader(
       }
     }
     if let Some(src) = src_opt {
-      task_params.push(PTaskParam::Download(DownloadParam {
+      task_params.push(DownloadTask {
         src,
         dest: lib_dir.join(&rel),
         filename: None,
         sha1: None,
-      }));
+      });
     }
     Ok(())
   };
@@ -149,7 +148,7 @@ pub async fn install_fabric_loader(
     )
     .await
   {
-    task_params.push(PTaskParam::Download(fabric_api_download));
+    task_params.push(fabric_api_download);
   }
 
   Ok(())

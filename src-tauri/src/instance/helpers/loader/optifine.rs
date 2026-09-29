@@ -1,4 +1,4 @@
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
@@ -6,6 +6,7 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::{ZipArchive, ZipWriter, write::FileOptions};
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{ArgumentsItem, LaunchArgumentTemplate};
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::common::add_library_entry;
@@ -15,15 +16,12 @@ use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 pub async fn download_optifine_installer(
   game_version: &str,
   optifine: &OptiFineResourceInfo,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
   // only have BMCLAPI source
   let root = get_download_api(SourceType::BMCLAPIMirror, ResourceType::OptiFine)?;
@@ -39,12 +37,12 @@ pub async fn download_optifine_installer(
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(DownloadTask {
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
     sha1: None,
-  }));
+  });
 
   Ok(())
 }
@@ -54,7 +52,7 @@ pub async fn download_optifine_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let optifine = instance
     .optifine
     .as_ref()
@@ -70,7 +68,7 @@ pub async fn download_optifine_libraries(
     return Err(InstanceError::InvalidSourcePath.into());
   };
 
-  let mut task_params: Vec<PTaskParam> = vec![];
+  let mut task_params: Vec<DownloadTask> = vec![];
   let installer_coord = format!(
     "net.minecraftforge:optifine:{}-installer",
     optifine.filename
@@ -146,12 +144,12 @@ pub async fn download_optifine_libraries(
     &priority[0],
   )?;
 
-  task_params.push(PTaskParam::Download(DownloadParam {
+  task_params.push(DownloadTask {
     src,
     dest: lw_dest,
     filename: None,
     sha1: None,
-  }));
+  });
 
   if !has_launchwrapper {
     lw_coord = "net.minecraft:launchwrapper:1.12".to_string();
@@ -257,19 +255,7 @@ pub async fn download_optifine_libraries(
     client_info.main_class = Some(lw_main.clone());
   }
 
-  if task_params.is_empty() {
-    return Ok(());
-  }
-
-  schedule_progressive_task_group(
-    app.clone(),
-    format!("optifine-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(task_params)
 }
 
 async fn run_optifine_patcher(
@@ -310,7 +296,9 @@ async fn run_optifine_patcher(
     .arg(installer_jar)
     .arg(out_optifine_jar);
 
-  let output = cmd.output()?;
+  let output = tokio::task::spawn_blocking(move || cmd.output())
+    .await
+    .map_err(|error| SJMCLError(error.to_string()))??;
 
   if !output.status.success() {
     return Err(InstanceError::ProcessorExecutionFailed.into());

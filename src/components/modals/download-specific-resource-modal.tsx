@@ -55,6 +55,7 @@ import { useToast } from "@/contexts/toast";
 import { InstanceSubdirType, ModLoaderType } from "@/enums/instance";
 import { OtherResourceSource, OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
+import { SubmitDownloadTask } from "@/models/download";
 import { InstanceSummary } from "@/models/instance/misc";
 import {
   GameClientResourceInfo,
@@ -62,10 +63,9 @@ import {
   OtherResourceInfo,
   OtherResourceVersionPack,
 } from "@/models/resource";
-import { TaskParam, TaskTypeEnums } from "@/models/task";
+import { DownloadService } from "@/services/download";
 import { InstanceService } from "@/services/instance";
 import { ResourceService } from "@/services/resource";
-import { TaskService } from "@/services/task";
 import cardStyles from "@/styles/card.module.css";
 import { ISOToDate } from "@/utils/datetime";
 import { getResourceCompatibleModLoader, translateTag } from "@/utils/resource";
@@ -165,20 +165,18 @@ const DownloadSpecificResourceModal: React.FC<
     release: "green.500",
   };
 
-  const handleScheduleProgressiveTaskGroup = useCallback(
-    (taskGroup: string, params: TaskParam[]) => {
-      TaskService.scheduleProgressiveTaskGroup(taskGroup, params).then(
-        (response) => {
-          // success toast will now be called by task context group listener
-          if (response.status !== "success") {
-            toast({
-              title: response.message,
-              description: response.details,
-              status: "error",
-            });
-          }
-        }
-      );
+  const handleSubmitDownloadGroup = useCallback(
+    (taskGroup: string, tasks: SubmitDownloadTask[]) => {
+      DownloadService.submitGroup({
+        name: taskGroup,
+        tasks,
+        autoResume: true,
+      }).catch((error) => {
+        toast({
+          title: String(error),
+          status: "error",
+        });
+      });
     },
     [toast]
   ); // this is because TaskContext is now inside the SharedModalContext, use a separated function to avoid circular dependency
@@ -286,12 +284,13 @@ const DownloadSpecificResourceModal: React.FC<
       if (!savepath) return;
       // use "modpack-wo-install" group to prevent auto-triggering install
       const taskGroup = isModpack ? "modpack-wo-install" : resource.type;
-      handleScheduleProgressiveTaskGroup(taskGroup, [
+      handleSubmitDownloadGroup(taskGroup, [
         {
-          src: selectedItem.downloadUrl,
+          name: fileName,
+          executor: "download",
+          spec: { url: selectedItem.downloadUrl },
           dest: savepath,
           sha1: selectedItem.sha1,
-          taskType: TaskTypeEnums.Download,
         },
       ]);
       closeSharedModal("download-specific-resource");
@@ -305,7 +304,7 @@ const DownloadSpecificResourceModal: React.FC<
     getSelectedFileName,
     isModpack,
     resource.type,
-    handleScheduleProgressiveTaskGroup,
+    handleSubmitDownloadGroup,
     closeSharedModal,
     router,
   ]);
@@ -322,12 +321,13 @@ const DownloadSpecificResourceModal: React.FC<
           response.data,
           getSelectedFileName(selectedItem)
         );
-        handleScheduleProgressiveTaskGroup(resource.type, [
+        handleSubmitDownloadGroup(resource.type, [
           {
-            src: selectedItem.downloadUrl,
+            name: getSelectedFileName(selectedItem),
+            executor: "download",
+            spec: { url: selectedItem.downloadUrl },
             dest: destPath,
             sha1: selectedItem.sha1,
-            taskType: TaskTypeEnums.Download,
           },
         ]);
         modalProps.onClose();
@@ -344,7 +344,7 @@ const DownloadSpecificResourceModal: React.FC<
       dirType,
       getSelectedFileName,
       resource.type,
-      handleScheduleProgressiveTaskGroup,
+      handleSubmitDownloadGroup,
       modalProps,
       toast,
     ]
@@ -362,12 +362,13 @@ const DownloadSpecificResourceModal: React.FC<
     if (!cacheDir) return;
     const fileName = sanitizeFileName(selectedItem.fileName);
     const destPath = await join(cacheDir, fileName);
-    handleScheduleProgressiveTaskGroup("modpack", [
+    handleSubmitDownloadGroup("modpack", [
       {
-        src: selectedItem.downloadUrl,
+        name: fileName,
+        executor: "download",
+        spec: { url: selectedItem.downloadUrl },
         dest: destPath,
         sha1: selectedItem.sha1,
-        taskType: TaskTypeEnums.Download,
       },
     ]);
     closeSharedModal("download-specific-resource");
@@ -376,7 +377,7 @@ const DownloadSpecificResourceModal: React.FC<
   }, [
     selectedItem,
     config.download.cache.directory,
-    handleScheduleProgressiveTaskGroup,
+    handleSubmitDownloadGroup,
     closeSharedModal,
     router,
   ]);

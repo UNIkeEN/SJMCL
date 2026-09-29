@@ -639,6 +639,11 @@
       "error": "未成",
       "cancelled": "已罷"
     },
+    "postprocess": {
+      "prepare_install": "備安裝",
+      "install": "安裝",
+      "verify": "校驗"
+    },
     "task": {
       "game-client": "戲客戶端 {{param}}",
       "game-client-w-java": "戲客戶端 {{param1}}（包含爪哇 {{param2}}）",
@@ -2934,37 +2939,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "方為 {{instanceName}} 置改囊載器",
-        "success": "改囊載器置畢",
-        "error": {
-          "title": "改囊載器弗能裝之",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
-            "INSTALLATION_DUPLICATED": "檢測到另一個程序已在置中",
-            "MAIN_CLASS_NOT_FOUND": "主類未找到",
-            "PROCESSOR_EXECUTION_FAILED": "置任務執行未成",
-            "LOADER_INSTALLER_NOT_FOUND": "載器置程式無"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "方為 {{instanceName}} 置 OptiFine",
-        "success": "OptiFine 置畢",
-        "error": {
-          "title": "OptiFine 弗能裝之",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
-            "INSTALLATION_DUPLICATED": "檢測到另一個程序已在置中",
-            "PROCESSOR_EXECUTION_FAILED": "置任務執行未成",
-            "LOADER_INSTALLER_NOT_FOUND": "OptiFine 置程式無",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版資訊解析未成",
-            "INVALID_SOURCE_PATH": "資源徑無效",
-            "NO_SUITABLE_JAVA": "未得可用之爪哇行時",
-            "SELECTED_JAVA_UNAVAILABLE": "所擇爪哇行時不可用"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "不能更改改囊載器",
@@ -3067,10 +3041,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "任務建立未成"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} 引任務已始",
           "Failed": "{{param}} 部分引之未成，請復試",

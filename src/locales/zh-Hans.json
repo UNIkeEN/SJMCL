@@ -639,6 +639,11 @@
       "error": "失败",
       "cancelled": "已取消"
     },
+    "postprocess": {
+      "prepare_install": "准备安装",
+      "install": "安装",
+      "verify": "校验"
+    },
     "task": {
       "game-client": "游戏客户端 {{param}}",
       "game-client-w-java": "游戏客户端 {{param1}}（包含 Java {{param2}}）",
@@ -2934,37 +2939,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "正在为 {{instanceName}} 安装模组加载器",
-        "success": "模组加载器安装完成",
-        "error": {
-          "title": "模组加载器安装失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
-            "MAIN_CLASS_NOT_FOUND": "主类未找到",
-            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
-            "LOADER_INSTALLER_NOT_FOUND": "加载器安装程序不存在"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "正在为 {{instanceName}} 安装 OptiFine",
-        "success": "OptiFine 安装完成",
-        "error": {
-          "title": "OptiFine 安装失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
-            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
-            "LOADER_INSTALLER_NOT_FOUND": "OptiFine 安装程序不存在",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版本信息解析失败",
-            "INVALID_SOURCE_PATH": "资源路径无效",
-            "NO_SUITABLE_JAVA": "没有找到可用的 Java 运行时",
-            "SELECTED_JAVA_UNAVAILABLE": "所选 Java 运行时不可用"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "无法更改模组加载器",
@@ -3067,10 +3041,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "任务创建失败"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} 下载任务已开始",
           "Failed": "{{param}} 部分下载失败，请重试",

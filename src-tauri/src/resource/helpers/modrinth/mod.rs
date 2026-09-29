@@ -13,6 +13,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
+use crate::download::DownloadTask;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::sort_localized_search_results;
 use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
@@ -24,7 +25,6 @@ use crate::resource::models::{
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
-use crate::tasks::download::DownloadParam;
 use crate::utils::string::contains_chinese;
 
 const ALL_FILTER: &str = "All";
@@ -206,7 +206,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
   mod_loader: ModLoaderType,
   game_version: &str,
   mods_dir: PathBuf,
-) -> SJMCLResult<Option<DownloadParam>> {
+) -> SJMCLResult<Option<DownloadTask>> {
   log::info!(
     "fetch_latest_mod_download_param_modrinth called: mod_id={}, mod_loader={}, game_version={}, mods_dir={}",
     mod_id,
@@ -246,7 +246,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
   let filename = latest_file.file_name.clone();
   let dest_path = mods_dir.join(&filename);
 
-  Ok(Some(DownloadParam {
+  Ok(Some(DownloadTask {
     src: download_url,
     dest: dest_path,
     filename: Some(filename),

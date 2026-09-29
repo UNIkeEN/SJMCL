@@ -639,6 +639,11 @@
       "error": "Fallido",
       "cancelled": "Cancelado"
     },
+    "postprocess": {
+      "prepare_install": "Preparar la instalación",
+      "install": "Instalar",
+      "verify": "Verificar"
+    },
     "task": {
       "game-client": "Cliente del Juego {{param}}",
       "game-client-w-java": "Cliente del Juego {{param1}} (con Java {{param2}})",
@@ -2934,37 +2939,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "Instalando cargador de mods para {{instanceName}}",
-        "success": "Cargador de mods instalado exitosamente",
-        "error": {
-          "title": "Error al instalar el cargador de mods",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
-            "INSTALLATION_DUPLICATED": "Ya hay otro proceso de instalación en curso",
-            "MAIN_CLASS_NOT_FOUND": "Clase principal no encontrada en la versión del cargador de mods",
-            "PROCESSOR_EXECUTION_FAILED": "Error al ejecutar el proceso de instalación",
-            "LOADER_INSTALLER_NOT_FOUND": "Archivo instalador del cargador de mods no encontrado"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "Instalando OptiFine para {{instanceName}}",
-        "success": "OptiFine instalado exitosamente",
-        "error": {
-          "title": "Error al instalar OptiFine",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
-            "INSTALLATION_DUPLICATED": "Ya hay otro proceso de instalación en curso",
-            "PROCESSOR_EXECUTION_FAILED": "Error al ejecutar el proceso de instalación",
-            "LOADER_INSTALLER_NOT_FOUND": "Archivo instalador de OptiFine no encontrado",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "Error al analizar la información de versión de OptiFine",
-            "INVALID_SOURCE_PATH": "Ruta de origen inválida",
-            "NO_SUITABLE_JAVA": "No se encontró un runtime de Java adecuado",
-            "SELECTED_JAVA_UNAVAILABLE": "El runtime de Java seleccionado no está disponible"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "No se puede cambiar el cargador de mods",
@@ -3067,10 +3041,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "Error al crear la tarea"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "La descarga de {{param}} ha comenzado",
           "Failed": "La descarga de {{param}} falló parcialmente, por favor intente de nuevo",

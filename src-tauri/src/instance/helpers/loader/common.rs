@@ -1,4 +1,4 @@
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -6,6 +6,7 @@ use std::process::Command;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
@@ -18,7 +19,6 @@ use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::misc::get_separator;
 use crate::resource::models::SourceType;
-use crate::tasks::PTaskParam;
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,
@@ -41,7 +41,7 @@ pub async fn install_mod_loader(
   lib_dir: PathBuf,
   mods_dir: PathBuf,
   client_info: &mut McClientInfo,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
   is_install_fabric_api: Option<bool>,
   is_install_qf_api: Option<bool>,
 ) -> SJMCLResult<()> {
@@ -107,20 +107,22 @@ pub async fn execute_processors(
   .await?;
 
   for processor in &install_profile.processors {
-    let mut archive = ZipArchive::new(File::open(processor.jar.clone())?)?;
-    let mut manifest = archive.by_name("META-INF/MANIFEST.MF")?;
-    let mut manifest_content = String::new();
-    manifest.read_to_string(&mut manifest_content)?;
-    let main_class = manifest_content
-      .lines()
-      .find_map(|line| {
-        if line.starts_with("Main-Class: ") {
-          Some(line.trim_start_matches("Main-Class: ").trim())
-        } else {
-          None
-        }
-      })
-      .ok_or(InstanceError::MainClassNotFound)?;
+    let main_class = {
+      let mut archive = ZipArchive::new(File::open(processor.jar.clone())?)?;
+      let mut manifest = archive.by_name("META-INF/MANIFEST.MF")?;
+      let mut manifest_content = String::new();
+      manifest.read_to_string(&mut manifest_content)?;
+      manifest_content
+        .lines()
+        .find_map(|line| {
+          if line.starts_with("Main-Class: ") {
+            Some(line.trim_start_matches("Main-Class: ").trim().to_string())
+          } else {
+            None
+          }
+        })
+        .ok_or(InstanceError::MainClassNotFound)?
+    };
     let mut cmd_base = Command::new(selected_java.exec_path.clone());
     #[cfg(target_os = "windows")]
     {
@@ -136,13 +138,15 @@ pub async fn execute_processors(
 
     let args = &processor.args;
 
-    cmd_base.arg("-cp").arg(&classpath).arg(main_class);
+    cmd_base.arg("-cp").arg(&classpath).arg(&main_class);
 
     for arg in args {
       cmd_base.arg(arg);
     }
 
-    let output = cmd_base.output()?;
+    let output = tokio::task::spawn_blocking(move || cmd_base.output())
+      .await
+      .map_err(|error| SJMCLError(error.to_string()))??;
 
     if !output.status.success() {
       eprintln!(

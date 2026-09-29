@@ -1,0 +1,12 @@
+[default]
+description = "download engine commands"
+permissions = [
+  "allow-submit-group",
+  "allow-pause-group",
+  "allow-resume-group",
+  "allow-cancel-group",
+  "allow-retry-group",
+  "allow-remove-group",
+  "allow-snapshot",
+  "allow-list-tasks",
+]

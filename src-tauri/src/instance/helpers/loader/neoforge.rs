@@ -7,6 +7,7 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{McClientInfo, reset_fields_from_patches};
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::loader::forge::InstallProfile;
@@ -15,15 +16,12 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],
   loader: &ModLoader,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
@@ -66,12 +64,12 @@ pub async fn install_neoforge_loader(
     let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
     let installer_path = lib_dir.join(&installer_rel);
 
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(DownloadTask {
       src: installer_url,
       dest: installer_path,
       filename: None,
       sha1: None,
-    }));
+    });
   }
 
   Ok(())
@@ -82,7 +80,7 @@ pub async fn download_neoforge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -204,12 +202,12 @@ pub async fn download_neoforge_libraries(
       if let Some(mojmaps) = args_map.get("{MOJMAPS}")
         && let Some(client_mappings) = client_info.downloads.get("client_mappings")
       {
-        task_params.push(PTaskParam::Download(DownloadParam {
+        task_params.push(DownloadTask {
           src: client_mappings.url.parse()?,
           dest: lib_dir.join(mojmaps),
           filename: None,
           sha1: Some(client_mappings.sha1.clone()),
-        }));
+        });
       }
       processor.args.clear();
       continue;
@@ -272,7 +270,7 @@ pub async fn download_neoforge_libraries(
       continue;
     }
 
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(DownloadTask {
       src: convert_url_to_target_source(
         &Url::parse(url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
@@ -281,7 +279,7 @@ pub async fn download_neoforge_libraries(
       dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
       filename: None,
       sha1: None,
-    }));
+    });
   }
 
   let nf_args = neoforge_info
@@ -314,7 +312,7 @@ pub async fn download_neoforge_libraries(
     }
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
-    task_params.push(PTaskParam::Download(DownloadParam {
+    task_params.push(DownloadTask {
       src: convert_url_to_target_source(
         &Url::parse(url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
@@ -323,23 +321,13 @@ pub async fn download_neoforge_libraries(
       dest: lib_dir.join(&rel),
       filename: None,
       sha1: None,
-    }));
+    });
   }
 
   reset_fields_from_patches(client_info);
 
   let mut seen = std::collections::HashSet::new();
-  task_params.retain(|param| match param {
-    PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
-  });
+  task_params.retain(|param| seen.insert(param.dest.clone()));
 
-  schedule_progressive_task_group(
-    app.clone(),
-    format!("neoforge-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(task_params)
 }

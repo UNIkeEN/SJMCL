@@ -639,6 +639,11 @@
       "error": "エラー",
       "cancelled": "キャンセル済み"
     },
+    "postprocess": {
+      "prepare_install": "インストールの準備",
+      "install": "インストール",
+      "verify": "検証"
+    },
     "task": {
       "game-client": "ゲームクライアント {{param}}",
       "game-client-w-java": "ゲームクライアント {{param1}}（Java {{param2}} 同梱）",
@@ -2934,37 +2939,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "{{instanceName}} にモッドローダーをインストール中",
-        "success": "モッドローダーのインストールが完了しました",
-        "error": {
-          "title": "モッドローダーのインストールに失敗",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
-            "INSTALLATION_DUPLICATED": "別のプロセスが既にインストール中です",
-            "MAIN_CLASS_NOT_FOUND": "メインクラスが見つかりません",
-            "PROCESSOR_EXECUTION_FAILED": "インストールタスクの実行に失敗",
-            "LOADER_INSTALLER_NOT_FOUND": "ローダーインストーラーのファイルが見つかりません"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "{{instanceName}} に OptiFine をインストール中",
-        "success": "OptiFine のインストールが完了",
-        "error": {
-          "title": "OptiFine のインストールに失敗",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
-            "INSTALLATION_DUPLICATED": "別のインストール処理がすでに進行中です",
-            "PROCESSOR_EXECUTION_FAILED": "インストール処理の実行に失敗",
-            "LOADER_INSTALLER_NOT_FOUND": "OptiFine インストーラーが見つかりません",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine のバージョン情報の解析に失敗",
-            "INVALID_SOURCE_PATH": "ソースパスが無効です",
-            "NO_SUITABLE_JAVA": "適切な Java ランタイムが見つかりません",
-            "SELECTED_JAVA_UNAVAILABLE": "選択した Java ランタイムは利用できません"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "モッドローダーを変更できません",
@@ -3067,10 +3041,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "タスクの作成に失敗"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} ダウンロードタスクを開始しました",
           "Failed": "{{param}} 一部のダウンロードに失敗しました。再試行してください",

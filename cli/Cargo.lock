@@ -979,6 +979,7 @@ dependencies = [
  "comfy-table",
  "indicatif",
  "rmcp",
+ "serde",
  "serde_json",
  "tokio",
 ]

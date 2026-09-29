@@ -639,6 +639,11 @@
       "error": "Erreur",
       "cancelled": "Annulé."
     },
+    "postprocess": {
+      "prepare_install": "Préparer l'installation",
+      "install": "Installer",
+      "verify": "Vérifier"
+    },
     "task": {
       "game-client": "Client {{param}}",
       "game-client-w-java": "Client du jeu {{param1}} (avec Java {{param2}})",
@@ -2934,37 +2939,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "Installation du chargeur de mods pour {{instanceName}} en cours",
-        "success": "Installation du chargeur de mods terminée",
-        "error": {
-          "title": "Échec de l'installation du chargeur de mods",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
-            "INSTALLATION_DUPLICATED": "Un autre processus est déjà détecté en cours d'installation",
-            "MAIN_CLASS_NOT_FOUND": "Classe principale non trouvée",
-            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution de la tâche d'installation",
-            "LOADER_INSTALLER_NOT_FOUND": "Fichier d'installation du loader introuvable"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "Installation d'OptiFine pour {{instanceName}}",
-        "success": "OptiFine installé avec succès",
-        "error": {
-          "title": "Échec de l'installation d'OptiFine",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "L'identifiant de l'instance n'existe pas",
-            "INSTALLATION_DUPLICATED": "Un autre processus d'installation est déjà en cours",
-            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution du processus d'installation",
-            "LOADER_INSTALLER_NOT_FOUND": "Fichier d'installation d'OptiFine introuvable",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "Échec de l'analyse des informations de version d'OptiFine",
-            "INVALID_SOURCE_PATH": "Chemin source invalide",
-            "NO_SUITABLE_JAVA": "Aucun runtime Java adapté trouvé",
-            "SELECTED_JAVA_UNAVAILABLE": "Le runtime Java sélectionné est indisponible"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "Impossible de changer le chargeur de mods",
@@ -3067,10 +3041,10 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
+      "submitDownloadGroup": {
         "error": "Échec de la création de la tâche"
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} La tâche de téléchargement a commencé",
           "Failed": "{{param}} Une partie du téléchargement a échoué. Veuillez réessayer",
