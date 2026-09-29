@@ -25,7 +25,7 @@ download engine commands
 <tr>
 <td>
 
-`download:allow-cancel-group`
+`sjmcl-downloader:allow-cancel-group`
 
 </td>
 <td>
@@ -38,7 +38,7 @@ Enables the cancel_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-cancel-group`
+`sjmcl-downloader:deny-cancel-group`
 
 </td>
 <td>
@@ -51,7 +51,7 @@ Denies the cancel_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-list-tasks`
+`sjmcl-downloader:allow-list-tasks`
 
 </td>
 <td>
@@ -64,7 +64,7 @@ Enables the list_tasks command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-list-tasks`
+`sjmcl-downloader:deny-list-tasks`
 
 </td>
 <td>
@@ -77,7 +77,7 @@ Denies the list_tasks command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-pause-group`
+`sjmcl-downloader:allow-pause-group`
 
 </td>
 <td>
@@ -90,7 +90,7 @@ Enables the pause_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-pause-group`
+`sjmcl-downloader:deny-pause-group`
 
 </td>
 <td>
@@ -103,7 +103,7 @@ Denies the pause_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-remove-group`
+`sjmcl-downloader:allow-remove-group`
 
 </td>
 <td>
@@ -116,7 +116,7 @@ Enables the remove_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-remove-group`
+`sjmcl-downloader:deny-remove-group`
 
 </td>
 <td>
@@ -129,7 +129,7 @@ Denies the remove_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-resume-group`
+`sjmcl-downloader:allow-resume-group`
 
 </td>
 <td>
@@ -142,7 +142,7 @@ Enables the resume_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-resume-group`
+`sjmcl-downloader:deny-resume-group`
 
 </td>
 <td>
@@ -155,7 +155,7 @@ Denies the resume_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-retry-group`
+`sjmcl-downloader:allow-retry-group`
 
 </td>
 <td>
@@ -168,7 +168,7 @@ Enables the retry_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-retry-group`
+`sjmcl-downloader:deny-retry-group`
 
 </td>
 <td>
@@ -181,7 +181,7 @@ Denies the retry_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-snapshot`
+`sjmcl-downloader:allow-snapshot`
 
 </td>
 <td>
@@ -194,7 +194,7 @@ Enables the snapshot command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-snapshot`
+`sjmcl-downloader:deny-snapshot`
 
 </td>
 <td>
@@ -207,7 +207,7 @@ Denies the snapshot command without any pre-configured scope.
 <tr>
 <td>
 
-`download:allow-submit-group`
+`sjmcl-downloader:allow-submit-group`
 
 </td>
 <td>
@@ -220,7 +220,7 @@ Enables the submit_group command without any pre-configured scope.
 <tr>
 <td>
 
-`download:deny-submit-group`
+`sjmcl-downloader:deny-submit-group`
 
 </td>
 <td>

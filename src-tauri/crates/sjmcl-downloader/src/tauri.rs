@@ -145,7 +145,7 @@ fn build_plugin<R: Runtime, F>(configure: F) -> ::tauri::plugin::TauriPlugin<R>
 where
   F: FnOnce(&AppHandle<R>) -> Result<Option<EngineSetup>, String> + Send + 'static,
 {
-  ::tauri::plugin::Builder::new("download")
+  ::tauri::plugin::Builder::new("sjmcl-downloader")
     .setup(move |app, _api| {
       if let Some(setup) = configure(app)? {
         setup_engine_with_executors(

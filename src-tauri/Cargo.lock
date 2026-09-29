@@ -43,6 +43,7 @@ dependencies = [
  "sha1",
  "sha2",
  "shlex",
+ "sjmcl-downloader",
  "sjmcl-macros",
  "sjmcl-types",
  "smart-default",
@@ -57,7 +58,6 @@ dependencies = [
  "tauri-plugin-decorum",
  "tauri-plugin-deep-link",
  "tauri-plugin-dialog",
- "tauri-plugin-download",
  "tauri-plugin-fs",
  "tauri-plugin-http",
  "tauri-plugin-log",
@@ -5649,6 +5649,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
 
 [[package]]
+name = "sjmcl-downloader"
+version = "0.1.0"
+dependencies = [
+ "async-channel",
+ "bytes",
+ "futures-util",
+ "reqwest 0.12.28",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "sjmcl-macros"
 version = "1.3.1"
 dependencies = [
@@ -6242,29 +6265,6 @@ dependencies = [
  "tauri-plugin-fs",
  "thiserror 2.0.18",
  "url",
-]
-
-[[package]]
-name = "tauri-plugin-download"
-version = "0.1.0"
-dependencies = [
- "async-channel",
- "bytes",
- "futures-util",
- "reqwest 0.12.28",
- "rusqlite",
- "serde",
- "serde_json",
- "sha1",
- "sha2",
- "tauri",
- "tauri-build",
- "tauri-plugin",
- "thiserror 2.0.18",
- "tokio",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]

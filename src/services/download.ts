@@ -11,7 +11,7 @@ import {
   SubmitDownloadGroup,
 } from "@/models/download";
 
-const DOWNLOAD_COMMAND = "plugin:download|";
+const DOWNLOAD_COMMAND = "plugin:sjmcl-downloader|";
 
 export const DOWNLOAD_TICK_EVENT = "download://tick";
 export const DOWNLOAD_STATE_EVENT = "download://state";

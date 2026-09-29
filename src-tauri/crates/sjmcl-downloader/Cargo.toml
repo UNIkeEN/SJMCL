@@ -1,8 +1,8 @@
 [package]
-name = "tauri-plugin-download"
+name = "sjmcl-downloader"
 version = "0.1.0"
 edition = "2021"
-links = "tauri-plugin-download"
+links = "sjmcl-downloader"
 
 [lib]
 name = "sjmcl_downloader"

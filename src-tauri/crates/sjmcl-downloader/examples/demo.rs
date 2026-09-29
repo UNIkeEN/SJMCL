@@ -1,7 +1,7 @@
 //! End-to-end demonstration with mock-server and the downloader engine.
 //!
 //! Start mock-server in another terminal, then run
-//! cargo run -p tauri-plugin-download --example demo.
+//! cargo run -p sjmcl-downloader --example demo.
 //!
 //! Scenarios run in sequence after each group is submitted:
 //! 1. Normal download with SHA-256 verification.
@@ -15,11 +15,11 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use sjmcl_downloader::{
+  Engine, EngineEvent, SubmitGroup, SubmitTask, TaskState,
   download::DownloadExecutor,
   event::EventSink,
   model::EngineConfig,
   storage::{MemoryStore, SqliteStore},
-  Engine, EngineEvent, SubmitGroup, SubmitTask, TaskState,
 };
 use tokio::time::sleep;
 use tracing_subscriber::EnvFilter;
