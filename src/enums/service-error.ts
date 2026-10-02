@@ -23,7 +23,7 @@ export enum AccountServiceError {
 export enum InstanceError {
   InstanceNotFoundById = "INSTANCE_NOT_FOUND_BY_ID",
   ServerNbtReadError = "SERVER_NBT_READ_ERROR",
-  DuplicateServer = "DUPLICATE_SERVER",
+  ServerNotFound = "SERVER_NOT_FOUND",
   FileNotFoundError = "FILE_NOT_FOUND_ERROR",
   InvalidSourcePath = "INVALID_SOURCE_PATH",
   FileCreationFailed = "FILE_CREATION_FAILED",

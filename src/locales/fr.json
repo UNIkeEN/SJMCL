@@ -147,7 +147,8 @@
   },
   "AddGameServerModal": {
     "header": {
-      "title": "Ajouter un serveur de jeu"
+      "title": "Ajouter un serveur de jeu",
+      "editTitle": "Modifier le serveur de jeu"
     },
     "serverAddrRequired": "L'adresse du serveur est requise",
     "label": {
@@ -1157,6 +1158,8 @@
     "import": "Importer",
     "launch": "Démarrer",
     "more": "Plus",
+    "moveDown": "Déplacer vers le bas",
+    "moveUp": "Déplacer vers le haut",
     "new": "Nouv.",
     "next": "Suivant",
     "notice": "Remarque",
@@ -2851,14 +2854,21 @@
           }
         }
       },
+      "queryGameServerOnlineStatus": {
+        "error": {
+          "title": "Échec de la consultation de l'état du serveur",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "Le fichier servers.dat est peut-être corrompu"
+          }
+        }
+      },
       "addGameServer": {
         "success": "Serveur de jeu ajouté avec succès",
         "error": {
           "title": "Échec de l'ajout du serveur de jeu",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance n'existe pas",
-            "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur",
-            "DUPLICATE_SERVER": "Le serveur existe déjà"
+            "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur"
           }
         }
       },
@@ -2866,6 +2876,27 @@
         "success": "Serveur de jeu supprimé avec succès",
         "error": {
           "title": "Échec de la suppression du serveur de jeu",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance n'existe pas",
+            "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur",
+            "SERVER_NOT_FOUND": "Serveur introuvable"
+          }
+        }
+      },
+      "moveGameServer": {
+        "error": {
+          "title": "Échec du déplacement du serveur de jeu",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance n'existe pas",
+            "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur",
+            "SERVER_NOT_FOUND": "Serveur introuvable"
+          }
+        }
+      },
+      "updateGameServer": {
+        "success": "Serveur de jeu mis à jour avec succès",
+        "error": {
+          "title": "Échec de la mise à jour du serveur de jeu",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "L'ID d'instance n'existe pas",
             "FILE_OPERATION_ERROR": "Échec de l'écriture des informations du serveur",

@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { IconType } from "react-icons";
 import {
   LuArrowDownToLine,
+  LuChevronDown,
+  LuChevronUp,
   LuCircleHelp,
   LuCopy,
   LuEllipsis,
@@ -60,6 +62,8 @@ export const CommonIconButton = forwardRef<
       info: <LuInfo />,
       launch: <LuPlay />,
       more: <LuEllipsis />,
+      moveDown: <LuChevronDown />,
+      moveUp: <LuChevronUp />,
       open: <LuFolderOpen />,
       openFolder: <LuFolderOpen />,
       refresh: <LuRefreshCcw />,

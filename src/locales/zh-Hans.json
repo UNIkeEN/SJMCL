@@ -147,7 +147,8 @@
   },
   "AddGameServerModal": {
     "header": {
-      "title": "添加游戏服务器"
+      "title": "添加游戏服务器",
+      "editTitle": "修改游戏服务器"
     },
     "serverAddrRequired": "服务器地址不能为空",
     "label": {
@@ -1157,6 +1158,8 @@
     "import": "导入",
     "launch": "启动",
     "more": "更多",
+    "moveDown": "下移",
+    "moveUp": "上移",
     "new": "新",
     "next": "下一步",
     "notice": "提示",
@@ -2851,14 +2854,21 @@
           }
         }
       },
+      "queryGameServerOnlineStatus": {
+        "error": {
+          "title": "查询服务器状态失败",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat 可能已损坏"
+          }
+        }
+      },
       "addGameServer": {
         "success": "游戏服务器添加成功",
         "error": {
           "title": "添加游戏服务器失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
-            "FILE_OPERATION_ERROR": "写入服务器信息失败",
-            "DUPLICATE_SERVER": "服务器已存在"
+            "FILE_OPERATION_ERROR": "写入服务器信息失败"
           }
         }
       },
@@ -2866,6 +2876,27 @@
         "success": "游戏服务器删除成功",
         "error": {
           "title": "删除游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "SERVER_NOT_FOUND": "服务器不存在"
+          }
+        }
+      },
+      "moveGameServer": {
+        "error": {
+          "title": "移动游戏服务器失败",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
+            "FILE_OPERATION_ERROR": "写入服务器信息失败",
+            "SERVER_NOT_FOUND": "服务器不存在"
+          }
+        }
+      },
+      "updateGameServer": {
+        "success": "游戏服务器已更新",
+        "error": {
+          "title": "修改游戏服务器失败",
           "description": {
             "INSTANCE_NOT_FOUND_BY_ID": "实例ID不存在",
             "FILE_OPERATION_ERROR": "写入服务器信息失败",
