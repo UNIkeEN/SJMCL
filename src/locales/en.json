@@ -81,7 +81,14 @@
       "add3rdPartyServer": "Add auth server",
       "sourceHomepage": "View Homepage",
       "deleteServer": "Delete Auth Server",
-      "importFromOtherLaunchers": "Import"
+      "importFromOtherLaunchers": "Import",
+      "rename": "Rename"
+    },
+    "renameServer": {
+      "title": "Rename Authentication Server",
+      "label": "New Authentication Server Name",
+      "error": "Failed to rename authentication server",
+      "success": "Successfully renamed authentication server"
     },
     "playerTypeList": {
       "all": "All Source"
