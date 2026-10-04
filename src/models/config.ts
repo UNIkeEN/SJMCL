@@ -27,6 +27,7 @@ export interface GameConfig {
   versionIsolation: boolean;
   launcherVisibility: string;
   displayGameLog: boolean;
+  gameCrashWindowAutoClose: string;
   advancedOptions: {
     enabled: boolean;
   };
@@ -225,6 +226,7 @@ export const defaultGameConfig: GameConfig = {
   versionIsolation: true,
   launcherVisibility: "startHidden",
   displayGameLog: false,
+  gameCrashWindowAutoClose: "disabled",
   advancedOptions: {
     enabled: false,
   },

@@ -18,7 +18,7 @@ import {
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { save } from "@tauri-apps/plugin-dialog";
 import { openPath, openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -48,6 +48,8 @@ const GameErrorPage: React.FC = () => {
   const [javaInfo, setJavaInfo] = useState<JavaInfo>();
   const [reason, setReason] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+  const [autoCloseSeconds, setAutoCloseSeconds] = useState<number | null>(null);
+  const autoCloseCancelledRef = useRef(false);
 
   const launchingId = useMemo(() => {
     if (typeof window === "undefined") return 0;
@@ -60,6 +62,11 @@ const GameErrorPage: React.FC = () => {
       .replace("bsd", "BSD");
     return name.includes("OS") ? name : capitalizeFirstLetter(name);
   }, [config.basicInfo.platform]);
+
+  const cancelAutoClose = useCallback(() => {
+    autoCloseCancelledRef.current = true;
+    setAutoCloseSeconds(null);
+  }, []);
 
   useEffect(() => {
     // construct info maps
@@ -90,6 +97,12 @@ const GameErrorPage: React.FC = () => {
       if (response.status === "success") {
         setInstanceInfo(response.data.selectedInstance);
         setJavaInfo(response.data.selectedJava);
+
+        const policy = response.data.gameConfig?.gameCrashWindowAutoClose;
+        if (policy === "tenSeconds" || policy === "thirtySeconds") {
+          autoCloseCancelledRef.current = false;
+          setAutoCloseSeconds(policy === "tenSeconds" ? 10 : 30);
+        }
       }
     });
 
@@ -106,6 +119,18 @@ const GameErrorPage: React.FC = () => {
       }
     });
   }, [t, launchingId]);
+
+  useEffect(() => {
+    if (autoCloseSeconds === null || autoCloseCancelledRef.current) return;
+    if (autoCloseSeconds <= 0) {
+      getCurrentWebviewWindow().close();
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      setAutoCloseSeconds((prev) => (prev === null ? null : prev - 1));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [autoCloseSeconds]);
 
   const renderStats = ({
     title,
@@ -157,7 +182,7 @@ const GameErrorPage: React.FC = () => {
   };
 
   return (
-    <Flex direction="column" h="100%">
+    <Flex direction="column" h="100%" onClickCapture={cancelAutoClose}>
       <Alert status="error">
         <AlertIcon />
         <AlertTitle fontSize="md">{t("GameErrorPage.title")}</AlertTitle>
@@ -229,7 +254,15 @@ const GameErrorPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <HStack mt="auto" p={4}>
+      {autoCloseSeconds !== null && (
+        <Text fontSize="xs-sm" color="orange.500" px={4} pt={2}>
+          {t("GameErrorPage.autoCloseCountdown", {
+            seconds: autoCloseSeconds,
+          })}
+        </Text>
+      )}
+
+      <HStack mt="auto" p={4} pt={autoCloseSeconds !== null ? 2 : 4}>
         <Button
           colorScheme={primaryColor}
           variant="solid"
