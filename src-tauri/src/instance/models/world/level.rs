@@ -24,10 +24,12 @@ pub struct LevelData {
 
   pub border_warning_blocks: Option<f64>,
   pub border_warning_time: Option<f64>,
-  pub clear_weather_time: i64,
+  pub clear_weather_time: Option<i64>,
   pub data_version: i64,
-  pub daytime: i64,
+  pub daytime: Option<i64>,
   pub difficulty: Option<u8>,
+  #[serde(rename = "difficulty_settings")]
+  pub difficulty_settings: Option<DifficultySettings>,
   pub difficulty_locked: Option<bool>,
   pub game_rules: HashMap<String, String>,
 
@@ -43,28 +45,69 @@ pub struct LevelData {
   pub last_played: i64,
   pub level_name: String,
   pub map_features: Option<bool>,
-  pub player: PlayerData,
+  pub player: Option<PlayerData>,
   #[serde(rename = "rainTime")]
-  pub rain_time: i64,
+  pub rain_time: Option<i64>,
   #[serde(rename = "raining")]
-  pub raining: bool,
+  pub raining: Option<bool>,
   #[serde(rename = "RandomSeed")]
-  pub seed: i64,
-  pub spawn_x: i64,
-  pub spawn_y: i64,
-  pub spawn_z: i64,
+  pub seed: Option<i64>,
+  #[serde(rename = "singleplayer_uuid")]
+  pub singleplayer_uuid: Option<Vec<i32>>,
+  #[serde(rename = "spawn")]
+  pub spawn: Option<SpawnData>,
+  pub world_border: Option<WorldBorderData>,
+  pub weather: Option<WeatherData>,
+  pub spawn_x: Option<i64>,
+  pub spawn_y: Option<i64>,
+  pub spawn_z: Option<i64>,
   #[serde(rename = "thundering")]
-  pub thundering: u8,
+  pub thundering: Option<u8>,
   #[serde(rename = "thunderTime")]
-  pub thunder_time: i64,
+  pub thunder_time: Option<i64>,
   pub time: i64,
   #[serde(rename = "version")]
   pub version: i64,
   #[serde(rename = "Version")]
   pub version_struct: Version,
-  pub wandering_trader_spawn_chance: i64,
-  pub wandering_trader_spawn_delay: i64,
+  pub wandering_trader_spawn_chance: Option<i64>,
+  pub wandering_trader_spawn_delay: Option<i64>,
   pub was_modded: u8,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct DifficultySettings {
+  pub difficulty: Option<String>,
+  pub locked: Option<bool>,
+  pub hardcore: Option<bool>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct SpawnData {
+  pub pos: Option<Vec<i32>>,
+  pub dimension: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct WorldBorderData {
+  pub center_x: Option<f64>,
+  pub center_z: Option<f64>,
+  pub size: Option<f64>,
+  pub lerp_target: Option<f64>,
+  pub lerp_time: Option<i64>,
+  pub safe_zone: Option<f64>,
+  pub damage_per_block: Option<f64>,
+  pub warning_blocks: Option<i64>,
+  pub warning_time: Option<i64>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Default)]
+pub struct WeatherData {
+  pub thunder_time: Option<i64>,
+  pub thundering: Option<u8>,
+  pub clear_weather_time: Option<i64>,
+  pub raining: Option<bool>,
+  pub rain_time: Option<i64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
