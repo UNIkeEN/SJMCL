@@ -1,5 +1,7 @@
 # Contributing
 
+**English** · [简体中文](docs/CONTRIBUTING.zh-Hans.md)
+
 We warmly welcome all forms of contributions to SJMCL, including issues, new features, documentation, and more. 🥰
 
 The following is a set of guidelines for contributing to SJMCL. Please take a few minutes to review these guidelines before submitting an issue or pull request.
