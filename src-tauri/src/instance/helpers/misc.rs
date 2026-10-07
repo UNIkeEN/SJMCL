@@ -5,7 +5,7 @@ use sjmcl_types::storage::load_json_async;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Cursor;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
@@ -398,7 +398,7 @@ pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
 pub async fn prepare_instance_after_download(
   app: &AppHandle,
   instance_id: &str,
-  version_path: &PathBuf,
+  version_path: &Path,
 ) -> SJMCLResult<()> {
   let binding = app.state::<InstanceRefreshLock>();
   let _refresh_guard = binding.0.lock().await;
@@ -408,7 +408,7 @@ pub async fn prepare_instance_after_download(
     .to_string_lossy()
     .to_string();
   let config = Instance {
-    version_path: version_path.clone(),
+    version_path: version_path.to_path_buf(),
     ..Default::default()
   }
   .load_json_cfg()
@@ -420,7 +420,7 @@ pub async fn prepare_instance_after_download(
   }
   refresh_instance(
     app,
-    version_path.clone(),
+    version_path.to_path_buf(),
     name.clone(),
     version_path.join(format!("{}.jar", name)),
     version_path.join(format!("{}.json", name)),

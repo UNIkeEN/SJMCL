@@ -103,10 +103,8 @@ impl TaskExecutor for PhaseExecutor {
         calls.push(name);
         first
       };
-      if first_call {
-        if let Some(error) = fail_once {
-          return Err(error);
-        }
+      if first_call && let Some(error) = fail_once {
+        return Err(error);
       }
       ctx
         .report
@@ -176,8 +174,8 @@ async fn postprocess_retry_calls(fail_stage: &'static str, error: TaskError) -> 
       engine.retry(group_id.clone()).await.unwrap();
     }
   }
-  let result = calls.lock().unwrap().clone();
-  result
+
+  calls.lock().unwrap().clone()
 }
 
 #[tokio::test]

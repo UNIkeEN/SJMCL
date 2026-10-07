@@ -167,11 +167,9 @@ impl StateStore for SqliteStore {
       let (id, mut name, mut auto_resume, state, finish, tasks_json) =
         row.map_err(|e| e.to_string())?;
       // Version 0.1 encoded auto_resume in the name prefix; restore the real field on load.
-      if !auto_resume {
-        if let Some(original) = name.strip_prefix("[auto]") {
-          name = original.to_string();
-          auto_resume = true;
-        }
+      if !auto_resume && let Some(original) = name.strip_prefix("[auto]") {
+        name = original.to_string();
+        auto_resume = true;
       }
       let tasks: Vec<Task> = serde_json::from_str(&tasks_json).map_err(|e| e.to_string())?;
       let state: GroupState = serde_json::from_str(&state).map_err(|e| e.to_string())?;

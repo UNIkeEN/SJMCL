@@ -798,14 +798,15 @@ impl EngineActor {
       self.state.groups[gi].tasks[ti].retries_exhausted = true;
     }
     // Keep intermediate failures in task state, but emit TaskFailed only when no retry remains.
-    if emit_failed && !schedule_retry {
-      if let Some(e) = &task_error {
-        self.emit(EngineEvent::TaskFailed {
-          group_id: gid.clone(),
-          task_id: task_id.into(),
-          error: e.clone(),
-        });
-      }
+    if emit_failed
+      && !schedule_retry
+      && let Some(e) = &task_error
+    {
+      self.emit(EngineEvent::TaskFailed {
+        group_id: gid.clone(),
+        task_id: task_id.into(),
+        error: e.clone(),
+      });
     }
     self.persist_group(&gid);
 
@@ -1062,10 +1063,9 @@ impl EngineActor {
       .runtime
       .get_mut(group_id)
       .and_then(|g| g.tasks.get_mut(task_id))
+      && !rt.queued
     {
-      if !rt.queued {
-        self.state.ready.push_back(task_id.to_string());
-      }
+      self.state.ready.push_back(task_id.to_string());
     }
   }
 
@@ -1128,19 +1128,18 @@ impl EngineActor {
 
   fn try_activate_next_group(&mut self) {
     // Activate a newly submitted group immediately when a slot is available.
-    if self.active_group_count() < self.cfg.max_active_groups.max(1) {
-      if let Some(gi) = self
+    if self.active_group_count() < self.cfg.max_active_groups.max(1)
+      && let Some(gi) = self
         .state
         .groups
         .iter()
         .position(|g| g.state == GroupState::Queued)
-      {
-        let gid = self.state.groups[gi].id.clone();
-        let old = self.state.groups[gi].state;
-        self.state.groups[gi].state = GroupState::Active;
-        self.emit_group_state(&gid, old, GroupState::Active);
-        self.enqueue_group(&gid);
-      }
+    {
+      let gid = self.state.groups[gi].id.clone();
+      let old = self.state.groups[gi].state;
+      self.state.groups[gi].state = GroupState::Active;
+      self.emit_group_state(&gid, old, GroupState::Active);
+      self.enqueue_group(&gid);
     }
   }
 
@@ -1243,10 +1242,10 @@ impl EngineActor {
   }
 
   fn persist_group(&self, group_id: &str) {
-    if let Some(g) = self.state.groups.iter().find(|g| g.id == group_id) {
-      if let Err(e) = self.store.save_group(g) {
-        tracing::warn!("persist group {group_id} failed: {e}");
-      }
+    if let Some(g) = self.state.groups.iter().find(|g| g.id == group_id)
+      && let Err(e) = self.store.save_group(g)
+    {
+      tracing::warn!("persist group {group_id} failed: {e}");
     }
   }
 }
