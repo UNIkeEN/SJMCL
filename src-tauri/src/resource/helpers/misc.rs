@@ -113,11 +113,11 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
       ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?), // seems 'not found'
       ResourceType::CleanroomInstall => Ok(Url::parse(
-        "https://hmcl.glavo.site/metadata/cleanroom/files/",
+        "https://alist.8mi.tech/d/mirror/HMCL-Metadata/Auto/cleanroom/files/",
       )?),
       ResourceType::CleanroomMaven => Ok(Url::parse("https://maven.cleanroommc.com/")?),
       ResourceType::CleanroomMeta => Ok(Url::parse(
-        "https://hmcl.glavo.site/metadata/cleanroom/index.json",
+        "https://alist.8mi.tech/d/mirror/HMCL-Metadata/Auto/cleanroom/index.json",
       )?),
     },
   }
