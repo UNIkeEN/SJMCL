@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "使用系統 OpenAL（僅 Linux）"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "崩潰視窗自動關閉",
+          "disabled": "不自動關閉",
+          "tenSeconds": "10 秒後自動關閉",
+          "thirtySeconds": "30 秒後自動關閉"
         }
       }
     }
@@ -1358,12 +1364,6 @@
         },
         "displayGameLog": {
           "title": "顯示遊戲日誌"
-        },
-        "gameCrashWindowAutoClose": {
-          "title": "崩潰視窗自動關閉",
-          "disabled": "不自動關閉",
-          "tenSeconds": "10 秒後自動關閉",
-          "thirtySeconds": "30 秒後自動關閉"
         },
         "advancedOptions": {
           "title": "高階啟動設定",

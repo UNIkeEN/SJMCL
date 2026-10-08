@@ -70,6 +70,11 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const rendererOptions = supportedRenderers ?? ["default"];
 
   const gameFileValidatePolicies = ["disable", "normal", "full"];
+  const gameCrashWindowAutoClosePolicy = [
+    "disabled",
+    "tenSeconds",
+    "thirtySeconds",
+  ];
   const updateGameAdvancedConfig = useCallback(
     (key: string, value: any) => {
       updateGameConfig(`advanced.${key}`, value);
@@ -391,6 +396,25 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 }}
               />
             </HStack>
+          ),
+        },
+        {
+          title: t(
+            "GameAdvancedSettingsPage.workaround.settings.gameCrashWindowAutoClose.title"
+          ),
+          children: (
+            <MenuSelector
+              value={gameConfig.gameCrashWindowAutoClose}
+              onSelect={(val) =>
+                updateGameConfig("gameCrashWindowAutoClose", val)
+              }
+              options={gameCrashWindowAutoClosePolicy.map((policy) => ({
+                value: policy,
+                label: t(
+                  `GameAdvancedSettingsPage.workaround.settings.gameCrashWindowAutoClose.${policy}`
+                ),
+              }))}
+            />
           ),
         },
         {

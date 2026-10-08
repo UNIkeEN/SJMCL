@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "システム OpenAL を利用（Linux のみ）"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "クラッシュウィンドウを自動で閉じる",
+          "disabled": "自動で閉じない",
+          "tenSeconds": "10秒後に自動で閉じる",
+          "thirtySeconds": "30秒後に自動で閉じる"
         }
       }
     }
@@ -1358,12 +1364,6 @@
         },
         "displayGameLog": {
           "title": "ゲームログを表示"
-        },
-        "gameCrashWindowAutoClose": {
-          "title": "クラッシュウィンドウを自動で閉じる",
-          "disabled": "自動で閉じない",
-          "tenSeconds": "10秒後に自動で閉じる",
-          "thirtySeconds": "30秒後に自動で閉じる"
         },
         "advancedOptions": {
           "title": "高度起動設定",

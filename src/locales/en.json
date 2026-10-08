@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "Use System OpenAL(Linux Only)"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "Auto-close Crash Window",
+          "disabled": "Do not auto-close",
+          "tenSeconds": "Close after 10 seconds",
+          "thirtySeconds": "Close after 30 seconds"
         }
       }
     }
@@ -1358,12 +1364,6 @@
         },
         "displayGameLog": {
           "title": "Display Game Logs"
-        },
-        "gameCrashWindowAutoClose": {
-          "title": "Auto-close Crash Window",
-          "disabled": "Do not auto-close",
-          "tenSeconds": "Close after 10 seconds",
-          "thirtySeconds": "Close after 30 seconds"
         },
         "advancedOptions": {
           "title": "Advanced Launch Options",

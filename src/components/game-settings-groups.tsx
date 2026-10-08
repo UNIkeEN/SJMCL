@@ -75,11 +75,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   }, [getJavaInfos]);
 
   const launcherVisibilityStrategy = ["startHidden", "runningHidden", "always"];
-  const gameCrashWindowAutoClosePolicy = [
-    "disabled",
-    "tenSeconds",
-    "thirtySeconds",
-  ];
   const processPriority = [
     "low",
     "belowNormal",
@@ -512,25 +507,6 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
               onChange={(event) => {
                 updateGameConfig("displayGameLog", event.target.checked);
               }}
-            />
-          ),
-        },
-        {
-          title: t(
-            "GlobalGameSettingsPage.moreOptions.settings.gameCrashWindowAutoClose.title"
-          ),
-          children: (
-            <MenuSelector
-              value={gameConfig.gameCrashWindowAutoClose}
-              onSelect={(val) =>
-                updateGameConfig("gameCrashWindowAutoClose", val)
-              }
-              options={gameCrashWindowAutoClosePolicy.map((policy) => ({
-                value: policy,
-                label: t(
-                  `GlobalGameSettingsPage.moreOptions.settings.gameCrashWindowAutoClose.${policy}`
-                ),
-              }))}
             />
           ),
         },

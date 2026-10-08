@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "Usar OpenAL del Sistema (Solo Linux)"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "Cierre automático de la ventana de fallo",
+          "disabled": "No cerrar automáticamente",
+          "tenSeconds": "Cerrar después de 10 segundos",
+          "thirtySeconds": "Cerrar después de 30 segundos"
         }
       }
     }
@@ -1358,12 +1364,6 @@
         },
         "displayGameLog": {
           "title": "Mostrar Registros del Juego"
-        },
-        "gameCrashWindowAutoClose": {
-          "title": "Cierre automático de la ventana de fallo",
-          "disabled": "No cerrar automáticamente",
-          "tenSeconds": "Cerrar después de 10 segundos",
-          "thirtySeconds": "Cerrar después de 30 segundos"
         },
         "advancedOptions": {
           "title": "Opciones de Inicio Avanzadas",

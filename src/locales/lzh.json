@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "啟械網 OpenAL（僅 Linux）"
+        },
+        "gameCrashWindowAutoClose": {
+          "title": "潰匡自闔",
+          "disabled": "不自闔",
+          "tenSeconds": "十秒後自闔",
+          "thirtySeconds": "三十秒後自闔"
         }
       }
     }
@@ -1358,12 +1364,6 @@
         },
         "displayGameLog": {
           "title": "顯戲誌"
-        },
-        "gameCrashWindowAutoClose": {
-          "title": "潰匡自闔",
-          "disabled": "不自闔",
-          "tenSeconds": "十秒後自闔",
-          "thirtySeconds": "三十秒後自闔"
         },
         "advancedOptions": {
           "title": "進階啟置設",
