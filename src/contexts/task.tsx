@@ -579,7 +579,6 @@ export const parseTaskGroup = (
 ): {
   name: string;
   params: Record<string, string>;
-  isRetry: boolean;
   rawName: string;
 } => {
   const rawName = taskGroup.includes("@")
@@ -588,14 +587,13 @@ export const parseTaskGroup = (
   const [name, paramString] = rawName.split("?");
   const params = paramString ? paramString.split("&") : [];
   return {
-    name: name.replace(/^retry-/, ""),
+    name,
     params:
       params.length === 1
         ? { param: params[0] }
         : Object.fromEntries(
             params.map((param, index) => [`param${index + 1}`, param])
           ),
-    isRetry: name.startsWith("retry-"),
     rawName,
   };
 };

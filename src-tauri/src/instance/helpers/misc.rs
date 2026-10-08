@@ -215,10 +215,7 @@ async fn refresh_instance(
   Ok(Some(instance))
 }
 
-pub async fn refresh_instances(
-  game_directory: &GameDirectory,
-  _is_first_run: bool,
-) -> SJMCLResult<Vec<Instance>> {
+pub async fn refresh_instances(game_directory: &GameDirectory) -> SJMCLResult<Vec<Instance>> {
   let mut instances = vec![];
   // traverse the "versions" directory
   let versions_dir = game_directory.dir.join("versions");
@@ -265,13 +262,12 @@ pub async fn refresh_instances(
 
 pub async fn refresh_all_instances(
   game_directories: &[GameDirectory],
-  is_first_run: bool,
 ) -> HashMap<String, Instance> {
   let mut instance_map = HashMap::new();
 
   for game_directory in game_directories {
     let dir_name = game_directory.name.clone();
-    match refresh_instances(game_directory, is_first_run).await {
+    match refresh_instances(game_directory).await {
       Ok(vs) => {
         for mut instance in vs {
           let composed_id = format!("{}:{}", dir_name, instance.name);
@@ -286,7 +282,7 @@ pub async fn refresh_all_instances(
   instance_map
 }
 
-pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
+pub async fn refresh_and_update_instances(app: &AppHandle) {
   let binding = app.state::<InstanceRefreshLock>();
   let _refresh_guard = binding.0.lock().await;
   // get launcher config -> local game directories
@@ -295,7 +291,7 @@ pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
     let state = binding.lock().unwrap();
     state.local_game_directories.clone()
   };
-  let instances = refresh_all_instances(&local_game_directories, is_first_run).await;
+  let instances = refresh_all_instances(&local_game_directories).await;
   // update the instances in the app state
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();

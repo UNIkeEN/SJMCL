@@ -80,7 +80,7 @@ use crate::utils::image::ImageWrapper;
 
 #[tauri::command]
 pub async fn retrieve_instance_list(app: AppHandle) -> SJMCLResult<Vec<InstanceSummary>> {
-  refresh_and_update_instances(&app, false).await; // firstly refresh and update
+  refresh_and_update_instances(&app).await; // firstly refresh and update
   let global_version_isolation = get_global_game_config(&app).version_isolation;
   let mut summary_list = Vec::new();
 
@@ -314,7 +314,7 @@ pub async fn rename_instance(
     instance.name = new_name;
     new_path
   };
-  refresh_and_update_instances(&app, false).await;
+  refresh_and_update_instances(&app).await;
   Ok(new_path)
 }
 
