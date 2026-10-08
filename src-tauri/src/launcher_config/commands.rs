@@ -271,7 +271,6 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
   }
 
   if !refresh_instances(
-    &app,
     &GameDirectory {
       dir: directory.clone(),
       name: "".to_string(),
@@ -293,7 +292,6 @@ pub async fn check_game_directory(app: AppHandle, dir: String) -> SJMCLResult<St
     )
   }) {
     if !refresh_instances(
-      &app,
       &GameDirectory {
         dir: sub_dir.clone(),
         name: "".to_string(),
