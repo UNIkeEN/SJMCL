@@ -2,6 +2,20 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.3.2
+
+`2026-10-08`
+
+- 🐛 Fix an issue where the avatar on the home page was distorted when the player name was too long. #1978 @LuLu-ling
+- 🛠 Hide the Cleanroom installation card for instances that do not support it. #1967 @VhahahaV
+- 🛠 Replace the game server status query library and remove an unmaintained dependency. #1972 @tangge233 @UNIkeEN
+- 🛠 Update the mirror download source for the Cleanroom mod loader. #2016 @CiiLu
+- 📦 Update MCP-related dependencies for the launcher and CLI. #1979 #2005 @xunying123
+- 📦 Update several Rust dependencies to address issues found during security audits. #2003 @tangge233 @UNIkeEN @w1049
+- 📦 Update the frontend dependency `next` to a patch version. #2012 @dependabot[bot]
+- Workflow:
+   - Add a security audit workflow for the Rust backend. #1975 #2003 @tangge233 @UNIkeEN @w1049
+
 ## 1.3.1
 
 `2026-09-16`
