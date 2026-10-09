@@ -11,6 +11,8 @@ use std::io::{self, IsTerminal};
 use std::process::Command;
 use tokio::time::{Instant, sleep};
 
+mod install;
+
 type LauncherClient = RunningService<RoleClient, ()>;
 
 const DEFAULT_PORT: u16 = 18970;
@@ -30,6 +32,9 @@ struct CliOptions {
 
 enum CliCommand {
   Help,
+  Install(install::InstallOptions),
+  Download(install::FileDownloadOptions),
+  Downloads,
   Call {
     name: String,
     arguments: Map<String, Value>,
@@ -97,6 +102,24 @@ async fn run() -> Result<(), String> {
 
       Ok(())
     }
+    CliCommand::Install(options) => {
+      let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
+      let result = install::run(&client, options).await;
+      let _ = client.cancel().await;
+      result
+    }
+    CliCommand::Download(options) => {
+      let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
+      let result = install::run_download(&client, options).await;
+      let _ = client.cancel().await;
+      result
+    }
+    CliCommand::Downloads => {
+      let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
+      let result = install::list_downloads(&client).await;
+      let _ = client.cancel().await;
+      result
+    }
   }
 }
 
@@ -151,13 +174,21 @@ impl CliInvocation {
       });
     }
 
-    Ok(Self {
-      options,
-      command: CliCommand::Call {
+    let command = match rest[0].as_str() {
+      "install" => CliCommand::Install(install::InstallOptions::parse(&rest[1..])?),
+      "download" => CliCommand::Download(install::FileDownloadOptions::parse(&rest[1..])?),
+      "downloads" => {
+        if rest.len() != 1 {
+          return Err("`downloads` does not take arguments".to_string());
+        }
+        CliCommand::Downloads
+      }
+      _ => CliCommand::Call {
         name: rest[0].clone(),
         arguments: parse_tool_arguments(&rest[1..])?,
       },
-    })
+    };
+    Ok(Self { options, command })
   }
 }
 
@@ -215,6 +246,11 @@ fn print_help(tools: Option<&[Tool]>, hint: Option<&str>) {
   println!();
   println!("Usage:");
   println!("  sjmcl-cli -h | --help");
+  println!(
+    "  sjmcl-cli [-p | --port <port>] install <game-version> <name> [--directory <name>] [--loader <type>] [--loader-version <version>] [--optifine <patch>] [--no-wait]"
+  );
+  println!("  sjmcl-cli [-p | --port <port>] download <url> <dest> [--sha1 <hash>] [--no-wait]");
+  println!("  sjmcl-cli [-p | --port <port>] downloads");
   println!("  sjmcl-cli [-p | --port <port>] <tool> [json-object]");
 
   if let Some(hint) = hint {

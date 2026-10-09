@@ -1,27 +1,32 @@
 use sanitize_filename;
 use serde_json::Value;
-use sjmcl_types::error::SJMCLResult;
+use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::load_json_async;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Cursor;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
+use crate::download::{DownloadTask, submit_install_group};
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
 use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
 use crate::instance::helpers::loader::forge::download_forge_libraries;
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::helpers::loader::optifine::download_optifine_libraries;
+use crate::instance::helpers::loader::postprocess::InstallKind;
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
 };
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::get_source_priority_list;
+
+#[derive(Default)]
+pub struct InstanceRefreshLock(pub tokio::sync::Mutex<()>);
 
 pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
   if instance.use_spec_game_config
@@ -137,7 +142,7 @@ async fn refresh_instance(
   name: String,
   jar_path: PathBuf,
   json_path: PathBuf,
-  is_first_run: bool,
+  prepare_install: bool,
 ) -> SJMCLResult<Option<Instance>> {
   let mut client_data = match load_json_async::<McClientInfo>(&json_path).await {
     Ok(v) => v,
@@ -163,116 +168,63 @@ async fn refresh_instance(
   .await
   .unwrap_or_default();
 
-  if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
+  let mut install_groups: Vec<(String, Vec<DownloadTask>, InstallKind)> = Vec::new();
+
+  if prepare_install && cfg_read.mod_loader.status == ModLoaderStatus::NotDownloaded {
     let priority_list = {
       let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
       let launcher_config = launcher_config_state.lock()?;
       get_source_priority_list(&launcher_config)
     };
-    if let Err(e) = {
-      match cfg_read.mod_loader.status {
-        ModLoaderStatus::NotDownloaded => {
-          match cfg_read.mod_loader.loader_type {
-            ModLoaderType::Forge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
-            }
-            ModLoaderType::Cleanroom => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data)
-                .await?;
-            }
-            ModLoaderType::NeoForge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
-            }
-            _ => {}
-          }
-          let vjson_path = cfg_read
-            .version_path
-            .join(format!("{}.json", cfg_read.name));
-          fs::write(vjson_path, serde_json::to_vec_pretty(&client_data)?)?;
-
-          Ok(())
+    let kind = cfg_read.mod_loader.loader_type;
+    if matches!(
+      kind,
+      ModLoaderType::Forge | ModLoaderType::Cleanroom | ModLoaderType::NeoForge
+    ) {
+      cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+      let tasks = match kind {
+        ModLoaderType::Forge => {
+          download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?
         }
-        ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
-          ModLoaderType::Forge => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-          }
-          ModLoaderType::Cleanroom => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-          }
-          ModLoaderType::NeoForge => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-          }
-          _ => Ok(()),
-        },
-        ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
-          if is_first_run {
-            // The instance failed to install mod loader during last run.
-            cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
-          }
-          Ok(())
+        ModLoaderType::Cleanroom => {
+          download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await?
         }
-        ModLoaderStatus::Installed => Ok(()),
-      }
-    } {
-      log::warn!("Failed to install mod loader for {}: {:?}", name, e);
-      cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
-      cfg_read.save_json_cfg().await?;
-      return Ok(None);
+        ModLoaderType::NeoForge => {
+          download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?
+        }
+        _ => unreachable!(),
+      };
+      install_groups.push((
+        format!(
+          "{}-libraries?{}",
+          kind.to_string().to_lowercase(),
+          cfg_read.id
+        ),
+        tasks,
+        InstallKind::ModLoader,
+      ));
     }
   }
 
-  if cfg_read
-    .optifine
-    .as_ref()
-    .is_some_and(|o| o.status != ModLoaderStatus::Installed)
+  if prepare_install
+    && cfg_read
+      .optifine
+      .as_ref()
+      .is_some_and(|o| o.status == ModLoaderStatus::NotDownloaded)
   {
     let priority_list = {
       let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
       let launcher_config = launcher_config_state.lock()?;
       get_source_priority_list(&launcher_config)
     };
-    if let Err(e) = {
-      match cfg_read.optifine.as_ref().unwrap().status {
-        ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
-          if is_first_run {
-            // The instance failed to install OptiFine during last run.
-            if let Some(optifine_cfg) = &mut cfg_read.optifine {
-              optifine_cfg.status = ModLoaderStatus::DownloadFailed;
-            }
-          }
-          Ok(())
-        }
-        ModLoaderStatus::NotDownloaded => {
-          cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
-          download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
-
-          let vjson_path = cfg_read
-            .version_path
-            .join(format!("{}.json", cfg_read.name));
-          fs::write(vjson_path, serde_json::to_vec_pretty(&client_data)?)?;
-
-          Ok(())
-        }
-        ModLoaderStatus::DownloadFailed => {
-          cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
-          download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-        }
-        ModLoaderStatus::Installed => Ok(()),
-      }
-    } {
-      log::warn!("Failed to install OptiFine for {}: {:?}", name, e);
-      if let Some(optifine_cfg) = &mut cfg_read.optifine {
-        optifine_cfg.status = ModLoaderStatus::DownloadFailed;
-      }
-      cfg_read.save_json_cfg().await?;
-      return Ok(None);
-    }
+    cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
+    let tasks =
+      download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+    install_groups.push((
+      format!("optifine-libraries?{}", cfg_read.id),
+      tasks,
+      InstallKind::Optifine,
+    ));
   }
 
   let (mut game_version, loader_version, loader_type, optifine_info) =
@@ -326,8 +278,21 @@ async fn refresh_instance(
     },
     ..cfg_read
   };
-  // ignore error here, for now
+  if !install_groups.is_empty() {
+    fs::write(
+      instance
+        .version_path
+        .join(format!("{}.json", instance.name)),
+      serde_json::to_vec_pretty(&client_data)?,
+    )?;
+  }
   instance.save_json_cfg().await?;
+
+  if !install_groups.is_empty() {
+    for (name, tasks, kind) in install_groups {
+      submit_install_group(app.clone(), name, tasks, &instance, kind).await?;
+    }
+  }
 
   Ok(Some(instance))
 }
@@ -335,7 +300,7 @@ async fn refresh_instance(
 pub async fn refresh_instances(
   app: &AppHandle,
   game_directory: &GameDirectory,
-  is_first_run: bool,
+  _is_first_run: bool,
 ) -> SJMCLResult<Vec<Instance>> {
   let mut instances = vec![];
   // traverse the "versions" directory
@@ -370,7 +335,7 @@ pub async fn refresh_instances(
       name.clone(),
       jar_path,
       json_path,
-      is_first_run,
+      false,
     )
     .await
     {
@@ -415,6 +380,8 @@ pub async fn refresh_all_instances(
 }
 
 pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
+  let binding = app.state::<InstanceRefreshLock>();
+  let _refresh_guard = binding.0.lock().await;
   // get launcher config -> local game directories
   let local_game_directories = {
     let binding = app.state::<Mutex<LauncherConfig>>();
@@ -426,6 +393,42 @@ pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();
   *state = instances;
+}
+
+pub async fn prepare_instance_after_download(
+  app: &AppHandle,
+  instance_id: &str,
+  version_path: &Path,
+) -> SJMCLResult<()> {
+  let binding = app.state::<InstanceRefreshLock>();
+  let _refresh_guard = binding.0.lock().await;
+  let name = version_path
+    .file_name()
+    .ok_or_else(|| SJMCLError("invalid instance path".into()))?
+    .to_string_lossy()
+    .to_string();
+  let config = Instance {
+    version_path: version_path.to_path_buf(),
+    ..Default::default()
+  }
+  .load_json_cfg()
+  .await?;
+  if config.id != instance_id {
+    return Err(SJMCLError(
+      "installation instance does not match task".into(),
+    ));
+  }
+  refresh_instance(
+    app,
+    version_path.to_path_buf(),
+    name.clone(),
+    version_path.join(format!("{}.jar", name)),
+    version_path.join(format!("{}.json", name)),
+    true,
+  )
+  .await?
+  .ok_or_else(|| SJMCLError("instance preparation failed".into()))?;
+  Ok(())
 }
 
 #[cfg(any(target_os = "windows", target_os = "linux"))]

@@ -1,6 +1,7 @@
 mod account;
 mod debug;
 mod discover;
+mod download;
 mod extension;
 mod instance;
 mod launch;
@@ -17,6 +18,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
   routes.extend(launcher_config::tool_routes());
   routes.extend(account::tool_routes());
   routes.extend(discover::tool_routes());
+  routes.extend(download::tool_routes());
   routes.extend(extension::tool_routes());
   routes.extend(instance::tool_routes());
   routes.extend(launch::tool_routes());

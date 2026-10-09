@@ -15,6 +15,7 @@ use std::sync::Mutex;
 #[cfg(target_os = "windows")]
 use tauri::Manager;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
@@ -25,8 +26,6 @@ use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::download::DownloadParam;
 use crate::utils::fs::validate_sha1;
 
 #[cfg(target_os = "windows")]
@@ -84,7 +83,7 @@ pub async fn get_invalid_library_files(
   library_path: &Path,
   client_info: &McClientInfo,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let mut artifacts = Vec::new();
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
@@ -108,16 +107,16 @@ pub async fn get_invalid_library_files(
         ],
         &source,
       )?;
-      Ok(Some(PTaskParam::Download(DownloadParam {
+      Ok(Some(DownloadTask {
         src,
         dest: file_path,
         filename: None,
         sha1: Some(artifact.sha1.clone()),
-      })))
+      }))
     }
   });
 
-  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+  let results: Vec<SJMCLResult<Option<DownloadTask>>> = join_all(futs).await;
 
   let mut params = Vec::new();
   for r in results {
@@ -167,7 +166,7 @@ pub async fn get_invalid_windows_mesa_loader_file(
   library_path: &Path,
   game_config: &GameConfig,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   if mesa_driver_name(
     &game_config.advanced.graphics.api,
     &game_config.advanced.graphics.renderer,
@@ -195,12 +194,12 @@ pub async fn get_invalid_windows_mesa_loader_file(
     &[ResourceType::Libraries],
     &source,
   )?;
-  Ok(vec![PTaskParam::Download(DownloadParam {
+  Ok(vec![DownloadTask {
     src,
     dest: file_path,
     filename: None,
     sha1: Some(artifact.sha1),
-  })])
+  }])
 }
 
 pub struct LibraryParts {
@@ -488,7 +487,7 @@ pub async fn get_invalid_assets(
   source: SourceType,
   asset_path: &Path,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let assets_download_api = get_download_api(source, ResourceType::Assets)?;
 
   let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
@@ -504,22 +503,22 @@ pub async fn get_invalid_assets(
       let exists = fs::try_exists(&dest).await?;
 
       if exists && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok()) {
-        Ok::<Option<PTaskParam>, sjmcl_types::error::SJMCLError>(None)
+        Ok::<Option<DownloadTask>, sjmcl_types::error::SJMCLError>(None)
       } else {
         let src = assets_download_api
           .join(&path_in_repo)
           .map_err(sjmcl_types::error::SJMCLError::from)?;
-        Ok(Some(PTaskParam::Download(DownloadParam {
+        Ok(Some(DownloadTask {
           src,
           dest,
           filename: None,
           sha1: Some(item.hash.clone()),
-        })))
+        }))
       }
     }
   });
 
-  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+  let results: Vec<SJMCLResult<Option<DownloadTask>>> = join_all(futs).await;
 
   let mut params = Vec::new();
   for r in results {

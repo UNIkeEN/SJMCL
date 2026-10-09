@@ -284,7 +284,6 @@ pub enum InstanceError {
   UnsupportedModLoader,
   NotSupportChangeModLoader,
   MainClassNotFound,
-  InstallationDuplicated,
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
   LoaderInstallerNotFound,
