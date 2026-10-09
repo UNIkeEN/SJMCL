@@ -142,6 +142,7 @@ const GameErrorPage: React.FC = () => {
   }, [autoCloseSeconds]);
 
   const renderStats = ({
+    key,
     title,
     value,
     helper,
@@ -152,7 +153,7 @@ const GameErrorPage: React.FC = () => {
     helper?: string | React.ReactNode;
   } & StatProps) => {
     return (
-      <Stat {...props}>
+      <Stat key={key} {...props}>
         <Text fontSize="xs-sm">{title}</Text>
         <StatNumber fontSize="xl">{value}</StatNumber>
         {typeof helper === "string" ? (
