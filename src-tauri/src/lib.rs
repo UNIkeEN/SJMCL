@@ -57,7 +57,6 @@ pub async fn run() {
       .plugin(tauri_plugin_http::init())
       .plugin(tauri_plugin_opener::init())
       .plugin(tauri_plugin_os::init())
-      .plugin(tauri_plugin_process::init())
       .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
         let main_window = app.get_webview_window("main").expect("no main window");
         let _ = main_window.show(); // may hide by launcher_visibility settings
