@@ -1011,8 +1011,8 @@
         "useNativeOpenal": {
           "title": "システム OpenAL を利用（Linux のみ）"
         },
-        "gameCrashWindowAutoClose": {
-          "title": "クラッシュウィンドウを自動で閉じる",
+        "autoCloseGameCrashWindow": {
+          "title": "クラッシュ通知ウィンドウを自動で閉じる",
           "disabled": "自動で閉じない",
           "tenSeconds": "10秒後に自動で閉じる",
           "thirtySeconds": "30秒後に自動で閉じる"

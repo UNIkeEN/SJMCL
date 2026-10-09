@@ -70,7 +70,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const rendererOptions = supportedRenderers ?? ["default"];
 
   const gameFileValidatePolicies = ["disable", "normal", "full"];
-  const gameCrashWindowAutoClosePolicy = [
+  const autoCloseGameCrashWindowPolicies = [
     "disabled",
     "tenSeconds",
     "thirtySeconds",
@@ -400,18 +400,21 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
         },
         {
           title: t(
-            "GameAdvancedSettingsPage.workaround.settings.gameCrashWindowAutoClose.title"
+            "GameAdvancedSettingsPage.workaround.settings.autoCloseGameCrashWindow.title"
           ),
           children: (
             <MenuSelector
-              value={gameConfig.gameCrashWindowAutoClose}
+              value={gameConfig.advanced.workaround.autoCloseGameCrashWindow}
               onSelect={(val) =>
-                updateGameConfig("gameCrashWindowAutoClose", val)
+                updateGameAdvancedConfig(
+                  "workaround.autoCloseGameCrashWindow",
+                  val
+                )
               }
-              options={gameCrashWindowAutoClosePolicy.map((policy) => ({
+              options={autoCloseGameCrashWindowPolicies.map((policy) => ({
                 value: policy,
                 label: t(
-                  `GameAdvancedSettingsPage.workaround.settings.gameCrashWindowAutoClose.${policy}`
+                  `GameAdvancedSettingsPage.workaround.settings.autoCloseGameCrashWindow.${policy}`
                 ),
               }))}
             />

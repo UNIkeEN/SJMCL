@@ -1011,8 +1011,8 @@
         "useNativeOpenal": {
           "title": "使用系统 OpenAL（仅 Linux）"
         },
-        "gameCrashWindowAutoClose": {
-          "title": "崩溃窗口自动关闭",
+        "autoCloseGameCrashWindow": {
+          "title": "自动关闭崩溃提示窗口",
           "disabled": "不自动关闭",
           "tenSeconds": "10 秒后自动关闭",
           "thirtySeconds": "30 秒后自动关闭"

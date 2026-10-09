@@ -89,7 +89,7 @@ const GameErrorPage: React.FC = () => {
     setBasicInfoParams(infoList);
   }, [config.basicInfo, platformName]);
 
-  // retrieve states and logs (for crash analysis)
+  // retrieve launching state and initialize auto-close
   useEffect(() => {
     if (!launchingId) return;
 
@@ -98,13 +98,22 @@ const GameErrorPage: React.FC = () => {
         setInstanceInfo(response.data.selectedInstance);
         setJavaInfo(response.data.selectedJava);
 
-        const policy = response.data.gameConfig?.gameCrashWindowAutoClose;
-        if (policy === "tenSeconds" || policy === "thirtySeconds") {
-          autoCloseCancelledRef.current = false;
+        const policy =
+          response.data.gameConfig?.advanced.workaround
+            .autoCloseGameCrashWindow;
+        if (
+          !autoCloseCancelledRef.current &&
+          (policy === "tenSeconds" || policy === "thirtySeconds")
+        ) {
           setAutoCloseSeconds(policy === "tenSeconds" ? 10 : 30);
         }
       }
     });
+  }, [launchingId]);
+
+  // retrieve logs for crash analysis
+  useEffect(() => {
+    if (!launchingId) return;
 
     LaunchService.retrieveGameLog(launchingId).then((response) => {
       if (response.status === "success") {

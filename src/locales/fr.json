@@ -1011,8 +1011,8 @@
         "useNativeOpenal": {
           "title": "Utiliser OpenAL du système (Linux uniquement)"
         },
-        "gameCrashWindowAutoClose": {
-          "title": "Fermeture automatique de la fenêtre de plantage",
+        "autoCloseGameCrashWindow": {
+          "title": "Fermer automatiquement la fenêtre signalant un plantage",
           "disabled": "Ne pas fermer automatiquement",
           "tenSeconds": "Fermer après 10 secondes",
           "thirtySeconds": "Fermer après 30 secondes"

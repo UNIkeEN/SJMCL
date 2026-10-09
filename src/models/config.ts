@@ -27,7 +27,6 @@ export interface GameConfig {
   versionIsolation: boolean;
   launcherVisibility: string;
   displayGameLog: boolean;
-  gameCrashWindowAutoClose: string;
   advancedOptions: {
     enabled: boolean;
   };
@@ -55,8 +54,9 @@ export interface GameConfig {
       args: string;
     };
     workaround: {
-      noJvmArgs: boolean;
       gameFileValidatePolicy: string;
+      autoCloseGameCrashWindow: string;
+      noJvmArgs: boolean;
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useLwjglUnsafeAgent: boolean;
@@ -226,7 +226,6 @@ export const defaultGameConfig: GameConfig = {
   versionIsolation: true,
   launcherVisibility: "startHidden",
   displayGameLog: false,
-  gameCrashWindowAutoClose: "disabled",
   advancedOptions: {
     enabled: false,
   },
@@ -254,8 +253,9 @@ export const defaultGameConfig: GameConfig = {
       args: "",
     },
     workaround: {
-      noJvmArgs: false,
       gameFileValidatePolicy: "normal",
+      autoCloseGameCrashWindow: "disabled",
+      noJvmArgs: false,
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useLwjglUnsafeAgent: true,

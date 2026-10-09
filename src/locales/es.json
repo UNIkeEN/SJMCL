@@ -1011,8 +1011,8 @@
         "useNativeOpenal": {
           "title": "Usar OpenAL del Sistema (Solo Linux)"
         },
-        "gameCrashWindowAutoClose": {
-          "title": "Cierre automático de la ventana de fallo",
+        "autoCloseGameCrashWindow": {
+          "title": "Cerrar automáticamente la ventana de aviso de fallo",
           "disabled": "No cerrar automáticamente",
           "tenSeconds": "Cerrar después de 10 segundos",
           "thirtySeconds": "Cerrar después de 30 segundos"
