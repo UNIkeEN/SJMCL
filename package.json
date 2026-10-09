@@ -45,7 +45,6 @@
     "@tauri-apps/plugin-log": "^2.10.0",
     "@tauri-apps/plugin-opener": "^2.7.0",
     "@tauri-apps/plugin-os": "^2.4.0",
-    "@tauri-apps/plugin-process": "^2.4.0",
     "@tauri-apps/plugin-window-state": "^2.5.0",
     "fuse.js": "^7.3.0",
     "i18next": "^24.0.0",

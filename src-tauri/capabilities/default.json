@@ -12,6 +12,7 @@
     "clipboard-manager:allow-write-text",
     "clipboard-manager:allow-write-image",
     "core:default",
+    "core:app:allow-exit",
     "core:event:default",
     "core:webview:allow-create-webview-window",
     "core:window:allow-show",
@@ -21,7 +22,6 @@
     "deep-link:default",
     "dialog:default",
     "log:default",
-    "os:default",
-    "process:default"
+    "os:default"
   ]
 }
