@@ -15,6 +15,7 @@
     "core:event:default",
     "core:webview:allow-create-webview-window",
     "core:window:allow-show",
+    "core:window:allow-close",
     "core:window:allow-start-dragging",
     "core:window:allow-set-title",
     "deep-link:default",
