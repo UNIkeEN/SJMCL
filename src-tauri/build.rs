@@ -6,7 +6,19 @@ fn main() {
   if std::env::var("GITHUB_ACTIONS").is_err() {
     // Load env variables from ".env" file, if not exists, use ".env.template" to set default value.
     from_filename(".env.template").ok();
-    dotenv_override().ok();
+    if let Ok(path) = dotenv_override()
+      && let Ok(contents) = fs::read_to_string(path)
+      && let Some(value) = contents.lines().find_map(|line| {
+        line
+          .trim()
+          .strip_prefix("SJMCL_CURSEFORGE_API_KEY")
+          .and_then(|line| line.trim_start().strip_prefix('='))
+          .map(|value| value.trim().trim_matches(['\'', '"']).to_string())
+      })
+    {
+      // CurseForge keys can contain '$', which dotenv treats as interpolation.
+      unsafe { env::set_var("SJMCL_CURSEFORGE_API_KEY", value) };
+    }
   }
 
   let out_dir = env::var("OUT_DIR").unwrap_or_else(|_| "".to_string());
