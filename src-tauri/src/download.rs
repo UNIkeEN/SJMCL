@@ -11,7 +11,10 @@ use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::{AppHandle, Manager, Url};
 
 use crate::APP_DATA_DIR;
-use crate::instance::helpers::loader::postprocess::{InstallKind, InstallSpec, PrepareSpec};
+use crate::instance::helpers::loader::common::InstallPlan;
+use crate::instance::helpers::loader::postprocess::{
+  InstallKind, InstallSpec, InstallTarget, PrepareSpec,
+};
 use crate::instance::models::misc::Instance;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::{
@@ -167,20 +170,25 @@ pub async fn submit_instance_download_group(
 pub async fn submit_install_group(
   app: AppHandle,
   name: String,
-  tasks: Vec<DownloadTask>,
+  plan: InstallPlan,
   instance: &Instance,
   kind: InstallKind,
 ) -> SJMCLResult<String> {
-  let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
-  let spec = serde_json::to_value(InstallSpec {
+  let mut tasks: Vec<SubmitTask> = plan.tasks.into_iter().map(Into::into).collect();
+  let target = InstallTarget {
     instance_id: instance.id.clone(),
     version_path: instance.version_path.clone(),
     kind,
+  };
+  let verify_spec = serde_json::to_value(&target)?;
+  let install_spec = serde_json::to_value(InstallSpec {
+    target,
+    processors: plan.processors,
   })?;
   tasks.push(SubmitTask {
     name: "Install".into(),
     executor: "install".into(),
-    spec: spec.clone(),
+    spec: install_spec,
     dest: None,
     sha1: None,
     sha256: None,
@@ -188,7 +196,7 @@ pub async fn submit_install_group(
   tasks.push(SubmitTask {
     name: "Verify".into(),
     executor: "verify".into(),
-    spec,
+    spec: verify_spec,
     dest: None,
     sha1: None,
     sha256: None,

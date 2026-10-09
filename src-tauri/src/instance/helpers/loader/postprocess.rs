@@ -15,11 +15,11 @@ use sjmcl_types::storage::{load_json_async, save_json_async};
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-use crate::download::{DownloadTask, submit_install_group};
+use crate::download::submit_install_group;
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
-use crate::instance::helpers::loader::common::execute_processors;
-use crate::instance::helpers::loader::forge::{InstallProfile, download_forge_libraries};
+use crate::instance::helpers::loader::common::{InstallPlan, execute_processors};
+use crate::instance::helpers::loader::forge::{ProcessorsValue, download_forge_libraries};
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::helpers::loader::optifine::{
   download_optifine_libraries, finish_optifine_install,
@@ -39,6 +39,14 @@ pub enum InstallKind {
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSpec {
+  #[serde(flatten)]
+  pub target: InstallTarget,
+  pub processors: Vec<ProcessorsValue>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallTarget {
   pub instance_id: String,
   pub version_path: PathBuf,
   pub kind: InstallKind,
@@ -116,7 +124,7 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
     let config = binding.lock()?;
     get_source_priority_list(&config)
   };
-  let mut install_groups: Vec<(String, Vec<DownloadTask>, InstallKind)> = Vec::new();
+  let mut install_groups: Vec<(String, InstallPlan, InstallKind)> = Vec::new();
 
   let kind = instance.mod_loader.loader_type;
   if instance.mod_loader.status == ModLoaderStatus::NotDownloaded
@@ -126,7 +134,7 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
     )
   {
     instance.mod_loader.status = ModLoaderStatus::Downloading;
-    let tasks = match kind {
+    let plan = match kind {
       ModLoaderType::Forge => {
         download_forge_libraries(app, &priority_list, &instance, &mut client_info).await?
       }
@@ -144,7 +152,7 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
         kind.to_string().to_lowercase(),
         instance.id
       ),
-      tasks,
+      plan,
       InstallKind::ModLoader,
     ));
   }
@@ -159,7 +167,10 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
       download_optifine_libraries(app, &priority_list, &instance, &mut client_info).await?;
     install_groups.push((
       format!("optifine-libraries?{}", instance.id),
-      tasks,
+      InstallPlan {
+        tasks,
+        processors: Vec::new(),
+      },
       InstallKind::Optifine,
     ));
   }
@@ -168,8 +179,8 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
     // Persist installation metadata before submitted tasks can start.
     save_json_async(&client_info, &json_path).await?;
     instance.save_json_cfg().await?;
-    for (name, tasks, kind) in install_groups {
-      submit_install_group(app.clone(), name, tasks, &instance, kind).await?;
+    for (name, plan, kind) in install_groups {
+      submit_install_group(app.clone(), name, plan, &instance, kind).await?;
     }
   }
   Ok(())
@@ -257,7 +268,7 @@ impl TaskExecutor for VerifyExecutor {
         report_interrupted(&ctx).await;
         return Ok(());
       }
-      let spec: InstallSpec = serde_json::from_value(ctx.spec.clone())
+      let spec: InstallTarget = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
       let checked = verify_downloads(&app, &ctx.group_id).await;
       let mut instance = Instance {
@@ -409,6 +420,10 @@ async fn save_status(
 }
 
 async fn install(app: &AppHandle, spec: InstallSpec) -> SJMCLResult<()> {
+  let InstallSpec {
+    target: spec,
+    processors,
+  } = spec;
   let mut instance = Instance {
     version_path: spec.version_path,
     ..Default::default()
@@ -443,11 +458,7 @@ async fn install(app: &AppHandle, spec: InstallSpec) -> SJMCLResult<()> {
     .await?;
     match spec.kind {
       InstallKind::ModLoader => {
-        let profile_path = instance.version_path.join("install_profile.json");
-        if profile_path.exists() {
-          let profile: InstallProfile = load_json_async(&profile_path).await?;
-          execute_processors(app, &instance, &client_info, &profile).await?;
-        }
+        execute_processors(app, &instance, &client_info, &processors).await?;
       }
       InstallKind::Optifine => finish_optifine_install(app, &instance, &client_info).await?,
     }
