@@ -48,17 +48,42 @@ const AppearanceSettingsPage = () => {
   );
 
   const [fonts, setFonts] = useState<string[]>([]);
+  const [monoFonts, setMonoFonts] = useState<string[]>([]);
 
   const [customBgList, setCustomBgList] = useState<Record<string, string>[]>(
     []
   );
   const [bgCacheKey, setBgCacheKey] = useState(0);
 
+  function isMonospace(fontFamily: string): boolean {
+    const container = document.createElement("div");
+    container.style.cssText = `position: absolute;visibility: hidden;white-space: nowrap;font-size: 48px;font-family: "${fontFamily}";`;
+    document.body.appendChild(container);
+
+    try {
+      const elements = ["i", "o", "W"].map((char) => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        span.style.display = "inline-block";
+        container.appendChild(span);
+        return span;
+      });
+      const widths = elements.map((el) => el.offsetWidth);
+      return widths.every((w) => Math.abs(w - widths[0]) <= 1);
+    } finally {
+      document.body.removeChild(container);
+    }
+  }
+
   useEffect(() => {
     const handleRetrieveFontList = async () => {
       const res = await UtilsService.retrieveFontList();
       if (res.status === "success") {
         setFonts(["%built-in", ...res.data]);
+        setMonoFonts([
+          "%built-in",
+          ...res.data.filter((it) => isMonospace(it)),
+        ]);
       }
     };
     handleRetrieveFontList();
@@ -197,15 +222,17 @@ const AppearanceSettingsPage = () => {
   };
 
   const FontFamilyMenu = ({
+    fontList,
     value,
     onChange,
   }: {
+    fontList: string[];
     value: string;
     onChange: (v: string) => void;
   }) => {
     return (
       <MenuSelector
-        options={fonts.map((font) => ({
+        options={fontList.map((font) => ({
           value: font,
           label: (
             <Text
@@ -469,6 +496,7 @@ const AppearanceSettingsPage = () => {
           title: t("AppearanceSettingsPage.font.settings.fontFamily.title"),
           children: (
             <FontFamilyMenu
+              fontList={fonts}
               value={appearanceConfigs.font.fontFamily}
               onChange={(v) => update("appearance.font.fontFamily", v)}
             />
@@ -491,6 +519,7 @@ const AppearanceSettingsPage = () => {
           ),
           children: (
             <FontFamilyMenu
+              fontList={monoFonts}
               value={appearanceConfigs.font.logFontFamily}
               onChange={(v) => update("appearance.font.logFontFamily", v)}
             />
