@@ -1317,7 +1317,12 @@ pub async fn finish_mod_loader_install(app: AppHandle, instance_id: String) -> S
       };
 
       let install_profile_dir = instance.version_path.join("install_profile.json");
-      if install_profile_dir.exists() {
+      if instance.mod_loader.loader_type == ModLoaderType::Cleanroom {
+        // Cleanroom has no processors, but a previous loader may leave a profile behind.
+        if install_profile_dir.exists() {
+          fs::remove_file(&install_profile_dir)?;
+        }
+      } else if install_profile_dir.exists() {
         let install_profile = load_json_async::<InstallProfile>(&install_profile_dir).await?;
         execute_processors(&app, &instance, &client_info, &install_profile).await?;
       }
