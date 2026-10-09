@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "使用系统 OpenAL（仅 Linux）"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "自动关闭崩溃提示窗口",
+          "disabled": "不自动关闭",
+          "tenSeconds": "10 秒后自动关闭",
+          "thirtySeconds": "30 秒后自动关闭"
         }
       }
     }
@@ -1032,6 +1038,7 @@
       "gameLogs": "游戏日志",
       "help": "帮助"
     },
+    "autoCloseCountdown": "窗口将在 {{seconds}} 秒后自动关闭（点击窗口任意位置可取消）",
     "bottomAlert": "如需寻求他人帮助，请导出并发送崩溃报告，而非这个窗口的截图",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {

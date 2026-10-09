@@ -1010,6 +1010,12 @@
         },
         "useNativeOpenal": {
           "title": "Utiliser OpenAL du système (Linux uniquement)"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "Fermer automatiquement la fenêtre signalant un plantage",
+          "disabled": "Ne pas fermer automatiquement",
+          "tenSeconds": "Fermer après 10 secondes",
+          "thirtySeconds": "Fermer après 30 secondes"
         }
       }
     }
@@ -1032,6 +1038,7 @@
       "gameLogs": "Journaux du jeu",
       "help": "Aide"
     },
+    "autoCloseCountdown": "Cette fenêtre se fermera automatiquement dans {{seconds}} secondes (cliquez n'importe où dans la fenêtre pour annuler)",
     "bottomAlert": "Pour obtenir de l'aide, veuillez exporter et envoyer le rapport de crash, et non une capture d'écran de cette fenêtre.",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
