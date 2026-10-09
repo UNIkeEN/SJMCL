@@ -436,18 +436,20 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
           const { name, params } = parseTaskGroup(payload.taskGroup);
 
-          toast({
-            status:
-              payload.event === GTaskEventStatusEnums.Failed
-                ? "error"
-                : "success",
-            title: t(
-              `Services.task.onTaskGroupUpdate.status.${payload.event}`,
-              {
-                param: t(`DownloadTasksPage.task.${name}`, params),
-              }
-            ),
-          });
+          if (name !== "extension-update-all") {
+            toast({
+              status:
+                payload.event === GTaskEventStatusEnums.Failed
+                  ? "error"
+                  : "success",
+              title: t(
+                `Services.task.onTaskGroupUpdate.status.${payload.event}`,
+                {
+                  param: t(`DownloadTasksPage.task.${name}`, params),
+                }
+              ),
+            });
+          }
 
           if (payload.event === GTaskEventStatusEnums.Completed) {
             switch (name) {
