@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use futures::future::join_all;
 use sjmcl_downloader::download::DownloadExecutor;
 use sjmcl_downloader::{
   EngineConfig, EngineError, EngineHandle, EngineSetup, GroupState, SubmitGroup, SubmitTask,
@@ -20,6 +21,7 @@ use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::{
   CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
 };
+use crate::utils::fs::is_local_file_valid;
 use crate::utils::web::build_sjmcl_client;
 
 pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
@@ -119,6 +121,25 @@ impl From<DownloadTask> for SubmitTask {
   }
 }
 
+pub async fn get_invalid_download_tasks(
+  tasks: Vec<DownloadTask>,
+  check_hash: bool,
+) -> SJMCLResult<Vec<DownloadTask>> {
+  let results = join_all(tasks.into_iter().map(|task| async move {
+    let valid = is_local_file_valid(&task.dest, task.sha1.as_deref(), check_hash).await?;
+    Ok::<_, SJMCLError>((!valid).then_some(task))
+  }))
+  .await;
+
+  let mut tasks = Vec::new();
+  for result in results {
+    if let Some(task) = result? {
+      tasks.push(task);
+    }
+  }
+  Ok(tasks)
+}
+
 pub async fn submit_download_group(
   app: AppHandle,
   name: String,
@@ -174,7 +195,11 @@ pub async fn submit_install_group(
   instance: &Instance,
   kind: InstallKind,
 ) -> SJMCLResult<String> {
-  let mut tasks: Vec<SubmitTask> = plan.tasks.into_iter().map(Into::into).collect();
+  let mut tasks: Vec<SubmitTask> = get_invalid_download_tasks(plan.tasks, false)
+    .await?
+    .into_iter()
+    .map(Into::into)
+    .collect();
   let target = InstallTarget {
     instance_id: instance.id.clone(),
     version_path: instance.version_path.clone(),

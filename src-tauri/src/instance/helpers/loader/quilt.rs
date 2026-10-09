@@ -4,7 +4,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::download::DownloadTask;
+use crate::download::{DownloadTask, get_invalid_download_tasks};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -99,6 +99,7 @@ pub async fn install_quilt_loader(
   }
 
   let launcher_meta = &meta["launcherMeta"]["libraries"];
+  let mut library_tasks = Vec::new();
   for side in ["common", "server", "client", "development"] {
     if let Some(arr) = launcher_meta.get(side).and_then(|v| v.as_array()) {
       for item in arr {
@@ -136,7 +137,7 @@ pub async fn install_quilt_loader(
             name
           )))?;
 
-          task_params.push(DownloadTask {
+          library_tasks.push(DownloadTask {
             src,
             dest: lib_dir.join(&rel),
             filename: None,
@@ -173,13 +174,15 @@ pub async fn install_quilt_loader(
       path
     )))?;
 
-    task_params.push(DownloadTask {
+    library_tasks.push(DownloadTask {
       src,
       dest: lib_dir.join(&rel),
       filename: None,
       sha1: None,
     });
   }
+
+  task_params.extend(get_invalid_download_tasks(library_tasks, false).await?);
 
   if is_install_qf_api.unwrap_or(true)
     && let Ok(Some(qfapi_download)) = fetch_latest_mod_download_param_modrinth(

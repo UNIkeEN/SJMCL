@@ -7,7 +7,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use url::Url;
 
-use crate::download::DownloadTask;
+use crate::download::{DownloadTask, get_invalid_download_tasks};
 use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
@@ -96,6 +96,7 @@ pub async fn install_fabric_loader(
 
   client_info.patches.push(new_patch);
 
+  let mut library_tasks = Vec::new();
   let mut push_task = |coord: &str, url_root: &Url| -> SJMCLResult<()> {
     let rel: String = convert_library_name_to_path(coord, None)?;
     let mut src_opt = None;
@@ -110,7 +111,7 @@ pub async fn install_fabric_loader(
       }
     }
     if let Some(src) = src_opt {
-      task_params.push(DownloadTask {
+      library_tasks.push(DownloadTask {
         src,
         dest: lib_dir.join(&rel),
         filename: None,
@@ -137,6 +138,8 @@ pub async fn install_fabric_loader(
       }
     }
   }
+
+  task_params.extend(get_invalid_download_tasks(library_tasks, false).await?);
 
   if is_install_fabric_api.unwrap_or(true)
     && let Ok(Some(fabric_api_download)) = fetch_latest_mod_download_param_modrinth(

@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use sha1::{Digest, Sha1};
 use sjmcl_downloader::EngineHandle;
 use sjmcl_downloader::executor::BoxFuture;
-use sjmcl_downloader::{ExecContext, TaskError, TaskExecutor, TaskOutcome, TaskReport};
+use sjmcl_downloader::{ExecContext, TaskError, TaskExecutor, TaskOutcome, TaskReport, TaskState};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use sjmcl_types::storage::{load_json_async, save_json_async};
 use tauri::{AppHandle, Manager};
@@ -83,7 +83,7 @@ impl TaskExecutor for PrepareExecutor {
         .map_err(|error| TaskError::Other(error.to_string()))?;
       if let Err(error) = prepare_installation(&app, spec).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
-          verify_downloads(&app, &ctx.group_id).await
+          verify_downloads(&app, &ctx.group_id, true).await
         {
           return Err(corrupt);
         }
@@ -194,7 +194,11 @@ pub struct VerifyExecutor {
   pub app: AppHandle,
 }
 
-async fn verify_downloads(app: &AppHandle, group_id: &str) -> Result<(), TaskError> {
+async fn verify_downloads(
+  app: &AppHandle,
+  group_id: &str,
+  recheck_verified: bool,
+) -> Result<(), TaskError> {
   let mut engine = app.try_state::<EngineHandle>();
   for _ in 0..100 {
     if engine.is_some() {
@@ -221,10 +225,14 @@ async fn verify_downloads(app: &AppHandle, group_id: &str) -> Result<(), TaskErr
         }
         Err(error) => return Err(TaskError::Io(error.to_string())),
         Ok(mut file) => {
+          // Downloads with checksums were already verified before installation.
+          if !recheck_verified && task.state == TaskState::Done && task.verified {
+            continue;
+          }
           if let Some(expected) = task.sha1.as_ref() {
             let mut hasher = Sha1::new();
             io::copy(&mut file, &mut hasher).map_err(|error| TaskError::Io(error.to_string()))?;
-            if hex::encode(hasher.finalize()) != *expected {
+            if !hex::encode(hasher.finalize()).eq_ignore_ascii_case(expected) {
               corrupt.push(path.clone());
             }
           } else if path.extension().is_some_and(|extension| extension == "jar") {
@@ -270,7 +278,7 @@ impl TaskExecutor for VerifyExecutor {
       }
       let spec: InstallTarget = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
-      let checked = verify_downloads(&app, &ctx.group_id).await;
+      let checked = verify_downloads(&app, &ctx.group_id, false).await;
       let mut instance = Instance {
         version_path: spec.version_path,
         ..Default::default()
@@ -331,7 +339,7 @@ impl TaskExecutor for InstallExecutor {
         .map_err(|error| TaskError::Other(error.to_string()))?;
       if let Err(error) = install(&app, spec).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
-          verify_downloads(&app, &ctx.group_id).await
+          verify_downloads(&app, &ctx.group_id, true).await
         {
           return Err(corrupt);
         }
