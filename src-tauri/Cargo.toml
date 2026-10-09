@@ -58,7 +58,7 @@ quote = "1"
 rand = "0.9.3"
 regex = "1.11"
 reqwest-middleware = "0.4.2"
-reqwest-retry = "0.7.0"
+reqwest-retry = "0.8.0"
 rmcp = { version = "2.2.0", features = [
   "server",
   "transport-streamable-http-server",

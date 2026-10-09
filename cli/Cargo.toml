@@ -13,7 +13,7 @@ codegen-units = 1
 
 [dependencies]
 comfy-table = "7"
-indicatif = "0.17"
+indicatif = "0.18.6"
 rmcp = { version = "3.4.0", features = ["client", "transport-streamable-http-client-reqwest"] }
 serde_json = "1.0"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }
