@@ -1,3 +1,5 @@
+minimumReleaseAge: 180
+
 overrides:
   mdast-util-gfm-autolink-literal: 2.0.0
 
