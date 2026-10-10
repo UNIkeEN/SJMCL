@@ -4,7 +4,9 @@ use crate::instance::helpers::loader::common::{InstallPlan, add_library_entry};
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
-use crate::launch::helpers::file_validator::convert_library_name_to_path;
+use crate::launch::helpers::file_validator::{
+  convert_library_name_to_path, get_library_artifact_path,
+};
 use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
 use crate::resource::models::{ResourceType, SourceType};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
@@ -146,7 +148,7 @@ pub async fn download_cleanroom_libraries(
         ],
         &priority[0],
       )?,
-      dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
+      dest: lib_dir.join(get_library_artifact_path(lib)?),
       filename: None,
       sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
     });
@@ -172,21 +174,19 @@ pub async fn download_cleanroom_libraries(
   });
 
   for lib in profile.libraries.iter() {
-    let name = &lib.name;
     let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
 
     let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
       continue;
     };
 
-    let rel = convert_library_name_to_path(&name.to_string(), None)?;
     task_params.push(DownloadTask {
       src: convert_url_to_target_source(
         &Url::parse(&artifact.url)?,
         &[ResourceType::CleanroomMaven, ResourceType::Libraries],
         &priority[0],
       )?,
-      dest: lib_dir.join(&rel),
+      dest: lib_dir.join(get_library_artifact_path(lib)?),
       filename: None,
       sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
     });

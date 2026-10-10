@@ -317,6 +317,19 @@ pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCL
   Ok(format!("{path}/{pack_name}/{pack_version}/{file_name}"))
 }
 
+pub fn get_library_artifact_path(library: &LibrariesValue) -> SJMCLResult<String> {
+  // Cleanroom library names may not encode the artifact's actual Maven path.
+  if let Some(artifact) = library
+    .downloads
+    .as_ref()
+    .and_then(|downloads| downloads.artifact.as_ref())
+    .filter(|artifact| !artifact.path.is_empty())
+  {
+    return Ok(artifact.path.clone());
+  }
+  convert_library_name_to_path(&library.name, None)
+}
+
 pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
@@ -351,7 +364,12 @@ pub fn get_nonnative_library_paths(
   libraries = merge_library_lists(&libraries, &[]); // remove duplicates to prevent launch errors
   let mut result = Vec::new();
   for library in libraries {
-    result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
+    let path = if mod_loader_type == ModLoaderType::Cleanroom {
+      get_library_artifact_path(&library)?
+    } else {
+      convert_library_name_to_path(&library.name, None)?
+    };
+    result.push(library_path.join(path));
   }
   Ok(result)
 }
