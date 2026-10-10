@@ -16,7 +16,9 @@ use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
 use crate::download::submit_install_group;
-use crate::instance::helpers::client_json::McClientInfo;
+use crate::instance::helpers::client_json::{
+  McClientInfo, remove_mod_loader_from_client_info, remove_optifine_from_client_info,
+};
 use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
 use crate::instance::helpers::loader::common::{InstallPlan, execute_processors};
 use crate::instance::helpers::loader::forge::{ProcessorsValue, download_forge_libraries};
@@ -81,7 +83,7 @@ impl TaskExecutor for PrepareExecutor {
       }
       let spec: PrepareSpec = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
-      if let Err(error) = prepare_installation(&app, spec).await {
+      if let Err(error) = prepare_installation(&app, spec, &ctx.group_id).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
           verify_downloads(&app, &ctx.group_id, true).await
         {
@@ -101,7 +103,11 @@ impl TaskExecutor for PrepareExecutor {
   }
 }
 
-async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult<()> {
+async fn prepare_installation(
+  app: &AppHandle,
+  spec: PrepareSpec,
+  group_id: &str,
+) -> SJMCLResult<()> {
   let binding = app.state::<InstanceRefreshLock>();
   let _refresh_guard = binding.0.lock().await;
   let mut instance = Instance {
@@ -124,16 +130,43 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
     let config = binding.lock()?;
     get_source_priority_list(&config)
   };
+  let mut engine = app.try_state::<EngineHandle>();
+  for _ in 0..100 {
+    if engine.is_some() {
+      break;
+    }
+    tokio::time::sleep(Duration::from_millis(10)).await;
+    engine = app.try_state::<EngineHandle>();
+  }
+  let submitted_groups = engine
+    .ok_or_else(|| SJMCLError("download engine is not initialized".into()))?
+    .0
+    .snapshot()
+    .await
+    .map_err(|error| SJMCLError(error.to_string()))?;
   let mut install_groups: Vec<(String, InstallPlan, InstallKind)> = Vec::new();
 
   let kind = instance.mod_loader.loader_type;
-  if instance.mod_loader.status == ModLoaderStatus::NotDownloaded
-    && matches!(
-      kind,
-      ModLoaderType::Forge | ModLoaderType::Cleanroom | ModLoaderType::NeoForge
-    )
+  // Keep child group names stable across retries, but distinct from other installations.
+  let loader_group_name = format!(
+    "{}-libraries?{}@{}",
+    kind.to_string().to_lowercase(),
+    instance.id,
+    group_id
+  );
+  if matches!(
+    instance.mod_loader.status,
+    ModLoaderStatus::NotDownloaded | ModLoaderStatus::Downloading
+  ) && matches!(
+    kind,
+    ModLoaderType::Forge | ModLoaderType::Cleanroom | ModLoaderType::NeoForge
+  ) && !submitted_groups
+    .iter()
+    .any(|group| group.name == loader_group_name)
   {
     instance.mod_loader.status = ModLoaderStatus::Downloading;
+    // A previous preparation may have saved this patch before submission failed.
+    remove_mod_loader_from_client_info(&mut client_info, kind);
     let plan = match kind {
       ModLoaderType::Forge => {
         download_forge_libraries(app, &priority_list, &instance, &mut client_info).await?
@@ -146,27 +179,31 @@ async fn prepare_installation(app: &AppHandle, spec: PrepareSpec) -> SJMCLResult
       }
       _ => unreachable!(),
     };
-    install_groups.push((
-      format!(
-        "{}-libraries?{}",
-        kind.to_string().to_lowercase(),
-        instance.id
-      ),
-      plan,
-      InstallKind::ModLoader,
-    ));
+    install_groups.push((loader_group_name, plan, InstallKind::ModLoader));
   }
 
-  if instance
-    .optifine
-    .as_ref()
-    .is_some_and(|optifine| optifine.status == ModLoaderStatus::NotDownloaded)
+  let optifine_group_name = format!("optifine-libraries?{}@{}", instance.id, group_id);
+  if instance.optifine.as_ref().is_some_and(|optifine| {
+    matches!(
+      optifine.status,
+      ModLoaderStatus::NotDownloaded | ModLoaderStatus::Downloading
+    )
+  }) && !submitted_groups
+    .iter()
+    .any(|group| group.name == optifine_group_name)
   {
     instance.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
+    if client_info
+      .patches
+      .iter()
+      .any(|patch| patch.id == "optifine")
+    {
+      remove_optifine_from_client_info(&mut client_info);
+    }
     let tasks =
       download_optifine_libraries(app, &priority_list, &instance, &mut client_info).await?;
     install_groups.push((
-      format!("optifine-libraries?{}", instance.id),
+      optifine_group_name,
       InstallPlan {
         tasks,
         processors: Vec::new(),
