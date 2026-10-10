@@ -372,7 +372,8 @@ structstruck::strike! {
       deserialize_with = "deserialize_discover_sources"
     )]
     #[default(_code="vec![(\"https://mc.sjtu.cn/api-sjmcl/article\".to_string(), true),
-    (\"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string(), true)]")]
+    (\"https://mc.sjtu.cn/api-sjmcl/article/mua\".to_string(), true),
+    (\"https://api.jsumc.fun/sjmcl?type=tribee&src=535\".to_string(), true)]")]
     pub discover_source_endpoints: Vec<(String, bool)>,
     pub extra_java_paths: Vec<String>,
     pub suppressed_dialogs: Vec<String>,
