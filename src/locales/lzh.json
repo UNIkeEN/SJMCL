@@ -2619,6 +2619,7 @@
           "title": "驗證戲案未成",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "改囊載器未畢置",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine 未畢置",
             "INSTANCE_NOT_FOUND_BY_ID": "例 ID 無",
             "GAME_FILES_INCOMPLETE": "戲案不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "啟狀態丟失"

@@ -27,8 +27,8 @@ use crate::instance::helpers::loader::common::install_mod_loader;
 use crate::instance::helpers::loader::fabric::remove_fabric_api_mods;
 use crate::instance::helpers::loader::optifine::download_optifine_installer;
 use crate::instance::helpers::misc::{
-  get_instance_game_config, get_instance_subdir_path_by_id, get_instance_subdir_paths,
-  refresh_and_update_instances, unify_instance_name,
+  InstanceRefreshLock, get_instance_game_config, get_instance_subdir_path_by_id,
+  get_instance_subdir_paths, refresh_and_update_instances, unify_instance_name,
 };
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, build_export_bundle, create_modpack_zip, list_files,
@@ -1087,13 +1087,10 @@ pub async fn create_instance(
     version_path: version_path.clone(),
     mod_loader: ModLoader {
       loader_type: mod_loader.loader_type,
-      status: if matches!(
-        mod_loader.loader_type,
-        ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
-      ) {
-        ModLoaderStatus::Installed
-      } else {
-        ModLoaderStatus::NotDownloaded
+      status: match mod_loader.loader_type {
+        ModLoaderType::Unknown => ModLoaderStatus::Installed,
+        ModLoaderType::Fabric | ModLoaderType::Quilt => ModLoaderStatus::Downloading,
+        _ => ModLoaderStatus::NotDownloaded,
       },
       version: mod_loader.version.clone(),
       branch: mod_loader.branch.clone(),
@@ -1272,6 +1269,7 @@ pub async fn create_instance(
     },
     task_params,
     &instance,
+    true,
   )
   .await?;
 
@@ -1367,13 +1365,10 @@ pub async fn change_mod_loader(
   let mod_loader = ModLoader {
     loader_type: new_mod_loader.loader_type,
     version: new_mod_loader.version.clone(),
-    status: if matches!(
-      new_mod_loader.loader_type,
-      ModLoaderType::Unknown | ModLoaderType::Fabric | ModLoaderType::Quilt
-    ) {
-      ModLoaderStatus::Installed
-    } else {
-      ModLoaderStatus::NotDownloaded
+    status: match new_mod_loader.loader_type {
+      ModLoaderType::Unknown => ModLoaderStatus::Installed,
+      ModLoaderType::Fabric | ModLoaderType::Quilt => ModLoaderStatus::Downloading,
+      _ => ModLoaderStatus::NotDownloaded,
     },
     branch: new_mod_loader.branch.clone(),
   };
@@ -1397,23 +1392,31 @@ pub async fn change_mod_loader(
   }
 
   save_json_async(&version_info, &json_path).await?;
-  instance
-    .save_json_cfg()
-    .await
-    .map_err(|_| InstanceError::FileCreationFailed)?;
-
-  if !modloader_task_params.is_empty() {
-    submit_instance_download_group(
-      app.clone(),
-      format!(
-        "change-mod-loader?{} {}",
-        instance.mod_loader.loader_type, instance.mod_loader.version
-      ),
-      modloader_task_params,
-      &instance,
-    )
-    .await?;
+  {
+    let binding = app.state::<InstanceRefreshLock>();
+    let _refresh_guard = binding.0.lock().await;
+    instance
+      .save_json_cfg()
+      .await
+      .map_err(|_| InstanceError::FileCreationFailed)?;
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    if let Some(current) = binding.lock()?.get_mut(&instance_id) {
+      current.mod_loader = instance.mod_loader.clone();
+    }
   }
+
+  // Keep the completion event that refreshes instance data even when all files are cached.
+  submit_instance_download_group(
+    app.clone(),
+    format!(
+      "change-mod-loader?{} {}",
+      instance.mod_loader.loader_type, instance.mod_loader.version
+    ),
+    modloader_task_params,
+    &instance,
+    true,
+  )
+  .await?;
 
   Ok(())
 }
@@ -1502,10 +1505,18 @@ pub async fn change_optifine(
   )
   .await?;
 
-  instance
-    .save_json_cfg()
-    .await
-    .map_err(|_| InstanceError::FileCreationFailed)?;
+  {
+    let binding = app.state::<InstanceRefreshLock>();
+    let _refresh_guard = binding.0.lock().await;
+    instance
+      .save_json_cfg()
+      .await
+      .map_err(|_| InstanceError::FileCreationFailed)?;
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    if let Some(current) = binding.lock()?.get_mut(&instance_id) {
+      current.optifine = instance.optifine.clone();
+    }
+  }
 
   if !optifine_task_params.is_empty() {
     submit_instance_download_group(
@@ -1513,6 +1524,7 @@ pub async fn change_optifine(
       format!("change-optifine?{}", new_optifine.filename),
       optifine_task_params,
       &instance,
+      false,
     )
     .await?;
   }

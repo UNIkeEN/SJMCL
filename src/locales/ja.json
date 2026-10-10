@@ -2619,6 +2619,7 @@
           "title": "ゲームファイルの検証に失敗",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "モッドローダーのインストールが完了していません",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine のインストールが完了していません",
             "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
             "GAME_FILES_INCOMPLETE": "ゲームファイルが不完全しています",
             "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"

@@ -2619,6 +2619,7 @@
           "title": "驗證遊戲檔案失敗",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模組載入器未完成安裝",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine 尚未完成安裝",
             "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "遊戲檔案不完整或缺失",
             "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失"

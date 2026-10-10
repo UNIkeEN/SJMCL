@@ -120,6 +120,13 @@ pub async fn validate_game_files(
   if instance.mod_loader.status != ModLoaderStatus::Installed {
     return Err(LaunchError::ModLoaderNotInstalled.into());
   }
+  if instance
+    .optifine
+    .as_ref()
+    .is_some_and(|optifine| optifine.status != ModLoaderStatus::Installed)
+  {
+    return Err(LaunchError::OptifineNotInstalled.into());
+  }
 
   replace_native_libraries(&app, &mut client_info, &instance)
     .await

@@ -76,6 +76,7 @@ export enum ResourceServiceError {
 
 export enum LaunchServiceError {
   ModLoaderNotInstalled = "MOD_LOADER_NOT_INSTALLED",
+  OptifineNotInstalled = "OPTIFINE_NOT_INSTALLED",
   NoSuitableJava = "NO_SUITABLE_JAVA",
   SelectedJavaUnavailable = "SELECTED_JAVA_UNAVAILABLE",
   GameFilesIncomplete = "GAME_FILES_INCOMPLETE",

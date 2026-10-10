@@ -2619,6 +2619,7 @@
           "title": "Error al validar los archivos del juego",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "La instalación del cargador de mods no se ha completado",
+            "OPTIFINE_NOT_INSTALLED": "La instalación de OptiFine no se ha completado",
             "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
             "GAME_FILES_INCOMPLETE": "Los archivos del juego están incompletos",
             "LAUNCHING_STATE_NOT_FOUND": "No se encontró el estado de lanzamiento"

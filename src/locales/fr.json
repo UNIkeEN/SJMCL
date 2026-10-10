@@ -2619,6 +2619,7 @@
           "title": "Échec de la vérification des fichiers du jeu",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Le chargeur de mods n'est pas encore installé",
+            "OPTIFINE_NOT_INSTALLED": "L'installation d'OptiFine n'est pas terminée",
             "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
             "GAME_FILES_INCOMPLETE": "Les fichiers du jeu sont incomplets ou manquants",
             "LAUNCHING_STATE_NOT_FOUND": "L'état de démarrage est perdu"

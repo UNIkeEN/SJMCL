@@ -16,7 +16,7 @@ use crate::instance::helpers::loader::common::InstallPlan;
 use crate::instance::helpers::loader::postprocess::{
   InstallKind, InstallSpec, InstallTarget, PrepareSpec,
 };
-use crate::instance::models::misc::Instance;
+use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::{
   CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
@@ -163,6 +163,7 @@ pub async fn submit_instance_download_group(
   name: String,
   tasks: Vec<DownloadTask>,
   instance: &Instance,
+  verify_mod_loader: bool,
 ) -> SJMCLResult<String> {
   let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
   tasks.push(SubmitTask {
@@ -176,6 +177,26 @@ pub async fn submit_instance_download_group(
     sha1: None,
     sha256: None,
   });
+  // Fabric and Quilt have no installer processors, but still need dependency verification.
+  if verify_mod_loader
+    && matches!(
+      instance.mod_loader.loader_type,
+      ModLoaderType::Fabric | ModLoaderType::Quilt
+    )
+  {
+    tasks.push(SubmitTask {
+      name: "Verify".into(),
+      executor: "verify".into(),
+      spec: serde_json::to_value(InstallTarget {
+        instance_id: instance.id.clone(),
+        version_path: instance.version_path.clone(),
+        kind: InstallKind::ModLoader,
+      })?,
+      dest: None,
+      sha1: None,
+      sha256: None,
+    });
+  }
   app
     .state::<EngineHandle>()
     .0
