@@ -361,6 +361,7 @@ export const defaultConfig: LauncherConfig = {
   discoverSourceEndpoints: [
     ["https://mc.sjtu.cn/api-sjmcl/article", true],
     ["https://mc.sjtu.cn/api-sjmcl/article/mua", true],
+    ["https://api.jsumc.fun/sjmcl?type=tribee&src=535", true],
   ],
   extraJavaPaths: [],
   suppressedDialogs: [],
