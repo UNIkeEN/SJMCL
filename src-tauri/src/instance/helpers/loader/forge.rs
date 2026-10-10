@@ -15,7 +15,7 @@ use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{
   LibrariesValue, McClientInfo, reset_fields_from_patches,
 };
-use crate::instance::helpers::loader::common::add_library_entry;
+use crate::instance::helpers::loader::common::{InstallPlan, add_library_entry};
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
@@ -112,7 +112,7 @@ pub async fn download_forge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<Vec<DownloadTask>> {
+) -> SJMCLResult<InstallPlan> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -123,6 +123,7 @@ pub async fn download_forge_libraries(
     return Err(InstanceError::InvalidSourcePath.into());
   };
   let mut task_params = vec![];
+  let mut processors = vec![];
 
   let installer_coord = format!(
     "net.minecraftforge:forge:{}-installer",
@@ -275,10 +276,7 @@ pub async fn download_forge_libraries(
       }
     });
 
-    fs::write(
-      instance.version_path.join("install_profile.json"),
-      &serde_json::to_vec_pretty(&profile)?,
-    )?;
+    processors = profile.processors;
 
     let forge_info: McClientInfo = serde_json::from_str(&version)?;
     client_info.main_class = forge_info.main_class.clone();
@@ -289,19 +287,14 @@ pub async fn download_forge_libraries(
       add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
       add_library_entry(&mut loader_libraries, name, Some(lib.clone()))?;
 
-      let url = lib
-        .downloads
-        .as_ref()
-        .and_then(|d| d.artifact.as_ref())
-        .map(|a| a.url.as_str())
-        .unwrap_or_default();
-      if url.is_empty() {
+      let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
+      let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
         continue;
-      }
+      };
 
       task_params.push(DownloadTask {
         src: convert_url_to_target_source(
-          &Url::parse(url)?,
+          &Url::parse(&artifact.url)?,
           &[
             ResourceType::ForgeMaven,
             ResourceType::ForgeMavenNew,
@@ -311,7 +304,7 @@ pub async fn download_forge_libraries(
         )?,
         dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
         filename: None,
-        sha1: None,
+        sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
       });
     }
 
@@ -336,21 +329,16 @@ pub async fn download_forge_libraries(
 
     for lib in profile.libraries.iter() {
       let name = &lib.name;
-      let url = lib
-        .downloads
-        .as_ref()
-        .and_then(|d| d.artifact.as_ref())
-        .map(|a| a.url.as_str())
-        .unwrap_or_default();
+      let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
 
-      if url.is_empty() {
+      let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
         continue;
-      }
+      };
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
       task_params.push(DownloadTask {
         src: convert_url_to_target_source(
-          &Url::parse(url)?,
+          &Url::parse(&artifact.url)?,
           &[
             ResourceType::ForgeMaven,
             ResourceType::ForgeMavenNew,
@@ -360,7 +348,7 @@ pub async fn download_forge_libraries(
         )?,
         dest: lib_dir.join(&rel),
         filename: None,
-        sha1: None,
+        sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
       });
     }
   } else {
@@ -443,7 +431,10 @@ pub async fn download_forge_libraries(
   let mut seen = std::collections::HashSet::new();
   task_params.retain(|param| seen.insert(param.dest.clone()));
 
-  Ok(task_params)
+  Ok(InstallPlan {
+    tasks: task_params,
+    processors,
+  })
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use futures::future::join_all;
 use sjmcl_downloader::download::DownloadExecutor;
 use sjmcl_downloader::{
   EngineConfig, EngineError, EngineHandle, EngineSetup, GroupState, SubmitGroup, SubmitTask,
@@ -11,12 +12,16 @@ use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::{AppHandle, Manager, Url};
 
 use crate::APP_DATA_DIR;
-use crate::instance::helpers::loader::postprocess::{InstallKind, InstallSpec, PrepareSpec};
-use crate::instance::models::misc::Instance;
+use crate::instance::helpers::loader::common::InstallPlan;
+use crate::instance::helpers::loader::postprocess::{
+  InstallKind, InstallSpec, InstallTarget, PrepareSpec,
+};
+use crate::instance::models::misc::{Instance, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::{
   CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
 };
+use crate::utils::fs::is_local_file_valid;
 use crate::utils::web::build_sjmcl_client;
 
 pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
@@ -116,6 +121,25 @@ impl From<DownloadTask> for SubmitTask {
   }
 }
 
+pub async fn get_invalid_download_tasks(
+  tasks: Vec<DownloadTask>,
+  check_hash: bool,
+) -> SJMCLResult<Vec<DownloadTask>> {
+  let results = join_all(tasks.into_iter().map(|task| async move {
+    let valid = is_local_file_valid(&task.dest, task.sha1.as_deref(), check_hash).await?;
+    Ok::<_, SJMCLError>((!valid).then_some(task))
+  }))
+  .await;
+
+  let mut tasks = Vec::new();
+  for result in results {
+    if let Some(task) = result? {
+      tasks.push(task);
+    }
+  }
+  Ok(tasks)
+}
+
 pub async fn submit_download_group(
   app: AppHandle,
   name: String,
@@ -139,6 +163,7 @@ pub async fn submit_instance_download_group(
   name: String,
   tasks: Vec<DownloadTask>,
   instance: &Instance,
+  verify_mod_loader: bool,
 ) -> SJMCLResult<String> {
   let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
   tasks.push(SubmitTask {
@@ -152,6 +177,26 @@ pub async fn submit_instance_download_group(
     sha1: None,
     sha256: None,
   });
+  // Fabric and Quilt have no installer processors, but still need dependency verification.
+  if verify_mod_loader
+    && matches!(
+      instance.mod_loader.loader_type,
+      ModLoaderType::Fabric | ModLoaderType::Quilt
+    )
+  {
+    tasks.push(SubmitTask {
+      name: "Verify".into(),
+      executor: "verify".into(),
+      spec: serde_json::to_value(InstallTarget {
+        instance_id: instance.id.clone(),
+        version_path: instance.version_path.clone(),
+        kind: InstallKind::ModLoader,
+      })?,
+      dest: None,
+      sha1: None,
+      sha256: None,
+    });
+  }
   app
     .state::<EngineHandle>()
     .0
@@ -167,20 +212,29 @@ pub async fn submit_instance_download_group(
 pub async fn submit_install_group(
   app: AppHandle,
   name: String,
-  tasks: Vec<DownloadTask>,
+  plan: InstallPlan,
   instance: &Instance,
   kind: InstallKind,
 ) -> SJMCLResult<String> {
-  let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
-  let spec = serde_json::to_value(InstallSpec {
+  let mut tasks: Vec<SubmitTask> = get_invalid_download_tasks(plan.tasks, false)
+    .await?
+    .into_iter()
+    .map(Into::into)
+    .collect();
+  let target = InstallTarget {
     instance_id: instance.id.clone(),
     version_path: instance.version_path.clone(),
     kind,
+  };
+  let verify_spec = serde_json::to_value(&target)?;
+  let install_spec = serde_json::to_value(InstallSpec {
+    target,
+    processors: plan.processors,
   })?;
   tasks.push(SubmitTask {
     name: "Install".into(),
     executor: "install".into(),
-    spec: spec.clone(),
+    spec: install_spec,
     dest: None,
     sha1: None,
     sha256: None,
@@ -188,7 +242,7 @@ pub async fn submit_install_group(
   tasks.push(SubmitTask {
     name: "Verify".into(),
     executor: "verify".into(),
-    spec,
+    spec: verify_spec,
     dest: None,
     sha1: None,
     sha256: None,

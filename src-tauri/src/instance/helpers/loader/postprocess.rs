@@ -9,18 +9,27 @@ use serde::{Deserialize, Serialize};
 use sha1::{Digest, Sha1};
 use sjmcl_downloader::EngineHandle;
 use sjmcl_downloader::executor::BoxFuture;
-use sjmcl_downloader::{ExecContext, TaskError, TaskExecutor, TaskOutcome, TaskReport};
+use sjmcl_downloader::{ExecContext, TaskError, TaskExecutor, TaskOutcome, TaskReport, TaskState};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
-use sjmcl_types::storage::load_json_async;
+use sjmcl_types::storage::{load_json_async, save_json_async};
 use tauri::{AppHandle, Manager};
 use zip::ZipArchive;
 
-use crate::instance::helpers::client_json::McClientInfo;
-use crate::instance::helpers::loader::common::execute_processors;
-use crate::instance::helpers::loader::forge::InstallProfile;
-use crate::instance::helpers::loader::optifine::finish_optifine_install;
-use crate::instance::helpers::misc::{InstanceRefreshLock, prepare_instance_after_download};
-use crate::instance::models::misc::{Instance, ModLoaderStatus};
+use crate::download::submit_install_group;
+use crate::instance::helpers::client_json::{
+  McClientInfo, remove_mod_loader_from_client_info, remove_optifine_from_client_info,
+};
+use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
+use crate::instance::helpers::loader::common::{InstallPlan, execute_processors};
+use crate::instance::helpers::loader::forge::{ProcessorsValue, download_forge_libraries};
+use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
+use crate::instance::helpers::loader::optifine::{
+  download_optifine_libraries, finish_optifine_install,
+};
+use crate::instance::helpers::misc::InstanceRefreshLock;
+use crate::instance::models::misc::{Instance, ModLoaderStatus, ModLoaderType};
+use crate::launcher_config::models::LauncherConfig;
+use crate::resource::helpers::misc::get_source_priority_list;
 
 #[derive(Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -32,6 +41,14 @@ pub enum InstallKind {
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallSpec {
+  #[serde(flatten)]
+  pub target: InstallTarget,
+  pub processors: Vec<ProcessorsValue>,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallTarget {
   pub instance_id: String,
   pub version_path: PathBuf,
   pub kind: InstallKind,
@@ -66,11 +83,9 @@ impl TaskExecutor for PrepareExecutor {
       }
       let spec: PrepareSpec = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
-      if let Err(error) =
-        prepare_instance_after_download(&app, &spec.instance_id, &spec.version_path).await
-      {
+      if let Err(error) = prepare_installation(&app, spec, &ctx.group_id).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
-          verify_downloads(&app, &ctx.group_id).await
+          verify_downloads(&app, &ctx.group_id, true).await
         {
           return Err(corrupt);
         }
@@ -88,6 +103,126 @@ impl TaskExecutor for PrepareExecutor {
   }
 }
 
+async fn prepare_installation(
+  app: &AppHandle,
+  spec: PrepareSpec,
+  group_id: &str,
+) -> SJMCLResult<()> {
+  let binding = app.state::<InstanceRefreshLock>();
+  let _refresh_guard = binding.0.lock().await;
+  let mut instance = Instance {
+    version_path: spec.version_path,
+    ..Default::default()
+  }
+  .load_json_cfg()
+  .await?;
+  if instance.id != spec.instance_id {
+    return Err(SJMCLError(
+      "installation instance does not match task".into(),
+    ));
+  }
+  let json_path = instance
+    .version_path
+    .join(format!("{}.json", instance.name));
+  let mut client_info: McClientInfo = load_json_async(&json_path).await?;
+  let priority_list = {
+    let binding = app.state::<Mutex<LauncherConfig>>();
+    let config = binding.lock()?;
+    get_source_priority_list(&config)
+  };
+  let mut engine = app.try_state::<EngineHandle>();
+  for _ in 0..100 {
+    if engine.is_some() {
+      break;
+    }
+    tokio::time::sleep(Duration::from_millis(10)).await;
+    engine = app.try_state::<EngineHandle>();
+  }
+  let submitted_groups = engine
+    .ok_or_else(|| SJMCLError("download engine is not initialized".into()))?
+    .0
+    .snapshot()
+    .await
+    .map_err(|error| SJMCLError(error.to_string()))?;
+  let mut install_groups: Vec<(String, InstallPlan, InstallKind)> = Vec::new();
+
+  let kind = instance.mod_loader.loader_type;
+  // Keep child group names stable across retries, but distinct from other installations.
+  let loader_group_name = format!(
+    "{}-libraries?{}@{}",
+    kind.to_string().to_lowercase(),
+    instance.id,
+    group_id
+  );
+  if matches!(
+    instance.mod_loader.status,
+    ModLoaderStatus::NotDownloaded | ModLoaderStatus::Downloading
+  ) && matches!(
+    kind,
+    ModLoaderType::Forge | ModLoaderType::Cleanroom | ModLoaderType::NeoForge
+  ) && !submitted_groups
+    .iter()
+    .any(|group| group.name == loader_group_name)
+  {
+    instance.mod_loader.status = ModLoaderStatus::Downloading;
+    // A previous preparation may have saved this patch before submission failed.
+    remove_mod_loader_from_client_info(&mut client_info, kind);
+    let plan = match kind {
+      ModLoaderType::Forge => {
+        download_forge_libraries(app, &priority_list, &instance, &mut client_info).await?
+      }
+      ModLoaderType::Cleanroom => {
+        download_cleanroom_libraries(app, &priority_list, &instance, &mut client_info).await?
+      }
+      ModLoaderType::NeoForge => {
+        download_neoforge_libraries(app, &priority_list, &instance, &mut client_info).await?
+      }
+      _ => unreachable!(),
+    };
+    install_groups.push((loader_group_name, plan, InstallKind::ModLoader));
+  }
+
+  let optifine_group_name = format!("optifine-libraries?{}@{}", instance.id, group_id);
+  if instance.optifine.as_ref().is_some_and(|optifine| {
+    matches!(
+      optifine.status,
+      ModLoaderStatus::NotDownloaded | ModLoaderStatus::Downloading
+    )
+  }) && !submitted_groups
+    .iter()
+    .any(|group| group.name == optifine_group_name)
+  {
+    instance.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
+    if client_info
+      .patches
+      .iter()
+      .any(|patch| patch.id == "optifine")
+    {
+      remove_optifine_from_client_info(&mut client_info);
+    }
+    let tasks =
+      download_optifine_libraries(app, &priority_list, &instance, &mut client_info).await?;
+    install_groups.push((
+      optifine_group_name,
+      InstallPlan {
+        tasks,
+        processors: Vec::new(),
+      },
+      InstallKind::Optifine,
+    ));
+  }
+
+  if !install_groups.is_empty() {
+    // Persist installation metadata before submitted tasks can start.
+    save_json_async(&client_info, &json_path).await?;
+    instance.save_json_cfg().await?;
+    for (name, plan, kind) in install_groups {
+      submit_install_group(app.clone(), name, plan, &instance, kind).await?;
+    }
+  }
+  Ok(())
+}
+
 pub struct InstallExecutor {
   pub app: AppHandle,
 }
@@ -96,7 +231,11 @@ pub struct VerifyExecutor {
   pub app: AppHandle,
 }
 
-async fn verify_downloads(app: &AppHandle, group_id: &str) -> Result<(), TaskError> {
+async fn verify_downloads(
+  app: &AppHandle,
+  group_id: &str,
+  recheck_verified: bool,
+) -> Result<(), TaskError> {
   let mut engine = app.try_state::<EngineHandle>();
   for _ in 0..100 {
     if engine.is_some() {
@@ -123,10 +262,14 @@ async fn verify_downloads(app: &AppHandle, group_id: &str) -> Result<(), TaskErr
         }
         Err(error) => return Err(TaskError::Io(error.to_string())),
         Ok(mut file) => {
+          // Downloads with checksums were already verified before installation.
+          if !recheck_verified && task.state == TaskState::Done && task.verified {
+            continue;
+          }
           if let Some(expected) = task.sha1.as_ref() {
             let mut hasher = Sha1::new();
             io::copy(&mut file, &mut hasher).map_err(|error| TaskError::Io(error.to_string()))?;
-            if hex::encode(hasher.finalize()) != *expected {
+            if !hex::encode(hasher.finalize()).eq_ignore_ascii_case(expected) {
               corrupt.push(path.clone());
             }
           } else if path.extension().is_some_and(|extension| extension == "jar") {
@@ -170,9 +313,9 @@ impl TaskExecutor for VerifyExecutor {
         report_interrupted(&ctx).await;
         return Ok(());
       }
-      let spec: InstallSpec = serde_json::from_value(ctx.spec.clone())
+      let spec: InstallTarget = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
-      let checked = verify_downloads(&app, &ctx.group_id).await;
+      let checked = verify_downloads(&app, &ctx.group_id, false).await;
       let mut instance = Instance {
         version_path: spec.version_path,
         ..Default::default()
@@ -233,7 +376,7 @@ impl TaskExecutor for InstallExecutor {
         .map_err(|error| TaskError::Other(error.to_string()))?;
       if let Err(error) = install(&app, spec).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
-          verify_downloads(&app, &ctx.group_id).await
+          verify_downloads(&app, &ctx.group_id, true).await
         {
           return Err(corrupt);
         }
@@ -322,6 +465,10 @@ async fn save_status(
 }
 
 async fn install(app: &AppHandle, spec: InstallSpec) -> SJMCLResult<()> {
+  let InstallSpec {
+    target: spec,
+    processors,
+  } = spec;
   let mut instance = Instance {
     version_path: spec.version_path,
     ..Default::default()
@@ -356,11 +503,7 @@ async fn install(app: &AppHandle, spec: InstallSpec) -> SJMCLResult<()> {
     .await?;
     match spec.kind {
       InstallKind::ModLoader => {
-        let profile_path = instance.version_path.join("install_profile.json");
-        if profile_path.exists() {
-          let profile: InstallProfile = load_json_async(&profile_path).await?;
-          execute_processors(app, &instance, &client_info, &profile).await?;
-        }
+        execute_processors(app, &instance, &client_info, &processors).await?;
       }
       InstallKind::Optifine => finish_optifine_install(app, &instance, &client_info).await?,
     }

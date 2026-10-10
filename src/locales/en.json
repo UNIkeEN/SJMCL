@@ -2619,6 +2619,7 @@
           "title": "Failed to validate game files",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine installation not completed",
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "GAME_FILES_INCOMPLETE": "Game files are incomplete",
             "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"

@@ -267,7 +267,7 @@ pub async fn run() {
         // Refresh all instances
         let app_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
-          refresh_and_update_instances(&app_handle, true).await;
+          refresh_and_update_instances(&app_handle).await;
         });
 
         // Refresh all javas

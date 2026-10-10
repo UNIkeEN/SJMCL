@@ -10,7 +10,7 @@ use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
 use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
-use crate::instance::helpers::loader::forge::{InstallProfile, install_forge_loader};
+use crate::instance::helpers::loader::forge::{ProcessorsValue, install_forge_loader};
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
 use crate::instance::helpers::loader::quilt::install_quilt_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
@@ -19,6 +19,11 @@ use crate::launch::helpers::file_validator::merge_library_lists;
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::misc::get_separator;
 use crate::resource::models::SourceType;
+
+pub struct InstallPlan {
+  pub tasks: Vec<DownloadTask>,
+  pub processors: Vec<ProcessorsValue>,
+}
 
 pub fn add_library_entry(
   libraries: &mut Vec<LibrariesValue>,
@@ -91,8 +96,12 @@ pub async fn execute_processors(
   app: &AppHandle,
   instance: &Instance,
   client_info: &McClientInfo,
-  install_profile: &InstallProfile,
+  processors: &[ProcessorsValue],
 ) -> SJMCLResult<()> {
+  if processors.is_empty() {
+    return Ok(());
+  }
+
   let game_config = get_instance_game_config(app, instance);
 
   let selected_java = select_java_runtime(
@@ -106,7 +115,7 @@ pub async fn execute_processors(
   )
   .await?;
 
-  for processor in &install_profile.processors {
+  for processor in processors {
     let main_class = {
       let mut archive = ZipArchive::new(File::open(processor.jar.clone())?)?;
       let mut manifest = archive.by_name("META-INF/MANIFEST.MF")?;
