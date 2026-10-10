@@ -1,4 +1,6 @@
 use serde::{self, Deserialize, Serialize};
+use serde_json::Value;
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
@@ -11,3 +13,6 @@ pub struct WorldInfo {
   pub icon_src: PathBuf,
   pub dir_path: PathBuf,
 }
+
+/// World-relative NBT file paths mapped to their display data.
+pub type WorldDetails = BTreeMap<String, Value>;

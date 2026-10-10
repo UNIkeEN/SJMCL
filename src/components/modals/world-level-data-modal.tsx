@@ -21,7 +21,7 @@ import TreeView, {
   buildStructTreeNodes,
 } from "@/components/common/tree-view";
 import { useToast } from "@/contexts/toast";
-import { LevelData } from "@/models/instance/world";
+import { WorldDetails } from "@/models/instance/world";
 import { InstanceService } from "@/services/instance";
 
 interface WorldLevelDataModalProps extends Omit<ModalProps, "children"> {
@@ -36,14 +36,15 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const toast = useToast();
-  const [levelData, setLevelData] = useState<LevelData>();
+  const [levelData, setLevelData] = useState<WorldDetails>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isOpen, onClose } = props;
 
-  const treeNodes = useMemo(
-    () => (levelData ? buildStructTreeNodes(levelData) : []),
-    [levelData]
-  );
+  const treeNodes = useMemo(() => {
+    if (!levelData) return [];
+    const { "level.dat": level, ...otherFiles } = levelData;
+    return buildStructTreeNodes({ "level.dat": level, ...otherFiles });
+  }, [levelData]);
 
   const handleRetrieveWorldDetails = useCallback(
     async (instanceId: string, worldName: string) => {
@@ -100,7 +101,7 @@ const WorldLevelDataModal: React.FC<WorldLevelDataModalProps> = ({
           {levelData && (
             <TreeView
               nodes={treeNodes}
-              defaultExpandedDepth={1}
+              defaultExpandedDepth={2}
               renderNode={({ node }) => {
                 const { key, value } = node.data as StructTreeNodeData;
                 const isPrimitive = typeof value !== "object" || value === null;
