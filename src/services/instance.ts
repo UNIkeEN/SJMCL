@@ -13,7 +13,7 @@ import {
   ScreenshotInfo,
   ShaderPackInfo,
 } from "@/models/instance/misc";
-import { LevelData, WorldInfo } from "@/models/instance/world";
+import { WorldDetails, WorldInfo } from "@/models/instance/world";
 import {
   GameClientResourceInfo,
   ModLoaderResourceInfo,
@@ -420,13 +420,13 @@ export class InstanceService {
    * RETRIEVE the level details for a specific world.
    * @param {string} instanceId - The instance ID to retrieve the level detail for.
    * @param {string} worldName - The name of the world to retrieve details for.
-   * @returns {Promise<InvokeResponse<LevelData>>}
+   * @returns {Promise<InvokeResponse<WorldDetails>>}
    */
   @responseHandler("instance")
   static async retrieveWorldDetails(
     instanceId: string,
     worldName: string
-  ): Promise<InvokeResponse<LevelData>> {
+  ): Promise<InvokeResponse<WorldDetails>> {
     return await invoke("retrieve_world_details", {
       instanceId,
       worldName,

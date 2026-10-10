@@ -224,7 +224,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     mcp_tool!(
       "retrieve_world_details",
       retrieve_world_details,
-      "Retrieve detailed level.dat data for a local world in a Minecraft instance.",
+      "Retrieve world NBT data keyed by relative file path, including level.dat and available external metadata.",
       #[serde(deny_unknown_fields)]
       {
         #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]

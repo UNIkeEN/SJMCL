@@ -55,8 +55,7 @@ use crate::instance::models::misc::{
   ModLoaderStatus, ModLoaderType, ModpackFileList, OptiFine, ResourcePackInfo, SchematicInfo,
   ScreenshotInfo, ShaderPackInfo,
 };
-use crate::instance::models::world::base::WorldInfo;
-use crate::instance::models::world::level::LevelData;
+use crate::instance::models::world::{WorldDetails, WorldInfo};
 use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
 use crate::launch::helpers::jre_selector::{get_minimum_java_version_by_game, select_java_runtime};
 use crate::launch::models::LaunchError;
@@ -498,8 +497,9 @@ pub async fn retrieve_world_list(
     };
   if let Ok(world_paths) = get_subdirectories(worlds_dir) {
     for path in world_paths {
-      if let Ok(info) = load_world_info_from_dir(&path, has_difficulty_support).await {
-        world_list.push(info);
+      match load_world_info_from_dir(&path, has_difficulty_support).await {
+        Ok(info) => world_list.push(info),
+        Err(err) => log::warn!("Failed to read world at {}: {:?}", path.display(), err),
       }
     }
   }
@@ -979,18 +979,14 @@ pub async fn retrieve_world_details(
   app: AppHandle,
   instance_id: String,
   world_name: String,
-) -> SJMCLResult<LevelData> {
+) -> SJMCLResult<WorldDetails> {
   let worlds_dir =
     match get_instance_subdir_path_by_id(&app, &instance_id, &InstanceSubdirType::Saves) {
       Some(path) => path,
       None => return Err(InstanceError::WorldNotExistError.into()),
     };
   let world_dir = worlds_dir.join(world_name);
-  if let Ok(level_data) = load_world_data_from_dir(&world_dir).await {
-    Ok(level_data)
-  } else {
-    Err(InstanceError::LevelParseError.into())
-  }
+  load_world_data_from_dir(&world_dir).await
 }
 
 #[tauri::command]
