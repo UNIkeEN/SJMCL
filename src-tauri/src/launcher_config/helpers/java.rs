@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
@@ -20,7 +20,43 @@ use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 #[cfg(target_os = "windows")]
 use crate::utils::sys_info::get_all_drive_mount_points;
 
-pub async fn refresh_and_update_javas(app: &AppHandle) {
+/// Serializes discovery and distinguishes an empty result from an unfinished scan.
+#[derive(Default)]
+pub struct JavaDiscovery(Arc<tokio::sync::Mutex<bool>>);
+
+impl JavaDiscovery {
+  async fn update(&self, force: bool, discover: impl FnOnce() + Send + 'static) -> SJMCLResult<()> {
+    let mut initialized = self.0.clone().lock_owned().await;
+    if force || !*initialized {
+      // Keep the lock in the blocking job even if its caller pauses or cancels.
+      tokio::task::spawn_blocking(move || {
+        discover();
+        *initialized = true;
+      })
+      .await
+      .map_err(|error| SJMCLError(error.to_string()))?;
+    }
+    Ok(())
+  }
+}
+
+pub async fn ensure_java_discovery(app: &AppHandle) -> SJMCLResult<()> {
+  let discovery = app.state::<JavaDiscovery>();
+  let app = app.clone();
+  discovery
+    .update(false, move || discover_and_update_javas(&app))
+    .await
+}
+
+pub async fn refresh_and_update_javas(app: &AppHandle) -> SJMCLResult<()> {
+  let discovery = app.state::<JavaDiscovery>();
+  let app = app.clone();
+  discovery
+    .update(true, move || discover_and_update_javas(&app))
+    .await
+}
+
+fn discover_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.
   let mut java_paths = get_java_paths(app);
 
@@ -547,4 +583,114 @@ pub async fn build_mojang_java_download_params(
     .collect();
 
   Ok(download_params)
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::launcher_config::helpers::java::JavaDiscovery;
+  use std::sync::{Arc, Mutex};
+  use std::time::Duration;
+
+  #[tokio::test]
+  async fn selectors_wait_for_discovery_and_accept_an_empty_result() {
+    let discovery = Arc::new(JavaDiscovery::default());
+    let (started, ready) = tokio::sync::oneshot::channel();
+    let (release, blocked) = std::sync::mpsc::channel();
+    let initial = discovery.clone();
+    let scan = tokio::spawn(async move {
+      initial
+        .update(false, move || {
+          started.send(()).unwrap();
+          blocked.recv().unwrap();
+        })
+        .await
+    });
+    ready.await.unwrap();
+    let selector = discovery.clone();
+    let mut waiter = tokio::spawn(async move {
+      selector
+        .update(false, || panic!("initial discovery must not run twice"))
+        .await
+    });
+    assert!(
+      tokio::time::timeout(Duration::from_millis(20), &mut waiter)
+        .await
+        .is_err()
+    );
+    release.send(()).unwrap();
+    scan.await.unwrap().unwrap();
+    waiter.await.unwrap().unwrap();
+    discovery
+      .update(false, || panic!("an empty Java list is a completed scan"))
+      .await
+      .unwrap();
+  }
+
+  #[tokio::test]
+  async fn selectors_wait_for_refresh_after_java_downloads() {
+    let discovery = Arc::new(JavaDiscovery::default());
+    discovery.update(false, || {}).await.unwrap();
+    let javas = Arc::new(Mutex::new(Vec::new()));
+    let (started, ready) = tokio::sync::oneshot::channel();
+    let (release, blocked) = std::sync::mpsc::channel();
+    let refresh = discovery.clone();
+    let updated_javas = javas.clone();
+    let scan = tokio::spawn(async move {
+      refresh
+        .update(true, move || {
+          started.send(()).unwrap();
+          blocked.recv().unwrap();
+          updated_javas.lock().unwrap().push(21);
+        })
+        .await
+    });
+    ready.await.unwrap();
+    let selector = discovery.clone();
+    let mut waiter = tokio::spawn(async move {
+      selector
+        .update(false, || panic!("wait for the active refresh"))
+        .await
+        .unwrap();
+      javas.lock().unwrap().clone()
+    });
+    assert!(
+      tokio::time::timeout(Duration::from_millis(20), &mut waiter)
+        .await
+        .is_err()
+    );
+    release.send(()).unwrap();
+    scan.await.unwrap().unwrap();
+    assert_eq!(waiter.await.unwrap(), [21]);
+  }
+
+  #[tokio::test]
+  async fn cancelling_the_scan_waiter_keeps_discovery_serialized() {
+    let discovery = Arc::new(JavaDiscovery::default());
+    let (started, ready) = tokio::sync::oneshot::channel();
+    let (release, blocked) = std::sync::mpsc::channel();
+    let initial = discovery.clone();
+    let scan = tokio::spawn(async move {
+      initial
+        .update(false, move || {
+          started.send(()).unwrap();
+          blocked.recv().unwrap();
+        })
+        .await
+    });
+    ready.await.unwrap();
+    scan.abort();
+    scan.await.unwrap_err();
+    let mut waiter = tokio::spawn(async move {
+      discovery
+        .update(false, || panic!("the original scan still owns discovery"))
+        .await
+    });
+    assert!(
+      tokio::time::timeout(Duration::from_millis(20), &mut waiter)
+        .await
+        .is_err()
+    );
+    release.send(()).unwrap();
+    waiter.await.unwrap().unwrap();
+  }
 }

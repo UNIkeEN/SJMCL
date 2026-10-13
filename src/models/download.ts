@@ -64,7 +64,12 @@ export interface DownloadTask extends Omit<
   SubmitDownloadTask,
   "executor" | "spec" | "dest"
 > {
-  executor: "download" | "prepare_install" | "install" | "verify";
+  executor:
+    | "download"
+    | "prepare_install"
+    | "install"
+    | "verify"
+    | "refresh_java";
   spec: DownloadSpec | PrepareSpec | InstallSpec;
   dest: string | null;
   id: string;

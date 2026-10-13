@@ -15,7 +15,7 @@ use account::models::AccountInfo;
 use instance::helpers::misc::refresh_and_update_instances;
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
-use launcher_config::helpers::java::refresh_and_update_javas;
+use launcher_config::helpers::java::{JavaDiscovery, ensure_java_discovery};
 use launcher_config::helpers::misc::auto_clear_download_cache;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
@@ -226,6 +226,7 @@ pub async fn run() {
 
         let javas: Vec<JavaInfo> = vec![];
         app.manage(Mutex::new(javas));
+        app.manage(JavaDiscovery::default());
 
         let mod_database = ModDataBase::new();
         app.manage(Mutex::new(mod_database));
@@ -273,7 +274,9 @@ pub async fn run() {
         // Refresh all javas
         let app_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
-          refresh_and_update_javas(&app_handle).await;
+          if let Err(error) = ensure_java_discovery(&app_handle).await {
+            log::warn!("Java discovery failed: {:?}", error);
+          }
         });
 
         // Initialize mod database

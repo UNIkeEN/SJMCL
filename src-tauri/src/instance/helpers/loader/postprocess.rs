@@ -28,6 +28,7 @@ use crate::instance::helpers::loader::optifine::{
 };
 use crate::instance::helpers::misc::InstanceRefreshLock;
 use crate::instance::models::misc::{Instance, ModLoaderStatus, ModLoaderType};
+use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::get_source_priority_list;
 
@@ -83,6 +84,10 @@ impl TaskExecutor for PrepareExecutor {
       }
       let spec: PrepareSpec = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
+      // Java files in this group are complete before preparing child installation groups.
+      if !refresh_java_for_task(&app, &ctx).await? {
+        return Ok(());
+      }
       if let Err(error) = prepare_installation(&app, spec, &ctx.group_id).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
           verify_downloads(&app, &ctx.group_id, true).await
@@ -374,6 +379,9 @@ impl TaskExecutor for InstallExecutor {
       }
       let spec: InstallSpec = serde_json::from_value(ctx.spec.clone())
         .map_err(|error| TaskError::Other(error.to_string()))?;
+      if !refresh_java_for_task(&app, &ctx).await? {
+        return Ok(());
+      }
       if let Err(error) = install(&app, spec).await {
         if let Err(corrupt @ TaskError::CorruptFiles(_)) =
           verify_downloads(&app, &ctx.group_id, true).await
@@ -381,6 +389,48 @@ impl TaskExecutor for InstallExecutor {
           return Err(corrupt);
         }
         return Err(TaskError::Other(error.0));
+      }
+      ctx
+        .report
+        .send(TaskReport::Outcome {
+          task_id: ctx.task_id,
+          outcome: TaskOutcome::Done { verified: false },
+        })
+        .await
+        .map_err(|error| TaskError::Other(error.to_string()))
+    })
+  }
+}
+
+async fn refresh_java_for_task(app: &AppHandle, ctx: &ExecContext) -> Result<bool, TaskError> {
+  tokio::select! {
+    biased;
+    _ = ctx.run_token.cancelled() => {
+      report_interrupted(ctx).await;
+      Ok(false)
+    }
+    result = refresh_and_update_javas(app) => result.map(|()| true).map_err(|error| TaskError::Other(error.0)),
+  }
+}
+
+pub struct RefreshJavaExecutor {
+  pub app: AppHandle,
+}
+
+impl TaskExecutor for RefreshJavaExecutor {
+  fn name(&self) -> &'static str {
+    "refresh_java"
+  }
+
+  fn postprocess_order(&self) -> u32 {
+    1
+  }
+
+  fn run(&self, ctx: ExecContext) -> BoxFuture<'static, Result<(), TaskError>> {
+    let app = self.app.clone();
+    Box::pin(async move {
+      if !refresh_java_for_task(&app, &ctx).await? {
+        return Ok(());
       }
       ctx
         .report

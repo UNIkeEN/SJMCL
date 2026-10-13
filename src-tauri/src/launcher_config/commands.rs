@@ -10,7 +10,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use tauri_plugin_opener::reveal_item_in_dir;
 
-use crate::download::{has_active_downloads, submit_download_group};
+use crate::download::{has_active_downloads, submit_java_download_group};
 use crate::instance::helpers::misc::refresh_instances;
 use crate::launcher_config::helpers::graphics::supported_graphics_renderers;
 use crate::launcher_config::helpers::java::{
@@ -219,7 +219,7 @@ pub fn delete_custom_background(app: AppHandle, file_name: String) -> SJMCLResul
 
 #[tauri::command]
 pub async fn retrieve_java_list(app: AppHandle) -> SJMCLResult<Vec<JavaInfo>> {
-  refresh_and_update_javas(&app).await; // firstly refresh and update
+  refresh_and_update_javas(&app).await?; // firstly refresh and update
   let binding = app.state::<Mutex<Vec<JavaInfo>>>();
   let state = binding.lock()?;
   Ok(state.clone())
@@ -242,13 +242,7 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
 pub async fn download_mojang_java(app: AppHandle, version: String) -> SJMCLResult<()> {
   let download_params = build_mojang_java_download_params(&app, &version).await?;
 
-  submit_download_group(
-    app,
-    format!("mojang-java?{}", version),
-    download_params,
-    true,
-  )
-  .await?;
+  submit_java_download_group(app, format!("mojang-java?{}", version), download_params).await?;
 
   Ok(())
 }

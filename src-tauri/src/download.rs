@@ -88,6 +88,9 @@ pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
         ) as Arc<dyn TaskExecutor>,
         Arc::new(crate::instance::helpers::loader::postprocess::VerifyExecutor { app: app.clone() })
           as Arc<dyn TaskExecutor>,
+        Arc::new(
+          crate::instance::helpers::loader::postprocess::RefreshJavaExecutor { app: app.clone() },
+        ) as Arc<dyn TaskExecutor>,
       ],
     })
   })
@@ -153,6 +156,32 @@ pub async fn submit_download_group(
       name,
       tasks: tasks.into_iter().map(Into::into).collect(),
       auto_resume,
+    })
+    .await
+    .map_err(engine_error)
+}
+
+pub async fn submit_java_download_group(
+  app: AppHandle,
+  name: String,
+  tasks: Vec<DownloadTask>,
+) -> SJMCLResult<String> {
+  let mut tasks: Vec<SubmitTask> = tasks.into_iter().map(Into::into).collect();
+  tasks.push(SubmitTask {
+    name: "Refresh Java discovery".into(),
+    executor: "refresh_java".into(),
+    spec: serde_json::json!({}),
+    dest: None,
+    sha1: None,
+    sha256: None,
+  });
+  app
+    .state::<EngineHandle>()
+    .0
+    .submit_group(SubmitGroup {
+      name,
+      tasks,
+      auto_resume: true,
     })
     .await
     .map_err(engine_error)

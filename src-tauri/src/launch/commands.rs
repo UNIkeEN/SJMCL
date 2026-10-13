@@ -69,7 +69,7 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
-  refresh_and_update_javas(&app).await;
+  refresh_and_update_javas(&app).await?;
 
   let selected_java = select_java_runtime(
     &app,
