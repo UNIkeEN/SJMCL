@@ -295,6 +295,18 @@
       "type": "string",
       "oneOf": [
         {
+          "description": "Enables the acknowledge_completion command without any pre-configured scope.",
+          "type": "string",
+          "const": "allow-acknowledge-completion",
+          "markdownDescription": "Enables the acknowledge_completion command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the acknowledge_completion command without any pre-configured scope.",
+          "type": "string",
+          "const": "deny-acknowledge-completion",
+          "markdownDescription": "Denies the acknowledge_completion command without any pre-configured scope."
+        },
+        {
           "description": "Enables the cancel_group command without any pre-configured scope.",
           "type": "string",
           "const": "allow-cancel-group",
@@ -391,10 +403,10 @@
           "markdownDescription": "Denies the submit_group command without any pre-configured scope."
         },
         {
-          "description": "download engine commands\n#### This default permission set includes:\n\n- `allow-submit-group`\n- `allow-pause-group`\n- `allow-resume-group`\n- `allow-cancel-group`\n- `allow-retry-group`\n- `allow-remove-group`\n- `allow-snapshot`\n- `allow-list-tasks`",
+          "description": "download engine commands\n#### This default permission set includes:\n\n- `allow-submit-group`\n- `allow-pause-group`\n- `allow-resume-group`\n- `allow-cancel-group`\n- `allow-retry-group`\n- `allow-remove-group`\n- `allow-acknowledge-completion`\n- `allow-snapshot`\n- `allow-list-tasks`",
           "type": "string",
           "const": "default",
-          "markdownDescription": "download engine commands\n#### This default permission set includes:\n\n- `allow-submit-group`\n- `allow-pause-group`\n- `allow-resume-group`\n- `allow-cancel-group`\n- `allow-retry-group`\n- `allow-remove-group`\n- `allow-snapshot`\n- `allow-list-tasks`"
+          "markdownDescription": "download engine commands\n#### This default permission set includes:\n\n- `allow-submit-group`\n- `allow-pause-group`\n- `allow-resume-group`\n- `allow-cancel-group`\n- `allow-retry-group`\n- `allow-remove-group`\n- `allow-acknowledge-completion`\n- `allow-snapshot`\n- `allow-list-tasks`"
         }
       ]
     }

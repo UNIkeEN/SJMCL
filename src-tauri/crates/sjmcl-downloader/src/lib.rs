@@ -40,6 +40,8 @@ pub struct GroupSummary {
   pub name: String,
   pub state: GroupState,
   pub finish: Option<FinishKind>,
+  #[serde(default)]
+  pub completion_pending: bool,
   pub stats: GroupStats,
 }
 

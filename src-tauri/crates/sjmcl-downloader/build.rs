@@ -6,6 +6,7 @@ fn main() {
     "cancel_group",
     "retry_group",
     "remove_group",
+    "acknowledge_completion",
     "snapshot",
     "list_tasks",
   ])

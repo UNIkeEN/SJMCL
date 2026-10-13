@@ -102,6 +102,7 @@ export interface DownloadGroupSummary {
   name: string;
   state: DownloadGroupState;
   finish: DownloadFinishKind | null;
+  completionPending: boolean;
   stats: DownloadGroupStats;
 }
 

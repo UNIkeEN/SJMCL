@@ -165,6 +165,7 @@ where
       cancel_group,
       retry_group,
       remove_group,
+      acknowledge_completion,
       snapshot,
       list_tasks
     ])
@@ -206,6 +207,18 @@ async fn retry_group(state: State<'_, EngineHandle>, group_id: String) -> Result
 #[tauri::command]
 async fn remove_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), String> {
   state.0.remove(group_id).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn acknowledge_completion(
+  state: State<'_, EngineHandle>,
+  group_id: String,
+) -> Result<(), String> {
+  state
+    .0
+    .acknowledge_completion(group_id)
+    .await
+    .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

@@ -139,6 +139,8 @@ pub struct TaskGroup {
   pub auto_resume: bool,
   pub state: GroupState,
   pub finish: Option<FinishKind>,
+  /// A successful completion has not yet been handled by the frontend.
+  pub completion_pending: bool,
   /// Task submission order is the scheduling order.
   pub tasks: Vec<Task>,
 }

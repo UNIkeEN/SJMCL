@@ -44,6 +44,12 @@ export class DownloadService {
     return await invoke(`${DOWNLOAD_COMMAND}remove_group`, { groupId });
   }
 
+  static async acknowledgeCompletion(groupId: string): Promise<void> {
+    return await invoke(`${DOWNLOAD_COMMAND}acknowledge_completion`, {
+      groupId,
+    });
+  }
+
   static async snapshot(): Promise<DownloadGroupSummary[]> {
     return await invoke(`${DOWNLOAD_COMMAND}snapshot`);
   }
@@ -52,39 +58,42 @@ export class DownloadService {
     return await invoke(`${DOWNLOAD_COMMAND}list_tasks`, { groupId });
   }
 
-  static onTick(callback: (payload: DownloadProgress[]) => void): () => void {
+  static onTick(
+    callback: (payload: DownloadProgress[]) => void
+  ): Promise<() => void> {
     return this.listen(DOWNLOAD_TICK_EVENT, callback);
   }
 
-  static onState(callback: (payload: DownloadStateEvent) => void): () => void {
+  static onState(
+    callback: (payload: DownloadStateEvent) => void
+  ): Promise<() => void> {
     return this.listen(DOWNLOAD_STATE_EVENT, callback);
   }
 
   static onFinished(
     callback: (payload: DownloadFinishedEvent) => void
-  ): () => void {
+  ): Promise<() => void> {
     return this.listen(DOWNLOAD_FINISHED_EVENT, callback);
   }
 
-  static onError(callback: (payload: DownloadErrorEvent) => void): () => void {
+  static onError(
+    callback: (payload: DownloadErrorEvent) => void
+  ): Promise<() => void> {
     return this.listen(DOWNLOAD_ERROR_EVENT, callback);
   }
 
   static onVerified(
     callback: (payload: DownloadVerifiedEvent) => void
-  ): () => void {
+  ): Promise<() => void> {
     return this.listen(DOWNLOAD_VERIFIED_EVENT, callback);
   }
 
-  private static listen<T>(
+  private static async listen<T>(
     eventName: string,
     callback: (payload: T) => void
-  ): () => void {
-    const unlisten = getCurrentWebview().listen<T>(eventName, (event) => {
+  ): Promise<() => void> {
+    return await getCurrentWebview().listen<T>(eventName, (event) => {
       callback(event.payload);
     });
-    return () => {
-      unlisten.then((stop) => stop());
-    };
   }
 }

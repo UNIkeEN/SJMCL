@@ -241,6 +241,7 @@ async fn auto_resume_continues_from_install_after_downloads_finish() {
       auto_resume: true,
       state: GroupState::Active,
       finish: None,
+      completion_pending: false,
       tasks,
     })
     .unwrap();
@@ -375,6 +376,7 @@ async fn restored_ids_are_not_reused() {
       auto_resume: false,
       state: GroupState::Finished,
       finish: Some(FinishKind::Completed),
+      completion_pending: false,
       tasks: vec![old_task],
     })
     .unwrap();
@@ -404,6 +406,7 @@ async fn auto_resume_restarts_an_active_group() {
       auto_resume: true,
       state: GroupState::Active,
       finish: None,
+      completion_pending: false,
       tasks: vec![task],
     })
     .unwrap();

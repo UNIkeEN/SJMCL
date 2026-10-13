@@ -452,6 +452,7 @@ const ActiveExtensionHostContextProvider: React.FC<{
           "plugin:sjmcl-downloader|cancel_group",
           "plugin:sjmcl-downloader|retry_group",
           "plugin:sjmcl-downloader|remove_group",
+          "plugin:sjmcl-downloader|acknowledge_completion",
           "add_extension",
           "delete_extension",
         ].includes(command)

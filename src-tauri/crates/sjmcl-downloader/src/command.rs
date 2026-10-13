@@ -54,6 +54,11 @@ pub enum Command {
     group_id: String,
     reply: Reply<()>,
   },
+  /// Persist acknowledgement of a successful completion action.
+  AcknowledgeCompletion {
+    group_id: String,
+    reply: Reply<()>,
+  },
   /// Internal delayed retry of a task after a transient failure.
   RetryTask {
     group_id: String,

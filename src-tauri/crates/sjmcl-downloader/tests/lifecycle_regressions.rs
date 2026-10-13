@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use sjmcl_downloader::event::NoopSink;
 use sjmcl_downloader::executor::BoxFuture;
-use sjmcl_downloader::storage::MemoryStore;
+use sjmcl_downloader::storage::{MemoryStore, SqliteStore};
 use sjmcl_downloader::{
   Engine, EngineConfig, ExecContext, FinishKind, GroupState, StateStore, SubmitGroup, SubmitTask,
   Task, TaskError, TaskExecutor, TaskGroup, TaskOutcome, TaskReport, TaskState,
@@ -164,6 +164,7 @@ async fn cancel_after_paused_worker_exits_finishes_and_removes_partial_file() {
   let group = engine.snapshot().await.unwrap().remove(0);
   assert_eq!(group.state, GroupState::Finished);
   assert_eq!(group.finish, Some(FinishKind::Cancelled));
+  assert!(!group.completion_pending);
   let task = engine.list_tasks(id).await.unwrap().remove(0);
   assert_eq!(task.state, TaskState::Cancelled);
   assert_eq!((task.offset, task.received), (0, 0));
@@ -199,6 +200,7 @@ async fn cancelling_restored_paused_and_pending_tasks_cleans_only_partial_files(
       auto_resume: true,
       state: GroupState::Paused,
       finish: None,
+      completion_pending: false,
       tasks,
     })
     .unwrap();
@@ -254,5 +256,49 @@ async fn cancelling_a_running_worker_preserves_its_actual_success_report() {
     engine.snapshot().await.unwrap()[0].finish,
     Some(FinishKind::Cancelled)
   );
+  actor.abort();
+}
+
+#[tokio::test]
+async fn recovered_completion_remains_pending_until_acknowledged_and_does_not_replay() {
+  let dir = TempDir::new();
+  let path = dir.0.join("downloads.db");
+  let store = Arc::new(SqliteStore::open(&path).unwrap());
+  store
+    .save_group(&TaskGroup {
+      id: "g1".into(),
+      name: "modpack?pack".into(),
+      auto_resume: true,
+      state: GroupState::Active,
+      finish: None,
+      completion_pending: false,
+      tasks: vec![Task::new("t2".into(), "g1".into(), &submit_task(None))],
+    })
+    .unwrap();
+  // The group recovers and finishes with no frontend listener attached.
+  let (engine, actor) = start(store, Arc::new(CompleteImmediately));
+  wait_for_task(&engine, "g1", TaskState::Done).await;
+  assert!(engine.snapshot().await.unwrap()[0].completion_pending);
+  actor.abort();
+  actor.await.unwrap_err();
+
+  let (engine, actor) = start(
+    Arc::new(SqliteStore::open(&path).unwrap()),
+    Arc::new(CompleteImmediately),
+  );
+  assert!(engine.snapshot().await.unwrap()[0].completion_pending);
+  engine.acknowledge_completion("g1".into()).await.unwrap();
+  engine.acknowledge_completion("g1".into()).await.unwrap();
+  assert!(!engine.snapshot().await.unwrap()[0].completion_pending);
+  actor.abort();
+  actor.await.unwrap_err();
+
+  let (engine, actor) = start(
+    Arc::new(SqliteStore::open(&path).unwrap()),
+    Arc::new(CompleteImmediately),
+  );
+  let group = engine.snapshot().await.unwrap().remove(0);
+  assert_eq!(group.finish, Some(FinishKind::Completed));
+  assert!(!group.completion_pending);
   actor.abort();
 }

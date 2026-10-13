@@ -10,6 +10,7 @@ download engine commands
 - `allow-cancel-group`
 - `allow-retry-group`
 - `allow-remove-group`
+- `allow-acknowledge-completion`
 - `allow-snapshot`
 - `allow-list-tasks`
 
@@ -21,6 +22,32 @@ download engine commands
 <th>Description</th>
 </tr>
 
+
+<tr>
+<td>
+
+`sjmcl-downloader:allow-acknowledge-completion`
+
+</td>
+<td>
+
+Enables the acknowledge_completion command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`sjmcl-downloader:deny-acknowledge-completion`
+
+</td>
+<td>
+
+Denies the acknowledge_completion command without any pre-configured scope.
+
+</td>
+</tr>
 
 <tr>
 <td>

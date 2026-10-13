@@ -119,6 +119,17 @@ impl Engine {
     rx.await.map_err(|_| EngineError::ChannelClosed)
   }
 
+  pub async fn acknowledge_completion(&self, group_id: String) -> Result<(), EngineError> {
+    let (tx, rx) = oneshot::channel();
+    self
+      .send(Command::AcknowledgeCompletion {
+        group_id,
+        reply: tx,
+      })
+      .await?;
+    rx.await.map_err(|_| EngineError::ChannelClosed)?
+  }
+
   pub async fn list_tasks(&self, group_id: String) -> Result<Vec<Task>, EngineError> {
     let (tx, rx) = oneshot::channel();
     self
@@ -319,6 +330,10 @@ impl EngineActor {
         let r = self.cmd_remove(&group_id);
         let _ = reply.send(r);
       }
+      Command::AcknowledgeCompletion { group_id, reply } => {
+        let r = self.cmd_acknowledge_completion(&group_id);
+        let _ = reply.send(r);
+      }
       Command::RetryTask { group_id, task_id } => self.cmd_retry_task(&group_id, &task_id),
       Command::Snapshot(reply) => {
         let snap: Vec<GroupSummary> = self
@@ -330,6 +345,7 @@ impl EngineActor {
             name: g.name.clone(),
             state: g.state,
             finish: g.finish,
+            completion_pending: g.completion_pending,
             stats: g.stats(),
           })
           .collect();
@@ -378,6 +394,7 @@ impl EngineActor {
       auto_resume: sg.auto_resume,
       state: GroupState::Queued,
       finish: None,
+      completion_pending: false,
       tasks,
     };
     self.state.groups.push(group);
@@ -605,6 +622,28 @@ impl EngineActor {
     self.state.groups.remove(index);
     self.state.runtime.remove(group_id);
     self.dequeue_group(group_id);
+    Ok(())
+  }
+
+  fn cmd_acknowledge_completion(&mut self, group_id: &str) -> Result<(), EngineError> {
+    let group = self
+      .state
+      .groups
+      .iter_mut()
+      .find(|g| g.id == group_id)
+      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+    if group.state != GroupState::Finished || group.finish != Some(FinishKind::Completed) {
+      return Err(EngineError::InvalidState(
+        "only successful completions can be acknowledged".into(),
+      ));
+    }
+    let mut acknowledged = group.clone();
+    acknowledged.completion_pending = false;
+    self
+      .store
+      .save_group(&acknowledged)
+      .map_err(EngineError::InvalidSubmission)?;
+    *group = acknowledged;
     Ok(())
   }
 
@@ -913,6 +952,9 @@ impl EngineActor {
     let old = self.state.groups[gi].state;
     self.state.groups[gi].state = GroupState::Finished;
     self.state.groups[gi].finish = Some(finish);
+    self.state.groups[gi].completion_pending = finish == FinishKind::Completed;
+    // Persist the action before notifying subscribers so snapshots can reconcile it.
+    self.persist_group(group_id);
     self.emit_group_state(group_id, old, GroupState::Finished);
     let (failed, summary) = {
       let g = &self.state.groups[gi];
@@ -931,7 +973,6 @@ impl EngineActor {
       failed_tasks: failed,
       summary,
     });
-    self.persist_group(group_id);
   }
 
   // ---------- Scheduling ----------

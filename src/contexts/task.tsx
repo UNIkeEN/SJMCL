@@ -1,4 +1,5 @@
 import { emit } from "@tauri-apps/api/event";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import React, {
   createContext,
   useCallback,
@@ -158,11 +159,16 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const toast = useToast();
   const { getInstanceList } = useGlobalData();
   const { config, getJavaInfos } = useLauncherConfig();
-  const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
+  const { openSharedModal, openGenericConfirmDialog, modalStates } =
+    useSharedModals();
   const [tasks, setTasks] = useState<DownloadGroup[]>([]);
   const tasksRef = useRef<DownloadGroup[]>([]);
   const { t } = useTranslation();
   const refreshSequence = useRef(0);
+  const completionInFlight = useRef<string | null>(null);
+  const completionOnClose = useRef<(() => void) | null>(null);
+  const handledCompletions = useRef(new Set<string>());
+  const [completionProcessing, setCompletionProcessing] = useState(false);
 
   useEffect(() => {
     tasksRef.current = tasks;
@@ -215,10 +221,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [loadGroup, showCommandError]);
 
-  useEffect(() => {
-    void refreshDownloadGroups();
-  }, [refreshDownloadGroups]);
-
   const handleSubmitDownloadGroup = useCallback(
     (name: string, groupTasks: SubmitDownloadTask[]) => {
       DownloadService.submitGroup({
@@ -258,19 +260,22 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleClearDownloadHistory = useCallback(() => {
     const finished = tasks.filter(
-      (group) => group.state === DownloadGroupState.Finished
+      (group) =>
+        group.state === DownloadGroupState.Finished && !group.completionPending
     );
     Promise.all(finished.map((group) => DownloadService.removeGroup(group.id)))
       .then(() => {
         setTasks((current) =>
-          current.filter((group) => group.state !== DownloadGroupState.Finished)
+          current.filter(
+            (group) => !finished.some((item) => item.id === group.id)
+          )
         );
       })
       .catch(showCommandError);
   }, [showCommandError, tasks]);
 
   const handleCompletedGroup = useCallback(
-    (group: DownloadGroup) => {
+    (group: DownloadGroup, onHandled: () => Promise<boolean>) => {
       const { name, params } = parseTaskGroup(group.name);
       switch (name) {
         case "game-client":
@@ -298,7 +303,11 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           break;
         case "modpack":
           if (group.tasks[0]?.dest) {
-            openSharedModal("import-modpack", { path: group.tasks[0].dest });
+            openSharedModal("import-modpack", {
+              path: group.tasks[0].dest,
+              onCloseCallback: onHandled,
+            });
+            return;
           }
           break;
         case "launcher-update":
@@ -308,6 +317,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               config.basicInfo.osType === "windows" &&
               !config.basicInfo.isPortable;
             openGenericConfirmDialog({
+              onCloseCallback: onHandled,
               title: t("RestartForUpdateConfirmDialog.title"),
               body: t(
                 `RestartForUpdateConfirmDialog.${isWinInstaller ? "bodyWinInstaller" : "body"}`
@@ -316,7 +326,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 `RestartForUpdateConfirmDialog.button.${isWinInstaller ? "install" : "restart"}`
               ),
               btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
-              onOKCallback: () => {
+              onOKCallback: async () => {
+                if (!(await onHandled())) return;
                 ConfigService.installLauncherUpdate(task.name, true).then(
                   (response) => {
                     if (response.status !== "success") {
@@ -329,7 +340,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   }
                 );
               },
-              onCancelCallback: () => {
+              onCancelCallback: async () => {
+                if (!(await onHandled())) return;
                 ConfigService.installLauncherUpdate(task.name, false).then(
                   (response) => {
                     if (response.status !== "success") {
@@ -343,6 +355,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 );
               },
             });
+            return;
           }
           break;
         case "extension-update": {
@@ -351,13 +364,15 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           const newVersion = params.param2 || "";
           if (task?.dest && "url" in task.spec && expectedIdentifier) {
             openGenericConfirmDialog({
+              onCloseCallback: onHandled,
               title: t("ExtensionUpdateConfirmDialog.title"),
               body: t("ExtensionUpdateConfirmDialog.body", {
                 identifier: expectedIdentifier,
                 version: newVersion,
                 src: task.spec.url,
               }),
-              onOKCallback: () => {
+              onOKCallback: async () => {
+                if (!(await onHandled())) return;
                 ExtensionService.addExtension(
                   task.dest!,
                   expectedIdentifier
@@ -375,6 +390,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 });
               },
             });
+            return;
           }
           break;
         }
@@ -382,6 +398,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           getJavaInfos(true);
           break;
       }
+      void onHandled();
     },
     [
       config.basicInfo.isPortable,
@@ -396,6 +413,74 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   useEffect(() => {
+    if (
+      completionInFlight.current &&
+      !handledCompletions.current.has(completionInFlight.current)
+    ) {
+      const visible = Object.values(modalStates).some(
+        (modal) => modal.onCloseCallback === completionOnClose.current
+      );
+      if (!visible) {
+        // Another dialog replaced this prompt. Keep its action pending for later.
+        completionInFlight.current = null;
+        setCompletionProcessing(false);
+      }
+      return;
+    }
+    if (
+      getCurrentWebview().label !== "main" ||
+      completionInFlight.current ||
+      completionProcessing ||
+      modalStates["generic-confirm"]?.isOpen ||
+      modalStates["import-modpack"]?.isOpen
+    )
+      return;
+    const group = tasks.find(
+      (item) =>
+        item.completionPending && !handledCompletions.current.has(item.id)
+    );
+    if (!group) return;
+    completionInFlight.current = group.id;
+    setCompletionProcessing(true);
+    let acknowledgement: Promise<boolean> | undefined;
+    const onHandled = (): Promise<boolean> => {
+      if (acknowledgement) return acknowledgement;
+      handledCompletions.current.add(group.id);
+      acknowledgement = DownloadService.acknowledgeCompletion(group.id)
+        .then(() => {
+          setTasks((current) =>
+            current.map((item) =>
+              item.id === group.id
+                ? { ...item, completionPending: false }
+                : item
+            )
+          );
+          return true;
+        })
+        .catch((error) => {
+          showCommandError(error);
+          return false;
+        })
+        .finally(() => {
+          if (completionInFlight.current === group.id) {
+            completionInFlight.current = null;
+            setCompletionProcessing(false);
+          }
+        });
+      return acknowledgement;
+    };
+    completionOnClose.current = onHandled;
+    handleCompletedGroup(group, onHandled);
+  }, [
+    completionProcessing,
+    handleCompletedGroup,
+    modalStates,
+    showCommandError,
+    tasks,
+  ]);
+
+  useEffect(() => {
+    let attached = true;
     const stopTick = DownloadService.onTick((updates) => {
       setTasks((groups) =>
         groups.map((group) => {
@@ -513,29 +598,30 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
               }
             ),
           });
-          if (event.finish === DownloadFinishKind.Completed) {
-            handleCompletedGroup(group);
-          }
         } catch (error) {
           showCommandError(error);
         }
       }
     );
+    const subscriptions = [
+      stopTick,
+      stopState,
+      stopError,
+      stopVerified,
+      stopFinished,
+    ];
+    void Promise.all(subscriptions)
+      .then(() => {
+        if (attached) void refreshDownloadGroups();
+      })
+      .catch(showCommandError);
     return () => {
-      stopTick();
-      stopState();
-      stopError();
-      stopVerified();
-      stopFinished();
+      attached = false;
+      subscriptions.forEach((subscription) => {
+        void subscription.then((stop) => stop()).catch(showCommandError);
+      });
     };
-  }, [
-    handleCompletedGroup,
-    loadGroup,
-    refreshDownloadGroups,
-    showCommandError,
-    t,
-    toast,
-  ]);
+  }, [loadGroup, refreshDownloadGroups, showCommandError, t, toast]);
 
   const generalPercent = useMemo(() => {
     const active = tasks.filter(

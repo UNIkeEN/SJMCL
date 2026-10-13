@@ -74,6 +74,7 @@ impl SqliteStore {
                  auto_resume INTEGER NOT NULL DEFAULT 0,
                  state TEXT NOT NULL,
                  finish TEXT,
+                 completion_pending INTEGER NOT NULL DEFAULT 0,
                  tasks_json TEXT NOT NULL
              );",
       )
@@ -81,6 +82,11 @@ impl SqliteStore {
     // Support older databases; a duplicate-column error means this migration already ran.
     let _ = conn.execute(
       "ALTER TABLE groups ADD COLUMN auto_resume INTEGER NOT NULL DEFAULT 0",
+      [],
+    );
+    // Existing history has no acknowledgement record and must not be replayed.
+    let _ = conn.execute(
+      "ALTER TABLE groups ADD COLUMN completion_pending INTEGER NOT NULL DEFAULT 0",
       [],
     );
     Ok(SqliteStore {
@@ -103,17 +109,19 @@ impl StateStore for SqliteStore {
     };
     let conn = self.conn.lock().unwrap();
     conn.execute(
-            "INSERT INTO groups (id, name, auto_resume, state, finish, tasks_json) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+            "INSERT INTO groups (id, name, auto_resume, state, finish, tasks_json, completion_pending) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
              ON CONFLICT(id) DO UPDATE SET
                  name=excluded.name, auto_resume=excluded.auto_resume, state=excluded.state,
-                 finish=excluded.finish, tasks_json=excluded.tasks_json",
+                 finish=excluded.finish, tasks_json=excluded.tasks_json,
+                 completion_pending=excluded.completion_pending",
             rusqlite::params![
                 g.id,
                 g.name,
                 g.auto_resume,
                 serde_json::to_string(&g.state).unwrap(),
                 finish,
-                tasks_json
+                tasks_json,
+                g.completion_pending
             ],
         )
         .map_err(|e| e.to_string())?;
@@ -148,7 +156,9 @@ impl StateStore for SqliteStore {
   fn load_all(&self) -> Result<Vec<TaskGroup>, String> {
     let conn = self.conn.lock().unwrap();
     let mut stmt = conn
-      .prepare("SELECT id, name, auto_resume, state, finish, tasks_json FROM groups")
+      .prepare(
+        "SELECT id, name, auto_resume, state, finish, tasks_json, completion_pending FROM groups",
+      )
       .map_err(|e| e.to_string())?;
     let rows = stmt
       .query_map([], |r| {
@@ -159,12 +169,13 @@ impl StateStore for SqliteStore {
           r.get::<_, String>(3)?,
           r.get::<_, Option<String>>(4)?,
           r.get::<_, String>(5)?,
+          r.get::<_, bool>(6)?,
         ))
       })
       .map_err(|e| e.to_string())?;
     let mut groups = Vec::new();
     for row in rows {
-      let (id, mut name, mut auto_resume, state, finish, tasks_json) =
+      let (id, mut name, mut auto_resume, state, finish, tasks_json, completion_pending) =
         row.map_err(|e| e.to_string())?;
       // Version 0.1 encoded auto_resume in the name prefix; restore the real field on load.
       if !auto_resume && let Some(original) = name.strip_prefix("[auto]") {
@@ -182,6 +193,7 @@ impl StateStore for SqliteStore {
         auto_resume,
         state,
         finish,
+        completion_pending,
         tasks,
       });
     }
@@ -304,5 +316,22 @@ mod tests {
     assert!(groups[0].auto_resume);
     assert_eq!(groups[0].tasks[0].group_id, "g1");
     assert_eq!(groups[0].tasks[0].sha1, None);
+    assert!(!groups[0].completion_pending);
+  }
+
+  #[test]
+  fn does_not_replay_completed_history_from_before_completion_tracking() {
+    let db = TempDb::new();
+    let conn = rusqlite::Connection::open(&db.0).unwrap();
+    conn.execute_batch(
+      "CREATE TABLE groups (id TEXT PRIMARY KEY, name TEXT NOT NULL,
+       auto_resume INTEGER NOT NULL DEFAULT 0, state TEXT NOT NULL, finish TEXT, tasks_json TEXT NOT NULL);
+       INSERT INTO groups VALUES ('g1', 'modpack?old', 1, '\"finished\"', '\"completed\"', '[]');"
+    ).unwrap();
+    drop(conn);
+    let store = SqliteStore::open(&db.0).unwrap();
+    let group = store.load_all().unwrap().remove(0);
+    assert_eq!(group.finish, Some(crate::FinishKind::Completed));
+    assert!(!group.completion_pending);
   }
 }
