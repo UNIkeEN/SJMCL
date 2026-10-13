@@ -483,12 +483,13 @@ impl EngineActor {
     rtg.cancel_reason = Some(CancelReason::Cancel);
     self.cancel_all_tokens(group_id);
     self.dequeue_group(group_id);
-    // Pending → Cancelled
-    let mut changed = 0;
+    // Tasks without a running worker cannot report cancellation themselves.
     for t in self.state.groups[gi].tasks.iter_mut() {
-      if t.state == TaskState::Pending {
+      if matches!(t.state, TaskState::Pending | TaskState::Paused) {
+        delete_part(t);
         t.state = TaskState::Cancelled;
-        changed += 1;
+        t.offset = 0;
+        t.received = 0;
       }
     }
     if self.state.groups[gi].state != GroupState::Draining {
@@ -496,7 +497,6 @@ impl EngineActor {
       self.state.groups[gi].state = GroupState::Draining;
       self.emit_group_state(group_id, old, GroupState::Draining);
     }
-    let _ = changed;
     self.persist_group(group_id);
     self.maybe_finish_group(group_id);
     Ok(())
