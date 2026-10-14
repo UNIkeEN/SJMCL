@@ -1,3 +1,4 @@
+use serde_json::json;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::Storage;
 use std::path::Path;
@@ -561,6 +562,26 @@ pub fn delete_auth_server(app: AppHandle, url: String) -> SJMCLResult<()> {
       .unwrap_or_default(),
     )?;
   }
+
+  account_state.save()?;
+  config_state.save()?;
+  Ok(())
+}
+
+#[tauri::command]
+pub fn rename_auth_server(app: AppHandle, url: String, target: String) -> SJMCLResult<()> {
+  let account_binding = app.state::<Mutex<AccountInfo>>();
+  let mut account_state = account_binding.lock()?;
+
+  let config_binding = app.state::<Mutex<LauncherConfig>>();
+  let mut config_state = config_binding.lock()?;
+
+  account_state
+    .auth_servers
+    .iter_mut()
+    .find(|server| server.auth_url == url)
+    .ok_or(AccountError::NotFound)?
+    .map(|server| server.server_name = Some(target));
 
   account_state.save()?;
   config_state.save()?;
