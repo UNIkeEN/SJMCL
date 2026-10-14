@@ -1,3 +1,4 @@
+use semver::Version;
 use sjmcl_types::error::SJMCLResult;
 use std::fs::File;
 use std::io::Read;
@@ -7,11 +8,13 @@ use tauri::AppHandle;
 use zip::ZipArchive;
 
 use crate::instance::helpers::client_json::{LibrariesValue, McClientInfo};
+use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::loader::cleanroom::install_cleanroom_loader;
 use crate::instance::helpers::loader::fabric::install_fabric_loader;
 use crate::instance::helpers::loader::forge::{InstallProfile, install_forge_loader};
 use crate::instance::helpers::loader::neoforge::install_neoforge_loader;
 use crate::instance::helpers::loader::quilt::install_quilt_loader;
+use crate::instance::helpers::loader::universal_forge::install_universal_forge_loader;
 use crate::instance::helpers::misc::get_instance_game_config;
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::merge_library_lists;
@@ -75,7 +78,15 @@ pub async fn install_mod_loader(
       .await
     }
     ModLoaderType::Forge => {
-      install_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params).await
+      if compare_game_versions(&app, game_version, "1.6.0", false)
+        .await
+        .is_lt()
+      {
+        install_universal_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params)
+          .await
+      } else {
+        install_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params).await
+      }
     }
     ModLoaderType::Cleanroom => {
       install_cleanroom_loader(priority, loader, lib_dir.clone(), task_params).await

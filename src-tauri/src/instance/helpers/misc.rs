@@ -1,4 +1,5 @@
 use sanitize_filename;
+use semver::Version;
 use serde_json::Value;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::storage::load_json_async;
@@ -16,6 +17,7 @@ use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
 use crate::instance::helpers::loader::forge::download_forge_libraries;
 use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
 use crate::instance::helpers::loader::optifine::download_optifine_libraries;
+use crate::instance::helpers::loader::universal_forge::download_universal_forge_libraries;
 use crate::instance::models::misc::{
   Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
 };
@@ -174,8 +176,19 @@ async fn refresh_instance(
         ModLoaderStatus::NotDownloaded => {
           match cfg_read.mod_loader.loader_type {
             ModLoaderType::Forge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+              if Version::parse(&*cfg_read.version)?.lt(&Version::new(1, 6, 0)) {
+                download_universal_forge_libraries(
+                  app,
+                  &priority_list,
+                  &cfg_read,
+                  &mut client_data,
+                )
+                .await?;
+                cfg_read.mod_loader.status = ModLoaderStatus::Installed;
+              } else {
+                cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+                download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
+              }
             }
             ModLoaderType::Cleanroom => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
@@ -197,8 +210,15 @@ async fn refresh_instance(
         }
         ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
           ModLoaderType::Forge => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
+            if Version::parse(&*cfg_read.version)?.lt(&Version::new(1, 6, 0)) {
+              download_universal_forge_libraries(app, &priority_list, &cfg_read, &mut client_data)
+                .await?;
+              cfg_read.mod_loader.status = ModLoaderStatus::Installed;
+              Ok(())
+            } else {
+              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
+            }
           }
           ModLoaderType::Cleanroom => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
