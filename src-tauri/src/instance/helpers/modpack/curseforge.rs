@@ -9,7 +9,9 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
-use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::helpers::modpack::import::{
+  ModpackLockInfo, ModpackManifest, ModpackMetaInfo,
+};
 use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::{CURSEFORGE_API_KEY, CurseForgeProject};
 use crate::resource::models::OtherResourceSource;
@@ -222,5 +224,12 @@ impl ModpackManifest for CurseForgeManifest {
 
   fn get_overrides_path(&self) -> String {
     self.overrides.clone()
+  }
+
+  fn get_lock_info(&self) -> ModpackLockInfo {
+    ModpackLockInfo {
+      source: OtherResourceSource::CurseForge,
+      version: self.version.clone(),
+    }
   }
 }
