@@ -4,9 +4,11 @@ overrides:
   mdast-util-gfm-autolink-literal: 2.0.0
 
 allowBuilds:
+  esbuild: true
   sharp: true
   unrs-resolver: true
 
 onlyBuiltDependencies:
+  - esbuild
   - sharp
   - unrs-resolver
