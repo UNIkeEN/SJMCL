@@ -36,7 +36,7 @@ use crate::instance::helpers::modpack::export::{
   validate_export_options,
 };
 use crate::instance::helpers::modpack::import::{
-  ModpackMetaInfo, extract_overrides, get_download_params,
+  ModpackMetaInfo, extract_overrides, parse_manifest,
 };
 use crate::instance::helpers::mods::common::{
   check_potential_incompatibility, compress_icon, discover_local_mod_paths, get_mod_info_from_dir,
@@ -1077,7 +1077,7 @@ pub async fn create_instance(
   });
 
   // Create instance config
-  let instance = Instance {
+  let mut instance = Instance {
     id: format!("{}:{}", directory.name, name.clone()),
     name: name.clone(),
     version: game.id.clone(),
@@ -1106,37 +1106,57 @@ pub async fn create_instance(
     modpack_version: modpack_version.clone(),
   };
 
-  // Download version info
-  let mut version_info = client
-    .get(&game.url)
-    .send()
-    .await
-    .map_err(|_| InstanceError::NetworkError)?
-    .json::<McClientInfo>()
-    .await
-    .map_err(|_| InstanceError::ClientJsonParseError)?;
-
-  version_info.id = name.clone();
-  version_info.jar = Some(name.clone());
-
-  // convert vanilla version info to vanilla patch
-  let mut vanilla_patch = version_info.clone();
-  vanilla_patch.id = "game".to_string();
-  vanilla_patch.version = Some(game.id.clone());
-  vanilla_patch.inherits_from = None;
-  vanilla_patch.priority = Some(0);
-  version_info.patches.push(vanilla_patch);
-
+  let modpack = modpack_path
+    .as_ref()
+    .map(|path| {
+      let file = fs::File::open(path)?;
+      let manifest = parse_manifest(&file)?;
+      Ok::<_, sjmcl_types::error::SJMCLError>((file, manifest))
+    })
+    .transpose()?;
+  let prepared = if let Some((file, manifest)) = &modpack {
+    manifest.prepare_instance(&app, file, &mut instance).await?
+  } else {
+    None
+  };
+  let has_component_profile = prepared.is_some();
   let mut task_params = Vec::<PTaskParam>::new();
+  let mut java_version_to_download = None;
+  let mut version_info = if let Some(prepared) = prepared {
+    task_params = prepared.download_params;
+    java_version_to_download = prepared.java_version;
+    prepared.client_info
+  } else {
+    let mut info = client
+      .get(&game.url)
+      .send()
+      .await
+      .map_err(|_| InstanceError::NetworkError)?
+      .json::<McClientInfo>()
+      .await
+      .map_err(|_| InstanceError::ClientJsonParseError)?;
+    info.id = name.clone();
+    info.jar = Some(name.clone());
+    let mut vanilla_patch = info.clone();
+    vanilla_patch.id = "game".to_string();
+    vanilla_patch.version = Some(game.id.clone());
+    vanilla_patch.inherits_from = None;
+    vanilla_patch.priority = Some(0);
+    info.patches.push(vanilla_patch);
+    info
+  };
 
   // auto download recommended java if needed
-  let mut java_version_to_download: Option<String> = None;
-  if auto_download_java {
+  if auto_download_java
+    && !instance
+      .spec_game_config
+      .as_ref()
+      .is_some_and(|config| !config.game_java.auto)
+  {
     let client_java_version = version_info
       .java_version
       .as_ref()
-      .map_or(0i32, |version| version.major_version);
-
+      .map_or(0, |version| version.major_version);
     if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await
       && err.0 == LaunchError::NoSuitableJava.to_string()
     {
@@ -1154,13 +1174,15 @@ pub async fn create_instance(
     .get("client")
     .ok_or(InstanceError::ClientJsonParseError)?;
 
-  task_params.push(PTaskParam::Download(DownloadParam {
-    src: Url::parse(&client_download_info.url.clone())
-      .map_err(|_| InstanceError::ClientJsonParseError)?,
-    dest: instance.version_path.join(format!("{}.jar", name)),
-    filename: None,
-    sha1: Some(client_download_info.sha1.clone()),
-  }));
+  if !client_download_info.url.is_empty() {
+    task_params.push(PTaskParam::Download(DownloadParam {
+      src: Url::parse(&client_download_info.url)
+        .map_err(|_| InstanceError::ClientJsonParseError)?,
+      dest: instance.version_path.join(format!("{}.jar", name)),
+      filename: None,
+      sha1: (!client_download_info.sha1.is_empty()).then(|| client_download_info.sha1.clone()),
+    }));
+  }
   let subdirs = get_instance_subdir_paths(
     &app,
     &instance,
@@ -1196,7 +1218,7 @@ pub async fn create_instance(
   }
 
   // download loader (installer)
-  if instance.mod_loader.loader_type != ModLoaderType::Unknown {
+  if !has_component_profile && instance.mod_loader.loader_type != ModLoaderType::Unknown {
     install_mod_loader(
       app.clone(),
       &priority_list,
@@ -1222,12 +1244,9 @@ pub async fn create_instance(
     .await?;
   }
 
-  // If modpack path is provided, install it
-  if let Some(modpack_path) = modpack_path {
-    let path = PathBuf::from(modpack_path);
-    let file = fs::File::open(&path).map_err(|_| InstanceError::FileNotFoundError)?;
-    task_params.extend(get_download_params(&app, &file, &version_path).await?);
-    extract_overrides(&file, &version_path)?;
+  if let Some((file, manifest)) = &modpack {
+    task_params.extend(manifest.get_download_params(&app, &version_path).await?);
+    extract_overrides(file, &version_path, &manifest.get_overrides_path())?;
   }
 
   schedule_progressive_task_group(

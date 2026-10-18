@@ -39,7 +39,14 @@ pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
     target_os = "macos" => "osx",
     _ => "other",
   };
-  if let Some(native) = natives.get(target_os) {
+  let arch = match tauri_plugin_os::arch() {
+    "aarch64" => "arm64",
+    arch => arch,
+  };
+  if let Some(native) = natives
+    .get(&format!("{target_os}-{arch}"))
+    .or_else(|| natives.get(target_os))
+  {
     let mut map = HashMap::<String, String>::new();
     let arch = std::mem::size_of::<usize>() * 8;
     map.insert("arch".to_string(), arch.to_string());

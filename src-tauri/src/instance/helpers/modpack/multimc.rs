@@ -6,16 +6,33 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
-use tauri::AppHandle;
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use tauri_plugin_http::reqwest;
 use zip::ZipArchive;
 
+use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
-use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
-use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
+use crate::instance::helpers::modpack::import::{
+  ModpackManifest, ModpackMetaInfo, PreparedModpack, extract_overrides,
+};
+use crate::instance::helpers::modpack::multimc::patch::{
+  assemble_client, read_local_patch, resolve_components,
+};
+use crate::instance::models::misc::{
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType,
+};
+use crate::launch::models::LaunchError;
+use crate::launcher_config::helpers::java::build_mojang_java_download_params;
+use crate::launcher_config::models::{GameConfig, JavaInfo, LauncherConfig};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
+
+mod patch;
+#[cfg(test)]
+mod tests;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -47,6 +64,8 @@ structstruck::strike! {
     pub cfg: HashMap<String, String>,
     #[serde(skip)]
     pub base_path: String,
+    #[serde(skip)]
+    pub overrides_path: String,
   }
 }
 
@@ -86,36 +105,56 @@ impl ModpackManifest for MultiMcManifest {
       manifest = serde_json::from_str(&manifest_content)?;
     }
 
+    if manifest.format_version != 1 {
+      return Err(InstanceError::ModpackManifestParseError.into());
+    }
+
     let cfg_path = format!("{}instance.cfg", base_path);
     let mut cfg_file = archive.by_name(&cfg_path)?;
     let mut cfg_str = String::new();
     cfg_file.read_to_string(&mut cfg_str)?;
 
+    drop(cfg_file);
+
     let config = Config::builder()
       .add_source(config::File::from_str(&cfg_str, config::FileFormat::Ini))
       .build()?;
 
+    manifest.overrides_path = format!("{base_path}.minecraft/");
+    if archive
+      .file_names()
+      .any(|name| name.starts_with(&format!("{base_path}minecraft/")))
+    {
+      manifest.overrides_path = format!("{base_path}minecraft/");
+    }
+    for component in &mut manifest.components {
+      if component.version.is_none()
+        && component.cached_version.is_none()
+        && let Some(patch) = read_local_patch(&mut archive, &base_path, &component.uid)?
+      {
+        component.version = Some(patch.version);
+      }
+    }
     manifest.base_path = base_path;
-    manifest.cfg = config.try_deserialize::<HashMap<String, String>>()?;
+    manifest.cfg = config
+      .try_deserialize::<HashMap<String, String>>()?
+      .into_iter()
+      .map(|(key, value)| (key.to_ascii_lowercase(), value))
+      .collect();
 
     Ok(manifest)
   }
 
-  async fn get_meta_info(&self, app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
+  async fn get_meta_info(&self, _app: &AppHandle) -> SJMCLResult<ModpackMetaInfo> {
     let client_version = self.get_client_version()?;
-    let mod_loader = if let Ok((loader_type, version)) = self.get_mod_loader_type_version() {
-      Some(
-        ModLoader {
-          loader_type,
-          version,
-          ..Default::default()
-        }
-        .with_branch(app, client_version.clone())
-        .await?,
-      )
-    } else {
-      None
-    };
+    let mod_loader = self
+      .get_mod_loader_type_version()
+      .ok()
+      .map(|(loader_type, version)| ModLoader {
+        loader_type,
+        version,
+        ..Default::default()
+      });
     Ok(ModpackMetaInfo {
       name: self.cfg.get("name").cloned().unwrap_or_default(),
       version: None,
@@ -145,6 +184,13 @@ impl ModpackManifest for MultiMcManifest {
         "net.fabricmc.fabric-loader" => {
           return Ok((ModLoaderType::Fabric, get_version(component)?));
         }
+        "org.quiltmc.quilt-loader" => return Ok((ModLoaderType::Quilt, get_version(component)?)),
+        "com.cleanroommc.cleanroom" => {
+          return Ok((ModLoaderType::Cleanroom, get_version(component)?));
+        }
+        "com.mumfrey.liteloader" => {
+          return Ok((ModLoaderType::LiteLoader, get_version(component)?));
+        }
         "net.neoforged" => return Ok((ModLoaderType::NeoForge, get_version(component)?)),
         _ => continue,
       }
@@ -157,13 +203,153 @@ impl ModpackManifest for MultiMcManifest {
     _app: &AppHandle,
     _instance_path: &Path,
   ) -> SJMCLResult<Vec<PTaskParam>> {
-    // MultiMC Manifests do not include download parameters
     Ok(Vec::new())
   }
 
   fn get_overrides_path(&self) -> String {
-    format!("{}.minecraft/", self.base_path)
+    self.overrides_path.clone()
   }
+
+  async fn prepare_instance(
+    &self,
+    app: &AppHandle,
+    file: &File,
+    instance: &mut Instance,
+  ) -> SJMCLResult<Option<PreparedModpack>> {
+    let mut game_config = app
+      .state::<Mutex<LauncherConfig>>()
+      .lock()?
+      .global_game_config
+      .clone();
+    apply_instance_config(&self.cfg, &mut game_config)?;
+    instance.spec_game_config = Some(game_config);
+    instance.use_spec_game_config = true;
+    instance.mod_loader.status = ModLoaderStatus::Installed;
+    let directories = get_instance_subdir_paths(app, instance, &[&InstanceSubdirType::Libraries])
+      .ok_or(InstanceError::InstanceNotFoundByID)?;
+    let client = app.state::<reqwest::Client>();
+    let patches = resolve_components(self, file, &client).await?;
+    let (client_info, compatible_java_majors) = assemble_client(
+      patches,
+      file,
+      &self.base_path,
+      &directories[0],
+      &instance.version_path,
+      &instance.name,
+    )?;
+    extract_overrides(
+      file,
+      &instance.version_path.join("libraries"),
+      &format!("{}libraries/", self.base_path),
+    )?;
+    let (download_params, java_version) = configure_java(
+      app,
+      instance.spec_game_config.as_mut().unwrap(),
+      &compatible_java_majors,
+    )
+    .await?;
+    Ok(Some(PreparedModpack {
+      client_info,
+      download_params,
+      java_version,
+    }))
+  }
+}
+
+fn select_compatible_java<'a>(javas: &'a [JavaInfo], compatible: &[i32]) -> Option<&'a JavaInfo> {
+  javas
+    .iter()
+    .filter(|java| compatible.contains(&java.major_version))
+    .min_by_key(|java| java.major_version)
+}
+
+fn downloadable_java_major(compatible: &[i32]) -> Option<i32> {
+  compatible
+    .iter()
+    .copied()
+    .filter(|version| [8, 16, 17, 21, 25].contains(version))
+    .max()
+}
+
+async fn configure_java(
+  app: &AppHandle,
+  config: &mut GameConfig,
+  compatible: &[i32],
+) -> SJMCLResult<(Vec<PTaskParam>, Option<String>)> {
+  if compatible.is_empty() {
+    return Ok((Vec::new(), None));
+  }
+  let selected =
+    select_compatible_java(&app.state::<Mutex<Vec<JavaInfo>>>().lock()?, compatible).cloned();
+  let (path, params, version) = if let Some(java) = selected {
+    (java.exec_path, Vec::new(), None)
+  } else {
+    let auto_download = app
+      .state::<Mutex<LauncherConfig>>()
+      .lock()?
+      .general
+      .functionality
+      .auto_download_java;
+    if !auto_download {
+      return Err(LaunchError::NoSuitableJava.into());
+    }
+    let version = downloadable_java_major(compatible)
+      .ok_or(LaunchError::NoSuitableJava)?
+      .to_string();
+    let params = build_mojang_java_download_params(app, &version).await?;
+    let java_name = if cfg!(target_os = "windows") {
+      "java.exe"
+    } else {
+      "java"
+    };
+    let path = params
+      .iter()
+      .find_map(|param| {
+        let PTaskParam::Download(param) = param;
+        (param.dest.file_name().is_some_and(|name| name == java_name))
+          .then(|| param.dest.to_string_lossy().into_owned())
+      })
+      .ok_or(LaunchError::NoSuitableJava)?;
+    (path, params, Some(version))
+  };
+  config.game_java.auto = false;
+  config.game_java.exec_path = path;
+  Ok((params, version))
+}
+
+fn apply_instance_config(
+  cfg: &HashMap<String, String>,
+  game_config: &mut GameConfig,
+) -> SJMCLResult<()> {
+  let enabled = |key: &str| {
+    cfg
+      .get(key)
+      .is_some_and(|value| value.eq_ignore_ascii_case("true"))
+  };
+  game_config.version_isolation = true;
+  if enabled("overridejavaargs") {
+    game_config.advanced_options.enabled = true;
+    game_config.advanced.jvm.args = cfg.get("jvmargs").cloned().unwrap_or_default();
+  }
+  if enabled("overridememory") {
+    if let Some(max) = cfg.get("maxmemalloc") {
+      game_config.performance.max_mem_allocation = max.parse()?;
+      game_config.performance.auto_mem_allocation = false;
+    }
+    if let Some(min) = cfg.get("minmemalloc") {
+      let min: u32 = min.parse()?;
+      game_config
+        .advanced
+        .jvm
+        .args
+        .push_str(&format!(" -Xms{min}m"));
+      game_config.advanced_options.enabled = true;
+    }
+    if let Some(permgen) = cfg.get("permgen") {
+      game_config.advanced.jvm.java_permanent_generation_space = permgen.parse()?;
+    }
+  }
+  Ok(())
 }
 
 fn get_version(component: &MultiMcComponent) -> SJMCLResult<String> {
@@ -240,6 +426,7 @@ fn generate_multimc_manifest(instance: &Instance) -> MultiMcManifest {
     components,
     cfg: HashMap::new(),
     base_path: String::new(),
+    overrides_path: String::new(),
   }
 }
 

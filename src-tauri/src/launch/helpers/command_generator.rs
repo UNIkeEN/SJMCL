@@ -5,7 +5,7 @@ use serde_json::Value;
 use shlex::try_quote;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::borrow::Cow;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
@@ -45,6 +45,7 @@ pub struct LaunchArguments {
 
   // compatibility with HMCL
   pub primary_jar_name: String,
+  pub primary_jar: String,
 
   // auth params
   pub auth_access_token: String,
@@ -169,8 +170,6 @@ pub async fn generate_launch_command(
     selected_instance.mod_loader.loader_type,
   )?
   .into_iter()
-  .collect::<HashSet<_>>()
-  .into_iter()
   .map(|p| p.to_string_lossy().to_string())
   .collect();
   class_paths.push(client_jar_path.clone());
@@ -195,6 +194,7 @@ pub async fn generate_launch_command(
 
     version_name: selected_instance.name.clone(),
     primary_jar_name: format!("{}.jar", selected_instance.name.clone()),
+    primary_jar: client_jar_path.clone(),
     version_type: custom_info
       .clone()
       .unwrap_or_else(|| client_info.type_.clone()),
@@ -263,7 +263,9 @@ pub async fn generate_launch_command(
     }
 
     if !jvm.args.is_empty() {
-      cmd.extend(jvm.args.split_whitespace().map(|s| s.to_string()));
+      cmd.extend(
+        shlex::split(&jvm.args).ok_or_else(|| SJMCLError("Invalid JVM arguments".to_string()))?,
+      );
     }
   }
 

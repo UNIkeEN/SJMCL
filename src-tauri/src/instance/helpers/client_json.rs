@@ -35,6 +35,10 @@ pub struct McClientInfo {
   pub libraries: Vec<LibrariesValue>,
   pub logging: Logging,
   pub java_version: Option<JavaVersion>,
+  #[serde(skip_serializing_if = "Vec::is_empty")]
+  pub maven_files: Vec<LibrariesValue>,
+  #[serde(skip_serializing_if = "std::ops::Not::not")]
+  pub preserve_libraries: bool,
   #[serde(rename = "type")]
   pub type_: String,
   pub time: String,
@@ -129,7 +133,7 @@ pub struct InstructionRule {
 
 impl InstructionRule {
   pub fn is_allowed(&self, target_feature: &FeaturesInfo) -> SJMCLResult<(bool, bool)> {
-    let mut positive = match self.action.to_lowercase().as_str() {
+    let allow = match self.action.as_str() {
       "allow" => true,
       "disallow" => false,
       _ => {
@@ -139,71 +143,55 @@ impl InstructionRule {
         )));
       }
     };
-    let mut strong = false;
-    if let Some(ref os_rule) = self.os {
-      strong = true;
-      let mut os_string = os_rule.name.to_lowercase();
-      if os_string == "osx" {
-        os_string = "macos".to_string();
+    if let Some(os) = &self.os {
+      let name = if os.name == "osx" { "macos" } else { &os.name };
+      if name != "unknown" && name != tauri_plugin_os::type_().to_string() {
+        return Ok((allow, false));
       }
-      if os_string != "unknown" && tauri_plugin_os::type_().to_string() != os_string {
-        positive = !positive;
-        return Ok((positive, strong));
-      }
-      if let Some(ref arch_string) = os_rule.arch
-        && arch_string != "unknown"
-        && arch_string != tauri_plugin_os::arch()
+      if let Some(arch) = &os.arch
+        && arch != "unknown"
+        && arch != tauri_plugin_os::arch()
       {
-        positive = !positive;
-        return Ok((positive, strong));
+        return Ok((allow, false));
       }
-      if let Some(ref version_string) = os_rule.version {
-        let version_regex = RegexBuilder::new(version_string).build()?;
-        if version_regex.is_match(tauri_plugin_os::version().to_string().as_str()) {
-          return Ok((positive, strong));
+      if let Some(version) = &os.version
+        && !RegexBuilder::new(version)
+          .build()?
+          .is_match(&tauri_plugin_os::version().to_string())
+      {
+        return Ok((allow, false));
+      }
+    }
+    if let Some(features) = &self.features {
+      for (expected, actual) in [
+        (features.is_demo_user, target_feature.is_demo_user),
+        (
+          features.is_quick_play_multiplayer,
+          target_feature.is_quick_play_multiplayer,
+        ),
+        (
+          features.is_quick_play_realms,
+          target_feature.is_quick_play_realms,
+        ),
+        (
+          features.is_quick_play_singleplayer,
+          target_feature.is_quick_play_singleplayer,
+        ),
+        (
+          features.has_custom_resolution,
+          target_feature.has_custom_resolution,
+        ),
+        (
+          features.has_quick_plays_support,
+          target_feature.has_quick_plays_support,
+        ),
+      ] {
+        if expected.is_some_and(|expected| expected != actual.unwrap_or(false)) {
+          return Ok((allow, false));
         }
       }
     }
-    if let Some(ref self_feature) = self.features {
-      strong = true;
-      if self_feature.is_demo_user.is_some() {
-        if self_feature.is_demo_user != target_feature.is_demo_user {
-          positive = !positive;
-        }
-        return Ok((positive, strong));
-      }
-      if self_feature.is_quick_play_multiplayer.is_some() {
-        if self_feature.is_quick_play_multiplayer != target_feature.is_quick_play_multiplayer {
-          positive = !positive;
-        }
-        return Ok((positive, strong));
-      }
-      if self_feature.is_quick_play_realms.is_some() {
-        if self_feature.is_quick_play_realms != target_feature.is_quick_play_realms {
-          positive = !positive;
-        }
-        return Ok((positive, strong));
-      }
-      if self_feature.is_quick_play_singleplayer.is_some() {
-        if self_feature.is_quick_play_singleplayer != target_feature.is_quick_play_singleplayer {
-          positive = !positive;
-        }
-        return Ok((positive, strong));
-      }
-      if self_feature.has_custom_resolution.is_some() {
-        if self_feature.has_custom_resolution != target_feature.has_custom_resolution {
-          positive = !positive;
-        }
-        return Ok((positive, strong));
-      }
-      if self_feature.has_quick_plays_support.is_some() {
-        if self_feature.has_quick_plays_support != target_feature.has_quick_plays_support {
-          positive = !positive;
-        }
-        return Ok((positive, strong));
-      }
-    }
-    Ok((positive, strong))
+    Ok((allow, true))
   }
 }
 
@@ -564,16 +552,16 @@ pub async fn libraries_to_info(
   (game_version, loader_version, loader_type, None)
 }
 
-fn rules_is_allowed(rules: &Vec<InstructionRule>, feature: &FeaturesInfo) -> SJMCLResult<bool> {
-  let mut weak_allowed = true;
+fn rules_is_allowed(rules: &[InstructionRule], feature: &FeaturesInfo) -> SJMCLResult<bool> {
+  let mut allowed = rules.is_empty();
+  // The last matching rule takes precedence.
   for rule in rules {
-    let (allow, strong) = rule.is_allowed(feature)?;
-    if strong {
-      return Ok(allow);
+    let (allow, matches) = rule.is_allowed(feature)?;
+    if matches {
+      allowed = allow;
     }
-    weak_allowed = allow;
   }
-  Ok(weak_allowed)
+  Ok(allowed)
 }
 
 pub trait IsAllowed {
@@ -632,6 +620,9 @@ pub async fn replace_native_libraries(
   client_info: &mut McClientInfo,
   instance: &Instance,
 ) -> SJMCLResult<()> {
+  if client_info.preserve_libraries {
+    return Ok(());
+  }
   #[cfg(any(
     all(
       any(target_arch = "x86", target_arch = "x86_64"),

@@ -7,13 +7,20 @@ use std::path::Path;
 use tauri::AppHandle;
 use zip::ZipArchive;
 
+use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::modpack::curseforge::CurseForgeManifest;
 use crate::instance::helpers::modpack::modrinth::ModrinthManifest;
 use crate::instance::helpers::modpack::multimc::MultiMcManifest;
-use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
+use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::resource::commands::fetch_mod_loader_version_list;
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
+
+pub struct PreparedModpack {
+  pub client_info: McClientInfo,
+  pub download_params: Vec<PTaskParam>,
+  pub java_version: Option<String>,
+}
 
 #[async_trait]
 pub trait ModpackManifest {
@@ -29,6 +36,14 @@ pub trait ModpackManifest {
     instance_path: &Path,
   ) -> SJMCLResult<Vec<PTaskParam>>;
   fn get_overrides_path(&self) -> String;
+  async fn prepare_instance(
+    &self,
+    _app: &AppHandle,
+    _file: &File,
+    _instance: &mut Instance,
+  ) -> SJMCLResult<Option<PreparedModpack>> {
+    Ok(None)
+  }
 }
 
 type ManifestBox = Box<dyn ModpackManifest + Send + Sync>;
@@ -85,40 +100,25 @@ pub struct ModpackMetaInfo {
 
 impl ModpackMetaInfo {
   pub async fn from_archive(app: &AppHandle, file: &File) -> SJMCLResult<Self> {
-    for parser in get_parsers() {
-      if let Ok(manifest) = parser(file) {
-        return manifest.get_meta_info(app).await;
-      }
-    }
-
-    Err(InstanceError::ModpackManifestParseError.into())
+    parse_manifest(file)?.get_meta_info(app).await
   }
 }
 
-pub async fn get_download_params(
-  app: &AppHandle,
-  file: &File,
-  instance_path: &Path,
-) -> SJMCLResult<Vec<PTaskParam>> {
+pub fn parse_manifest(file: &File) -> SJMCLResult<ManifestBox> {
   for parser in get_parsers() {
     if let Ok(manifest) = parser(file) {
-      return manifest.get_download_params(app, instance_path).await;
+      return Ok(manifest);
     }
   }
 
   Err(InstanceError::ModpackManifestParseError.into())
 }
 
-pub fn extract_overrides(file: &File, instance_path: &Path) -> SJMCLResult<()> {
-  let get_overrides_path = |file| {
-    for parser in get_parsers() {
-      if let Ok(manifest) = parser(file) {
-        return Some(manifest.get_overrides_path());
-      }
-    }
-    None
-  };
-  let overrides_path = get_overrides_path(file).ok_or(InstanceError::ModpackManifestParseError)?;
+pub fn extract_overrides(
+  file: &File,
+  instance_path: &Path,
+  overrides_path: &str,
+) -> SJMCLResult<()> {
   let mut archive = ZipArchive::new(file)?;
   for i in 0..archive.len() {
     let mut file = archive.by_index(i)?;

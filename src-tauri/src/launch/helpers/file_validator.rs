@@ -36,10 +36,10 @@ use crate::launcher_config::helpers::graphics::mesa_driver_name;
 #[cfg(target_os = "windows")]
 use crate::launcher_config::models::{GameConfig, LauncherConfig};
 
-pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
+pub fn get_nonnative_library_artifacts(libraries: &[LibrariesValue]) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
   let feature = FeaturesInfo::default();
-  for library in &client_info.libraries {
+  for library in libraries {
     if !library.is_allowed(&feature).unwrap_or(false) {
       continue;
     }
@@ -55,14 +55,20 @@ pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<Downlo
   artifacts.into_iter().collect()
 }
 
+fn get_native_libraries(client_info: &McClientInfo) -> Vec<LibrariesValue> {
+  let feature = FeaturesInfo::default();
+  let libraries: Vec<_> = client_info
+    .libraries
+    .iter()
+    .filter(|library| library.natives.is_some() && library.is_allowed(&feature).unwrap_or(false))
+    .cloned()
+    .collect();
+  merge_library_lists(&libraries, &[])
+}
+
 pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
-  let feature = FeaturesInfo::default();
-
-  for library in &client_info.libraries {
-    if !library.is_allowed(&feature).unwrap_or(false) {
-      continue;
-    }
+  for library in get_native_libraries(client_info) {
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
         if let Some(downloads) = &library.downloads
@@ -87,12 +93,17 @@ pub async fn get_invalid_library_files(
 ) -> SJMCLResult<Vec<PTaskParam>> {
   let mut artifacts = Vec::new();
   artifacts.extend(get_native_library_artifacts(client_info));
-  artifacts.extend(get_nonnative_library_artifacts(client_info));
+  artifacts.extend(get_nonnative_library_artifacts(&client_info.libraries));
+  artifacts.extend(get_nonnative_library_artifacts(&client_info.maven_files));
 
   let futs = artifacts.into_iter().map(move |artifact| async move {
     let file_path = library_path.join(&artifact.path);
     let exists = fs::try_exists(&file_path).await?;
-    if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
+    if exists
+      && (!check_hash
+        || artifact.sha1.is_empty()
+        || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok())
+    {
       Ok(None)
     } else if artifact.url.is_empty() {
       Err(LaunchError::GameFilesIncomplete.into())
@@ -112,7 +123,7 @@ pub async fn get_invalid_library_files(
         src,
         dest: file_path,
         filename: None,
-        sha1: Some(artifact.sha1.clone()),
+        sha1: (!artifact.sha1.is_empty()).then(|| artifact.sha1.clone()),
       })))
     }
   });
@@ -256,7 +267,8 @@ pub fn merge_library_lists(
   libraries_a: &[LibrariesValue],
   libraries_b: &[LibrariesValue],
 ) -> Vec<LibrariesValue> {
-  let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+  let mut library_map: HashMap<LibraryKey, usize> = HashMap::new();
+  let mut libraries: Vec<LibrariesValue> = Vec::new();
 
   for library in libraries_a.iter().chain(libraries_b.iter()) {
     if let Ok(library_parts) = parse_library_name(&library.name, None) {
@@ -269,21 +281,23 @@ pub fn merge_library_lists(
 
       let new_version = library_parts.pack_version;
 
-      if let Some(existing_library) = library_map.get(&key) {
+      if let Some(&index) = library_map.get(&key) {
+        let existing_library = &libraries[index];
         let existing_version = parse_library_name(&existing_library.name, None)
           .map(|parts| parts.pack_version)
           .unwrap_or("0.1.0".to_string());
 
         if parse_sem_version(&new_version) > parse_sem_version(&existing_version) {
-          library_map.insert(key, library.clone());
+          libraries[index] = library.clone();
         }
       } else {
-        library_map.insert(key, library.clone());
+        library_map.insert(key, libraries.len());
+        libraries.push(library.clone());
       }
     }
   }
 
-  library_map.into_values().collect()
+  libraries
 }
 
 fn parse_sem_version(version: &str) -> Version {
@@ -354,7 +368,15 @@ pub fn get_nonnative_library_paths(
   libraries = merge_library_lists(&libraries, &[]); // remove duplicates to prevent launch errors
   let mut result = Vec::new();
   for library in libraries {
-    result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
+    let path = library
+      .downloads
+      .as_ref()
+      .and_then(|downloads| downloads.artifact.as_ref())
+      .map(|artifact| artifact.path.clone())
+      .filter(|path| !path.is_empty())
+      .map(Ok)
+      .unwrap_or_else(|| convert_library_name_to_path(&library.name, None))?;
+    result.push(library_path.join(path));
   }
   Ok(result)
 }
@@ -366,14 +388,18 @@ pub fn get_native_library_paths(
   #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_openal: bool,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut result = Vec::new();
-  let feature = FeaturesInfo::default();
-  for library in &client_info.libraries {
-    if !library.is_allowed(&feature).unwrap_or(false) {
-      continue;
-    }
+  for library in get_native_libraries(client_info) {
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        let path = convert_library_name_to_path(&library.name, Some(native))?;
+        let path = library
+          .downloads
+          .as_ref()
+          .and_then(|downloads| downloads.classifiers.as_ref())
+          .and_then(|classifiers| classifiers.get(&native))
+          .map(|artifact| artifact.path.clone())
+          .filter(|path| !path.is_empty())
+          .map(Ok)
+          .unwrap_or_else(|| convert_library_name_to_path(&library.name, Some(native)))?;
         #[cfg(target_os = "linux")]
         {
           if use_native_glfw && library.name.to_lowercase().contains("glfw") {
