@@ -103,7 +103,11 @@ export const DiscoverSourcesPage = () => {
                 key={source.endpointUrl}
                 title={source.name || ""}
                 titleExtra={
-                  <Text className="secondary-text" fontSize="xs-sm">
+                  <Text
+                    className="secondary-text"
+                    fontSize="xs-sm"
+                    lineHeight="base"
+                  >
                     {source.fullName}
                   </Text>
                 }
