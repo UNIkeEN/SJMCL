@@ -1666,6 +1666,7 @@
     },
     "serverList": {
       "title": "サーバー",
+      "showHidden": "隠し項目を表示",
       "players": "プレイヤー",
       "tag": {
         "online": "オンライン",
