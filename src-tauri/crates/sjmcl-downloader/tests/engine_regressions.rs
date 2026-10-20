@@ -134,7 +134,8 @@ async fn postprocess_retry_calls(fail_stage: &'static str, error: TaskError) -> 
       fail_once: (name == fail_stage).then(|| error.clone()),
     }));
   }
-  let (engine, _handle) = builder.spawn();
+  let (engine, actor) = builder.build();
+  let _handle = tokio::spawn(actor);
   let path = std::path::PathBuf::from("downloaded.jar");
   let group_id = engine
     .submit_group(SubmitGroup {
@@ -254,7 +255,8 @@ async fn auto_resume_continues_from_install_after_downloads_finish() {
       fail_once: None,
     }));
   }
-  let (engine, _handle) = builder.spawn();
+  let (engine, actor) = builder.build();
+  let _handle = tokio::spawn(actor);
   let deadline = tokio::time::Instant::now() + Duration::from_secs(2);
   loop {
     if engine.snapshot().await.unwrap()[0].finish == Some(FinishKind::Completed) {
@@ -344,7 +346,8 @@ fn engine_with(
 ) -> (Engine, tokio::task::JoinHandle<()>) {
   let mut builder = Engine::builder(config(), Arc::new(NoopSink), store);
   builder.register(executor);
-  builder.spawn()
+  let (engine, actor) = builder.build();
+  (engine, tokio::spawn(actor))
 }
 
 #[tokio::test]
@@ -498,7 +501,8 @@ async fn fail_fast_does_not_revive_a_cancelled_task() {
   cfg.concurrency = 2;
   let mut builder = Engine::builder(cfg, Arc::new(NoopSink), Arc::new(MemoryStore::default()));
   builder.register(Arc::new(FailFirstTask));
-  let (engine, _handle) = builder.spawn();
+  let (engine, actor) = builder.build();
+  let _handle = tokio::spawn(actor);
   let group_id = engine
     .submit_group(SubmitGroup {
       name: "fail-fast".into(),
@@ -548,7 +552,8 @@ async fn transient_http_failure_retries_with_exponential_backoff() {
   let sink = Arc::new(RecordingSink::default());
   let mut builder = Engine::builder(cfg, sink.clone(), Arc::new(MemoryStore::default()));
   builder.register(Arc::new(FailTwiceThenComplete(calls.clone())));
-  let (engine, _handle) = builder.spawn();
+  let (engine, actor) = builder.build();
+  let _handle = tokio::spawn(actor);
   let group_id = engine
     .submit_group(SubmitGroup {
       name: "retry-backoff".into(),

@@ -174,7 +174,8 @@ impl EngineBuilder {
     self
   }
 
-  pub fn spawn(self) -> (Engine, tokio::task::JoinHandle<()>) {
+  /// Build the handle before starting dispatch so the host can register its state first.
+  pub fn build(self) -> (Engine, impl Future<Output = ()> + Send + 'static) {
     let (cmd_tx, cmd_rx) = mpsc::channel(256);
     let (report_tx, report_rx) = mpsc::channel(1024);
     let executors: Arc<dyn ExecutorRegistry> = Arc::new(self.executors);
@@ -216,8 +217,7 @@ impl EngineBuilder {
         actor.init_runtime(&id);
       }
     }
-    let handle = tokio::spawn(actor.run());
-    (Engine { tx: cmd_tx }, handle)
+    (Engine { tx: cmd_tx }, actor.run())
   }
 }
 

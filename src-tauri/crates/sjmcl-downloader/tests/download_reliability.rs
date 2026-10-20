@@ -103,7 +103,9 @@ fn engine(executor: DownloadExecutor) -> Engine {
   };
   let mut builder = Engine::builder(config, Arc::new(NoopSink), Arc::new(MemoryStore::default()));
   builder.register(Arc::new(executor));
-  builder.spawn().0
+  let (engine, actor) = builder.build();
+  tokio::spawn(actor);
+  engine
 }
 
 fn task(url: String, destination: &Path, sha1: Option<String>) -> SubmitTask {

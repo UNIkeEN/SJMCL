@@ -88,7 +88,7 @@ impl EventSink for PrintSink {
         task_id,
         error,
       } => {
-        println!("[fail] {group_id}/{task_id}: {error}")
+        println!("[fail] {group_id}/{task_id}: {error:?}")
       }
       EngineEvent::TaskVerified { group_id, task_id } => {
         println!("[ok]   {group_id}/{task_id} checksum verified")
@@ -141,9 +141,10 @@ async fn main() {
   let store = Arc::new(MemoryStore::default());
   let mut builder = Engine::builder(cfg, Arc::new(PrintSink), store);
   builder.register(Arc::new(DownloadExecutor::default()));
-  let (engine, _handle) = builder.spawn();
+  let (engine, actor) = builder.build();
+  let _handle = tokio::spawn(actor);
 
-  println!("== 场景1: 正常下载 + 校验 ==");
+  println!("== Scenario 1: Normal download ==");
   let g1 = engine
     .submit_group(SubmitGroup {
       name: "normal".into(),
@@ -158,10 +159,10 @@ async fn main() {
   wait_finished(&engine, &g1).await;
   assert!(
     std::path::Path::new("/tmp/opencode/dl/a.bin").exists(),
-    "a.bin 应下载完成"
+    "a.bin should be downloaded"
   );
 
-  println!("== 场景2: slow + 暂停/恢复（Range 续传）==");
+  println!("== Scenario 2: Pause and resume with Range ==");
   let slow_sha: String = {
     let body = reqwest::get("http://127.0.0.1:8080/sha256/20000000")
       .await
@@ -189,12 +190,12 @@ async fn main() {
     .unwrap();
   sleep(Duration::from_millis(1200)).await;
   engine.pause(g2.clone()).await.unwrap();
-  println!("  -- 已暂停, 2 秒后恢复 --");
+  println!("  -- Paused; resuming in 2s --");
   sleep(Duration::from_secs(2)).await;
   engine.resume(g2.clone()).await.unwrap();
   wait_finished(&engine, &g2).await;
 
-  println!("== 场景3: flaky 自动重试 ==");
+  println!("== Scenario 3: Retry transient failures ==");
   let g3 = engine
     .submit_group(SubmitGroup {
       name: "flaky".into(),
@@ -205,7 +206,7 @@ async fn main() {
     .unwrap();
   wait_finished(&engine, &g3).await;
 
-  println!("== 场景4: corrupt 校验失败 → fail-fast ==");
+  println!("== Scenario 4: Checksum failure and fail-fast ==");
   // Hash the expected content so the corrupted response must fail verification.
   let good_hash: String = {
     let body = reqwest::get("http://127.0.0.1:8080/sha256/1000000")
@@ -245,16 +246,16 @@ async fn main() {
   let tasks = engine.list_tasks(g4.clone()).await.unwrap();
   assert!(
     tasks.iter().any(|t| t.state == TaskState::Failed),
-    "bad 应 Failed"
+    "bad should fail"
   );
   let never = tasks.iter().find(|t| t.name == "never").unwrap();
   assert!(
     matches!(never.state, TaskState::Done | TaskState::Cancelled),
-    "never 应被中止(未开始)或排水完成(已被领取)，实际 {:?}",
+    "never should be cancelled or completed, got {:?}",
     never.state
   );
 
-  println!("== 场景5: 取消组 ==");
+  println!("== Scenario 5: Cancel group ==");
   let g5 = engine
     .submit_group(SubmitGroup {
       name: "cancel".into(),
@@ -268,10 +269,10 @@ async fn main() {
   wait_finished(&engine, &g5).await;
   assert!(
     !std::path::Path::new("/tmp/opencode/dl/x.bin.part").exists(),
-    "取消后 .part 应删除"
+    ".part should be removed after cancellation"
   );
 
-  println!("== 场景6: 全局限速 500KB/s（5MB 文件应约 10s）==");
+  println!("== Scenario 6: Limit to 500KB/s (5MB in ~10s) ==");
   let mut ex = DownloadExecutor {
     limiter: Some(std::sync::Arc::new(sjmcl_downloader::TokenBucket::new(
       500 * 1024,
@@ -289,7 +290,8 @@ async fn main() {
     Arc::new(MemoryStore::default()),
   );
   builder2.register(Arc::new(ex));
-  let (engine2, _h2) = builder2.spawn();
+  let (engine2, actor) = builder2.build();
+  let _h2 = tokio::spawn(actor);
   let g6 = engine2
     .submit_group(SubmitGroup {
       name: "ratelimit".into(),
@@ -301,14 +303,14 @@ async fn main() {
   let t0 = std::time::Instant::now();
   wait_finished(&engine2, &g6).await;
   let elapsed = t0.elapsed();
-  println!("  限速下载耗时 {:.1}s", elapsed.as_secs_f64());
+  println!("  Download took {:.1}s", elapsed.as_secs_f64());
   assert!(
     elapsed.as_secs_f64() > 7.0,
-    "限速未生效: {:.1}s",
+    "Rate limit not applied: {:.1}s",
     elapsed.as_secs_f64()
   );
 
-  println!("== 场景7: 崩溃恢复（SQLite + .part 续传）==");
+  println!("== Scenario 7: Crash recovery (SQLite + .part) ==");
   let db_path = "/tmp/opencode/dl/crash.db";
   let _ = std::fs::remove_file(db_path);
   let _ = std::fs::remove_file(format!("{db_path}-wal"));
@@ -340,7 +342,8 @@ async fn main() {
         store1,
       );
       b1.register(Arc::new(DownloadExecutor::default()));
-      let (engine1, _handle1) = b1.spawn();
+      let (engine1, actor) = b1.build();
+      let _handle1 = tokio::spawn(actor);
       engine1
         .submit_group(SubmitGroup {
           name: "crash".into(),
@@ -364,7 +367,7 @@ async fn main() {
   let part_len = std::fs::metadata("/tmp/opencode/dl/cr.bin.part")
     .map(|m| m.len())
     .unwrap_or(0);
-  assert!(part_len > 0, ".part 应保留崩溃时的进度，实际 {part_len}");
+  assert!(part_len > 0, ".part should retain progress, got {part_len}");
 
   // Reopen the same database; the group returns Paused and resume should use Range.
   let store2 = Arc::new(SqliteStore::open(std::path::Path::new(db_path)).unwrap());
@@ -377,33 +380,34 @@ async fn main() {
     store2,
   );
   b2.register(Arc::new(DownloadExecutor::default()));
-  let (engine2, _h2) = b2.spawn();
+  let (engine2, actor) = b2.build();
+  let _h2 = tokio::spawn(actor);
   let snap = engine2.snapshot().await.unwrap();
   let g = snap.iter().find(|g| g.id == g7).unwrap();
   assert_eq!(
     g.state,
     sjmcl_downloader::model::GroupState::Paused,
-    "崩溃后组应恢复为 Paused"
+    "Group should be paused after recovery"
   );
   engine2.resume(g7.clone()).await.unwrap();
   let t1 = std::time::Instant::now();
   wait_finished(&engine2, &g7).await;
   let resume_elapsed = t1.elapsed();
   println!(
-    "  崩溃后 resume 耗时 {:.1}s（全量约 6.3s）",
+    "  Resumed in {:.1}s (full download ~6.3s)",
     resume_elapsed.as_secs_f64()
   );
   assert!(
     resume_elapsed.as_secs_f64() < 5.8,
-    "应为续传而非重下: {:.1}s",
+    "Expected resumption, not a full download: {:.1}s",
     resume_elapsed.as_secs_f64()
   );
   assert!(
     std::path::Path::new("/tmp/opencode/dl/cr.bin").exists(),
-    "恢复后文件应完成"
+    "File should be complete after recovery"
   );
 
-  println!("\n全部场景通过 ✓");
+  println!("\nAll scenarios passed.");
   // Wait briefly to observe that Tick events stop.
   sleep(Duration::from_secs(1)).await;
 }

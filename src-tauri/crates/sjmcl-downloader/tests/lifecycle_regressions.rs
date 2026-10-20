@@ -120,7 +120,8 @@ fn start(
     store,
   );
   builder.register(executor);
-  builder.spawn()
+  let (engine, actor) = builder.build();
+  (engine, tokio::spawn(actor))
 }
 
 async fn wait_for_task(engine: &Engine, group_id: &str, expected: TaskState) {

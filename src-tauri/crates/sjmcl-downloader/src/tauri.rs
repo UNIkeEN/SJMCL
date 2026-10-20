@@ -17,7 +17,7 @@ use ::tauri::{AppHandle, Emitter, Manager, Runtime, State};
 pub struct EngineHandle(pub Engine);
 
 /// Dedicated Tokio runtime: Tauri setup is outside a Tokio runtime,
-/// and EngineBuilder::spawn uses tokio::spawn. Retain the runtime so it stays alive.
+/// and engine workers use tokio::spawn. Retain the runtime so it stays alive.
 pub struct EngineRuntime(pub tokio::runtime::Runtime);
 
 /// Host-provided settings used when the plugin initializes its engine.
@@ -128,9 +128,10 @@ pub fn setup_engine_with_executors<R: Runtime>(
     .worker_threads(2)
     .build()
     .map_err(|error| error.to_string())?;
-  let (engine, _actor) = {
+  let runtime_handle = runtime.handle().clone();
+  let (engine, actor) = {
     let _enter = runtime.enter();
-    builder.spawn()
+    builder.build()
   };
   if !app.manage(EngineHandle(engine)) {
     return Err("download engine is already initialized".into());
@@ -138,6 +139,7 @@ pub fn setup_engine_with_executors<R: Runtime>(
   if !app.manage(EngineRuntime(runtime)) {
     return Err("download runtime is already initialized".into());
   }
+  runtime_handle.spawn(actor);
   Ok(())
 }
 

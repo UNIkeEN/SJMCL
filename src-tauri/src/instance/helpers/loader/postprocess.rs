@@ -3,7 +3,6 @@ use std::fs::File;
 use std::io;
 use std::path::PathBuf;
 use std::sync::Mutex;
-use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 use sha1::{Digest, Sha1};
@@ -135,15 +134,8 @@ async fn prepare_installation(
     let config = binding.lock()?;
     get_source_priority_list(&config)
   };
-  let mut engine = app.try_state::<EngineHandle>();
-  for _ in 0..100 {
-    if engine.is_some() {
-      break;
-    }
-    tokio::time::sleep(Duration::from_millis(10)).await;
-    engine = app.try_state::<EngineHandle>();
-  }
-  let submitted_groups = engine
+  let submitted_groups = app
+    .try_state::<EngineHandle>()
     .ok_or_else(|| SJMCLError("download engine is not initialized".into()))?
     .0
     .snapshot()
@@ -241,15 +233,8 @@ async fn verify_downloads(
   group_id: &str,
   recheck_verified: bool,
 ) -> Result<(), TaskError> {
-  let mut engine = app.try_state::<EngineHandle>();
-  for _ in 0..100 {
-    if engine.is_some() {
-      break;
-    }
-    tokio::time::sleep(Duration::from_millis(10)).await;
-    engine = app.try_state::<EngineHandle>();
-  }
-  let tasks = engine
+  let tasks = app
+    .try_state::<EngineHandle>()
     .ok_or_else(|| TaskError::Other("download engine is not initialized".into()))?
     .0
     .list_tasks(group_id.to_string())
