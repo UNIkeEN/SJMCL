@@ -205,6 +205,13 @@ impl EngineBuilder {
         .max()
         .unwrap_or(0);
       for g in groups {
+        // Keep unfinished work, retryable failures, and pending completion actions.
+        if g.state == GroupState::Finished
+          && g.finish != Some(FinishKind::Failed)
+          && !g.completion_pending
+        {
+          continue;
+        }
         if let Err(e) = actor.store.save_group(&g) {
           tracing::warn!("persist reconciled group failed: {e}");
         }

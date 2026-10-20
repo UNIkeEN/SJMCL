@@ -261,7 +261,43 @@ async fn cancelling_a_running_worker_preserves_its_actual_success_report() {
 }
 
 #[tokio::test]
-async fn recovered_completion_remains_pending_until_acknowledged_and_does_not_replay() {
+async fn restart_hides_cancelled_groups_but_keeps_failed_groups_retryable() {
+  for finish in [FinishKind::Cancelled, FinishKind::Failed] {
+    let store = Arc::new(MemoryStore::default());
+    let mut task = Task::new("t2".into(), "g1".into(), &submit_task(None));
+    task.state = if finish == FinishKind::Cancelled {
+      TaskState::Cancelled
+    } else {
+      TaskState::Failed
+    };
+    store
+      .save_group(&TaskGroup {
+        id: "g1".into(),
+        name: "download".into(),
+        auto_resume: true,
+        state: GroupState::Finished,
+        finish: Some(finish),
+        completion_pending: false,
+        tasks: vec![task],
+      })
+      .unwrap();
+    let (engine, actor) = start(store, Arc::new(CompleteImmediately));
+    let groups = engine.snapshot().await.unwrap();
+    if finish == FinishKind::Cancelled {
+      assert!(groups.is_empty());
+    } else {
+      assert_eq!(groups.len(), 1);
+      assert_eq!(groups[0].finish, Some(FinishKind::Failed));
+      engine.retry("g1".into()).await.unwrap();
+      wait_for_task(&engine, "g1", TaskState::Done).await;
+    }
+    actor.abort();
+    actor.await.unwrap_err();
+  }
+}
+
+#[tokio::test]
+async fn recovered_completion_is_retained_until_acknowledged_then_hidden_after_restart() {
   let dir = TempDir::new();
   let path = dir.0.join("downloads.db");
   let store = Arc::new(SqliteStore::open(&path).unwrap());
@@ -298,8 +334,6 @@ async fn recovered_completion_remains_pending_until_acknowledged_and_does_not_re
     Arc::new(SqliteStore::open(&path).unwrap()),
     Arc::new(CompleteImmediately),
   );
-  let group = engine.snapshot().await.unwrap().remove(0);
-  assert_eq!(group.finish, Some(FinishKind::Completed));
-  assert!(!group.completion_pending);
+  assert!(engine.snapshot().await.unwrap().is_empty());
   actor.abort();
 }
