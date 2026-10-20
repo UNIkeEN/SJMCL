@@ -487,3 +487,73 @@ test("queued files do not reuse an ETA from an earlier attempt", () => {
     1
   );
 });
+
+test("ETAs of one day or more are hidden", () => {
+  for (const seconds of [86400, 86401, 1e9]) {
+    const tasks = [
+      {
+        executor: "download",
+        state: "downloading",
+        total: seconds,
+        received: 0,
+        speedBps: 1,
+        etaSecs: seconds,
+      },
+    ];
+    assert.equal(
+      estimateDownloadGroupEta("active", tasks, undefined, 0).etaSecs,
+      undefined
+    );
+  }
+});
+
+test("the ETA limit applies after rounding to whole seconds", () => {
+  const tasks = (seconds) => [
+    {
+      executor: "download",
+      state: "downloading",
+      total: seconds,
+      received: 0,
+      speedBps: 1,
+      etaSecs: seconds,
+    },
+  ];
+  assert.equal(
+    estimateDownloadGroupEta("active", tasks(86399), undefined, 0).etaSecs,
+    86399
+  );
+  assert.equal(
+    estimateDownloadGroupEta("active", tasks(86399.1), undefined, 0).etaSecs,
+    undefined
+  );
+});
+
+test("overflowing estimates are hidden and recover when speed improves", () => {
+  const task = {
+    executor: "download",
+    state: "downloading",
+    total: 1e10,
+    received: 0,
+    speedBps: 1e-300,
+  };
+  const initial = estimateDownloadGroupEta("active", [task], undefined, 0);
+  assert.equal(initial.etaSecs, undefined);
+  assert.ok(initial.etaSample);
+  const current = estimateDownloadGroupEta(
+    "active",
+    [{ ...task, speedBps: 1e9 }],
+    initial.etaSample,
+    500
+  );
+  assert.equal(current.etaSecs, 10);
+});
+
+test("excessive unknown-file estimates are hidden", () => {
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeTasks(0, 100),
+    { startedAt: 0, done: 0, filesPerSec: 0.001 },
+    500
+  );
+  assert.equal(current.etaSecs, undefined);
+});

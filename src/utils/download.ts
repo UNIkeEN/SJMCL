@@ -7,6 +7,8 @@ import {
   DownloadTaskState,
 } from "@/models/download";
 
+const MAX_DOWNLOAD_ETA_SECS = 24 * 60 * 60;
+
 export const getDownloadErrorText = (
   error: DownloadTaskError | null
 ): string | undefined => {
@@ -151,9 +153,12 @@ export const estimateDownloadGroupEta = (
     (etaSample.filesPerSec ?? 0) > 0
       ? unknownFiles / etaSample.filesPerSec!
       : 0;
-  const etaSecs = Math.max(longestEta, transferEta + unknownEta);
+  const etaSecs = Math.ceil(Math.max(longestEta, transferEta + unknownEta));
   return {
     etaSample,
-    etaSecs: etaSecs > 0 ? Math.ceil(etaSecs) : undefined,
+    etaSecs:
+      Number.isFinite(etaSecs) && etaSecs > 0 && etaSecs < MAX_DOWNLOAD_ETA_SECS
+        ? etaSecs
+        : undefined,
   };
 };
