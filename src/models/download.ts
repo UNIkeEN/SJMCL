@@ -111,6 +111,14 @@ export interface DownloadGroup extends DownloadGroupSummary {
   tasks: DownloadTask[];
   progress?: number;
   etaSecs?: number;
+  // Frontend completion-rate sample for the current active period.
+  etaSample?: {
+    startedAt: number;
+    done: number;
+    received?: number;
+    filesPerSec?: number;
+    bytesPerSec?: number;
+  };
   error?: string;
 }
 

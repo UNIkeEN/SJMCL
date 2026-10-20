@@ -34,6 +34,7 @@ import {
   ExtensionService,
 } from "@/services/extension";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
+import { estimateDownloadGroupEta } from "@/utils/download";
 
 interface TaskContextType {
   tasks: DownloadGroup[];
@@ -100,7 +101,7 @@ const taskOrder = (state: DownloadTaskState): number => {
 };
 
 const deriveGroup = (
-  summary: DownloadGroupSummary,
+  summary: DownloadGroupSummary & Pick<DownloadGroup, "etaSample">,
   tasks: DownloadTask[]
 ): DownloadGroup => {
   const derivedTasks = tasks
@@ -117,21 +118,12 @@ const deriveGroup = (
   const stats = deriveStats(derivedTasks);
   // Group progress counts completed tasks so files with unknown sizes contribute equally.
   const progress = stats.total ? (stats.done * 100) / stats.total : 0;
-  const etaSecs = derivedTasks
-    .filter(
-      (task) =>
-        task.state === DownloadTaskState.Downloading && task.etaSecs != null
-    )
-    .reduce<
-      number | undefined
-    >((longest, task) => Math.max(longest ?? 0, task.etaSecs ?? 0), undefined);
-
   return {
     ...summary,
     tasks: derivedTasks,
     stats,
     progress,
-    etaSecs,
+    ...estimateDownloadGroupEta(summary.state, derivedTasks, summary.etaSample),
     error: taskErrorText(
       derivedTasks.find((task) => task.retriesExhausted && task.error)?.error ??
         null
@@ -191,7 +183,14 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       previous?: DownloadGroup
     ): Promise<DownloadGroup> => {
       const groupTasks = await DownloadService.listTasks(summary.id);
-      return deriveGroup(summary, mergeRuntimeProgress(groupTasks, previous));
+      return deriveGroup(
+        {
+          ...summary,
+          etaSample:
+            previous?.state === summary.state ? previous.etaSample : undefined,
+        },
+        mergeRuntimeProgress(groupTasks, previous)
+      );
     },
     []
   );
