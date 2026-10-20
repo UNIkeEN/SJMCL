@@ -32,7 +32,7 @@ export const DownloadIndicator: React.FC = () => {
     ) && tasks.some((group) => group.finish === DownloadFinishKind.Completed);
 
   const hasError = tasks.some(
-    (task) => task.finish === DownloadFinishKind.Failed
+    (task) => task.finish === DownloadFinishKind.Failed || !!task.error
   );
 
   useEffect(() => {

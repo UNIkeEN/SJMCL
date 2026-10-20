@@ -19,7 +19,9 @@ registerHooks({
 const { formatTimeInterval } = require("../../src/utils/datetime.ts");
 const {
   estimateDownloadGroupEta,
+  getDownloadErrorText,
   getDownloadStats,
+  shouldShowDownloadProgress,
 } = require("../../src/utils/download.ts");
 
 const makeTasks = (done, pending, extra = []) => [
@@ -358,6 +360,73 @@ test("a terminal failure clears ETA before the group state catches up", () => {
   );
   assert.equal(current.etaSecs, undefined);
   assert.equal(current.etaSample, undefined);
+});
+
+test("failed and cancelled rows never show a waiting progress bar", () => {
+  const group = { state: "active", finish: null };
+  assert.equal(
+    shouldShowDownloadProgress(group, {
+      state: "failed",
+      retriesExhausted: false,
+    }),
+    false
+  );
+  assert.equal(
+    shouldShowDownloadProgress(group, {
+      state: "failed",
+      retriesExhausted: true,
+    }),
+    false
+  );
+  assert.equal(
+    shouldShowDownloadProgress(group, { state: "cancelled" }),
+    false
+  );
+});
+
+test("stopped groups hide stale pending and downloading rows", () => {
+  for (const group of [
+    { state: "draining", finish: null },
+    { state: "finished", finish: "failed" },
+    { state: "finished", finish: "cancelled" },
+    { state: "finished", finish: "completed" },
+    { state: "active", finish: null, error: "HTTP 403" },
+  ]) {
+    assert.equal(shouldShowDownloadProgress(group), false);
+    assert.equal(
+      shouldShowDownloadProgress(group, { state: "pending" }),
+      false
+    );
+    assert.equal(
+      shouldShowDownloadProgress(group, { state: "downloading" }),
+      false
+    );
+  }
+});
+
+test("pending work becomes visible again after a retry starts", () => {
+  const group = { state: "active", finish: null };
+  assert.equal(shouldShowDownloadProgress(group), true);
+  assert.equal(shouldShowDownloadProgress(group, { state: "pending" }), true);
+  assert.equal(
+    shouldShowDownloadProgress(group, { state: "downloading" }),
+    true
+  );
+  assert.equal(shouldShowDownloadProgress(group, { state: "verifying" }), true);
+  assert.equal(shouldShowDownloadProgress(group, { state: "done" }), false);
+});
+
+test("error details retain the useful message without a serialized wrapper", () => {
+  assert.equal(getDownloadErrorText({ Http: 403 }), "HTTP 403");
+  assert.equal(
+    getDownloadErrorText({ Network: "connection timed out" }),
+    "connection timed out"
+  );
+  assert.equal(
+    getDownloadErrorText({ CorruptFiles: ["a.jar", "b.jar"] }),
+    "a.jar, b.jar"
+  );
+  assert.equal(getDownloadErrorText(null), undefined);
 });
 
 test("known small files completing between ticks contribute byte throughput", () => {

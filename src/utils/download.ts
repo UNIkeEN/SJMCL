@@ -3,8 +3,34 @@ import {
   DownloadGroupState,
   type DownloadGroupStats,
   type DownloadTask,
+  type DownloadTaskError,
   DownloadTaskState,
 } from "@/models/download";
+
+export const getDownloadErrorText = (
+  error: DownloadTaskError | null
+): string | undefined => {
+  if (!error) return undefined;
+  if ("Http" in error) return `HTTP ${error.Http}`;
+  if ("Checksum" in error) {
+    return `Checksum mismatch: ${error.Checksum.actual}`;
+  }
+  if ("CorruptFiles" in error) return error.CorruptFiles.join(", ");
+  return Object.values(error)[0];
+};
+
+export const shouldShowDownloadProgress = (
+  group: Pick<DownloadGroup, "state" | "finish" | "error">,
+  task?: Pick<DownloadTask, "state">
+): boolean =>
+  !group.finish &&
+  !group.error &&
+  (group.state === DownloadGroupState.Active ||
+    group.state === DownloadGroupState.Queued) &&
+  (!task ||
+    task.state === DownloadTaskState.Pending ||
+    task.state === DownloadTaskState.Downloading ||
+    task.state === DownloadTaskState.Verifying);
 
 export const getDownloadStats = (tasks: DownloadTask[]): DownloadGroupStats => {
   const downloads = tasks.filter((task) => task.executor === "download");

@@ -22,7 +22,6 @@ import {
   DownloadGroupState,
   DownloadGroupSummary,
   DownloadTask,
-  DownloadTaskError,
   DownloadTaskState,
   SubmitDownloadTask,
 } from "@/models/download";
@@ -33,7 +32,12 @@ import {
   ExtensionService,
 } from "@/services/extension";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
-import { estimateDownloadGroupEta, getDownloadStats } from "@/utils/download";
+import {
+  estimateDownloadGroupEta,
+  getDownloadErrorText,
+  getDownloadStats,
+  shouldShowDownloadProgress,
+} from "@/utils/download";
 
 interface TaskContextType {
   tasks: DownloadGroup[];
@@ -52,16 +56,6 @@ interface TaskContextType {
 export const TaskContext = createContext<TaskContextType | undefined>(
   undefined
 );
-
-const taskErrorText = (error: DownloadTaskError | null): string | undefined => {
-  if (!error) return undefined;
-  if ("Http" in error) return `HTTP ${error.Http}`;
-  if ("Checksum" in error) {
-    return `Checksum mismatch: ${error.Checksum.actual}`;
-  }
-  if ("CorruptFiles" in error) return error.CorruptFiles.join(", ");
-  return Object.values(error)[0];
-};
 
 const taskOrder = (state: DownloadTaskState): number => {
   switch (state) {
@@ -103,7 +97,7 @@ const deriveGroup = (
     stats,
     progress,
     ...estimateDownloadGroupEta(summary.state, derivedTasks, summary.etaSample),
-    error: taskErrorText(
+    error: getDownloadErrorText(
       derivedTasks.find((task) => task.retriesExhausted && task.error)?.error ??
         null
     ),
@@ -508,7 +502,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     const stopError = DownloadService.onError((event) => {
       logger.error(
-        `Download ${event.taskId} in group ${event.groupId} failed: ${taskErrorText(event.error)}`
+        `Download ${event.taskId} in group ${event.groupId} failed: ${getDownloadErrorText(event.error)}`
       );
       setTasks((groups) =>
         groups.map((group) =>
@@ -603,7 +597,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const generalPercent = useMemo(() => {
     const active = tasks.filter(
-      (group) => group.state === DownloadGroupState.Active
+      (group) =>
+        group.state === DownloadGroupState.Active &&
+        shouldShowDownloadProgress(group)
     );
     if (!active.length) return undefined;
     return active.reduce(

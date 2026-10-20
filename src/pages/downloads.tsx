@@ -33,7 +33,32 @@ import {
   DownloadTaskState,
 } from "@/models/download";
 import { formatTimeInterval } from "@/utils/datetime";
+import {
+  getDownloadErrorText,
+  shouldShowDownloadProgress,
+} from "@/utils/download";
 import { formatByteSize } from "@/utils/string";
+
+const DownloadErrorLabel = ({ error }: { error?: string }) => {
+  const { t } = useTranslation();
+  return (
+    <Tooltip
+      label={error}
+      isDisabled={!error}
+      maxW="sm"
+      maxH="40vh"
+      overflowY="auto"
+      overflowWrap="anywhere"
+      whiteSpace="pre-wrap"
+      pointerEvents="auto"
+      userSelect="text"
+    >
+      <Text fontSize="xs" color="red.600" flexShrink={0}>
+        {t("DownloadTasksPage.label.error")}
+      </Text>
+    </Tooltip>
+  );
+};
 
 export const DownloadTasksPage = () => {
   const { t } = useTranslation();
@@ -134,12 +159,14 @@ export const DownloadTasksPage = () => {
                       </Text>
                     )}
                     {group.state === DownloadGroupState.Active &&
+                      shouldShowDownloadProgress(group) &&
                       group.etaSecs != null && (
                         <Text fontSize="xs" className="secondary-text">
                           {formatTimeInterval(group.etaSecs)}
                         </Text>
                       )}
                     {group.state === DownloadGroupState.Active &&
+                      shouldShowDownloadProgress(group) &&
                       group.stats.done === group.stats.total && (
                         <Text fontSize="xs" className="secondary-text">
                           {t("DownloadTasksPage.label.finalizing")}
@@ -155,10 +182,9 @@ export const DownloadTasksPage = () => {
                         {t("DownloadTasksPage.label.completed")}
                       </Text>
                     )}
-                    {group.finish === DownloadFinishKind.Failed && (
-                      <Text fontSize="xs" color="red.600">
-                        {group.error || t("DownloadTasksPage.label.error")}
-                      </Text>
+                    {(group.finish === DownloadFinishKind.Failed ||
+                      group.error) && (
+                      <DownloadErrorLabel error={group.error} />
                     )}
                     {group.finish === DownloadFinishKind.Cancelled && (
                       <Text fontSize="xs" color="red.600">
@@ -237,7 +263,7 @@ export const DownloadTasksPage = () => {
                     />
                   </HStack>
                 </Flex>
-                {group.finish !== DownloadFinishKind.Completed &&
+                {shouldShowDownloadProgress(group) &&
                   group.stats.done < group.stats.total && (
                     <Progress
                       size="xs"
@@ -256,6 +282,7 @@ export const DownloadTasksPage = () => {
                         key={`${task.id}-detail`}
                         title={task.name}
                         description={
+                          shouldShowDownloadProgress(group, task) &&
                           (task.state === DownloadTaskState.Downloading ||
                             task.state === DownloadTaskState.Verifying) && (
                             <Text
@@ -268,32 +295,25 @@ export const DownloadTasksPage = () => {
                           )
                         }
                       >
-                        {task.state !== DownloadTaskState.Done &&
-                          (task.state !== DownloadTaskState.Failed ||
-                            !task.retriesExhausted) && (
-                            <Progress
-                              w={36}
-                              size="xs"
-                              value={task.progress}
-                              colorScheme={primaryColor}
-                              isIndeterminate={
-                                task.state === DownloadTaskState.Pending ||
-                                (task.state === DownloadTaskState.Failed &&
-                                  !task.retriesExhausted) ||
-                                (task.state === DownloadTaskState.Downloading &&
-                                  task.total === 0)
-                              }
-                              borderRadius="sm"
-                            />
-                          )}
-                        {task.state === DownloadTaskState.Failed &&
-                          task.retriesExhausted && (
-                            <Tooltip label={JSON.stringify(task.error)}>
-                              <Text color="red.600" fontSize="xs">
-                                {t("DownloadTasksPage.label.error")}
-                              </Text>
-                            </Tooltip>
-                          )}
+                        {shouldShowDownloadProgress(group, task) && (
+                          <Progress
+                            w={36}
+                            size="xs"
+                            value={task.progress}
+                            colorScheme={primaryColor}
+                            isIndeterminate={
+                              task.state === DownloadTaskState.Pending ||
+                              (task.state === DownloadTaskState.Downloading &&
+                                task.total === 0)
+                            }
+                            borderRadius="sm"
+                          />
+                        )}
+                        {task.state === DownloadTaskState.Failed && (
+                          <DownloadErrorLabel
+                            error={getDownloadErrorText(task.error)}
+                          />
+                        )}
                         {task.state === DownloadTaskState.Done && task.dest && (
                           <CommonIconButton
                             icon="revealFile"
