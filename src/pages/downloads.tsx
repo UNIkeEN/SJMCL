@@ -128,13 +128,21 @@ export const DownloadTasksPage = () => {
                     {parseGroupTitle(group.name)}
                   </Text>
                   <HStack alignItems="center">
-                    <Text fontSize="xs" className="secondary-text">
-                      {group.stats.done} / {group.tasks.length}
-                    </Text>
+                    {group.stats.total > 0 && (
+                      <Text fontSize="xs" className="secondary-text">
+                        {group.stats.done} / {group.stats.total}
+                      </Text>
+                    )}
                     {group.state === DownloadGroupState.Active &&
                       group.etaSecs != null && (
                         <Text fontSize="xs" className="secondary-text">
                           {formatTimeInterval(group.etaSecs)}
+                        </Text>
+                      )}
+                    {group.state === DownloadGroupState.Active &&
+                      group.stats.done === group.stats.total && (
+                        <Text fontSize="xs" className="secondary-text">
+                          {t("DownloadTasksPage.label.finalizing")}
                         </Text>
                       )}
                     {group.state === DownloadGroupState.Paused && (
@@ -229,75 +237,74 @@ export const DownloadTasksPage = () => {
                     />
                   </HStack>
                 </Flex>
-                {group.finish !== DownloadFinishKind.Completed && (
-                  <Progress
-                    size="xs"
-                    value={group.progress}
-                    colorScheme={primaryColor}
-                    borderRadius="sm"
-                    mb={1}
-                  />
-                )}
+                {group.finish !== DownloadFinishKind.Completed &&
+                  group.stats.done < group.stats.total && (
+                    <Progress
+                      size="xs"
+                      value={group.progress}
+                      colorScheme={primaryColor}
+                      borderRadius="sm"
+                      mb={1}
+                    />
+                  )}
               </VStack>,
               ...(expanded
-                ? group.tasks.map((task) => (
-                    <OptionItem
-                      key={`${task.id}-detail`}
-                      title={
-                        task.executor === "download"
-                          ? task.name
-                          : t(`DownloadTasksPage.postprocess.${task.executor}`)
-                      }
-                      description={
-                        (task.state === DownloadTaskState.Downloading ||
-                          task.state === DownloadTaskState.Verifying) && (
-                          <Text
-                            fontSize="xs"
-                            className="secondary-text"
-                            mt={0.5}
-                          >
-                            {showTaskProgressInfo(task)}
-                          </Text>
-                        )
-                      }
-                    >
-                      {task.state !== DownloadTaskState.Done &&
-                        (task.state !== DownloadTaskState.Failed ||
-                          !task.retriesExhausted) && (
-                          <Progress
-                            w={36}
+                ? group.tasks
+                    .filter((task) => task.executor === "download")
+                    .map((task) => (
+                      <OptionItem
+                        key={`${task.id}-detail`}
+                        title={task.name}
+                        description={
+                          (task.state === DownloadTaskState.Downloading ||
+                            task.state === DownloadTaskState.Verifying) && (
+                            <Text
+                              fontSize="xs"
+                              className="secondary-text"
+                              mt={0.5}
+                            >
+                              {showTaskProgressInfo(task)}
+                            </Text>
+                          )
+                        }
+                      >
+                        {task.state !== DownloadTaskState.Done &&
+                          (task.state !== DownloadTaskState.Failed ||
+                            !task.retriesExhausted) && (
+                            <Progress
+                              w={36}
+                              size="xs"
+                              value={task.progress}
+                              colorScheme={primaryColor}
+                              isIndeterminate={
+                                task.state === DownloadTaskState.Pending ||
+                                (task.state === DownloadTaskState.Failed &&
+                                  !task.retriesExhausted) ||
+                                (task.state === DownloadTaskState.Downloading &&
+                                  task.total === 0)
+                              }
+                              borderRadius="sm"
+                            />
+                          )}
+                        {task.state === DownloadTaskState.Failed &&
+                          task.retriesExhausted && (
+                            <Tooltip label={JSON.stringify(task.error)}>
+                              <Text color="red.600" fontSize="xs">
+                                {t("DownloadTasksPage.label.error")}
+                              </Text>
+                            </Tooltip>
+                          )}
+                        {task.state === DownloadTaskState.Done && task.dest && (
+                          <CommonIconButton
+                            icon="revealFile"
                             size="xs"
-                            value={task.progress}
-                            colorScheme={primaryColor}
-                            isIndeterminate={
-                              task.state === DownloadTaskState.Pending ||
-                              (task.state === DownloadTaskState.Failed &&
-                                !task.retriesExhausted) ||
-                              (task.state === DownloadTaskState.Downloading &&
-                                task.total === 0)
-                            }
-                            borderRadius="sm"
+                            fontSize="sm"
+                            h={21}
+                            onClick={() => revealItemInDir(task.dest!)}
                           />
                         )}
-                      {task.state === DownloadTaskState.Failed &&
-                        task.retriesExhausted && (
-                          <Tooltip label={JSON.stringify(task.error)}>
-                            <Text color="red.600" fontSize="xs">
-                              {t("DownloadTasksPage.label.error")}
-                            </Text>
-                          </Tooltip>
-                        )}
-                      {task.state === DownloadTaskState.Done && task.dest && (
-                        <CommonIconButton
-                          icon="revealFile"
-                          size="xs"
-                          fontSize="sm"
-                          h={21}
-                          onClick={() => revealItemInDir(task.dest!)}
-                        />
-                      )}
-                    </OptionItem>
-                  ))
+                      </OptionItem>
+                    ))
                 : []),
             ]}
             maxFirstVisibleItems={6}

@@ -1,9 +1,35 @@
 import {
   type DownloadGroup,
   DownloadGroupState,
+  type DownloadGroupStats,
   type DownloadTask,
   DownloadTaskState,
 } from "@/models/download";
+
+export const getDownloadStats = (tasks: DownloadTask[]): DownloadGroupStats => {
+  const downloads = tasks.filter((task) => task.executor === "download");
+  return {
+    total: downloads.length,
+    done: downloads.filter((task) => task.state === DownloadTaskState.Done)
+      .length,
+    failed: downloads.filter((task) => task.state === DownloadTaskState.Failed)
+      .length,
+    cancelled: downloads.filter(
+      (task) => task.state === DownloadTaskState.Cancelled
+    ).length,
+    downloading: downloads.filter(
+      (task) =>
+        task.state === DownloadTaskState.Downloading ||
+        task.state === DownloadTaskState.Verifying
+    ).length,
+    pending: downloads.filter(
+      (task) =>
+        task.state === DownloadTaskState.Pending ||
+        task.state === DownloadTaskState.Paused
+    ).length,
+    verified: downloads.filter((task) => task.verified).length,
+  };
+};
 
 export const estimateDownloadGroupEta = (
   state: DownloadGroupState,

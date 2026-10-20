@@ -635,14 +635,10 @@
     },
     "label": {
       "paused": "已暫止",
+      "finalizing": "安裝將畢",
       "completed": "已畢",
       "error": "未成",
       "cancelled": "已罷"
-    },
-    "postprocess": {
-      "prepare_install": "備安裝",
-      "install": "安裝",
-      "verify": "校驗"
     },
     "task": {
       "game-client": "戲客戶端 {{param}}",

@@ -635,14 +635,10 @@
     },
     "label": {
       "paused": "En pause",
+      "finalizing": "Finalisation de l'installation",
       "completed": "Terminé.",
       "error": "Erreur",
       "cancelled": "Annulé."
-    },
-    "postprocess": {
-      "prepare_install": "Préparer l'installation",
-      "install": "Installer",
-      "verify": "Vérifier"
     },
     "task": {
       "game-client": "Client {{param}}",

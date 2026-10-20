@@ -17,7 +17,10 @@ registerHooks({
 });
 
 const { formatTimeInterval } = require("../../src/utils/datetime.ts");
-const { estimateDownloadGroupEta } = require("../../src/utils/download.ts");
+const {
+  estimateDownloadGroupEta,
+  getDownloadStats,
+} = require("../../src/utils/download.ts");
 
 const makeTasks = (done, pending, extra = []) => [
   ...Array.from({ length: done }, () => ({
@@ -187,6 +190,42 @@ test("queued, draining, and finished groups clear estimates", () => {
     assert.equal(current.etaSecs, undefined);
     assert.equal(current.etaSample, undefined);
   }
+});
+
+test("preparation and installation steps do not count as downloaded files", () => {
+  const tasks = makeTasks(3, 1, [
+    { executor: "prepare_install", state: "pending" },
+    { executor: "install", state: "pending" },
+    { executor: "verify", state: "pending" },
+    { executor: "refresh_java", state: "pending" },
+  ]);
+  const stats = getDownloadStats(tasks);
+  assert.equal(stats.total, 4);
+  assert.equal(stats.done, 3);
+  assert.equal(stats.pending, 1);
+  assert.equal((stats.done * 100) / stats.total, 75);
+});
+
+test("download progress reaches 100 percent before postprocessing finishes", () => {
+  const tasks = makeTasks(4, 0, [
+    { executor: "prepare_install", state: "downloading" },
+  ]);
+  const stats = getDownloadStats(tasks);
+  assert.equal(stats.total, 4);
+  assert.equal(stats.done, 4);
+  assert.equal(stats.downloading, 0);
+  assert.equal((stats.done * 100) / stats.total, 100);
+});
+
+test("groups containing only installation steps have no download files", () => {
+  const stats = getDownloadStats([
+    { executor: "install", state: "downloading" },
+    { executor: "verify", state: "pending" },
+  ]);
+  assert.equal(stats.total, 0);
+  assert.equal(stats.done, 0);
+  assert.equal(stats.downloading, 0);
+  assert.equal(stats.pending, 0);
 });
 
 test("known queued file sizes contribute to the byte-based estimate", () => {

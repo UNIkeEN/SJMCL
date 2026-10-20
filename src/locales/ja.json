@@ -635,14 +635,10 @@
     },
     "label": {
       "paused": "一時停止中",
+      "finalizing": "インストールの最終処理中",
       "completed": "完了",
       "error": "エラー",
       "cancelled": "キャンセル済み"
-    },
-    "postprocess": {
-      "prepare_install": "インストールの準備",
-      "install": "インストール",
-      "verify": "検証"
     },
     "task": {
       "game-client": "ゲームクライアント {{param}}",

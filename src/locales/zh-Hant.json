@@ -635,14 +635,10 @@
     },
     "label": {
       "paused": "已暫停",
+      "finalizing": "正在完成安裝",
       "completed": "已完成",
       "error": "失敗",
       "cancelled": "已取消"
-    },
-    "postprocess": {
-      "prepare_install": "準備安裝",
-      "install": "安裝",
-      "verify": "驗證"
     },
     "task": {
       "game-client": "遊戲用戶端 {{param}}",

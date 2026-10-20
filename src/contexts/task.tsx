@@ -20,7 +20,6 @@ import {
   DownloadFinishedEvent,
   DownloadGroup,
   DownloadGroupState,
-  DownloadGroupStats,
   DownloadGroupSummary,
   DownloadTask,
   DownloadTaskError,
@@ -34,7 +33,7 @@ import {
   ExtensionService,
 } from "@/services/extension";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
-import { estimateDownloadGroupEta } from "@/utils/download";
+import { estimateDownloadGroupEta, getDownloadStats } from "@/utils/download";
 
 interface TaskContextType {
   tasks: DownloadGroup[];
@@ -63,26 +62,6 @@ const taskErrorText = (error: DownloadTaskError | null): string | undefined => {
   if ("CorruptFiles" in error) return error.CorruptFiles.join(", ");
   return Object.values(error)[0];
 };
-
-const deriveStats = (tasks: DownloadTask[]): DownloadGroupStats => ({
-  total: tasks.length,
-  done: tasks.filter((task) => task.state === DownloadTaskState.Done).length,
-  failed: tasks.filter((task) => task.state === DownloadTaskState.Failed)
-    .length,
-  cancelled: tasks.filter((task) => task.state === DownloadTaskState.Cancelled)
-    .length,
-  downloading: tasks.filter(
-    (task) =>
-      task.state === DownloadTaskState.Downloading ||
-      task.state === DownloadTaskState.Verifying
-  ).length,
-  pending: tasks.filter(
-    (task) =>
-      task.state === DownloadTaskState.Pending ||
-      task.state === DownloadTaskState.Paused
-  ).length,
-  verified: tasks.filter((task) => task.verified).length,
-});
 
 const taskOrder = (state: DownloadTaskState): number => {
   switch (state) {
@@ -115,8 +94,8 @@ const deriveGroup = (
             : 0,
     }))
     .sort((left, right) => taskOrder(left.state) - taskOrder(right.state));
-  const stats = deriveStats(derivedTasks);
-  // Group progress counts completed tasks so files with unknown sizes contribute equally.
+  const stats = getDownloadStats(derivedTasks);
+  // Count only downloaded files so installation steps do not affect progress.
   const progress = stats.total ? (stats.done * 100) / stats.total : 0;
   return {
     ...summary,
