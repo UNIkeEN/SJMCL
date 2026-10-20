@@ -577,6 +577,7 @@ pub async fn build_mojang_java_download_params(
         src: url.parse().ok()?,
         dest: runtime_dir.join(path),
         filename: None,
+        size: raw.get("size").and_then(|size| size.as_u64()),
         sha1: Some(sha1.into()),
       })
     })

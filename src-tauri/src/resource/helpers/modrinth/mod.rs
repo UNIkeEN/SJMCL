@@ -250,6 +250,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
     src: download_url,
     dest: dest_path,
     filename: Some(filename),
+    size: None,
     sha1: Some(latest_file.sha1.clone()),
   }))
 }

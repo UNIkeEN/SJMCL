@@ -171,7 +171,10 @@ impl DownloadExecutor {
       }
       total
     } else {
-      resp.content_length().unwrap_or(0)
+      resp
+        .content_length()
+        .or_else(|| ctx.spec.get("size").and_then(|size| size.as_u64()))
+        .unwrap_or(0)
     };
 
     // Wrap the response stream with cancellation, progress, and rate limiting.

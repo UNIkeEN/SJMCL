@@ -32,6 +32,7 @@ export type DownloadTaskError =
 
 export interface DownloadSpec {
   url: string;
+  size?: number | null;
 }
 
 export interface InstallSpec {

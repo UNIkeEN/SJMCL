@@ -13,7 +13,8 @@ pub struct SubmitTask {
   pub name: String,
   /// Registered executor name, such as "download".
   pub executor: String,
-  /// Executor-specific arguments. The download executor expects { "url": "..." }.
+  /// Executor-specific arguments. Downloads accept { "url": "...", "size": 123 };
+  /// size is an optional hint used before the response headers arrive.
   pub spec: serde_json::Value,
   pub dest: Option<PathBuf>,
   pub sha1: Option<String>,

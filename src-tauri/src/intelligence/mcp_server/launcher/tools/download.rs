@@ -82,6 +82,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
             src: url,
             dest,
             filename: None,
+            size: None,
             sha1: params.sha1,
           }],
           true,

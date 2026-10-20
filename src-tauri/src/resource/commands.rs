@@ -155,6 +155,7 @@ pub async fn download_game_server(
       src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
       dest: dest.clone().into(),
       filename: None,
+      size: u64::try_from(download_info.size).ok(),
       sha1: Some(download_info.sha1.clone()),
     }],
     true,
@@ -205,6 +206,7 @@ pub async fn update_mods(
       src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
       dest: new_file_path.clone(),
       filename: None,
+      size: None,
       sha1: Some(query.sha1.clone()),
     };
     download_tasks.push(download_param);

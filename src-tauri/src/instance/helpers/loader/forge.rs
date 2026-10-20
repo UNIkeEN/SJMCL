@@ -101,6 +101,7 @@ pub async fn install_forge_loader(
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
+    size: None,
     sha1: None,
   });
 
@@ -236,6 +237,7 @@ pub async fn download_forge_libraries(
             src: client_mappings.url.parse()?,
             dest: lib_dir.join(mojmaps),
             filename: None,
+            size: u64::try_from(client_mappings.size).ok(),
             sha1: Some(client_mappings.sha1.clone()),
           });
         }
@@ -304,6 +306,7 @@ pub async fn download_forge_libraries(
         )?,
         dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
         filename: None,
+        size: u64::try_from(artifact.size).ok(),
         sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
       });
     }
@@ -348,6 +351,7 @@ pub async fn download_forge_libraries(
         )?,
         dest: lib_dir.join(&rel),
         filename: None,
+        size: u64::try_from(artifact.size).ok(),
         sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
       });
     }
@@ -420,6 +424,7 @@ pub async fn download_forge_libraries(
         src,
         dest: lib_dir.join(&rel),
         filename: None,
+        size: None,
         sha1: None,
       });
     }

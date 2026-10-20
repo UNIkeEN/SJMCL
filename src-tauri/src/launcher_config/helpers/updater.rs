@@ -147,6 +147,7 @@ pub async fn download_target_version(
           src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
           dest: download_cache_dir.join(&fname),
           filename: Some(fname),
+          size: None,
           sha1: None,
         }],
         true,

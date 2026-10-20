@@ -178,6 +178,34 @@ async fn downloads_with_sha1_and_url_scoped_request_decoration() {
 }
 
 #[tokio::test]
+async fn response_size_overrides_the_manifest_hint() {
+  let body = b"actual file contents".to_vec();
+  let (url, server) = serve_once(body.clone(), None, None).await;
+  let destination = TempDownload::new("size-hint");
+  let engine = engine(DownloadExecutor::default());
+  let mut download = task(url, &destination.path, None);
+  download.spec["size"] = serde_json::json!(1);
+  let group_id = engine
+    .submit_group(SubmitGroup {
+      name: "size-hint".into(),
+      tasks: vec![download],
+      auto_resume: true,
+    })
+    .await
+    .unwrap();
+
+  assert_eq!(
+    wait_finished(&engine, &group_id).await,
+    FinishKind::Completed
+  );
+  let tasks = engine.list_tasks(group_id).await.unwrap();
+  assert_eq!(tasks[0].total, body.len() as u64);
+  assert_eq!(tasks[0].received, body.len() as u64);
+  assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+  server.await.unwrap();
+}
+
+#[tokio::test]
 async fn resumes_from_the_authoritative_part_file() {
   let body = b"0123456789abcdefghij".to_vec();
   let expected = format!("{:x}", Sha1::digest(&body));

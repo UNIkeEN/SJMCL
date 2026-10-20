@@ -121,7 +121,15 @@ impl Task {
       sha256: submit.sha256.clone(),
       state: TaskState::Pending,
       received: 0,
-      total: 0,
+      total: if submit.executor == "download" {
+        submit
+          .spec
+          .get("size")
+          .and_then(|size| size.as_u64())
+          .unwrap_or(0)
+      } else {
+        0
+      },
       offset: 0,
       attempts: 0,
       error: None,

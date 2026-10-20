@@ -1159,6 +1159,7 @@ pub async fn create_instance(
       .map_err(|_| InstanceError::ClientJsonParseError)?,
     dest: instance.version_path.join(format!("{}.jar", name)),
     filename: None,
+    size: u64::try_from(client_download_info.size).ok(),
     sha1: Some(client_download_info.sha1.clone()),
   });
   let subdirs = get_instance_subdir_paths(

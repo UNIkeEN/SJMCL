@@ -41,6 +41,7 @@ pub async fn download_optifine_installer(
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
+    size: None,
     sha1: None,
   });
 
@@ -148,6 +149,7 @@ pub async fn download_optifine_libraries(
     src,
     dest: lw_dest,
     filename: None,
+    size: None,
     sha1: None,
   });
 

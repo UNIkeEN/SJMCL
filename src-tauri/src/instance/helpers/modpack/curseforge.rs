@@ -204,6 +204,7 @@ impl ModpackManifest for CurseForgeManifest {
             })
             .join(&file_manifest.data.file_name),
           filename: Some(file_manifest.data.file_name.clone()),
+          size: None,
         };
 
         Ok::<DownloadTask, SJMCLError>(task_param)

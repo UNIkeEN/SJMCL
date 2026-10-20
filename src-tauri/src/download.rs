@@ -102,6 +102,7 @@ pub struct DownloadTask {
   pub dest: PathBuf,
   pub filename: Option<String>,
   pub sha1: Option<String>,
+  pub size: Option<u64>,
 }
 
 impl From<DownloadTask> for SubmitTask {
@@ -116,7 +117,7 @@ impl From<DownloadTask> for SubmitTask {
     Self {
       name,
       executor: "download".into(),
-      spec: serde_json::json!({ "url": task.src }),
+      spec: serde_json::json!({ "url": task.src, "size": task.size }),
       dest: Some(task.dest),
       sha1: task.sha1,
       sha256: None,

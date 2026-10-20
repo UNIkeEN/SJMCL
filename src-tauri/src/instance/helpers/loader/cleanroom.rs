@@ -49,6 +49,7 @@ pub async fn install_cleanroom_loader(
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
+    size: None,
     sha1: None,
   });
 
@@ -150,6 +151,7 @@ pub async fn download_cleanroom_libraries(
       )?,
       dest: lib_dir.join(get_library_artifact_path(lib)?),
       filename: None,
+      size: u64::try_from(artifact.size).ok(),
       sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
     });
   }
@@ -188,6 +190,7 @@ pub async fn download_cleanroom_libraries(
       )?,
       dest: lib_dir.join(get_library_artifact_path(lib)?),
       filename: None,
+      size: u64::try_from(artifact.size).ok(),
       sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
     });
   }
