@@ -9,7 +9,7 @@ use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth;
 use crate::resource::models::{ResourceType, SourceType};
 
@@ -116,29 +116,16 @@ pub async fn install_quilt_loader(
           let rel: String = convert_library_name_to_path(name, None)?;
           let full_url = Url::parse(&root_url)?.join(&rel)?;
 
-          // fallback priority
-          let mut src_opt = None;
-          for source_type in priority.iter() {
-            if let Ok(src) = convert_url_to_target_source(
+          library_tasks.push(DownloadTask {
+            sources: get_download_urls(
               &full_url,
               &[
                 ResourceType::QuiltMaven,
                 ResourceType::FabricMaven,
                 ResourceType::Libraries,
               ],
-              source_type,
-            ) {
-              src_opt = Some(src);
-              break;
-            }
-          }
-          let src = src_opt.ok_or(SJMCLError(format!(
-            "failed to create download source for {}",
-            name
-          )))?;
-
-          library_tasks.push(DownloadTask {
-            src,
+              priority,
+            )?,
             dest: lib_dir.join(&rel),
             filename: None,
             size: None,
@@ -155,28 +142,16 @@ pub async fn install_quilt_loader(
     let root_url = resolve_maven_root(path, quilt_maven.as_str());
     let full_url = Url::parse(root_url)?.join(&rel)?;
 
-    let mut src_opt = None;
-    for source_type in priority.iter() {
-      if let Ok(src) = convert_url_to_target_source(
+    library_tasks.push(DownloadTask {
+      sources: get_download_urls(
         &full_url,
         &[
           ResourceType::QuiltMaven,
           ResourceType::FabricMaven,
           ResourceType::Libraries,
         ],
-        source_type,
-      ) {
-        src_opt = Some(src);
-        break;
-      }
-    }
-    let src = src_opt.ok_or(SJMCLError(format!(
-      "failed to create download source for {}",
-      path
-    )))?;
-
-    library_tasks.push(DownloadTask {
-      src,
+        priority,
+      )?,
       dest: lib_dir.join(&rel),
       filename: None,
       size: None,

@@ -14,7 +14,7 @@ use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subd
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderType};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
 use crate::launch::helpers::jre_selector::select_java_runtime;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{OptiFineResourceInfo, ResourceType, SourceType};
 
 pub async fn download_optifine_installer(
@@ -38,7 +38,7 @@ pub async fn download_optifine_installer(
   let installer_path = lib_dir.join(&installer_rel);
 
   task_params.push(DownloadTask {
-    src: installer_url,
+    sources: vec![installer_url],
     dest: installer_path.clone(),
     filename: None,
     size: None,
@@ -139,14 +139,10 @@ pub async fn download_optifine_libraries(
   let lw_dest = lib_dir.join(&lw_rel);
 
   let base = get_download_api(priority[0], ResourceType::Libraries)?;
-  let src = convert_url_to_target_source(
-    &base.join(&lw_rel)?,
-    &[ResourceType::Libraries],
-    &priority[0],
-  )?;
+  let sources = get_download_urls(&base.join(&lw_rel)?, &[ResourceType::Libraries], priority)?;
 
   task_params.push(DownloadTask {
-    src,
+    sources,
     dest: lw_dest,
     filename: None,
     size: None,

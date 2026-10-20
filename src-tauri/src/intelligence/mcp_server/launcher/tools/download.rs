@@ -79,7 +79,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
           app,
           format!("file-download?{name}"),
           vec![DownloadTask {
-            src: url,
+            sources: vec![url],
             dest,
             filename: None,
             size: None,

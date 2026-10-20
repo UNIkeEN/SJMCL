@@ -127,38 +127,31 @@ pub async fn download_target_version(
     )
   };
 
-  let client = app.state::<reqwest::Client>();
-
   let mut sources = SOURCES;
   if !is_china_mainland_ip {
     sources.reverse();
   }
 
-  for (endpoint, _, mk_url) in sources {
-    if let Ok(resp) = client.get(endpoint).send().await
-      && resp.status().is_success()
-    {
-      let url = mk_url(&version, &fname);
-
-      submit_download_group(
-        app.clone(),
-        format!("launcher-update?{}", fname),
-        vec![DownloadTask {
-          src: url::Url::parse(&url).map_err(|_| LauncherConfigError::FetchError)?,
-          dest: download_cache_dir.join(&fname),
-          filename: Some(fname),
-          size: None,
-          sha1: None,
-        }],
-        true,
-      )
-      .await?;
-
-      return Ok(());
-    }
-  }
-
-  Err(LauncherConfigError::FetchError.into())
+  let sources = sources
+    .into_iter()
+    .map(|(_, _, mk_url)| {
+      url::Url::parse(&mk_url(&version, &fname)).map_err(|_| LauncherConfigError::FetchError.into())
+    })
+    .collect::<SJMCLResult<Vec<_>>>()?;
+  submit_download_group(
+    app.clone(),
+    format!("launcher-update?{}", fname),
+    vec![DownloadTask {
+      sources,
+      dest: download_cache_dir.join(&fname),
+      filename: Some(fname),
+      size: None,
+      sha1: None,
+    }],
+    true,
+  )
+  .await?;
+  Ok(())
 }
 
 #[cfg(target_os = "windows")]

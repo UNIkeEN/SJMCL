@@ -7,7 +7,7 @@ use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType,
 use crate::launch::helpers::file_validator::{
   convert_library_name_to_path, get_library_artifact_path,
 };
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs;
@@ -46,7 +46,7 @@ pub async fn install_cleanroom_loader(
   let installer_path = lib_dir.join(&installer_rel);
 
   task_params.push(DownloadTask {
-    src: installer_url,
+    sources: vec![installer_url],
     dest: installer_path.clone(),
     filename: None,
     size: None,
@@ -140,14 +140,14 @@ pub async fn download_cleanroom_libraries(
     };
 
     task_params.push(DownloadTask {
-      src: convert_url_to_target_source(
+      sources: get_download_urls(
         &Url::parse(&artifact.url)?,
         &[
           ResourceType::ForgeMaven,
           ResourceType::ForgeMavenNew,
           ResourceType::Libraries,
         ],
-        &priority[0],
+        priority,
       )?,
       dest: lib_dir.join(get_library_artifact_path(lib)?),
       filename: None,
@@ -183,10 +183,10 @@ pub async fn download_cleanroom_libraries(
     };
 
     task_params.push(DownloadTask {
-      src: convert_url_to_target_source(
+      sources: get_download_urls(
         &Url::parse(&artifact.url)?,
         &[ResourceType::CleanroomMaven, ResourceType::Libraries],
-        &priority[0],
+        priority,
       )?,
       dest: lib_dir.join(get_library_artifact_path(lib)?),
       filename: None,

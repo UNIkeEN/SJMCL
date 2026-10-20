@@ -12,7 +12,7 @@ use crate::instance::helpers::client_json::McClientInfo;
 use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::models::misc::{ModLoader, ModLoaderType};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::helpers::modrinth::fetch_latest_mod_download_param_modrinth;
 use crate::resource::models::{ResourceType, SourceType};
 use crate::utils::fs::get_files_with_regex;
@@ -99,26 +99,17 @@ pub async fn install_fabric_loader(
   let mut library_tasks = Vec::new();
   let mut push_task = |coord: &str, url_root: &Url| -> SJMCLResult<()> {
     let rel: String = convert_library_name_to_path(coord, None)?;
-    let mut src_opt = None;
-    for source_type in priority.iter() {
-      if let Ok(src) = convert_url_to_target_source(
+    library_tasks.push(DownloadTask {
+      sources: get_download_urls(
         &url_root.join(&rel)?,
         &[ResourceType::FabricMaven, ResourceType::Libraries],
-        source_type,
-      ) {
-        src_opt = Some(src);
-        break;
-      }
-    }
-    if let Some(src) = src_opt {
-      library_tasks.push(DownloadTask {
-        src,
-        dest: lib_dir.join(&rel),
-        filename: None,
-        size: None,
-        sha1: None,
-      });
-    }
+        priority,
+      )?,
+      dest: lib_dir.join(&rel),
+      filename: None,
+      size: None,
+      sha1: None,
+    });
     Ok(())
   };
 

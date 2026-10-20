@@ -19,7 +19,9 @@ use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version
 use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
 use crate::resource::helpers::loader_meta::optifine::get_optifine_meta_by_game_version;
 use crate::resource::helpers::loader_meta::quilt::get_quilt_meta_by_game_version;
-use crate::resource::helpers::misc::{get_source_priority_list, resolve_mod_update_paths};
+use crate::resource::helpers::misc::{
+  get_download_urls, get_source_priority_list, resolve_mod_update_paths,
+};
 use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
   fetch_resource_list_by_name_modrinth, fetch_resource_version_packs_modrinth,
@@ -29,6 +31,7 @@ use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, ModUpdateQuery, OptiFineResourceInfo,
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
   OtherResourceSource, OtherResourceVersionPack, OtherResourceVersionPackQuery, ResourceError,
+  ResourceType,
 };
 
 #[tauri::command]
@@ -147,12 +150,21 @@ pub async fn download_game_server(
     .downloads
     .get("server")
     .ok_or(ResourceError::ParseError)?;
+  let priority_list = {
+    let binding = app.state::<Mutex<LauncherConfig>>();
+    let config = binding.lock()?;
+    get_source_priority_list(&config)
+  };
 
   submit_download_group(
     app,
     format!("game-server?{}", resource_info.id),
     vec![DownloadTask {
-      src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
+      sources: get_download_urls(
+        &url::Url::parse(&download_info.url).map_err(|_| ResourceError::ParseError)?,
+        &[ResourceType::Launcher],
+        &priority_list,
+      )?,
       dest: dest.clone().into(),
       filename: None,
       size: u64::try_from(download_info.size).ok(),
@@ -203,7 +215,7 @@ pub async fn update_mods(
   let mut download_tasks = Vec::new();
   for (query, (_, new_file_path)) in queries.iter().zip(&update_paths) {
     let download_param = DownloadTask {
-      src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
+      sources: vec![url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?],
       dest: new_file_path.clone(),
       filename: None,
       size: None,

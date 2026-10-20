@@ -194,7 +194,9 @@ impl ModpackManifest for CurseForgeManifest {
           .map(|h| h.value.clone());
 
         let task_param = DownloadTask {
-          src: url::Url::parse(&download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
+          sources: vec![
+            url::Url::parse(&download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
+          ],
           sha1,
           dest: instance_path
             .join(match class_id {

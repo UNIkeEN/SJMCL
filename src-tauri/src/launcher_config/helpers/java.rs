@@ -13,7 +13,9 @@ use std::os::windows::process::CommandExt;
 
 use crate::download::DownloadTask;
 use crate::launcher_config::models::{JavaInfo, LauncherConfig};
-use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
+use crate::resource::helpers::misc::{
+  get_download_api, get_download_urls, get_source_priority_list,
+};
 use crate::resource::models::ResourceType;
 use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 
@@ -574,7 +576,12 @@ pub async fn build_mojang_java_download_params(
       let (url, sha1) = (raw["url"].as_str()?, raw["sha1"].as_str()?);
 
       Some(DownloadTask {
-        src: url.parse().ok()?,
+        sources: get_download_urls(
+          &url.parse().ok()?,
+          &[ResourceType::Launcher, ResourceType::LauncherMeta],
+          &priority_list,
+        )
+        .ok()?,
         dest: runtime_dir.join(path),
         filename: None,
         size: raw.get("size").and_then(|size| size.as_u64()),

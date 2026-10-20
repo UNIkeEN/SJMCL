@@ -818,22 +818,57 @@ impl EngineActor {
         task_id: task_id.into(),
       });
     }
-    // Retry transient failures before treating them as terminal group failures.
-    let (attempts, transient, group_active) = {
+    let group_active = self.state.groups[gi].state == GroupState::Active;
+    let (attempts, retry_limit, transient, can_switch_source) = {
       let t = &self.state.groups[gi].tasks[ti];
+      let source_count = if new_state == TaskState::Failed {
+        download_sources(t).len()
+      } else {
+        0
+      };
       (
         t.attempts,
-        t.error.as_ref().map(|e| e.is_transient()).unwrap_or(false),
-        self.state.groups[gi].state == GroupState::Active,
+        (self.cfg.max_retries as usize).max(source_count.saturating_sub(1)),
+        t.error.as_ref().is_some_and(TaskError::is_transient),
+        source_count > 1
+          && matches!(
+            t.error,
+            Some(TaskError::Network(_) | TaskError::Http(_) | TaskError::Checksum { .. })
+          ),
       )
     };
-    let schedule_retry = new_state == TaskState::Failed
+    // Include source switches in the retry budget, extending it to try every source once.
+    let mut schedule_retry = new_state == TaskState::Failed
       && group_active
-      && attempts < self.cfg.max_retries
-      && transient;
+      && (attempts as usize) < retry_limit
+      && (transient || can_switch_source);
+    let switched_source = if schedule_retry && can_switch_source {
+      match advance_download_source(&mut self.state.groups[gi].tasks[ti]) {
+        Ok(switched) => switched,
+        Err(error) => {
+          self.state.groups[gi].tasks[ti].error = Some(error.clone());
+          task_error = Some(error);
+          schedule_retry = false;
+          false
+        }
+      }
+    } else {
+      false
+    };
+    if switched_source
+      && let Some(runtime) = self
+        .state
+        .runtime
+        .get_mut(&gid)
+        .and_then(|group| group.tasks.get_mut(task_id))
+    {
+      runtime.speed_ema = 0.0;
+      runtime.prev_received = 0;
+      runtime.prev_at = None;
+    }
     if schedule_retry {
       self.state.groups[gi].tasks[ti].attempts = attempts + 1;
-    } else if new_state == TaskState::Failed {
+    } else if !schedule_retry && new_state == TaskState::Failed {
       self.state.groups[gi].tasks[ti].retries_exhausted = true;
     }
     // Keep intermediate failures in task state, but emit TaskFailed only when no retry remains.
@@ -1289,6 +1324,65 @@ impl EngineActor {
       tracing::warn!("persist group {group_id} failed: {e}");
     }
   }
+}
+
+fn download_sources(task: &Task) -> Vec<&str> {
+  if task.executor != "download" {
+    return Vec::new();
+  }
+  let mut sources = Vec::new();
+  for url in task
+    .spec
+    .get("url")
+    .into_iter()
+    .chain(
+      task
+        .spec
+        .get("fallbackUrls")
+        .and_then(serde_json::Value::as_array)
+        .into_iter()
+        .flatten(),
+    )
+    .filter_map(serde_json::Value::as_str)
+    .filter(|url| !url.is_empty())
+  {
+    if !sources.contains(&url) {
+      sources.push(url);
+    }
+  }
+  sources
+}
+
+fn advance_download_source(task: &mut Task) -> Result<bool, TaskError> {
+  let mut sources: Vec<_> = download_sources(task)
+    .into_iter()
+    .map(str::to_owned)
+    .collect();
+  if sources.len() < 2 {
+    return Ok(false);
+  }
+  // A partial file belongs to its source; never append bytes from a different source.
+  if let Some(dest) = &task.dest {
+    let mut path = dest.as_os_str().to_owned();
+    path.push(".part");
+    match std::fs::remove_file(std::path::PathBuf::from(path)) {
+      Ok(()) => {}
+      Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+      Err(error) => return Err(TaskError::Io(error.to_string())),
+    }
+  }
+  sources.rotate_left(1);
+  task.spec["url"] = sources.remove(0).into();
+  task.spec["fallbackUrls"] = sources.into();
+  task.offset = 0;
+  task.received = 0;
+  task.total = task
+    .spec
+    .get("size")
+    .and_then(|size| size.as_u64())
+    .unwrap_or(0);
+  task.verified = false;
+  Ok(true)
 }
 
 fn delete_part(task: &Task) {

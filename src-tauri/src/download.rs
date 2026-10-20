@@ -98,7 +98,8 @@ pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
 
 #[derive(Debug, Clone)]
 pub struct DownloadTask {
-  pub src: Url,
+  /// Download URLs in source priority order.
+  pub sources: Vec<Url>,
   pub dest: PathBuf,
   pub filename: Option<String>,
   pub sha1: Option<String>,
@@ -107,6 +108,7 @@ pub struct DownloadTask {
 
 impl From<DownloadTask> for SubmitTask {
   fn from(task: DownloadTask) -> Self {
+    let mut sources = task.sources.into_iter();
     let name = task.filename.unwrap_or_else(|| {
       task
         .dest
@@ -117,7 +119,11 @@ impl From<DownloadTask> for SubmitTask {
     Self {
       name,
       executor: "download".into(),
-      spec: serde_json::json!({ "url": task.src, "size": task.size }),
+      spec: serde_json::json!({
+        "url": sources.next(),
+        "fallbackUrls": sources.collect::<Vec<_>>(),
+        "size": task.size,
+      }),
       dest: Some(task.dest),
       sha1: task.sha1,
       sha256: None,

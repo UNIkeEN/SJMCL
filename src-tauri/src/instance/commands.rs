@@ -62,13 +62,13 @@ use crate::launch::models::LaunchError;
 use crate::launcher_config::helpers::java::build_mojang_java_download_params;
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
-use crate::resource::helpers::misc::get_source_priority_list;
+use crate::resource::helpers::misc::{get_download_urls, get_source_priority_list};
 use crate::resource::helpers::translation::{
   LOCAL_MOD_TRANSLATION_CACHE_EXPIRY_HOURS, LocalModTranslationEntry, LocalModTranslationsCache,
   add_local_mod_translations,
 };
 use crate::resource::models::{
-  GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo,
+  GameClientResourceInfo, ModLoaderResourceInfo, OptiFineResourceInfo, ResourceType,
 };
 use crate::utils::fs::{
   RemoveDirGuard, copy_whole_dir, create_url_shortcut, generate_unique_filename,
@@ -1148,8 +1148,11 @@ pub async fn create_instance(
     .ok_or(InstanceError::ClientJsonParseError)?;
 
   task_params.push(DownloadTask {
-    src: Url::parse(&client_download_info.url.clone())
-      .map_err(|_| InstanceError::ClientJsonParseError)?,
+    sources: get_download_urls(
+      &Url::parse(&client_download_info.url).map_err(|_| InstanceError::ClientJsonParseError)?,
+      &[ResourceType::Launcher],
+      &priority_list,
+    )?,
     dest: instance.version_path.join(format!("{}.jar", name)),
     filename: None,
     size: u64::try_from(client_download_info.size).ok(),

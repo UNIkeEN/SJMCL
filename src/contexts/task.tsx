@@ -78,15 +78,27 @@ const deriveGroup = (
   tasks: DownloadTask[]
 ): DownloadGroup => {
   const derivedTasks = tasks
-    .map((task) => ({
-      ...task,
-      progress:
-        task.state === DownloadTaskState.Done
-          ? 100
-          : task.total
-            ? (task.received * 100) / task.total
-            : 0,
-    }))
+    .map((task) => {
+      // Keep automatic retries pending in the UI until a terminal failure is reported.
+      const waitingForRetry =
+        task.state === DownloadTaskState.Failed &&
+        !task.retriesExhausted &&
+        summary.state !== DownloadGroupState.Draining &&
+        summary.state !== DownloadGroupState.Finished;
+      const state = waitingForRetry ? DownloadTaskState.Pending : task.state;
+      return {
+        ...task,
+        state,
+        speedBps: waitingForRetry ? undefined : task.speedBps,
+        etaSecs: waitingForRetry ? undefined : task.etaSecs,
+        progress:
+          state === DownloadTaskState.Done
+            ? 100
+            : task.total
+              ? (task.received * 100) / task.total
+              : 0,
+      };
+    })
     .sort((left, right) => taskOrder(left.state) - taskOrder(right.state));
   const stats = getDownloadStats(derivedTasks);
   // Count only downloaded files so installation steps do not affect progress.

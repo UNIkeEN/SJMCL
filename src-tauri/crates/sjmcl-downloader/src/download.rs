@@ -1,7 +1,9 @@
 //! Download executor: streaming reqwest transfers, Range resumption,
 //! and SHA-1/SHA-256 verification.
 //!
-//! Task spec format: { "url": "https://..." }.
+//! Task spec format: { "url": "https://...", "fallbackUrls": ["https://..."] }.
+//! fallbackUrls is optional. The actor cycles through sources with backoff after
+//! network, HTTP, or checksum failures, persisting the current source order.
 //!
 //! The transfer is composed as AsyncRead layers.
 //! DownloadReader wraps tokio-util's StreamReader and owns:
@@ -214,6 +216,10 @@ impl DownloadExecutor {
         return Ok(());
       }
       Err(e) => {
+        file
+          .flush()
+          .await
+          .map_err(|error| TaskError::Io(error.to_string()))?;
         if e
           .get_ref()
           .and_then(|source| source.downcast_ref::<reqwest::Error>())
@@ -228,6 +234,7 @@ impl DownloadExecutor {
       .flush()
       .await
       .map_err(|e| TaskError::Io(e.to_string()))?;
+    drop(file);
 
     // Report final progress, verify the content, and rename the file.
     let _ = ctx

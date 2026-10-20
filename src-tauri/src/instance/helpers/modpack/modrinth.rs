@@ -131,12 +131,15 @@ impl ModpackManifest for ModrinthManifest {
       .files
       .iter()
       .map(|file| {
-        let download_url = file
-          .downloads
-          .first()
-          .ok_or(InstanceError::InvalidSourcePath)?;
+        if file.downloads.is_empty() {
+          return Err(InstanceError::InvalidSourcePath.into());
+        }
         Ok(DownloadTask {
-          src: url::Url::parse(download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
+          sources: file
+            .downloads
+            .iter()
+            .map(|url| url::Url::parse(url).map_err(|_| InstanceError::InvalidSourcePath.into()))
+            .collect::<SJMCLResult<Vec<_>>>()?,
           sha1: Some(file.hashes.sha1.clone()),
           dest: instance_path.join(&file.path),
           filename: None,

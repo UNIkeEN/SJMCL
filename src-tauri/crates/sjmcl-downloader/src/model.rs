@@ -217,7 +217,7 @@ pub struct EngineConfig {
   pub dispatch_interval: Duration,
   /// Reserved for worker progress reports; configure DownloadExecutor::report_interval instead.
   pub report_interval: Duration,
-  /// Maximum number of automatic retries for transient errors.
+  /// Automatic retry limit, extended for downloads to try every source at least once.
   pub max_retries: u32,
   /// Base retry delay, doubled after each attempt.
   pub retry_backoff: Duration,

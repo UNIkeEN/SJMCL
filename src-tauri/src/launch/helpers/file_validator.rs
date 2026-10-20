@@ -24,7 +24,7 @@ use crate::instance::helpers::client_json::{
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::utils::fs::{is_local_file_valid, validate_sha1};
 
@@ -95,7 +95,7 @@ pub async fn get_invalid_library_files(
     } else if artifact.url.is_empty() {
       Err(LaunchError::GameFilesIncomplete.into())
     } else {
-      let src = convert_url_to_target_source(
+      let sources = get_download_urls(
         &url::Url::parse(&artifact.url)?,
         &[
           ResourceType::Libraries,
@@ -104,10 +104,10 @@ pub async fn get_invalid_library_files(
           ResourceType::ForgeMavenNew,
           ResourceType::NeoforgeMaven,
         ],
-        &source,
+        &[source],
       )?;
       Ok(Some(DownloadTask {
-        src,
+        sources,
         dest: file_path,
         filename: None,
         size: u64::try_from(artifact.size).ok(),
@@ -188,13 +188,13 @@ pub async fn get_invalid_windows_mesa_loader_file(
     return Ok(Vec::new());
   }
 
-  let src = convert_url_to_target_source(
+  let sources = get_download_urls(
     &url::Url::parse(&artifact.url)?,
     &[ResourceType::Libraries],
-    &source,
+    &[source],
   )?;
   Ok(vec![DownloadTask {
-    src,
+    sources,
     dest: file_path,
     filename: None,
     size: u64::try_from(artifact.size).ok(),
@@ -527,7 +527,7 @@ pub async fn get_invalid_assets(
           .join(&path_in_repo)
           .map_err(sjmcl_types::error::SJMCLError::from)?;
         Ok(Some(DownloadTask {
-          src,
+          sources: get_download_urls(&src, &[ResourceType::Assets], &[source])?,
           dest,
           filename: None,
           size: u64::try_from(item.size).ok(),

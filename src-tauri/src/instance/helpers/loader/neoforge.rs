@@ -14,7 +14,7 @@ use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
 
 pub async fn install_neoforge_loader(
@@ -25,16 +25,18 @@ pub async fn install_neoforge_loader(
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
-  let mut installer_url_opt: Option<Url> = None;
+  let mut sources = Vec::new();
   let mut installer_coord: String = String::new();
 
   if loader_ver.starts_with("1.20.1-") {
-    installer_url_opt = Some(
-      get_download_api(SourceType::Official, ResourceType::NeoforgeInstall)?.join(&format!(
+    sources = get_download_urls(
+      &get_download_api(SourceType::Official, ResourceType::NeoforgeInstall)?.join(&format!(
         "net/neoforged/forge/{v}/forge-{v}-installer.jar",
         v = loader_ver
       ))?,
-    );
+      &[ResourceType::NeoforgeMaven],
+      priority,
+    )?;
     installer_coord = format!("net.neoforged:forge:{}-installer", loader.version);
   } else {
     // fallback priority
@@ -53,19 +55,18 @@ pub async fn install_neoforge_loader(
             root.join(&path)?
           }
         };
-        installer_url_opt = Some(url);
+        sources.push(url);
         installer_coord = format!("net.neoforged:neoforge:{}-installer", loader.version);
-        break;
       }
     }
   }
 
-  if let Some(installer_url) = installer_url_opt {
+  if !sources.is_empty() {
     let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
     let installer_path = lib_dir.join(&installer_rel);
 
     task_params.push(DownloadTask {
-      src: installer_url,
+      sources,
       dest: installer_path,
       filename: None,
       size: None,
@@ -204,7 +205,11 @@ pub async fn download_neoforge_libraries(
         && let Some(client_mappings) = client_info.downloads.get("client_mappings")
       {
         task_params.push(DownloadTask {
-          src: client_mappings.url.parse()?,
+          sources: get_download_urls(
+            &client_mappings.url.parse()?,
+            &[ResourceType::Launcher],
+            priority,
+          )?,
           dest: lib_dir.join(mojmaps),
           filename: None,
           size: u64::try_from(client_mappings.size).ok(),
@@ -263,10 +268,10 @@ pub async fn download_neoforge_libraries(
     };
 
     task_params.push(DownloadTask {
-      src: convert_url_to_target_source(
+      sources: get_download_urls(
         &Url::parse(&artifact.url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
-        &priority[0],
+        priority,
       )?,
       dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
       filename: None,
@@ -301,10 +306,10 @@ pub async fn download_neoforge_libraries(
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
     task_params.push(DownloadTask {
-      src: convert_url_to_target_source(
+      sources: get_download_urls(
         &Url::parse(&artifact.url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
-        &priority[0],
+        priority,
       )?,
       dest: lib_dir.join(&rel),
       filename: None,
