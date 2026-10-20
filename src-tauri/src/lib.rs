@@ -12,7 +12,7 @@ mod utils;
 use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
 use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
-use instance::helpers::misc::refresh_and_update_instances;
+use instance::helpers::misc::{InstanceRefreshLock, refresh_and_update_instances};
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
 use launcher_config::helpers::java::{JavaDiscovery, ensure_java_discovery};
@@ -27,6 +27,7 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use tauri::Manager;
 use utils::portable::is_portable;
+use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
@@ -221,7 +222,7 @@ pub async fn run() {
 
         let instances: HashMap<String, Instance> = HashMap::new();
         app.manage(Mutex::new(instances));
-        app.manage(instance::helpers::misc::InstanceRefreshLock::default());
+        app.manage(InstanceRefreshLock::default());
 
         let javas: Vec<JavaInfo> = vec![];
         app.manage(Mutex::new(javas));
@@ -236,7 +237,10 @@ pub async fn run() {
         let resource_translations = ResourceTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(resource_translations));
 
-        app.handle().plugin(download::init_plugin())?;
+        let client = build_sjmcl_client(app.handle(), true);
+        app.manage(client.clone());
+
+        app.handle().plugin(download::init_plugin(client))?;
 
         let launching_queue = Vec::<LaunchingState>::new();
         app.manage(Mutex::new(launching_queue));

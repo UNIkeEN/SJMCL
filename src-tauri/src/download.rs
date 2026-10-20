@@ -22,10 +22,11 @@ use crate::resource::helpers::curseforge::misc::{
   CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
 };
 use crate::utils::fs::is_local_file_valid;
-use crate::utils::web::build_sjmcl_client;
 
-pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
-  sjmcl_downloader::init_with_setup(|app| {
+pub fn init_plugin(
+  client: tauri_plugin_http::reqwest::Client,
+) -> tauri::plugin::TauriPlugin<tauri::Wry> {
+  sjmcl_downloader::init_with_setup(move |app| {
     let launcher_config = app.state::<Mutex<LauncherConfig>>();
     let launcher_config = launcher_config.lock().map_err(|error| error.to_string())?;
     let download_concurrency = if launcher_config.download.transmission.auto_concurrent {
@@ -48,9 +49,8 @@ pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
       );
     drop(launcher_config);
 
-    let client = build_sjmcl_client(app, true);
     let executor = DownloadExecutor {
-      client: client.clone(),
+      client,
       limiter: speed_limit
         .map(|bytes_per_second| Arc::new(TokenBucket::new(bytes_per_second, bytes_per_second))),
       request_decorator: Some(Arc::new(
@@ -67,7 +67,6 @@ pub fn init_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
       )),
       ..DownloadExecutor::default()
     };
-    app.manage(client);
 
     Ok(EngineSetup {
       db_path: APP_DATA_DIR
