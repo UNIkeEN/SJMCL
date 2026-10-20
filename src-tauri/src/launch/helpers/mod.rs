@@ -3,5 +3,6 @@ pub mod file_validator;
 pub mod graphics_handler;
 pub mod jre_selector;
 pub mod log_parser;
+pub mod lwjgl3ify;
 pub mod misc;
 pub mod process_monitor;

@@ -28,6 +28,24 @@ pub struct LegacyForgeModMetadata {
   pub author_list: Option<Vec<Value>>,
 }
 
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum LegacyForgeModList {
+  Array(Vec<LegacyForgeModMetadata>),
+  Container {
+    #[serde(rename = "modList")]
+    mods: Vec<LegacyForgeModMetadata>,
+  },
+}
+
+pub fn read_legacy_forge_mod_metadata<R: Read>(
+  reader: R,
+) -> SJMCLResult<Vec<LegacyForgeModMetadata>> {
+  Ok(match serde_json::from_reader(reader)? {
+    LegacyForgeModList::Array(mods) | LegacyForgeModList::Container { mods } => mods,
+  })
+}
+
 impl From<LegacyForgeModMetadata> for LocalModInfo {
   fn from(meta: LegacyForgeModMetadata) -> Self {
     Self {
@@ -51,13 +69,7 @@ impl LocalModMetadataParser for LegacyForgeModMetadataParser {
   fn get_mod_metadata_from_jar<R: Read + Seek>(
     jar: &mut ZipArchive<R>,
   ) -> SJMCLResult<Self::Metadata> {
-    let mut meta: Vec<LegacyForgeModMetadata> = match jar.by_name("mcmod.info") {
-      Ok(val) => match serde_json::from_reader(val) {
-        Ok(val) => val,
-        Err(e) => return Err(SJMCLError::from(e)),
-      },
-      Err(e) => return Err(SJMCLError::from(e)),
-    };
+    let mut meta = read_legacy_forge_mod_metadata(jar.by_name("mcmod.info")?)?;
     if meta.is_empty() {
       return Err(SJMCLError("len of LegacyForgeModMetadata is 0".to_string()));
     }
@@ -66,14 +78,8 @@ impl LocalModMetadataParser for LegacyForgeModMetadataParser {
 
   async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata> {
     let legacy_forge_file_path = dir_path.join("mcmod.info");
-    let mut meta: Vec<LegacyForgeModMetadata> =
-      match tokio::fs::read_to_string(legacy_forge_file_path).await {
-        Ok(val) => match serde_json::from_str(val.as_str()) {
-          Ok(val) => val,
-          Err(e) => return Err(SJMCLError::from(e)),
-        },
-        Err(e) => return Err(SJMCLError::from(e)),
-      };
+    let contents = tokio::fs::read(legacy_forge_file_path).await?;
+    let mut meta = read_legacy_forge_mod_metadata(contents.as_slice())?;
     if meta.is_empty() {
       return Err(SJMCLError("len of LegacyForgeModMetadata is 0".to_string()));
     }

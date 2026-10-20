@@ -32,6 +32,9 @@ use crate::launch::helpers::graphics_handler::{
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::launch::helpers::log_parser::parse_crash_report_path_from_log;
+use crate::launch::helpers::lwjgl3ify::{
+  prepare_lwjgl3ify, resolve_lwjgl3ify, validate_lwjgl3ify_java,
+};
 use crate::launch::helpers::misc::get_separator;
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
@@ -67,7 +70,8 @@ pub async fn select_suitable_jre(
   let client_path = instance
     .version_path
     .join(format!("{}.json", instance.name));
-  let client_info = load_json_async::<McClientInfo>(&client_path).await?;
+  let mut client_info = load_json_async::<McClientInfo>(&client_path).await?;
+  let lwjgl3ify = resolve_lwjgl3ify(&app, &instance, &game_config, &mut client_info).await?;
 
   refresh_and_update_javas(&app).await;
 
@@ -82,12 +86,23 @@ pub async fn select_suitable_jre(
   )
   .await?;
 
+  if lwjgl3ify.is_some() {
+    validate_lwjgl3ify_java(
+      selected_java.major_version,
+      client_info
+        .java_version
+        .as_ref()
+        .map_or(17, |java| java.major_version),
+    )?;
+  }
+
   let timestamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
   let mut launching = launching_queue_state.lock()?;
   launching.push(LaunchingState {
     id: timestamp,
     game_config,
     client_info,
+    lwjgl3ify,
     selected_java,
     selected_instance: instance,
     ..LaunchingState::default()
@@ -103,7 +118,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, mut client_info, game_config) = {
+  let (instance, mut client_info, game_config, lwjgl3ify) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -113,6 +128,7 @@ pub async fn validate_game_files(
       launching.selected_instance.clone(),
       launching.client_info.clone(),
       launching.game_config.clone(),
+      launching.lwjgl3ify.clone(),
     )
   };
   let workaround = game_config.advanced.workaround.clone();
@@ -149,6 +165,9 @@ pub async fn validate_game_files(
   let [root_dir, libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
+  if let Some(info) = &lwjgl3ify {
+    prepare_lwjgl3ify(info, libraries_dir).await?;
+  }
   extract_native_libraries(
     &client_info,
     libraries_dir,

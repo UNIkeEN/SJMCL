@@ -256,7 +256,8 @@ pub fn merge_library_lists(
   libraries_a: &[LibrariesValue],
   libraries_b: &[LibrariesValue],
 ) -> Vec<LibrariesValue> {
-  let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+  let mut library_map: HashMap<LibraryKey, usize> = HashMap::new();
+  let mut result: Vec<LibrariesValue> = Vec::new();
 
   for library in libraries_a.iter().chain(libraries_b.iter()) {
     if let Ok(library_parts) = parse_library_name(&library.name, None) {
@@ -269,21 +270,22 @@ pub fn merge_library_lists(
 
       let new_version = library_parts.pack_version;
 
-      if let Some(existing_library) = library_map.get(&key) {
-        let existing_version = parse_library_name(&existing_library.name, None)
+      if let Some(&index) = library_map.get(&key) {
+        let existing_version = parse_library_name(&result[index].name, None)
           .map(|parts| parts.pack_version)
           .unwrap_or("0.1.0".to_string());
 
         if parse_sem_version(&new_version) > parse_sem_version(&existing_version) {
-          library_map.insert(key, library.clone());
+          result[index] = library.clone();
         }
       } else {
-        library_map.insert(key, library.clone());
+        library_map.insert(key, result.len());
+        result.push(library.clone());
       }
     }
   }
 
-  library_map.into_values().collect()
+  result
 }
 
 fn parse_sem_version(version: &str) -> Version {

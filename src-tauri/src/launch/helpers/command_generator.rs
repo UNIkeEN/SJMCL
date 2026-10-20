@@ -169,8 +169,10 @@ pub async fn generate_launch_command(
     selected_instance.mod_loader.loader_type,
   )?
   .into_iter()
-  .collect::<HashSet<_>>()
-  .into_iter()
+  .filter({
+    let mut seen = HashSet::new();
+    move |path| seen.insert(path.clone())
+  })
   .map(|p| p.to_string_lossy().to_string())
   .collect();
   class_paths.push(client_jar_path.clone());
