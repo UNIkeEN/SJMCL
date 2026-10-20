@@ -12,16 +12,17 @@
     "clipboard-manager:allow-write-text",
     "clipboard-manager:allow-write-image",
     "core:default",
+    "core:app:allow-exit",
     "core:event:default",
     "core:webview:allow-create-webview-window",
     "core:window:allow-show",
+    "core:window:allow-close",
     "core:window:allow-start-dragging",
     "core:window:allow-set-title",
     "deep-link:default",
     "dialog:default",
     "sjmcl-downloader:default",
     "log:default",
-    "os:default",
-    "process:default"
+    "os:default"
   ]
 }

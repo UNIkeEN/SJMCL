@@ -53,7 +53,7 @@ export const buildStructTreeNodes = (
   }
 
   return Object.entries(data).map(([key, value]) => {
-    const id = `${parentId}.${key}`;
+    const id = `${parentId}/${encodeURIComponent(key)}`;
     return {
       id,
       data: { key, value },

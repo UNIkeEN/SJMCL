@@ -14,8 +14,8 @@ import {
   ModalProps,
   Text,
 } from "@chakra-ui/react";
+import { exit } from "@tauri-apps/api/app";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { exit } from "@tauri-apps/plugin-process";
 import { Trans, useTranslation } from "react-i18next";
 import { LuLanguages } from "react-icons/lu";
 import LanguageMenu from "@/components/language-menu";

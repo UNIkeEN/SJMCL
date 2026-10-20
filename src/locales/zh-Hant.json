@@ -1011,6 +1011,12 @@
         },
         "useNativeOpenal": {
           "title": "使用系統 OpenAL（僅 Linux）"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "自動關閉崩潰提示視窗",
+          "disabled": "不自動關閉",
+          "tenSeconds": "10 秒後自動關閉",
+          "thirtySeconds": "30 秒後自動關閉"
         }
       }
     }
@@ -1033,6 +1039,7 @@
       "gameLogs": "遊戲日誌",
       "help": "幫助"
     },
+    "autoCloseCountdown": "視窗將在 {{seconds}} 秒後自動關閉（點擊視窗任意位置可取消）",
     "bottomAlert": "如需尋求他人幫助，請匯出併發送崩潰報告，而非這個視窗的截圖",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/docs/user-group.html",
     "crashDetails": {
@@ -1594,7 +1601,7 @@
       "error-3": "實例名稱太長"
     },
     "tipsToGlobal": {
-      "content": "目前實例未啟用特定遊戲設定，<terms>前往全域性遊戲設定</terms>"
+      "content": "目前實例未啟用特定遊戲設定，<toGlobal>前往全域性遊戲設定</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

@@ -1011,6 +1011,12 @@
         },
         "useNativeOpenal": {
           "title": "Use System OpenAL(Linux Only)"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "Automatically close the crash notification window",
+          "disabled": "Do not auto-close",
+          "tenSeconds": "Close after 10 seconds",
+          "thirtySeconds": "Close after 30 seconds"
         }
       }
     }
@@ -1033,6 +1039,7 @@
       "gameLogs": "Game Logs",
       "help": "Help"
     },
+    "autoCloseCountdown": "This window will close automatically in {{seconds}} seconds (click anywhere in the window to cancel)",
     "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
@@ -1594,7 +1601,7 @@
       "error-3": "Instance name is too long"
     },
     "tipsToGlobal": {
-      "content": "This instance is not using specific settings. <terms>Go to Global Game Settings</terms>"
+      "content": "This instance is not using specific settings. <toGlobal>Go to Global Game Settings</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

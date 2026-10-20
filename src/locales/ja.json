@@ -1011,6 +1011,12 @@
         },
         "useNativeOpenal": {
           "title": "システム OpenAL を利用（Linux のみ）"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "クラッシュ通知ウィンドウを自動で閉じる",
+          "disabled": "自動で閉じない",
+          "tenSeconds": "10秒後に自動で閉じる",
+          "thirtySeconds": "30秒後に自動で閉じる"
         }
       }
     }
@@ -1033,6 +1039,7 @@
       "gameLogs": "ゲームログ",
       "help": "サポート"
     },
+    "autoCloseCountdown": "このウィンドウは {{seconds}} 秒後に自動で閉じられます（ウィンドウ内の任意の場所をクリックするとキャンセル）",
     "bottomAlert": "サポートを問い合わせる場合は、「このウィンドウのスクリーンショット」ではなく、クラッシュレポートをエクスポートし、相手に送信してください。",
     "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
     "crashDetails": {
@@ -1594,7 +1601,7 @@
       "error-3": "インスタンス名が長すぎる"
     },
     "tipsToGlobal": {
-      "content": "このインスタンスでは個別設定が有効になっていません。<terms>グローバルゲーム設定へ</terms>"
+      "content": "このインスタンスでは個別設定が有効になっていません。<toGlobal>グローバルゲーム設定へ</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

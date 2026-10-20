@@ -84,6 +84,12 @@ const InstanceModsPage = () => {
   const currentModLoaderType =
     summary?.modLoader?.loaderType ?? ModLoaderType.Unknown;
   const currentModLoaderVersion = summary?.modLoader?.version || "";
+  const visibleModLoaderTypes = modLoaderTypes.filter(
+    (type) =>
+      type !== ModLoaderType.Cleanroom ||
+      summary?.version === "1.12.2" ||
+      currentModLoaderType === ModLoaderType.Cleanroom
+  );
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
@@ -441,7 +447,7 @@ const InstanceModsPage = () => {
         }}
       >
         <WrapCardGroup
-          items={modLoaderTypes.map((type) => ({
+          items={visibleModLoaderTypes.map((type) => ({
             cardContent: (
               <Flex justify="space-between" align="center">
                 <HStack spacing={2}>

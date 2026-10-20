@@ -15,7 +15,7 @@
 ```text
 SJMCL/
 ├── src/                      # 前端源码（React）
-│   ├── pages/                # 前端页面路由（Next JS Page Router）
+│   ├── pages/                # 前端页面路由（Next.js Page Router）
 │   │   ├── ...               
 │   │   ├── extension/        # 扩展页面入口
 │   │   └── standalone/       # 独立窗口页面（如游戏日志、错误页）
@@ -51,15 +51,26 @@ SJMCL/
 │   │   ├── launcher_config/  # 启动器配置
 │   │   ├── resource/         # 游戏资源搜索与下载
 │   │   ├── tasks/            # 后台任务系统（现主要用于下载）
-│   │   └── utils/            # 后端工具函数
+│   │   ├── utils/            # 后端工具函数
+│   │   └── ...
 │   ├── assets/               # 后端静态资源
-│   ├── crates/               # 计划分拆后端功能到对应crate，此为装载目录
-│   │   ├── sjmcl-types/      # 后端通用Types以及Traits
+│   ├── crates/               # 计划分拆后端功能到对应 crate，此为装载目录
+│   │   ├── sjmcl-types/      # 后端通用 Types 以及 Traits
 │   │   └── sjmcl-macros/     # 后端所使用的过程宏包
 │   └── infoplist/            # macOS InfoPlist 资源
 ├── public/                   # 前端静态资源
 ├── docs/                     # 文档
-└── cli/                      # 配套 CLI（通过 MCP 集成操作应用本体）
+├── cli/                      # 配套 CLI（通过 MCP 集成操作应用本体）
+├── tools/                    # 开发工具（Git 子模块）
+│   ├── create-extension-CLI/ # create-sjmcl-extension 扩展脚手架
+│   └── vscode-extension/     # SJMCL VS Code 开发辅助扩展
+├── scripts/                  # 项目维护相关脚本
+│   ├── game/                 # 游戏版本列表与模组数据维护（用于 GitHub Actions 定时任务）
+│   ├── locale/               # 国际化文本检查与维护
+│   ├── release/              # 发布打包、上传与更新日志生成
+│   └── version/              # 版本检查与更新
+├── .agents/skills/           # 项目 skill
+└── ...
 ```
 
 - 前端代码整体按页面、组件、状态上下文与服务层分层。

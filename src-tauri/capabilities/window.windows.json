@@ -5,7 +5,6 @@
   "windows": ["main", "game_log*", "game_error*", "extension_standalone*"],
   "platforms": ["windows"],
   "permissions": [
-    "core:window:allow-close",
     "core:window:allow-center",
     "core:window:allow-minimize",
     "core:window:allow-maximize",
