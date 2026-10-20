@@ -1600,7 +1600,7 @@
       "error-3": "Le nom de l'instance est trop long"
     },
     "tipsToGlobal": {
-      "content": "Cette instance n'utilise pas de paramètres spécifiques. <terms>Aller aux paramètres globaux du jeu</terms>"
+      "content": "Cette instance n'utilise pas de paramètres spécifiques. <toGlobal>Aller aux paramètres globaux du jeu</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

@@ -1600,7 +1600,7 @@
       "error-3": "インスタンス名が長すぎる"
     },
     "tipsToGlobal": {
-      "content": "このインスタンスでは個別設定が有効になっていません。<terms>グローバルゲーム設定へ</terms>"
+      "content": "このインスタンスでは個別設定が有効になっていません。<toGlobal>グローバルゲーム設定へ</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

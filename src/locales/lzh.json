@@ -1600,7 +1600,7 @@
       "error-3": "例名太長"
     },
     "tipsToGlobal": {
-      "content": "今例未啟特定戲置設，<terms>前往全例戲置設</terms>"
+      "content": "今例未啟特定戲置設，<toGlobal>前往全例戲置設</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

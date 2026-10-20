@@ -1600,7 +1600,7 @@
       "error-3": "实例名称太长"
     },
     "tipsToGlobal": {
-      "content": "当前实例未启用特定游戏设置，<terms>前往全局游戏设置</terms>"
+      "content": "当前实例未启用特定游戏设置，<toGlobal>前往全局游戏设置</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

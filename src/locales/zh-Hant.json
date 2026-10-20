@@ -1600,7 +1600,7 @@
       "error-3": "實例名稱太長"
     },
     "tipsToGlobal": {
-      "content": "目前實例未啟用特定遊戲設定，<terms>前往全域性遊戲設定</terms>"
+      "content": "目前實例未啟用特定遊戲設定，<toGlobal>前往全域性遊戲設定</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {

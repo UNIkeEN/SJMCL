@@ -1600,7 +1600,7 @@
       "error-3": "El nombre de la instancia es demasiado largo"
     },
     "tipsToGlobal": {
-      "content": "Esta instancia no está usando configuración específica. <terms>Ir a Configuración Global del Juego</terms>"
+      "content": "Esta instancia no está usando configuración específica. <toGlobal>Ir a Configuración Global del Juego</toGlobal>"
     }
   },
   "InstanceShaderPacksPage": {
