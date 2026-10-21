@@ -8,7 +8,6 @@ import {
   RadioGroup,
   Text,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import { FaStar } from "react-icons/fa6";
 import { GoDotFill } from "react-icons/go";
 import Empty from "@/components/common/empty";
@@ -28,6 +27,7 @@ interface InstancesViewProps extends BoxProps {
   selectedInstance: InstanceSummary | undefined;
   viewType: string;
   onSelectInstance?: (instance: InstanceSummary) => void;
+  onDoubleClickInstance?: (instance: InstanceSummary) => void;
   onSelectCallback?: () => void;
   withMenu?: boolean;
 }
@@ -37,14 +37,13 @@ const InstancesView: React.FC<InstancesViewProps> = ({
   selectedInstance,
   viewType,
   onSelectInstance,
+  onDoubleClickInstance,
   onSelectCallback = () => {},
   withMenu = true,
   ...boxProps
 }) => {
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-
-  const router = useRouter();
 
   const handleSelectInstance = (instance: InstanceSummary) => {
     if (onSelectInstance) {
@@ -55,10 +54,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     onSelectCallback();
   };
   const handleDoubleClickInstance = (instance: InstanceSummary) => {
-    router.push({
-      pathname: "/instances/details/[id]",
-      query: { id: instance.id },
-    });
+    onDoubleClickInstance?.(instance);
   };
 
   const listItems: OptionItemProps[] = instances.map((instance) => ({
