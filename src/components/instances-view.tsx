@@ -8,6 +8,7 @@ import {
   RadioGroup,
   Text,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { FaStar } from "react-icons/fa6";
 import { GoDotFill } from "react-icons/go";
 import Empty from "@/components/common/empty";
@@ -43,6 +44,8 @@ const InstancesView: React.FC<InstancesViewProps> = ({
   const { config, update } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
+  const router = useRouter();
+
   const handleSelectInstance = (instance: InstanceSummary) => {
     if (onSelectInstance) {
       onSelectInstance(instance);
@@ -50,6 +53,12 @@ const InstancesView: React.FC<InstancesViewProps> = ({
       update("states.shared.selectedInstanceId", instance.id);
     }
     onSelectCallback();
+  };
+  const handleDoubleClickInstance = (instance: InstanceSummary) => {
+    router.push({
+      pathname: "/instances/details/[id]",
+      query: { id: instance.id },
+    });
   };
 
   const listItems: OptionItemProps[] = instances.map((instance) => ({
@@ -79,11 +88,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     titleLineWrap: false,
     prefixElement: (
       <HStack spacing={2.5}>
-        <Radio
-          value={instance.id}
-          onClick={() => handleSelectInstance(instance)}
-          colorScheme={primaryColor}
-        />
+        <Radio value={instance.id} colorScheme={primaryColor} />
         <Image
           boxSize="32px"
           src={getInstanceIconSrc(instance.iconSrc, instance.versionPath)}
@@ -92,10 +97,10 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       </HStack>
     ),
-    ...(!withMenu && {
-      isFullClickZone: true,
-      onClick: () => handleSelectInstance(instance),
-    }),
+    isFullClickZone: true,
+    onClick: () => handleSelectInstance(instance),
+    onDoubleClick: () => handleDoubleClickInstance(instance),
+    isChildrenIndependent: true,
     children: withMenu ? (
       <InstanceMenu instance={instance} variant="buttonGroup" />
     ) : (
