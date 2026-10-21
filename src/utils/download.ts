@@ -8,6 +8,7 @@ import {
 } from "@/models/download";
 
 const MAX_DOWNLOAD_ETA_SECS = 24 * 60 * 60;
+const DOWNLOAD_ETA_SMOOTHING_SECS = 3;
 
 export const getDownloadErrorText = (
   error: DownloadTaskError | null
@@ -103,15 +104,25 @@ export const estimateDownloadGroupEta = (
       : sample;
   const elapsed = (now - etaSample.startedAt) / 1000;
   if (elapsed >= 1) {
+    // Weight by elapsed time so irregular updates use the same smoothing timescale.
+    const alpha = 1 - Math.exp(-elapsed / DOWNLOAD_ETA_SMOOTHING_SECS);
+    const smoothRate = (current: number, previous = 0) =>
+      previous > 0 ? previous + alpha * (current - previous) : current;
     etaSample = {
       startedAt: now,
       done,
       received,
-      filesPerSec: (done - etaSample.done) / elapsed,
+      filesPerSec: smoothRate(
+        (done - etaSample.done) / elapsed,
+        etaSample.filesPerSec
+      ),
       bytesPerSec:
         etaSample.received == null
           ? undefined
-          : (received - etaSample.received) / elapsed,
+          : smoothRate(
+              (received - etaSample.received) / elapsed,
+              etaSample.bytesPerSec
+            ),
     };
   }
 

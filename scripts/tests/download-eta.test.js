@@ -36,6 +36,13 @@ const makeTasks = (done, pending, extra = []) => [
   ...extra,
 ];
 
+const makeKnownTasks = (done, pending) =>
+  makeTasks(done, pending).map((task) => ({
+    ...task,
+    total: 100,
+    received: 0,
+  }));
+
 test("fractional durations use whole seconds across minute and hour boundaries", () => {
   assert.equal(formatTimeInterval(0.123456789), "00:00:00");
   assert.equal(formatTimeInterval(59.999999), "00:00:59");
@@ -101,7 +108,13 @@ test("pausing clears the sample and resuming excludes earlier completions and id
   const paused = estimateDownloadGroupEta(
     "paused",
     tasks,
-    { startedAt: 0, done: 0 },
+    {
+      startedAt: 0,
+      done: 0,
+      received: 0,
+      filesPerSec: 100,
+      bytesPerSec: 10000,
+    },
     2000
   );
   assert.equal(paused.etaSecs, undefined);
@@ -113,6 +126,8 @@ test("pausing clears the sample and resuming excludes earlier completions and id
     100000
   );
   assert.equal(resumed.etaSecs, undefined);
+  assert.equal(resumed.etaSample.filesPerSec, undefined);
+  assert.equal(resumed.etaSample.bytesPerSec, undefined);
   const current = estimateDownloadGroupEta(
     "active",
     makeTasks(30, 70),
@@ -454,6 +469,156 @@ test("known small files completing between ticks contribute byte throughput", ()
     2000
   );
   assert.equal(current.etaSecs, 8);
+});
+
+test("the first positive throughput sample is used directly after an idle start", () => {
+  const initial = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(0, 100),
+    undefined,
+    0
+  );
+  const idle = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(0, 100),
+    initial.etaSample,
+    1000
+  );
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(10, 90),
+    idle.etaSample,
+    2000
+  );
+  assert.equal(current.etaSample.filesPerSec, 10);
+  assert.equal(current.etaSample.bytesPerSec, 1000);
+  assert.equal(current.etaSecs, 9);
+});
+
+test("a completion burst is smoothed before calculating the group ETA", () => {
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(40, 60),
+    {
+      startedAt: 0,
+      done: 10,
+      received: 1000,
+      filesPerSec: 10,
+      bytesPerSec: 1000,
+    },
+    1000
+  );
+  assert.ok(current.etaSample.filesPerSec > 15.66);
+  assert.ok(current.etaSample.filesPerSec < 15.68);
+  assert.ok(current.etaSample.bytesPerSec > 1566);
+  assert.ok(current.etaSample.bytesPerSec < 1568);
+  assert.equal(current.etaSecs, 4);
+});
+
+test("a brief gap between completions decays throughput instead of clearing ETA", () => {
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(10, 90),
+    {
+      startedAt: 0,
+      done: 10,
+      received: 1000,
+      filesPerSec: 10,
+      bytesPerSec: 1000,
+    },
+    1000
+  );
+  assert.ok(current.etaSample.filesPerSec > 7.16);
+  assert.ok(current.etaSample.filesPerSec < 7.17);
+  assert.ok(current.etaSample.bytesPerSec > 716);
+  assert.ok(current.etaSample.bytesPerSec < 717);
+  assert.equal(current.etaSecs, 13);
+});
+
+test("throughput smoothing follows elapsed time across irregular update intervals", () => {
+  const tasks = makeKnownTasks(10, 90);
+  const sample = {
+    startedAt: 0,
+    done: 10,
+    received: 1000,
+    filesPerSec: 10,
+    bytesPerSec: 1000,
+  };
+  const oneInterval = estimateDownloadGroupEta("active", tasks, sample, 3000);
+  const first = estimateDownloadGroupEta("active", tasks, sample, 1000);
+  const twoIntervals = estimateDownloadGroupEta(
+    "active",
+    tasks,
+    first.etaSample,
+    3000
+  );
+  assert.ok(oneInterval.etaSample.filesPerSec > 3.67);
+  assert.ok(oneInterval.etaSample.filesPerSec < 3.68);
+  assert.ok(oneInterval.etaSample.bytesPerSec > 367);
+  assert.ok(oneInterval.etaSample.bytesPerSec < 368);
+  assert.ok(
+    Math.abs(
+      oneInterval.etaSample.filesPerSec - twoIntervals.etaSample.filesPerSec
+    ) < 1e-10
+  );
+  assert.ok(
+    Math.abs(
+      oneInterval.etaSample.bytesPerSec - twoIntervals.etaSample.bytesPerSec
+    ) < 1e-10
+  );
+  assert.equal(oneInterval.etaSecs, 25);
+  assert.equal(twoIntervals.etaSecs, 25);
+});
+
+test("retry progress resets discard the previous smoothed rates", () => {
+  const reset = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(10, 90),
+    {
+      startedAt: 0,
+      done: 20,
+      received: 2000,
+      filesPerSec: 100,
+      bytesPerSec: 10000,
+    },
+    1000
+  );
+  assert.equal(reset.etaSample.filesPerSec, undefined);
+  assert.equal(reset.etaSample.bytesPerSec, undefined);
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeKnownTasks(20, 80),
+    reset.etaSample,
+    2000
+  );
+  assert.equal(current.etaSample.filesPerSec, 10);
+  assert.equal(current.etaSample.bytesPerSec, 1000);
+  assert.equal(current.etaSecs, 8);
+});
+
+test("a slow file still bounds ETA when smoothed group throughput is high", () => {
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeTasks(0, 0, [
+      {
+        executor: "download",
+        state: "downloading",
+        total: 1100,
+        received: 100,
+        speedBps: 10,
+        etaSecs: 100,
+      },
+    ]),
+    {
+      startedAt: 0,
+      done: 0,
+      received: 0,
+      filesPerSec: 100,
+      bytesPerSec: 10000,
+    },
+    1000
+  );
+  assert.equal(current.etaSecs, 100);
 });
 
 test("missing byte samples fall back to file throughput for known queued sizes", () => {
