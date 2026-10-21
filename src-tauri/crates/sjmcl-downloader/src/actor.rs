@@ -817,6 +817,20 @@ impl EngineActor {
         t.error = Some(e.clone());
       }
     }
+    // Small downloads may finish between periodic ticks. Send their final byte
+    // counts so the frontend can include them in group throughput samples.
+    let task = &self.state.groups[gi].tasks[ti];
+    if new_state == TaskState::Done && task.executor == "download" {
+      self.emit(EngineEvent::Tick(vec![Progress {
+        task_id: task_id.into(),
+        group_id: gid.clone(),
+        state: new_state,
+        received: task.received,
+        total: task.total,
+        speed_bps: 0.0,
+        eta_secs: None,
+      }]));
+    }
     // Emit state and verification events.
     self.emit_task_state(&gid, task_id, old, new_state);
     if emit_verified {

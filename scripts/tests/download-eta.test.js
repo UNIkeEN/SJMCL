@@ -79,7 +79,12 @@ test("the completion estimate stays available while active files change", () => 
 
 test("a slow active file sets a lower bound on the group ETA", () => {
   const tasks = makeTasks(20, 79, [
-    { executor: "download", state: "downloading", etaSecs: 30.123456789 },
+    {
+      executor: "download",
+      state: "downloading",
+      received: 1,
+      etaSecs: 30.123456789,
+    },
   ]);
   const current = estimateDownloadGroupEta(
     "active",
@@ -147,7 +152,7 @@ test("startup waits for a completion sample and keeps the per-file fallback", ()
     undefined
   );
   const tasks = makeTasks(0, 0, [
-    { executor: "download", state: "downloading", etaSecs: 0.1 },
+    { executor: "download", state: "downloading", received: 1, etaSecs: 0.1 },
   ]);
   assert.equal(
     estimateDownloadGroupEta("active", tasks, undefined, 0).etaSecs,
@@ -328,16 +333,16 @@ test("a slow connection still bounds the ETA when other transfers are fast", () 
     {
       executor: "download",
       state: "downloading",
-      total: 1000,
-      received: 0,
+      total: 1001,
+      received: 1,
       speedBps: 10,
       etaSecs: 100,
     },
     {
       executor: "download",
       state: "downloading",
-      total: 1000,
-      received: 0,
+      total: 1001,
+      received: 1,
       speedBps: 1000,
       etaSecs: 1,
     },
@@ -451,6 +456,39 @@ test("known small files completing between ticks contribute byte throughput", ()
   assert.equal(current.etaSecs, 8);
 });
 
+test("missing byte samples fall back to file throughput for known queued sizes", () => {
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeTasks(20, 80).map((task) => ({
+      ...task,
+      received: 0,
+      total: task.state === "done" ? 0 : 100000,
+    })),
+    { startedAt: 0, done: 0, received: 0 },
+    2000
+  );
+  assert.equal(current.etaSecs, 8);
+});
+
+test("a connection without received bytes cannot inflate the group ETA", () => {
+  const current = estimateDownloadGroupEta(
+    "active",
+    makeTasks(20, 79, [
+      {
+        executor: "download",
+        state: "downloading",
+        total: 100000,
+        received: 0,
+        speedBps: 8,
+        etaSecs: 12500,
+      },
+    ]),
+    { startedAt: 0, done: 0, received: 0 },
+    2000
+  );
+  assert.equal(current.etaSecs, 8);
+});
+
 test("recent byte throughput accounts for queued large files without per-file speed ticks", () => {
   const smallTasks = (done, pending) =>
     makeTasks(done, pending).map((task) => ({
@@ -494,8 +532,8 @@ test("ETAs of one day or more are hidden", () => {
       {
         executor: "download",
         state: "downloading",
-        total: seconds,
-        received: 0,
+        total: seconds + 1,
+        received: 1,
         speedBps: 1,
         etaSecs: seconds,
       },
@@ -512,8 +550,8 @@ test("the ETA limit applies after rounding to whole seconds", () => {
     {
       executor: "download",
       state: "downloading",
-      total: seconds,
-      received: 0,
+      total: seconds + 1,
+      received: 1,
       speedBps: 1,
       etaSecs: seconds,
     },
@@ -532,8 +570,8 @@ test("overflowing estimates are hidden and recover when speed improves", () => {
   const task = {
     executor: "download",
     state: "downloading",
-    total: 1e10,
-    received: 0,
+    total: 1e10 + 1,
+    received: 1,
     speedBps: 1e-300,
   };
   const initial = estimateDownloadGroupEta("active", [task], undefined, 0);

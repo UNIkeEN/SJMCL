@@ -242,7 +242,8 @@ impl DownloadExecutor {
       .send(TaskReport::Progress {
         task_id: ctx.task_id.clone(),
         received: reader.offset(),
-        total,
+        // At EOF the actual size is known, even for chunked responses or stale size hints.
+        total: reader.offset(),
       })
       .await;
     finalize_download(&ctx, &part_path, &dest).await

@@ -116,22 +116,27 @@ export const estimateDownloadGroupEta = (
   }
 
   let remainingBytes = 0;
+  let knownFiles = 0;
   let speedBps = 0;
   let unknownFiles = 0;
   let longestEta = 0;
   for (const task of remaining) {
     if (task.state === DownloadTaskState.Verifying) continue;
-    const hasEta =
+    const transferring =
       task.state === DownloadTaskState.Downloading &&
+      task.received > (task.offset ?? 0);
+    const hasEta =
+      transferring &&
       task.etaSecs != null &&
       Number.isFinite(task.etaSecs) &&
       task.etaSecs > 0;
     if (task.total > 0) {
       remainingBytes += Math.max(0, task.total - task.received);
+      if (task.total > task.received) knownFiles++;
     } else if (!hasEta) {
       unknownFiles++;
     }
-    if (task.state === DownloadTaskState.Downloading) {
+    if (transferring) {
       if (Number.isFinite(task.speedBps) && (task.speedBps ?? 0) > 0) {
         speedBps += task.speedBps!;
         if (task.total > task.received) {
@@ -145,14 +150,18 @@ export const estimateDownloadGroupEta = (
     }
   }
 
-  // Use bytes for known files, and recent completion throughput only for unknown
-  // files. A slow active connection remains a lower bound on the group ETA.
+  // Prefer byte throughput for known sizes. Until byte samples are available,
+  // completed-file throughput also covers known files waiting for a connection.
+  // A slow connection with actual transfer progress still bounds the group ETA.
   speedBps = Math.max(speedBps, etaSample.bytesPerSec ?? 0);
-  const transferEta = speedBps > 0 ? remainingBytes / speedBps : 0;
-  const unknownEta =
-    (etaSample.filesPerSec ?? 0) > 0
-      ? unknownFiles / etaSample.filesPerSec!
-      : 0;
+  const filesPerSec = etaSample.filesPerSec ?? 0;
+  const transferEta =
+    speedBps > 0
+      ? remainingBytes / speedBps
+      : filesPerSec > 0
+        ? knownFiles / filesPerSec
+        : 0;
+  const unknownEta = filesPerSec > 0 ? unknownFiles / filesPerSec : 0;
   const etaSecs = Math.ceil(Math.max(longestEta, transferEta + unknownEta));
   return {
     etaSample,
