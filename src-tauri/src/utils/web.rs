@@ -36,8 +36,9 @@ use crate::launcher_config::models::{LauncherConfig, ProxyType};
 /// ```
 pub fn build_sjmcl_client(app: &AppHandle, use_proxy: bool) -> Client {
   let mut builder = ClientBuilder::new()
-    .timeout(Duration::from_secs(10))
-    .tcp_keepalive(Duration::from_secs(10));
+      .connect_timeout(Duration::from_secs(10))
+      .read_timeout(Duration::from_secs(30))
+      .tcp_keepalive(Duration::from_secs(10));
 
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
     // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
