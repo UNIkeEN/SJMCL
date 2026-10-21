@@ -38,7 +38,7 @@ pub fn extract_assets(app: &AppHandle) -> Result<(), io::Error> {
     let mut file_in_zip = zip.by_index(i)?;
     let out_path = app
       .path()
-      .resolve(file_in_zip.mangled_name(), BaseDirectory::AppData)
+      .resolve(file_in_zip.mangled_name()?, BaseDirectory::AppData)
       .map_err(io::Error::other)?;
 
     if file_in_zip.is_dir() {
