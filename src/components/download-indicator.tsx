@@ -64,6 +64,10 @@ export const DownloadIndicator: React.FC = () => {
             color={`${primaryColor}.500`}
             size="30px"
             value={generalPercent}
+            isIndeterminate={
+              generalPercent == null &&
+              tasks.some((group) => group.state === DownloadGroupState.Active)
+            }
           >
             <CircularProgressLabel>
               <Center w="100%">

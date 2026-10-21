@@ -40,6 +40,10 @@ import {
 } from "@/utils/download";
 import { formatByteSize } from "@/utils/string";
 
+const downloadProgressStyles = {
+  "& > div": { transition: "width 0.2s linear" },
+};
+
 const DownloadErrorLabel = ({ error }: { error?: DownloadError | null }) => {
   const { t } = useTranslation();
   return (
@@ -96,13 +100,13 @@ export const DownloadTasksPage = () => {
   };
 
   const showTaskProgressInfo = (task: DownloadTask) => {
-    const parts = [];
+    const parts = [formatByteSize(task.received)];
     if (task.total) {
-      parts.push(
-        `${formatByteSize(task.received)} / ${formatByteSize(task.total)}`
-      );
+      parts[0] += ` / ${formatByteSize(task.total)}`;
     }
-    if (task.speedBps) parts.push(`${formatByteSize(task.speedBps)}/s`);
+    if (Number.isFinite(task.speedBps) && (task.speedBps ?? 0) > 0) {
+      parts.push(`${formatByteSize(task.speedBps!)}/s`);
+    }
     return parts.join(" - ");
   };
 
@@ -149,11 +153,16 @@ export const DownloadTasksPage = () => {
             key={group.id}
             items={[
               <VStack align="stretch" key={group.id}>
-                <Flex justify="space-between" alignItems="center">
-                  <Text fontSize="xs-sm" fontWeight="bold">
+                <Flex justify="space-between" alignItems="center" gap={2}>
+                  <Text
+                    fontSize="xs-sm"
+                    fontWeight="bold"
+                    minW={0}
+                    noOfLines={2}
+                  >
                     {parseGroupTitle(group.name)}
                   </Text>
-                  <HStack alignItems="center">
+                  <HStack alignItems="center" flexShrink={0}>
                     {group.stats.total > 0 && (
                       <Text fontSize="xs" className="secondary-text">
                         {group.stats.done} / {group.stats.total}
@@ -269,6 +278,8 @@ export const DownloadTasksPage = () => {
                     <Progress
                       size="xs"
                       value={group.progress}
+                      isIndeterminate={group.progress == null}
+                      sx={downloadProgressStyles}
                       colorScheme={primaryColor}
                       borderRadius="sm"
                       mb={1}
@@ -290,6 +301,8 @@ export const DownloadTasksPage = () => {
                               fontSize="xs"
                               className="secondary-text"
                               mt={0.5}
+                              noOfLines={1}
+                              title={showTaskProgressInfo(task)}
                             >
                               {showTaskProgressInfo(task)}
                             </Text>
@@ -299,13 +312,14 @@ export const DownloadTasksPage = () => {
                         {shouldShowDownloadProgress(group, task) && (
                           <Progress
                             w={36}
+                            flexShrink={0}
                             size="xs"
                             value={task.progress}
+                            sx={downloadProgressStyles}
                             colorScheme={primaryColor}
                             isIndeterminate={
-                              task.state === DownloadTaskState.Pending ||
-                              (task.state === DownloadTaskState.Downloading &&
-                                task.total === 0)
+                              task.total === 0 &&
+                              task.state !== DownloadTaskState.Verifying
                             }
                             borderRadius="sm"
                           />

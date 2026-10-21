@@ -326,6 +326,34 @@ pub(crate) struct RuntimeTask {
   pub prev_at: Option<std::time::Instant>,
 }
 
+impl RuntimeTask {
+  pub fn update_speed(&mut self, received: u64, now: std::time::Instant) -> f64 {
+    if let Some(previous) = self.prev_at
+      && received >= self.prev_received
+    {
+      let elapsed = now.duration_since(previous).as_secs_f64();
+      if elapsed >= 0.05 {
+        let rate = (received - self.prev_received) as f64 / elapsed;
+        // Use a three-second timescale, independent of the progress event frequency.
+        let alpha = 1.0 - (-elapsed / 3.0).exp();
+        self.speed_ema = if self.speed_ema <= 0.0 {
+          rate
+        } else {
+          self.speed_ema + alpha * (rate - self.speed_ema)
+        };
+        self.prev_received = received;
+        self.prev_at = Some(now);
+      }
+    } else {
+      // Establish a fresh baseline after resumption or a full-download fallback.
+      self.speed_ema = 0.0;
+      self.prev_received = received;
+      self.prev_at = Some(now);
+    }
+    self.speed_ema
+  }
+}
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct RuntimeGroup {
   pub cancel_reason: Option<CancelReason>,
@@ -339,5 +367,80 @@ impl RuntimeGroup {
       cancel_reason: None,
       tasks: HashMap::new(),
     }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::model::RuntimeTask;
+  use std::time::{Duration, Instant};
+  use tokio_util::sync::CancellationToken;
+
+  fn runtime() -> RuntimeTask {
+    RuntimeTask {
+      start_token: CancellationToken::new(),
+      run_token: CancellationToken::new(),
+      queued: false,
+      speed_ema: 0.0,
+      prev_received: 0,
+      prev_at: None,
+    }
+  }
+
+  #[test]
+  fn transfer_speed_smooths_bursts_and_short_stalls() {
+    let mut task = runtime();
+    let now = Instant::now();
+    assert_eq!(task.update_speed(0, now), 0.0);
+    assert_eq!(
+      task.update_speed(1000, now + Duration::from_secs(1)),
+      1000.0
+    );
+    let burst = task.update_speed(3000, now + Duration::from_millis(1200));
+    assert!((1000.0..2000.0).contains(&burst));
+    let stall = task.update_speed(3000, now + Duration::from_millis(1400));
+    assert!(stall < burst && stall > burst * 0.9);
+  }
+
+  #[test]
+  fn transfer_speed_smoothing_does_not_depend_on_tick_frequency() {
+    let now = Instant::now();
+    let mut frequent = runtime();
+    frequent.update_speed(0, now);
+    frequent.update_speed(1000, now + Duration::from_secs(1));
+    let mut infrequent = frequent.clone();
+    for step in 1..=5 {
+      frequent.update_speed(
+        1000 + step * 400,
+        now + Duration::from_millis(1000 + step * 200),
+      );
+    }
+    infrequent.update_speed(3000, now + Duration::from_secs(2));
+    assert!((frequent.speed_ema - infrequent.speed_ema).abs() < 1e-6);
+  }
+
+  #[test]
+  fn speed_samples_exclude_resumed_bytes_and_reset_on_a_full_restart() {
+    let now = Instant::now();
+    let mut task = runtime();
+    assert_eq!(task.update_speed(1_000_000, now), 0.0);
+    assert_eq!(
+      task.update_speed(1_001_000, now + Duration::from_secs(1)),
+      1000.0
+    );
+    assert_eq!(task.update_speed(10, now + Duration::from_secs(2)), 0.0);
+    assert_eq!(task.update_speed(510, now + Duration::from_secs(3)), 500.0);
+  }
+
+  #[test]
+  fn frequent_ticks_do_not_discard_unsampled_bytes() {
+    let now = Instant::now();
+    let mut task = runtime();
+    task.update_speed(0, now);
+    task.update_speed(10, now + Duration::from_millis(10));
+    assert_eq!(
+      task.update_speed(100, now + Duration::from_millis(100)),
+      1000.0
+    );
   }
 }

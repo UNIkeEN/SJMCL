@@ -35,6 +35,7 @@ import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
 import {
   estimateDownloadGroupEta,
   getDownloadErrorText,
+  getDownloadGroupProgress,
   getDownloadStats,
   shouldShowDownloadProgress,
 } from "@/utils/download";
@@ -95,14 +96,13 @@ const deriveGroup = (
           state === DownloadTaskState.Done
             ? 100
             : task.total
-              ? (task.received * 100) / task.total
-              : 0,
+              ? Math.min(100, Math.max(0, (task.received * 100) / task.total))
+              : undefined,
       };
     })
     .sort((left, right) => taskOrder(left.state) - taskOrder(right.state));
   const stats = getDownloadStats(derivedTasks);
-  // Count only downloaded files so installation steps do not affect progress.
-  const progress = stats.total ? (stats.done * 100) / stats.total : 0;
+  const progress = getDownloadGroupProgress(derivedTasks);
   return {
     ...summary,
     tasks: derivedTasks,
@@ -613,6 +613,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         shouldShowDownloadProgress(group)
     );
     if (!active.length) return undefined;
+    if (active.every((group) => group.progress == null)) return undefined;
     return active.reduce(
       (total, group) => total + (group.progress ?? 0) / active.length,
       0

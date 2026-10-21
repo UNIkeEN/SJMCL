@@ -732,6 +732,9 @@ impl EngineActor {
             .and_then(|g| g.tasks.get_mut(&task_id))
           {
             rt.queued = false;
+            rt.speed_ema = 0.0;
+            rt.prev_received = 0;
+            rt.prev_at = None;
           }
         }
         let _ = reply.send(accepted);
@@ -1303,20 +1306,7 @@ impl EngineActor {
             .get_mut(&gid)
             .and_then(|g| g.tasks.get_mut(&tid))
           {
-            let dt = now.duration_since(rt.prev_at.unwrap_or(now)).as_secs_f64();
-            if dt > 0.05 {
-              let inst = (received.saturating_sub(rt.prev_received)) as f64 / dt;
-              rt.speed_ema = if rt.speed_ema <= 0.0 {
-                inst
-              } else {
-                0.7 * inst + 0.3 * rt.speed_ema
-              };
-              speed = rt.speed_ema;
-            } else {
-              speed = rt.speed_ema;
-            }
-            rt.prev_received = received;
-            rt.prev_at = Some(now);
+            speed = rt.update_speed(received, now);
           }
           speed
         } else {

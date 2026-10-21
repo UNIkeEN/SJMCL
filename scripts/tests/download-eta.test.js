@@ -21,9 +21,78 @@ const { formatTimeInterval } = require("../../src/utils/datetime.ts");
 const {
   estimateDownloadGroupEta,
   getDownloadErrorText,
+  getDownloadGroupProgress,
   getDownloadStats,
   shouldShowDownloadProgress,
 } = require("../../src/utils/download.ts");
+const { formatByteSize } = require("../../src/utils/string.ts");
+
+test("a single modpack archive reports progress before the file completes", () => {
+  assert.equal(
+    getDownloadGroupProgress([
+      {
+        executor: "download",
+        state: "downloading",
+        total: 1000,
+        received: 375,
+      },
+    ]),
+    37.5
+  );
+});
+
+test("group progress includes partial files and excludes installation steps", () => {
+  assert.equal(
+    getDownloadGroupProgress([
+      { executor: "download", state: "done", total: 100, received: 100 },
+      { executor: "download", state: "downloading", total: 100, received: 50 },
+      { executor: "download", state: "pending", total: 100, received: 0 },
+      { executor: "install", state: "pending" },
+    ]),
+    50
+  );
+});
+
+test("unknown archive sizes stay indeterminate until a size or completion is known", () => {
+  const archive = {
+    executor: "download",
+    state: "downloading",
+    total: 0,
+    received: 10,
+  };
+  assert.equal(getDownloadGroupProgress([archive]), undefined);
+  assert.equal(getDownloadGroupProgress([{ ...archive, total: 20 }]), 50);
+  assert.equal(getDownloadGroupProgress([{ ...archive, state: "done" }]), 100);
+  assert.equal(getDownloadGroupProgress([]), undefined);
+});
+
+test("group progress stays bounded and follows a full-download restart", () => {
+  const archive = {
+    executor: "download",
+    state: "downloading",
+    total: 100,
+    received: 90,
+  };
+  assert.equal(getDownloadGroupProgress([archive]), 90);
+  assert.equal(getDownloadGroupProgress([{ ...archive, received: 10 }]), 10);
+  assert.equal(getDownloadGroupProgress([{ ...archive, received: 150 }]), 100);
+  assert.equal(getDownloadGroupProgress([{ ...archive, received: -10 }]), 0);
+});
+
+test("sub-KiB download rates never expose raw floating-point decimals", async () => {
+  const { default: i18n } = await import("i18next");
+  await i18n.init({
+    lng: "en",
+    resources: { en: { translation: require("../../src/locales/en.json") } },
+  });
+  assert.equal(formatByteSize(123.456789123), "123 B");
+  assert.equal(formatByteSize(0.123456789123), "0 B");
+  assert.equal(formatByteSize(1023.999999), "1024 B");
+  assert.equal(formatByteSize(1536.789123), "1.50 KiB");
+  assert.equal(formatByteSize(-1), "0 B");
+  assert.equal(formatByteSize(Number.NaN), "0 B");
+  assert.equal(formatByteSize(Number.POSITIVE_INFINITY), "0 B");
+});
 
 const makeTasks = (done, pending, extra = []) => [
   ...Array.from({ length: done }, () => ({

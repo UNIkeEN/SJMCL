@@ -63,6 +63,31 @@ export const getDownloadStats = (tasks: DownloadTask[]): DownloadGroupStats => {
   };
 };
 
+export const getDownloadGroupProgress = (
+  tasks: DownloadTask[]
+): number | undefined => {
+  const downloads = tasks.filter((task) => task.executor === "download");
+  if (
+    !downloads.some(
+      (task) => task.state === DownloadTaskState.Done || task.total > 0
+    )
+  ) {
+    return undefined;
+  }
+  // Include partial files so a single archive advances before it completes.
+  const completed = downloads.reduce(
+    (sum, task) =>
+      sum +
+      (task.state === DownloadTaskState.Done
+        ? 1
+        : task.total > 0
+          ? Math.min(1, Math.max(0, task.received / task.total))
+          : 0),
+    0
+  );
+  return (completed * 100) / downloads.length;
+};
+
 export const estimateDownloadGroupEta = (
   state: DownloadGroupState,
   tasks: DownloadTask[],
