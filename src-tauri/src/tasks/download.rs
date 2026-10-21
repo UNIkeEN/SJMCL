@@ -173,7 +173,7 @@ impl DownloadTask {
     Ok((
       resp.bytes_stream().map(|res| match res {
         Ok(bytes) => Ok(bytes),
-        Err(_) => Ok(bytes::Bytes::new()),
+        Err(e) => Err(std::io::Error::other(e)),
       }),
       total_progress,
     ))
