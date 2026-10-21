@@ -55,6 +55,14 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   const basePadding = cardProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
 
+  const isCardClickable = variant === "radio" && !!onSelect;
+
+  const handleInteractiveAreaClick = (e: React.MouseEvent) => {
+    // prevent clicks on interactive elements (e.g. menu button) inside
+    // extraContent from selecting the card
+    e.stopPropagation();
+  };
+
   const renderContent = () => {
     if (!cardContent) return null;
 
@@ -96,7 +104,17 @@ export const WrapCard: React.FC<WrapCardProps> = ({
         <Text fontSize="xs" className="secondary-text ellipsis-text">
           {description}
         </Text>
-        {extraContent}
+        {extraContent &&
+          (isCardClickable ? (
+            <Box
+              onClick={handleInteractiveAreaClick}
+              onDoubleClick={handleInteractiveAreaClick}
+            >
+              {extraContent}
+            </Box>
+          ) : (
+            extraContent
+          ))}
       </VStack>
     );
   };
@@ -110,14 +128,14 @@ export const WrapCard: React.FC<WrapCardProps> = ({
       borderWidth={isSelected ? borderWidth : 0}
       p={isSelected ? selectedPadding : basePadding}
       {...cardProps}
+      {...(isCardClickable && {
+        cursor: "pointer",
+        onClick: onSelect,
+      })}
     >
       {variant === "radio" && (
         <Box position="absolute" top={2} left={2}>
-          <Radio
-            value={radioValue}
-            onClick={onSelect}
-            colorScheme={primaryColor}
-          />
+          <Radio value={radioValue} colorScheme={primaryColor} />
         </Box>
       )}
       {renderContent()}

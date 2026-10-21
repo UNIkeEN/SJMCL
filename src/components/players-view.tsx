@@ -46,20 +46,13 @@ const PlayersView: React.FC<PlayersViewProps> = ({
     description: showDesc ? generatePlayerDesc(player, true) : undefined,
     prefixElement: (
       <HStack spacing={2.5}>
-        <Radio
-          value={player.id}
-          onClick={() => handleSelectPlayer(player)}
-          colorScheme={primaryColor}
-        />
+        <Radio value={player.id} colorScheme={primaryColor} />
         <PlayerAvatar avatar={player.avatar} boxSize="32px" objectFit="cover" />
       </HStack>
     ),
-    ...(withMenu
-      ? {}
-      : {
-          isFullClickZone: true,
-          onClick: () => handleSelectPlayer(player),
-        }),
+    isFullClickZone: true,
+    onClick: () => handleSelectPlayer(player),
+    isChildrenIndependent: true,
     children: withMenu ? (
       <PlayerMenu player={player} variant="buttonGroup" />
     ) : (

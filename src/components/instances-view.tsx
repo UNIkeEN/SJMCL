@@ -141,6 +141,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     isSelected: selectedInstance?.id === instance.id,
     radioValue: instance.id,
     onSelect: () => handleSelectInstance(instance),
+    onDoubleClick: () => handleDoubleClickInstance(instance),
   }));
 
   return (
