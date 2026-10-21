@@ -9,6 +9,7 @@ mod launcher_config;
 mod resource;
 mod utils;
 
+use crate::utils::web::{build_sjmcl_client, build_sjmcl_download_client};
 use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
 use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
@@ -27,7 +28,6 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use tauri::Manager;
 use utils::portable::is_portable;
-use utils::web::build_sjmcl_client;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
@@ -238,9 +238,12 @@ pub async fn run() {
         app.manage(Mutex::new(resource_translations));
 
         let client = build_sjmcl_client(app.handle(), true);
-        app.manage(client.clone());
+        app.manage(client);
 
-        app.handle().plugin(download::init_plugin(client))?;
+        let download_client = build_sjmcl_download_client(app.handle(), true);
+        app
+          .handle()
+          .plugin(download::init_plugin(download_client))?;
 
         let launching_queue = Vec::<LaunchingState>::new();
         app.manage(Mutex::new(launching_queue));

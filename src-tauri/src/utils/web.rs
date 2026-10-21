@@ -15,7 +15,7 @@ use url::Url;
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
 
 /// Builds a reqwest client with SJMCL User-Agent and proxy support.
-/// Defaults to 10s timeout.
+/// Uses a 10s total request timeout.
 ///
 /// # Arguments
 ///
@@ -35,10 +35,31 @@ use crate::launcher_config::models::{LauncherConfig, ProxyType};
 /// let client = build_sjmcl_client(&app, true);
 /// ```
 pub fn build_sjmcl_client(app: &AppHandle, use_proxy: bool) -> Client {
-  let mut builder = ClientBuilder::new()
+  let builder = ClientBuilder::new()
     .timeout(Duration::from_secs(10))
     .tcp_keepalive(Duration::from_secs(10));
 
+  build_sjmcl_client_with_builder(app, use_proxy, builder)
+}
+
+/// Builds a separate streaming download client with the launcher User-Agent and proxy settings.
+/// Uses a 10s connect timeout and a 30s read timeout, without a total request deadline.
+pub fn build_sjmcl_download_client(app: &AppHandle, use_proxy: bool) -> Client {
+  build_sjmcl_client_with_builder(app, use_proxy, download_client_builder())
+}
+
+fn download_client_builder() -> ClientBuilder {
+  ClientBuilder::new()
+    .connect_timeout(Duration::from_secs(10))
+    .read_timeout(Duration::from_secs(30))
+    .tcp_keepalive(Duration::from_secs(10))
+}
+
+fn build_sjmcl_client_with_builder(
+  app: &AppHandle,
+  use_proxy: bool,
+  mut builder: ClientBuilder,
+) -> Client {
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
     // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}
     // https://github.com/MCLF-CN/docs/issues/2
@@ -187,4 +208,79 @@ pub fn normalize_url(input: &str) -> String {
   normalized.set_fragment(url.fragment());
 
   normalized.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::utils::web::download_client_builder;
+  use std::time::Duration;
+  use tokio::io::{AsyncReadExt, AsyncWriteExt};
+  use tokio::net::TcpListener;
+  use tokio::time::{Instant, sleep, timeout};
+
+  async fn serve_stream(
+    interval: Duration,
+    chunks: usize,
+  ) -> (String, tokio::task::JoinHandle<()>) {
+    let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let server = tokio::spawn(async move {
+      let (mut socket, _) = listener.accept().await.unwrap();
+      let mut request = Vec::new();
+      let mut buffer = [0; 1024];
+      while !request.windows(4).any(|window| window == b"\r\n\r\n") {
+        let received = socket.read(&mut buffer).await.unwrap();
+        assert!(received > 0);
+        request.extend_from_slice(&buffer[..received]);
+      }
+      socket
+        .write_all(
+          format!("HTTP/1.1 200 OK\r\nContent-Length: {chunks}\r\nConnection: close\r\n\r\n")
+            .as_bytes(),
+        )
+        .await
+        .unwrap();
+      for index in 0..chunks {
+        if index > 0 {
+          sleep(interval).await;
+        }
+        if socket.write_all(b"x").await.is_err() {
+          break;
+        }
+      }
+    });
+    (format!("http://{address}/file"), server)
+  }
+
+  #[tokio::test]
+  async fn download_client_streams_past_ten_seconds() {
+    let (url, server) = serve_stream(Duration::from_secs(1), 12).await;
+    let client = download_client_builder().no_proxy().build().unwrap();
+    let started = Instant::now();
+    let body = timeout(Duration::from_secs(35), async {
+      client.get(url).send().await.unwrap().bytes().await.unwrap()
+    })
+    .await
+    .unwrap();
+
+    assert_eq!(body.as_ref(), b"xxxxxxxxxxxx");
+    assert!(started.elapsed() > Duration::from_secs(10));
+    server.await.unwrap();
+  }
+
+  #[tokio::test]
+  async fn download_client_times_out_after_thirty_seconds_without_data() {
+    let (url, server) = serve_stream(Duration::from_secs(31), 2).await;
+    let client = download_client_builder().no_proxy().build().unwrap();
+    let response = client.get(url).send().await.unwrap();
+    let started = Instant::now();
+    let error = timeout(Duration::from_secs(35), response.bytes())
+      .await
+      .expect("stalled download did not time out")
+      .unwrap_err();
+
+    assert!(error.is_timeout());
+    assert!(started.elapsed() >= Duration::from_secs(29));
+    server.await.unwrap();
+  }
 }
