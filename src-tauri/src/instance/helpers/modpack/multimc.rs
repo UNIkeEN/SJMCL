@@ -12,7 +12,9 @@ use zip::ZipArchive;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
-use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
+use crate::instance::helpers::modpack::import::{
+  ModpackLockInfo, ModpackManifest, ModpackMetaInfo,
+};
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::resource::models::OtherResourceSource;
 use crate::tasks::PTaskParam;
@@ -163,6 +165,13 @@ impl ModpackManifest for MultiMcManifest {
 
   fn get_overrides_path(&self) -> String {
     format!("{}.minecraft/", self.base_path)
+  }
+
+  fn get_lock_info(&self) -> ModpackLockInfo {
+    ModpackLockInfo {
+      source: OtherResourceSource::MultiMc,
+      version: None,
+    }
   }
 }
 
