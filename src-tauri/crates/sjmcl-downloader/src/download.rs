@@ -16,7 +16,7 @@
 //!
 //! Transfer behavior:
 //! - Write to `<dest>.part` and rename it after successful verification.
-//! - Request Range when the partial file is nonempty; restart if the server returns 200.
+//! - Request Range when the partial file is nonempty; fall back to a full GET if unsupported.
 //! - Use the partial file size as the resume offset, including after a crash.
 //! - Report Interrupted with the written offset; the actor decides whether to keep the file.
 
@@ -110,73 +110,75 @@ impl DownloadExecutor {
       _ => 0,
     };
 
-    // Send the request, allowing run_token to interrupt the handshake.
-    let req = self.client.get(&url).header("Accept-Encoding", "identity");
-    let req = if resume > 0 {
-      req.header("Range", format!("bytes={resume}-"))
-    } else {
-      req
-    };
-    let req = if let Some(decorate) = &self.request_decorator {
-      decorate(&url, req)
-    } else {
-      req
-    };
-    let resp = tokio::select! {
+    let mut request_offset = resume;
+    let (resp, offset, total) = loop {
+      // Rebuild both requests so authentication and cancellation also apply to the fallback.
+      let req = self.client.get(&url).header("Accept-Encoding", "identity");
+      let req = if request_offset > 0 {
+        req.header("Range", format!("bytes={request_offset}-"))
+      } else {
+        req
+      };
+      let req = if let Some(decorate) = &self.request_decorator {
+        decorate(&url, req)
+      } else {
+        req
+      };
+      let resp = tokio::select! {
         r = req.send() => match r {
             Ok(r) => r,
             Err(e) => return Err(TaskError::Network(e.to_string())),
         },
         _ = ctx.run_token.cancelled() => {
+            // The old partial file is retained until a usable response is received.
             report_interrupted(&ctx, resume).await;
             return Ok(());
         }
-    };
+      };
 
-    let status = resp.status();
-    if status == reqwest::StatusCode::RANGE_NOT_SATISFIABLE && resume > 0 {
+      let status = resp.status();
       // A 416 whose total matches the partial file means all bytes are already present.
-      if content_range_unsatisfied_total(resp.headers().get("content-range")) == Some(resume) {
+      if status == reqwest::StatusCode::RANGE_NOT_SATISFIABLE
+        && request_offset > 0
+        && content_range_unsatisfied_total(resp.headers().get("content-range"))
+          == Some(request_offset)
+      {
         let _ = ctx
           .report
           .send(TaskReport::Progress {
             task_id: ctx.task_id.clone(),
-            received: resume,
-            total: resume,
+            received: request_offset,
+            total: request_offset,
           })
           .await;
         return finalize_download(&ctx, &part_path, &dest).await;
       }
-      // The local offset exceeds the remote object or the response is invalid; retry from zero.
-      let _ = tokio::fs::remove_file(&part_path).await;
-      return Err(TaskError::Network("服务器拒绝断点位置，将从头重试".into()));
-    }
-    let is_range = status == reqwest::StatusCode::PARTIAL_CONTENT;
-    if !status.is_success() {
-      return Err(TaskError::Http(status.as_u16()));
-    }
-    // A full 200 response to a Range request means the server ignored resumption.
-    let offset = if resume > 0 && !is_range { 0 } else { resume };
-    let total = if is_range {
-      // A 206 must start exactly where the local partial file ends.
-      let Some((start, total)) = content_range(resp.headers().get("content-range")) else {
-        let _ = tokio::fs::remove_file(&part_path).await;
-        return Err(TaskError::Network(
-          "服务器返回了无效的 Content-Range，将从头重试".into(),
-        ));
-      };
-      if start != resume {
-        let _ = tokio::fs::remove_file(&part_path).await;
-        return Err(TaskError::Network(format!(
-          "服务器断点位置不匹配: 请求 {resume}，响应 {start}，将从头重试"
-        )));
+
+      if status == reqwest::StatusCode::PARTIAL_CONTENT {
+        // Only append a 206 whose range starts exactly at the requested offset.
+        if let Some((start, total)) = content_range(resp.headers().get("content-range"))
+          && start == request_offset
+        {
+          break (resp, request_offset, total);
+        }
+        if request_offset == 0 {
+          return Err(TaskError::Network(
+            "服务器返回了无效或不匹配的 Content-Range".into(),
+          ));
+        }
+      } else if status.is_success() {
+        // A full response to a Range request can be used immediately, overwriting the part file.
+        let total = resp
+          .content_length()
+          .or_else(|| ctx.spec.get("size").and_then(|size| size.as_u64()))
+          .unwrap_or(0);
+        break (resp, 0, total);
+      } else if request_offset == 0 || !matches!(status.as_u16(), 400 | 403 | 405 | 416 | 501) {
+        return Err(TaskError::Http(status.as_u16()));
       }
-      total
-    } else {
-      resp
-        .content_length()
-        .or_else(|| ctx.spec.get("size").and_then(|size| size.as_u64()))
-        .unwrap_or(0)
+
+      // Retry once without Range within this attempt, preserving the normal retry budget.
+      request_offset = 0;
     };
 
     // Wrap the response stream with cancellation, progress, and rate limiting.

@@ -40,6 +40,17 @@ impl Drop for TempDownload {
   }
 }
 
+async fn read_request(socket: &mut tokio::net::TcpStream) -> String {
+  let mut request = Vec::new();
+  let mut chunk = [0_u8; 1024];
+  while !request.windows(4).any(|window| window == b"\r\n\r\n") {
+    let read = socket.read(&mut chunk).await.unwrap();
+    assert!(read > 0, "client closed before sending request headers");
+    request.extend_from_slice(&chunk[..read]);
+  }
+  String::from_utf8(request).unwrap().to_ascii_lowercase()
+}
+
 async fn serve_once(
   body: Vec<u8>,
   range_start: Option<usize>,
@@ -50,14 +61,7 @@ async fn serve_once(
   let address = listener.local_addr().unwrap();
   let handle = tokio::spawn(async move {
     let (mut socket, _) = listener.accept().await.unwrap();
-    let mut request = Vec::new();
-    let mut chunk = [0_u8; 1024];
-    while !request.windows(4).any(|window| window == b"\r\n\r\n") {
-      let read = socket.read(&mut chunk).await.unwrap();
-      assert!(read > 0, "client closed before sending request headers");
-      request.extend_from_slice(&chunk[..read]);
-    }
-    let request = String::from_utf8(request).unwrap().to_ascii_lowercase();
+    let request = read_request(&mut socket).await;
     if let Some(start) = range_start {
       assert!(request.contains(&format!("range: bytes={start}-")));
     }
@@ -102,6 +106,50 @@ async fn serve_once(
     socket.shutdown().await.unwrap();
   });
   (format!("http://{address}/file"), handle)
+}
+
+struct TestResponse {
+  expected_range: Option<usize>,
+  status: &'static str,
+  headers: String,
+  body: Vec<u8>,
+}
+
+async fn serve_responses(responses: Vec<TestResponse>) -> (String, tokio::task::JoinHandle<()>) {
+  let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+  let address = listener.local_addr().unwrap();
+  let handle = tokio::spawn(async move {
+    for response in responses {
+      let (mut socket, _) = listener.accept().await.unwrap();
+      let request = read_request(&mut socket).await;
+      if let Some(start) = response.expected_range {
+        assert!(request.contains(&format!("\r\nrange: bytes={start}-\r\n")));
+      } else {
+        assert!(!request.contains("\r\nrange:"));
+      }
+      assert!(request.contains("\r\naccept-encoding: identity\r\n"));
+      assert!(request.contains("\r\nx-api-key: test-key\r\n"));
+      let headers = format!(
+        "HTTP/1.1 {}\r\nContent-Length: {}\r\n{}Connection: close\r\n\r\n",
+        response.status,
+        response.body.len(),
+        response.headers
+      );
+      socket.write_all(headers.as_bytes()).await.unwrap();
+      socket.write_all(&response.body).await.unwrap();
+      socket.shutdown().await.unwrap();
+    }
+  });
+  (format!("http://{address}/file"), handle)
+}
+
+fn decorated_executor() -> DownloadExecutor {
+  DownloadExecutor {
+    request_decorator: Some(Arc::new(|_, request| {
+      request.header("x-api-key", "test-key")
+    })),
+    ..DownloadExecutor::default()
+  }
 }
 
 fn engine(executor: DownloadExecutor) -> Engine {
@@ -298,6 +346,177 @@ async fn resumes_from_the_authoritative_part_file() {
     .submit_group(SubmitGroup {
       name: "resume".into(),
       tasks: vec![task(url, &destination.path, Some(expected))],
+      auto_resume: true,
+    })
+    .await
+    .unwrap();
+
+  assert_eq!(
+    wait_finished(&engine, &group_id).await,
+    FinishKind::Completed
+  );
+  assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+  server.await.unwrap();
+}
+
+#[tokio::test]
+async fn rejected_or_invalid_ranges_fall_back_without_using_the_retry_budget() {
+  let body = b"0123456789abcdefghij".to_vec();
+  let expected = format!("{:x}", Sha1::digest(&body));
+  for (status, headers) in [
+    ("400 Bad Request", ""),
+    ("403 Forbidden", ""),
+    ("405 Method Not Allowed", ""),
+    ("416 Range Not Satisfiable", ""),
+    ("416 Range Not Satisfiable", "Content-Range: bytes */3\r\n"),
+    ("501 Not Implemented", ""),
+    ("206 Partial Content", ""),
+    ("206 Partial Content", "Content-Range: invalid\r\n"),
+    ("206 Partial Content", "Content-Range: bytes 8-19/20\r\n"),
+  ] {
+    let destination = TempDownload::new("range-fallback");
+    tokio::fs::write(destination.part_path(), &body[..7])
+      .await
+      .unwrap();
+    let (url, server) = serve_responses(vec![
+      TestResponse {
+        expected_range: Some(7),
+        status,
+        headers: headers.into(),
+        body: b"unsupported range".to_vec(),
+      },
+      TestResponse {
+        expected_range: None,
+        status: "200 OK",
+        headers: String::new(),
+        body: body.clone(),
+      },
+    ])
+    .await;
+    let engine = engine(decorated_executor());
+    let group_id = engine
+      .submit_group(SubmitGroup {
+        name: "range-fallback".into(),
+        tasks: vec![task(url, &destination.path, Some(expected.clone()))],
+        auto_resume: true,
+      })
+      .await
+      .unwrap();
+
+    assert_eq!(
+      wait_finished(&engine, &group_id).await,
+      FinishKind::Completed,
+      "range response: {status}, {headers}"
+    );
+    assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+    assert!(!destination.part_path().exists());
+    let tasks = engine.list_tasks(group_id).await.unwrap();
+    assert_eq!(tasks[0].attempts, 0);
+    assert!(tasks[0].verified);
+    assert_eq!(tasks[0].received, body.len() as u64);
+    assert_eq!(tasks[0].total, body.len() as u64);
+    server.await.unwrap();
+  }
+}
+
+#[tokio::test]
+async fn ignored_ranges_replace_the_partial_file_without_appending() {
+  let body = b"0123456789abcdefghij".to_vec();
+  let destination = TempDownload::new("range-ignored");
+  tokio::fs::write(destination.part_path(), b"stale partial contents")
+    .await
+    .unwrap();
+  let (url, server) = serve_responses(vec![TestResponse {
+    expected_range: Some(22),
+    status: "200 OK",
+    headers: String::new(),
+    body: body.clone(),
+  }])
+  .await;
+  let engine = engine(decorated_executor());
+  let group_id = engine
+    .submit_group(SubmitGroup {
+      name: "range-ignored".into(),
+      tasks: vec![task(url, &destination.path, None)],
+      auto_resume: true,
+    })
+    .await
+    .unwrap();
+
+  assert_eq!(
+    wait_finished(&engine, &group_id).await,
+    FinishKind::Completed
+  );
+  assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+  server.await.unwrap();
+}
+
+#[tokio::test]
+async fn failed_full_download_after_range_rejection_preserves_the_partial_file() {
+  let destination = TempDownload::new("range-fallback-failed");
+  let partial = b"partial";
+  tokio::fs::write(destination.part_path(), partial)
+    .await
+    .unwrap();
+  let (url, server) = serve_responses(vec![
+    TestResponse {
+      expected_range: Some(partial.len()),
+      status: "416 Range Not Satisfiable",
+      headers: String::new(),
+      body: Vec::new(),
+    },
+    TestResponse {
+      expected_range: None,
+      status: "403 Forbidden",
+      headers: String::new(),
+      body: Vec::new(),
+    },
+  ])
+  .await;
+  let engine = engine(decorated_executor());
+  let group_id = engine
+    .submit_group(SubmitGroup {
+      name: "range-fallback-failed".into(),
+      tasks: vec![task(url, &destination.path, None)],
+      auto_resume: true,
+    })
+    .await
+    .unwrap();
+
+  assert_eq!(wait_finished(&engine, &group_id).await, FinishKind::Failed);
+  let tasks = engine.list_tasks(group_id).await.unwrap();
+  assert_eq!(tasks[0].error, Some(TaskError::Http(403)));
+  assert_eq!(
+    tokio::fs::read(destination.part_path()).await.unwrap(),
+    partial
+  );
+  assert!(!destination.path.exists());
+  server.await.unwrap();
+}
+
+#[tokio::test]
+async fn a_complete_partial_file_is_finalized_on_a_matching_416() {
+  let body = b"already downloaded".to_vec();
+  let destination = TempDownload::new("range-complete");
+  tokio::fs::write(destination.part_path(), &body)
+    .await
+    .unwrap();
+  let (url, server) = serve_responses(vec![TestResponse {
+    expected_range: Some(body.len()),
+    status: "416 Range Not Satisfiable",
+    headers: format!("Content-Range: bytes */{}\r\n", body.len()),
+    body: Vec::new(),
+  }])
+  .await;
+  let engine = engine(decorated_executor());
+  let group_id = engine
+    .submit_group(SubmitGroup {
+      name: "range-complete".into(),
+      tasks: vec![task(
+        url,
+        &destination.path,
+        Some(format!("{:x}", Sha1::digest(&body))),
+      )],
       auto_resume: true,
     })
     .await
