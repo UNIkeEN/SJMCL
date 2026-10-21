@@ -297,6 +297,55 @@ async fn restart_hides_cancelled_groups_but_keeps_failed_groups_retryable() {
 }
 
 #[tokio::test]
+async fn persisted_errors_survive_restart_and_remain_retryable() {
+  let dir = TempDir::new();
+  let path = dir.0.join("downloads.db");
+  for error in [
+    TaskError::Http { status: 403 },
+    TaskError::Application {
+      code: "OPTIFINE_MISSING".into(),
+    },
+    sjmcl_downloader::EngineError::EngineNotInitialized.into(),
+  ] {
+    let store = SqliteStore::open(&path).unwrap();
+    let mut task = Task::new("t2".into(), "g1".into(), &submit_task(None));
+    task.state = TaskState::Failed;
+    task.error = Some(error.clone());
+    task.retries_exhausted = true;
+    store
+      .save_group(&TaskGroup {
+        id: "g1".into(),
+        name: "download".into(),
+        auto_resume: true,
+        state: GroupState::Finished,
+        finish: Some(FinishKind::Failed),
+        completion_pending: false,
+        tasks: vec![task],
+      })
+      .unwrap();
+    drop(store);
+
+    let (engine, actor) = start(
+      Arc::new(SqliteStore::open(&path).unwrap()),
+      Arc::new(CompleteImmediately),
+    );
+    assert_eq!(
+      engine.list_tasks("g1".into()).await.unwrap()[0].error,
+      Some(error)
+    );
+    engine.retry("g1".into()).await.unwrap();
+    wait_for_task(&engine, "g1", TaskState::Done).await;
+    assert!(
+      engine.list_tasks("g1".into()).await.unwrap()[0]
+        .error
+        .is_none()
+    );
+    actor.abort();
+    actor.await.unwrap_err();
+  }
+}
+
+#[tokio::test]
 async fn recovered_completion_is_retained_until_acknowledged_then_hidden_after_restart() {
   let dir = TempDir::new();
   let path = dir.0.join("downloads.db");

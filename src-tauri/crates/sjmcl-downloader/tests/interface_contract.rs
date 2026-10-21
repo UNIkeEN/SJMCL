@@ -1,5 +1,6 @@
 use sjmcl_downloader::{
-  EngineEvent, FinishKind, GroupState, GroupStats, SubmitGroup, SubmitTask, Task, TaskState,
+  EngineError, EngineEvent, FinishKind, GroupState, GroupStats, SubmitGroup, SubmitTask, Task,
+  TaskError, TaskState,
 };
 
 #[test]
@@ -23,6 +24,90 @@ fn accepts_the_camel_case_tauri_submission_contract() {
     Some("0123456789abcdef0123456789abcdef01234567")
   );
   assert_eq!(group.tasks[0].sha256, None);
+}
+
+#[test]
+fn errors_preserve_their_type_and_dynamic_parameters() {
+  let cases = [
+    (
+      TaskError::Http { status: 403 },
+      serde_json::json!({ "code": "HTTP_ERROR", "params": { "status": 403 } }),
+    ),
+    (
+      TaskError::Network {
+        details: "timeout".into(),
+      },
+      serde_json::json!({ "code": "NETWORK_ERROR", "params": { "details": "timeout" } }),
+    ),
+    (
+      TaskError::CorruptFiles {
+        paths: vec!["a.jar".into()],
+      },
+      serde_json::json!({ "code": "CORRUPT_FILES", "params": { "paths": ["a.jar"] } }),
+    ),
+    (
+      TaskError::Checksum {
+        expected: "abc".into(),
+        actual: "def".into(),
+      },
+      serde_json::json!({ "code": "CHECKSUM_MISMATCH", "params": { "expected": "abc", "actual": "def" } }),
+    ),
+    (
+      TaskError::ResumeOffsetMismatch {
+        expected: 10,
+        actual: 5,
+      },
+      serde_json::json!({ "code": "RESUME_OFFSET_MISMATCH", "params": { "expected": 10, "actual": 5 } }),
+    ),
+    (
+      TaskError::MissingField {
+        field: "url".into(),
+      },
+      serde_json::json!({ "code": "MISSING_FIELD", "params": { "field": "url" } }),
+    ),
+    (
+      TaskError::Application {
+        code: "OPTIFINE_MISSING".into(),
+      },
+      serde_json::json!({ "code": "OPTIFINE_MISSING" }),
+    ),
+    (
+      TaskError::from(EngineError::EngineNotInitialized),
+      serde_json::json!({ "code": "ENGINE_NOT_INITIALIZED" }),
+    ),
+    (
+      TaskError::from(EngineError::InvalidState {
+        group_id: "g1".into(),
+        state: GroupState::Finished,
+      }),
+      serde_json::json!({ "code": "INVALID_STATE", "params": { "groupId": "g1", "state": "finished" } }),
+    ),
+  ];
+  for (error, json) in cases {
+    assert_eq!(serde_json::to_value(&error).unwrap(), json);
+    assert_eq!(serde_json::from_value::<TaskError>(json).unwrap(), error);
+  }
+  assert_eq!(
+    serde_json::to_value(EngineError::EmptyGroup).unwrap(),
+    serde_json::json!({ "code": "EMPTY_GROUP" })
+  );
+  for error in [
+    TaskError::InvalidContentRange,
+    TaskError::ResumeOffsetMismatch {
+      expected: 10,
+      actual: 5,
+    },
+  ] {
+    assert!(error.is_transient());
+    let json = serde_json::to_value(&error).unwrap();
+    assert_eq!(serde_json::from_value::<TaskError>(json).unwrap(), error);
+  }
+  assert!(
+    !TaskError::MissingField {
+      field: "url".into()
+    }
+    .is_transient()
+  );
 }
 
 #[test]

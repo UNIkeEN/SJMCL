@@ -1,5 +1,6 @@
 // Run with: node --experimental-transform-types --test scripts/tests/download-eta.test.js
 const assert = require("node:assert/strict");
+const { createInstance } = require("i18next");
 const { registerHooks } = require("node:module");
 const path = require("node:path");
 const { test } = require("node:test");
@@ -436,17 +437,131 @@ test("pending work becomes visible again after a retry starts", () => {
   assert.equal(shouldShowDownloadProgress(group, { state: "done" }), false);
 });
 
-test("error details retain the useful message without a serialized wrapper", () => {
-  assert.equal(getDownloadErrorText({ Http: 403 }), "HTTP 403");
-  assert.equal(
-    getDownloadErrorText({ Network: "connection timed out" }),
-    "connection timed out"
-  );
-  assert.equal(
-    getDownloadErrorText({ CorruptFiles: ["a.jar", "b.jar"] }),
-    "a.jar, b.jar"
-  );
-  assert.equal(getDownloadErrorText(null), undefined);
+const locales = ["en", "es", "fr", "ja", "lzh", "zh-Hans", "zh-Hant"];
+const resources = Object.fromEntries(
+  locales.map((locale) => [
+    locale,
+    { translation: require(`../../src/locales/${locale}.json`) },
+  ])
+);
+
+const translator = (locale) => {
+  const instance = createInstance();
+  instance.init({
+    lng: locale,
+    resources,
+    initImmediate: false,
+    interpolation: { escapeValue: false },
+  });
+  return instance;
+};
+
+test("task and command errors share one translation contract", () => {
+  const { t } = translator("en");
+  for (const [error, expected] of [
+    [{ code: "HTTP_ERROR", params: { status: 403 } }, "HTTP error: 403"],
+    [
+      { code: "NETWORK_ERROR", params: { details: "connection timed out" } },
+      "Network error: connection timed out",
+    ],
+    [
+      { code: "CORRUPT_FILES", params: { paths: ["a.jar", "b.jar"] } },
+      "Corrupt files: a.jar and b.jar",
+    ],
+    [
+      { code: "CHECKSUM_MISMATCH", params: { expected: "abc", actual: "def" } },
+      "File checksum mismatch: expected abc, got def",
+    ],
+    [{ code: "OPTIFINE_MISSING" }, "OptiFine is missing"],
+    [
+      {
+        code: "OTHER_ERROR",
+        params: { details: "unexpected processor output" },
+      },
+      "Task failed: unexpected processor output",
+    ],
+    [
+      { code: "UNKNOWN_GROUP", params: { groupId: "g1" } },
+      "Task group g1 was not found",
+    ],
+    [
+      { code: "INVALID_STATE", params: { groupId: "g1", state: "finished" } },
+      "Task group g1 cannot perform this operation in its current state",
+    ],
+    [{ code: "EMPTY_GROUP" }, "A task group must contain at least one task"],
+    [
+      { code: "STORAGE_ERROR", params: { details: "disk full" } },
+      "Failed to save download state: disk full",
+    ],
+    [new Error("IPC failure"), "Task failed: Error: IPC failure"],
+  ]) {
+    assert.equal(getDownloadErrorText(error, t), expected);
+  }
+  assert.equal(getDownloadErrorText(null, t), undefined);
+});
+
+test("all locales translate download errors and retain interpolation fields", () => {
+  const reference = resources.en.translation.Services.task.common.description;
+  const placeholders = (value) =>
+    [...value.matchAll(/{{(\w+)(?:,[^}]*)?}}/g)]
+      .map((match) => match[1])
+      .sort();
+  const params = {
+    details: "disk full",
+    status: 403,
+    paths: ["a.jar", "b.jar"],
+    expected: "abc",
+    actual: "def",
+    field: "url",
+    executor: "test",
+    groupId: "g1",
+  };
+  for (const locale of locales) {
+    const { t } = translator(locale);
+    const errors =
+      resources[locale].translation.Services.task.common.description;
+    assert.deepEqual(Object.keys(errors).sort(), Object.keys(reference).sort());
+    for (const [code, value] of Object.entries(errors)) {
+      assert.deepEqual(
+        placeholders(value),
+        placeholders(reference[code]),
+        `${locale}: ${code}`
+      );
+      const text = getDownloadErrorText({ code, params }, t);
+      assert.ok(
+        text &&
+          !text.includes("Services.task.common.description.") &&
+          !text.includes("{{"),
+        `${locale}: ${code}`
+      );
+    }
+    for (const command of [
+      "instance.createInstance",
+      "instance.changeModLoader",
+      "instance.changeOptiFine",
+      "config.downloadMojangJava",
+      "config.clearDownloadCache",
+      "config.downloadLauncherUpdate",
+      "resource.downloadGameServer",
+      "resource.updateMods",
+      "launch.validateGameFiles",
+    ]) {
+      assert.equal(
+        t(`Services.${command}.error.description.DOWNLOAD_ENGINE_ERROR`),
+        resources[locale].translation.Services.instance.createInstance.error
+          .description.DOWNLOAD_ENGINE_ERROR,
+        `${locale}: ${command}`
+      );
+    }
+  }
+});
+
+test("an existing error is translated again after changing the language", () => {
+  const instance = translator("en");
+  const error = { code: "HTTP_ERROR", params: { status: 403 } };
+  assert.equal(getDownloadErrorText(error, instance.t), "HTTP error: 403");
+  instance.changeLanguage("zh-Hans");
+  assert.equal(getDownloadErrorText(error, instance.t), "HTTP 错误：403");
 });
 
 test("known small files completing between ticks contribute byte throughput", () => {

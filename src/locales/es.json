@@ -2339,7 +2339,10 @@
       },
       "downloadMojangJava": {
         "error": {
-          "title": "Error al descargar el entorno de ejecución de Mojang Java"
+          "title": "Error al descargar el entorno de ejecución de Mojang Java",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
+          }
         }
       },
       "checkGameDirectory": {
@@ -2357,7 +2360,16 @@
           "title": "Error al limpiar la caché de descarga",
           "description": {
             "HAS_ACTIVE_DOWNLOAD_TASKS": "Hay tareas de descarga activas en progreso.",
-            "FILE_DELETION_FAILED": "Error al eliminar archivos, es posible que estén en uso."
+            "FILE_DELETION_FAILED": "Error al eliminar archivos, es posible que estén en uso.",
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "No se pudo descargar la actualización del lanzador",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
           }
         }
       }
@@ -2625,7 +2637,8 @@
             "OPTIFINE_NOT_INSTALLED": "La instalación de OptiFine no se ha completado",
             "INSTANCE_NOT_FOUND_BY_ID": "El ID de instancia no existe",
             "GAME_FILES_INCOMPLETE": "Los archivos del juego están incompletos",
-            "LAUNCHING_STATE_NOT_FOUND": "No se encontró el estado de lanzamiento"
+            "LAUNCHING_STATE_NOT_FOUND": "No se encontró el estado de lanzamiento",
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
           }
         }
       },
@@ -2716,7 +2729,8 @@
           "title": "Error al descargar el servidor del juego",
           "description": {
             "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
-            "NETWORK_ERROR": "Error al conectar con el servidor"
+            "NETWORK_ERROR": "Error al conectar con el servidor",
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
           }
         }
       },
@@ -2736,7 +2750,8 @@
           "description": {
             "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
             "NETWORK_ERROR": "Error al conectar con el servidor",
-            "FILE_OPERATION_ERROR": "Error al renombrar el archivo del mod anterior"
+            "FILE_OPERATION_ERROR": "Error al renombrar el archivo del mod anterior",
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
           }
         }
       }
@@ -2762,7 +2777,8 @@
             "FILE_CREATION_FAILED": "Error al crear el archivo de destino",
             "NETWORK_ERROR": "Error al conectar con el servidor",
             "CLIENT_JSON_PARSE_ERROR": "Error al analizar la información de versión de la instancia",
-            "ASSET_INDEX_PARSE_ERROR": "Error al analizar el índice de recursos"
+            "ASSET_INDEX_PARSE_ERROR": "Error al analizar el índice de recursos",
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
           }
         }
       },
@@ -2955,13 +2971,17 @@
         "error": {
           "title": "Error al cambiar el cargador de mods",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Instalado por un proceso externo, no se puede configurar"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Instalado por un proceso externo, no se puede configurar",
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
           }
         }
       },
       "changeOptiFine": {
         "error": {
-          "title": "Error al cambiar OptiFine"
+          "title": "Error al cambiar OptiFine",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
+          }
         }
       },
       "removeModLoader": {
@@ -3045,8 +3065,30 @@
       }
     },
     "task": {
-      "submitDownloadGroup": {
-        "error": "Error al crear la tarea"
+      "common": {
+        "title": "La operación de descarga ha fallado",
+        "description": {
+          "NETWORK_ERROR": "Error de red: {{details}}",
+          "HTTP_ERROR": "Error HTTP: {{status}}",
+          "IO_ERROR": "La operación de archivo ha fallado: {{details}}",
+          "CHECKSUM_MISMATCH": "La suma de verificación no coincide: se esperaba {{expected}}, se obtuvo {{actual}}",
+          "CORRUPT_FILES": "Archivos dañados: {{paths, list}}",
+          "MISSING_FIELD": "Falta un campo de la tarea: {{field}}",
+          "UNKNOWN_EXECUTOR": "Ejecutor de tareas desconocido: {{executor}}",
+          "INVALID_CONTENT_RANGE": "El servidor devolvió un Content-Range no válido",
+          "RESUME_OFFSET_MISMATCH": "La posición de reanudación no coincide: se esperaba {{expected}}, se obtuvo {{actual}}",
+          "OTHER_ERROR": "La tarea ha fallado: {{details}}",
+          "EMPTY_GROUP": "Un grupo debe contener al menos una tarea",
+          "CHANNEL_CLOSED": "Se ha cerrado la conexión con el motor de descargas",
+          "UNKNOWN_GROUP": "No se encontró el grupo de tareas {{groupId}}",
+          "INVALID_STATE": "El estado actual del grupo {{groupId}} no permite esta operación",
+          "STORAGE_ERROR": "No se pudo guardar el estado de descarga: {{details}}",
+          "ENGINE_NOT_INITIALIZED": "El motor de descargas no está inicializado",
+          "INSTALLATION_INSTANCE_MISMATCH": "La instancia de instalación no coincide con la tarea",
+          "MOD_LOADER_CHANGED": "El cargador de mods cambió durante la instalación",
+          "OPTIFINE_MISSING": "No se encontró OptiFine",
+          "OPTIFINE_CHANGED": "OptiFine cambió durante la instalación"
+        }
       },
       "onDownloadGroupUpdate": {
         "status": {

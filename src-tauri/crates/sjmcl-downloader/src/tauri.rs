@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use crate::{
-  Engine, EngineEvent, GroupSummary, SubmitGroup,
+  Engine, EngineError, EngineEvent, GroupSummary, SubmitGroup,
   download::DownloadExecutor,
   event::EventSink,
   executor::TaskExecutor,
@@ -178,61 +178,52 @@ where
 async fn submit_group(
   state: State<'_, EngineHandle>,
   payload: SubmitGroup,
-) -> Result<String, String> {
-  state
-    .0
-    .submit_group(payload)
-    .await
-    .map_err(|e| e.to_string())
+) -> Result<String, EngineError> {
+  state.0.submit_group(payload).await
 }
 
 #[tauri::command]
-async fn pause_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), String> {
-  state.0.pause(group_id).await.map_err(|e| e.to_string())
+async fn pause_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), EngineError> {
+  state.0.pause(group_id).await
 }
 
 #[tauri::command]
-async fn resume_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), String> {
-  state.0.resume(group_id).await.map_err(|e| e.to_string())
+async fn resume_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), EngineError> {
+  state.0.resume(group_id).await
 }
 
 #[tauri::command]
-async fn cancel_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), String> {
-  state.0.cancel(group_id).await.map_err(|e| e.to_string())
+async fn cancel_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), EngineError> {
+  state.0.cancel(group_id).await
 }
 
 #[tauri::command]
-async fn retry_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), String> {
-  state.0.retry(group_id).await.map_err(|e| e.to_string())
+async fn retry_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), EngineError> {
+  state.0.retry(group_id).await
 }
 
 #[tauri::command]
-async fn remove_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), String> {
-  state.0.remove(group_id).await.map_err(|e| e.to_string())
+async fn remove_group(state: State<'_, EngineHandle>, group_id: String) -> Result<(), EngineError> {
+  state.0.remove(group_id).await
 }
 
 #[tauri::command]
 async fn acknowledge_completion(
   state: State<'_, EngineHandle>,
   group_id: String,
-) -> Result<(), String> {
-  state
-    .0
-    .acknowledge_completion(group_id)
-    .await
-    .map_err(|e| e.to_string())
+) -> Result<(), EngineError> {
+  state.0.acknowledge_completion(group_id).await
 }
 
 #[tauri::command]
-async fn snapshot(state: State<'_, EngineHandle>) -> Result<Vec<GroupSummary>, String> {
-  state.0.snapshot().await.map_err(|e| e.to_string())
+async fn snapshot(state: State<'_, EngineHandle>) -> Result<Vec<GroupSummary>, EngineError> {
+  state.0.snapshot().await
 }
 
 #[tauri::command]
-async fn list_tasks(state: State<'_, EngineHandle>, group_id: String) -> Result<Vec<Task>, String> {
-  state
-    .0
-    .list_tasks(group_id)
-    .await
-    .map_err(|e| e.to_string())
+async fn list_tasks(
+  state: State<'_, EngineHandle>,
+  group_id: String,
+) -> Result<Vec<Task>, EngineError> {
+  state.0.list_tasks(group_id).await
 }

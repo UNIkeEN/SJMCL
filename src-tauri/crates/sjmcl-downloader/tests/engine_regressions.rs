@@ -39,7 +39,7 @@ impl TaskExecutor for FailTwiceThenComplete {
         calls.len()
       };
       if attempt < 3 {
-        return Err(TaskError::Http(403));
+        return Err(TaskError::Http { status: 403 });
       }
       ctx
         .report
@@ -182,17 +182,31 @@ async fn postprocess_retry_calls(fail_stage: &'static str, error: TaskError) -> 
 #[tokio::test]
 async fn retries_postprocessing_without_redownloading_unless_files_are_corrupt() {
   assert_eq!(
-    postprocess_retry_calls("install", TaskError::Other("processor failed".into())).await,
+    postprocess_retry_calls(
+      "install",
+      TaskError::Other {
+        details: "processor failed".into()
+      }
+    )
+    .await,
     ["download", "install", "install", "verify"]
   );
   assert_eq!(
-    postprocess_retry_calls("verify", TaskError::Other("verification failed".into())).await,
+    postprocess_retry_calls(
+      "verify",
+      TaskError::Other {
+        details: "verification failed".into()
+      }
+    )
+    .await,
     ["download", "install", "verify", "verify"]
   );
   assert_eq!(
     postprocess_retry_calls(
       "verify",
-      TaskError::CorruptFiles(vec!["downloaded.jar".into()])
+      TaskError::CorruptFiles {
+        paths: vec!["downloaded.jar".into()]
+      }
     )
     .await,
     [
@@ -202,7 +216,9 @@ async fn retries_postprocessing_without_redownloading_unless_files_are_corrupt()
   assert_eq!(
     postprocess_retry_calls(
       "install",
-      TaskError::CorruptFiles(vec!["downloaded.jar".into()])
+      TaskError::CorruptFiles {
+        paths: vec!["downloaded.jar".into()]
+      }
     )
     .await,
     ["download", "install", "download", "install", "verify"]
@@ -301,7 +317,9 @@ impl TaskExecutor for FailFirstTask {
   fn run(&self, ctx: sjmcl_downloader::ExecContext) -> BoxFuture<'static, Result<(), TaskError>> {
     Box::pin(async move {
       if ctx.name == "fail" {
-        return Err(TaskError::Other("expected failure".into()));
+        return Err(TaskError::Other {
+          details: "expected failure".into(),
+        });
       }
       if ctx.name == "slow" {
         tokio::time::sleep(Duration::from_millis(50)).await;
@@ -364,7 +382,7 @@ async fn rejects_an_empty_group() {
     })
     .await
     .unwrap_err();
-  assert!(error.to_string().contains("至少需要一个任务"));
+  assert!(matches!(error, sjmcl_downloader::EngineError::EmptyGroup));
 }
 
 #[tokio::test]

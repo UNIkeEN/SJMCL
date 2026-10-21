@@ -51,28 +51,65 @@ pub enum FinishKind {
 
 /// Error classes let the actor identify failures eligible for automatic retry.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Error)]
+#[serde(tag = "code", content = "params", rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum TaskError {
-  #[error("网络错误: {0}")]
-  Network(String),
-  #[error("HTTP 错误: {0}")]
-  Http(u16),
-  #[error("IO 错误: {0}")]
-  Io(String),
-  #[error("校验失败: 期望 {expected}, 实际 {actual}")]
+  #[error("network error: {details}")]
+  #[serde(rename = "NETWORK_ERROR")]
+  Network { details: String },
+  #[error("HTTP error: {status}")]
+  #[serde(rename = "HTTP_ERROR")]
+  Http { status: u16 },
+  #[error("I/O error: {details}")]
+  #[serde(rename = "IO_ERROR")]
+  Io { details: String },
+  #[error("checksum mismatch: expected {expected}, got {actual}")]
+  #[serde(rename = "CHECKSUM_MISMATCH")]
   Checksum { expected: String, actual: String },
-  #[error("文件损坏: {0:?}")]
-  CorruptFiles(Vec<PathBuf>),
-  #[error("未知: {0}")]
-  Other(String),
+  #[error("corrupt files: {paths:?}")]
+  CorruptFiles { paths: Vec<PathBuf> },
+  #[error("missing task field: {field}")]
+  MissingField { field: String },
+  #[error("server returned an invalid Content-Range")]
+  InvalidContentRange,
+  #[error("resume offset mismatch: expected {expected}, got {actual}")]
+  ResumeOffsetMismatch { expected: u64, actual: u64 },
+  #[error("unknown error: {details}")]
+  #[serde(rename = "OTHER_ERROR")]
+  Other { details: String },
+  #[error(transparent)]
+  #[serde(untagged)]
+  Engine(#[from] EngineError),
+  /// Application-defined error codes supplied by custom executors.
+  #[error("{code}")]
+  #[serde(untagged)]
+  Application { code: String },
 }
 
 impl TaskError {
   /// Transient errors eligible for backoff retries: network errors and recoverable HTTP responses.
   pub fn is_transient(&self) -> bool {
     match self {
-      TaskError::Network(_) => true,
-      TaskError::Http(code) => matches!(*code, 403 | 408 | 429 | 500..=599),
+      TaskError::Network { .. }
+      | TaskError::InvalidContentRange
+      | TaskError::ResumeOffsetMismatch { .. } => true,
+      TaskError::Http { status } => matches!(*status, 403 | 408 | 429 | 500..=599),
       _ => false,
+    }
+  }
+}
+
+impl From<std::io::Error> for TaskError {
+  fn from(error: std::io::Error) -> Self {
+    Self::Io {
+      details: error.to_string(),
+    }
+  }
+}
+
+impl From<serde_json::Error> for TaskError {
+  fn from(error: serde_json::Error) -> Self {
+    Self::Other {
+      details: error.to_string(),
     }
   }
 }
@@ -244,18 +281,29 @@ impl Default for EngineConfig {
 }
 
 /// Engine-level errors, such as rejected commands.
-#[derive(Debug, Error)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Error)]
+#[serde(
+  tag = "code",
+  content = "params",
+  rename_all = "SCREAMING_SNAKE_CASE",
+  rename_all_fields = "camelCase"
+)]
 pub enum EngineError {
-  #[error("未知组: {0}")]
-  UnknownGroup(String),
-  #[error("未知 executor: {0}")]
-  UnknownExecutor(String),
-  #[error("组 {0} 当前状态不允许该操作")]
-  InvalidState(String),
-  #[error("提交参数无效: {0}")]
-  InvalidSubmission(String),
-  #[error("命令通道已关闭")]
+  #[error("unknown group: {group_id}")]
+  UnknownGroup { group_id: String },
+  #[error("unknown executor: {executor}")]
+  UnknownExecutor { executor: String },
+  #[error("group {group_id} does not allow this operation in state {state:?}")]
+  InvalidState { group_id: String, state: GroupState },
+  #[error("a task group must contain at least one task")]
+  EmptyGroup,
+  #[error("storage error: {details}")]
+  #[serde(rename = "STORAGE_ERROR")]
+  Storage { details: String },
+  #[error("command channel closed")]
   ChannelClosed,
+  #[error("download engine is not initialized")]
+  EngineNotInitialized,
 }
 
 /// Actor-local reason for cancelling a running task.

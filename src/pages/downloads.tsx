@@ -26,6 +26,7 @@ import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { parseTaskGroup, useTaskContext } from "@/contexts/task";
 import {
+  DownloadError,
   DownloadFinishKind,
   DownloadGroup,
   DownloadGroupState,
@@ -39,11 +40,11 @@ import {
 } from "@/utils/download";
 import { formatByteSize } from "@/utils/string";
 
-const DownloadErrorLabel = ({ error }: { error?: string }) => {
+const DownloadErrorLabel = ({ error }: { error?: DownloadError | null }) => {
   const { t } = useTranslation();
   return (
     <Tooltip
-      label={error}
+      label={getDownloadErrorText(error, t)}
       isDisabled={!error}
       maxW="sm"
       maxH="40vh"
@@ -310,9 +311,7 @@ export const DownloadTasksPage = () => {
                           />
                         )}
                         {task.state === DownloadTaskState.Failed && (
-                          <DownloadErrorLabel
-                            error={getDownloadErrorText(task.error)}
-                          />
+                          <DownloadErrorLabel error={task.error} />
                         )}
                         {task.state === DownloadTaskState.Done && task.dest && (
                           <CommonIconButton

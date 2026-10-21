@@ -6,7 +6,7 @@ use futures::future::join_all;
 use sjmcl_downloader::download::DownloadExecutor;
 use sjmcl_downloader::{
   EngineConfig, EngineError, EngineHandle, EngineSetup, GroupState, SubmitGroup, SubmitTask,
-  TaskExecutor, TokenBucket,
+  TaskError, TaskExecutor, TokenBucket,
 };
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use tauri::{AppHandle, Manager, Url};
@@ -16,7 +16,7 @@ use crate::instance::helpers::loader::common::InstallPlan;
 use crate::instance::helpers::loader::postprocess::{
   InstallKind, InstallSpec, InstallTarget, PrepareSpec,
 };
-use crate::instance::models::misc::{Instance, ModLoaderType};
+use crate::instance::models::misc::{Instance, InstanceError, ModLoaderType};
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::curseforge::misc::{
   CURSEFORGE_API_KEY, is_curseforge_authenticated_url,
@@ -250,9 +250,10 @@ pub async fn submit_install_group(
   plan: InstallPlan,
   instance: &Instance,
   kind: InstallKind,
-) -> SJMCLResult<String> {
+) -> Result<String, TaskError> {
   let mut tasks: Vec<SubmitTask> = get_invalid_download_tasks(plan.tasks, false)
-    .await?
+    .await
+    .map_err(task_error)?
     .into_iter()
     .map(Into::into)
     .collect();
@@ -291,7 +292,7 @@ pub async fn submit_install_group(
     engine = app.try_state::<EngineHandle>();
   }
   engine
-    .ok_or_else(|| SJMCLError("download engine is not initialized".into()))?
+    .ok_or(EngineError::EngineNotInitialized)?
     .0
     .submit_group(SubmitGroup {
       name,
@@ -299,7 +300,7 @@ pub async fn submit_install_group(
       auto_resume: true,
     })
     .await
-    .map_err(engine_error)
+    .map_err(TaskError::from)
 }
 
 pub async fn has_active_downloads(app: &AppHandle) -> SJMCLResult<bool> {
@@ -317,5 +318,18 @@ pub async fn has_active_downloads(app: &AppHandle) -> SJMCLResult<bool> {
 }
 
 fn engine_error(error: EngineError) -> SJMCLError {
-  SJMCLError(error.to_string())
+  log::error!("Download engine operation failed: {error}");
+  SJMCLError("DOWNLOAD_ENGINE_ERROR".into())
+}
+
+pub fn task_error(error: SJMCLError) -> TaskError {
+  TaskError::Other { details: error.0 }
+}
+
+impl From<InstanceError> for TaskError {
+  fn from(error: InstanceError) -> Self {
+    Self::Application {
+      code: error.to_string(),
+    }
+  }
 }

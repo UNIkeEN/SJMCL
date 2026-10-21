@@ -485,13 +485,75 @@ async fn failed_full_download_after_range_rejection_preserves_the_partial_file()
 
   assert_eq!(wait_finished(&engine, &group_id).await, FinishKind::Failed);
   let tasks = engine.list_tasks(group_id).await.unwrap();
-  assert_eq!(tasks[0].error, Some(TaskError::Http(403)));
+  assert_eq!(tasks[0].error, Some(TaskError::Http { status: 403 }));
   assert_eq!(
     tokio::fs::read(destination.part_path()).await.unwrap(),
     partial
   );
   assert!(!destination.path.exists());
   server.await.unwrap();
+}
+
+#[tokio::test]
+async fn invalid_full_responses_report_structured_range_errors() {
+  for resume in [false, true] {
+    for (headers, expected) in [
+      ("", TaskError::InvalidContentRange),
+      (
+        "Content-Range: bytes 1-19/20\r\n",
+        TaskError::ResumeOffsetMismatch {
+          expected: 0,
+          actual: 1,
+        },
+      ),
+    ] {
+      let destination = TempDownload::new("invalid-full-range");
+      let partial = b"partial";
+      let mut responses = Vec::new();
+      if resume {
+        tokio::fs::write(destination.part_path(), partial)
+          .await
+          .unwrap();
+        responses.push(TestResponse {
+          expected_range: Some(partial.len()),
+          status: "416 Range Not Satisfiable",
+          headers: String::new(),
+          body: Vec::new(),
+        });
+      }
+      responses.push(TestResponse {
+        expected_range: None,
+        status: "206 Partial Content",
+        headers: headers.into(),
+        body: Vec::new(),
+      });
+      let (url, server) = serve_responses(responses).await;
+      let engine = engine(decorated_executor());
+      let group_id = engine
+        .submit_group(SubmitGroup {
+          name: "invalid-full-range".into(),
+          tasks: vec![task(url, &destination.path, None)],
+          auto_resume: true,
+        })
+        .await
+        .unwrap();
+
+      assert_eq!(wait_finished(&engine, &group_id).await, FinishKind::Failed);
+      let tasks = engine.list_tasks(group_id).await.unwrap();
+      assert_eq!(tasks[0].error, Some(expected));
+      assert_eq!(tasks[0].attempts, 0);
+      assert!(!destination.path.exists());
+      if resume {
+        assert_eq!(
+          tokio::fs::read(destination.part_path()).await.unwrap(),
+          partial
+        );
+      } else {
+        assert!(!destination.part_path().exists());
+      }
+      server.await.unwrap();
+    }
+  }
 }
 
 #[tokio::test]

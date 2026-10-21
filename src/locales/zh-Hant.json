@@ -2339,7 +2339,10 @@
       },
       "downloadMojangJava": {
         "error": {
-          "title": "Mojang Java 執行時下載失敗"
+          "title": "Mojang Java 執行時下載失敗",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
+          }
         }
       },
       "checkGameDirectory": {
@@ -2357,7 +2360,16 @@
           "title": "清除下載快取失敗",
           "description": {
             "HAS_ACTIVE_DOWNLOAD_TASKS": "目前有下載任務正在進行中，請稍後再試",
-            "FILE_DELETION_FAILED": "無法刪除快取檔案，可能是檔案正在被使用"
+            "FILE_DELETION_FAILED": "無法刪除快取檔案，可能是檔案正在被使用",
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "下載啟動器更新失敗",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
           }
         }
       }
@@ -2625,7 +2637,8 @@
             "OPTIFINE_NOT_INSTALLED": "OptiFine 尚未完成安裝",
             "INSTANCE_NOT_FOUND_BY_ID": "實例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "遊戲檔案不完整或缺失",
-            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失"
+            "LAUNCHING_STATE_NOT_FOUND": "啟動狀態遺失",
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
           }
         }
       },
@@ -2716,7 +2729,8 @@
           "title": "下載遊戲伺服器失敗",
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
-            "NETWORK_ERROR": "無法連線到伺服器"
+            "NETWORK_ERROR": "無法連線到伺服器",
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
           }
         }
       },
@@ -2736,7 +2750,8 @@
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
-            "FILE_OPERATION_ERROR": "無法重新命名舊模組檔案"
+            "FILE_OPERATION_ERROR": "無法重新命名舊模組檔案",
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
           }
         }
       }
@@ -2762,7 +2777,8 @@
             "FILE_CREATION_FAILED": "目標檔案建立失敗",
             "NETWORK_ERROR": "網路錯誤",
             "CLIENT_JSON_PARSE_ERROR": "實例版本資訊解析錯誤",
-            "ASSET_INDEX_PARSE_ERROR": "資源索引檔案解析錯誤"
+            "ASSET_INDEX_PARSE_ERROR": "資源索引檔案解析錯誤",
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
           }
         }
       },
@@ -2955,13 +2971,17 @@
         "error": {
           "title": "修改模組載入器失敗",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由第三者安裝的版本，無法解除安裝或更換"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由第三者安裝的版本，無法解除安裝或更換",
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
           }
         }
       },
       "changeOptiFine": {
         "error": {
-          "title": "修改 OptiFine 失敗"
+          "title": "修改 OptiFine 失敗",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能完成操作"
+          }
         }
       },
       "removeModLoader": {
@@ -3045,8 +3065,30 @@
       }
     },
     "task": {
-      "submitDownloadGroup": {
-        "error": "任務建立失敗"
+      "common": {
+        "title": "下載操作失敗",
+        "description": {
+          "NETWORK_ERROR": "網路錯誤：{{details}}",
+          "HTTP_ERROR": "HTTP 錯誤：{{status}}",
+          "IO_ERROR": "檔案操作失敗：{{details}}",
+          "CHECKSUM_MISMATCH": "檔案校驗失敗：預期 {{expected}}，實際 {{actual}}",
+          "CORRUPT_FILES": "檔案損壞：{{paths, list}}",
+          "MISSING_FIELD": "任務缺少欄位：{{field}}",
+          "UNKNOWN_EXECUTOR": "未知的任務執行器：{{executor}}",
+          "INVALID_CONTENT_RANGE": "伺服器傳回了無效的 Content-Range",
+          "RESUME_OFFSET_MISMATCH": "續傳位置不符：預期 {{expected}}，實際 {{actual}}",
+          "OTHER_ERROR": "任務失敗：{{details}}",
+          "EMPTY_GROUP": "任務群組至少需要一項任務",
+          "CHANNEL_CLOSED": "與下載引擎的連線已關閉",
+          "UNKNOWN_GROUP": "找不到任務群組 {{groupId}}",
+          "INVALID_STATE": "任務群組 {{groupId}} 目前狀態不允許此操作",
+          "STORAGE_ERROR": "儲存下載狀態失敗：{{details}}",
+          "ENGINE_NOT_INITIALIZED": "下載引擎尚未初始化",
+          "INSTALLATION_INSTANCE_MISMATCH": "安裝實例與任務不符",
+          "MOD_LOADER_CHANGED": "安裝過程中模組載入器已變更",
+          "OPTIFINE_MISSING": "找不到 OptiFine",
+          "OPTIFINE_CHANGED": "安裝過程中 OptiFine 已變更"
+        }
       },
       "onDownloadGroupUpdate": {
         "status": {

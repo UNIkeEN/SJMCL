@@ -90,16 +90,15 @@ impl DownloadExecutor {
       .spec
       .get("url")
       .and_then(|v| v.as_str())
-      .ok_or_else(|| TaskError::Other("spec 缺少 url".into()))?
+      .ok_or_else(|| TaskError::MissingField {
+        field: "url".into(),
+      })?
       .to_string();
-    let dest = ctx
-      .dest
-      .clone()
-      .ok_or_else(|| TaskError::Other("缺少 dest".into()))?;
+    let dest = ctx.dest.clone().ok_or_else(|| TaskError::MissingField {
+      field: "dest".into(),
+    })?;
     if let Some(parent) = dest.parent().filter(|p| !p.as_os_str().is_empty()) {
-      tokio::fs::create_dir_all(parent)
-        .await
-        .map_err(|e| TaskError::Io(e.to_string()))?;
+      tokio::fs::create_dir_all(parent).await?;
     }
     let part_path = part_path(&dest);
     // The partial file size is authoritative for resumption.
@@ -127,7 +126,7 @@ impl DownloadExecutor {
       let resp = tokio::select! {
         r = req.send() => match r {
             Ok(r) => r,
-            Err(e) => return Err(TaskError::Network(e.to_string())),
+            Err(e) => return Err(TaskError::Network { details: e.to_string() }),
         },
         _ = ctx.run_token.cancelled() => {
             // The old partial file is retained until a usable response is received.
@@ -156,15 +155,18 @@ impl DownloadExecutor {
 
       if status == reqwest::StatusCode::PARTIAL_CONTENT {
         // Only append a 206 whose range starts exactly at the requested offset.
-        if let Some((start, total)) = content_range(resp.headers().get("content-range"))
-          && start == request_offset
-        {
-          break (resp, request_offset, total);
-        }
-        if request_offset == 0 {
-          return Err(TaskError::Network(
-            "服务器返回了无效或不匹配的 Content-Range".into(),
-          ));
+        match content_range(resp.headers().get("content-range")) {
+          Some((start, total)) if start == request_offset => {
+            break (resp, request_offset, total);
+          }
+          Some((start, _)) if request_offset == 0 => {
+            return Err(TaskError::ResumeOffsetMismatch {
+              expected: request_offset,
+              actual: start,
+            });
+          }
+          None if request_offset == 0 => return Err(TaskError::InvalidContentRange),
+          _ => {}
         }
       } else if status.is_success() {
         // A full response to a Range request can be used immediately, overwriting the part file.
@@ -174,7 +176,9 @@ impl DownloadExecutor {
           .unwrap_or(0);
         break (resp, 0, total);
       } else if request_offset == 0 || !matches!(status.as_u16(), 400 | 403 | 405 | 416 | 501) {
-        return Err(TaskError::Http(status.as_u16()));
+        return Err(TaskError::Http {
+          status: status.as_u16(),
+        });
       }
 
       // Retry once without Range within this attempt, preserving the normal retry budget.
@@ -201,12 +205,9 @@ impl DownloadExecutor {
         .append(true)
         .create(true)
         .open(&part_path)
-        .await
-        .map_err(|e| TaskError::Io(e.to_string()))?
+        .await?
     } else {
-      tokio::fs::File::create(&part_path)
-        .await
-        .map_err(|e| TaskError::Io(e.to_string()))?
+      tokio::fs::File::create(&part_path).await?
     };
 
     // Copy into the partial file; an Interrupted reader stops the copy.
@@ -218,24 +219,20 @@ impl DownloadExecutor {
         return Ok(());
       }
       Err(e) => {
-        file
-          .flush()
-          .await
-          .map_err(|error| TaskError::Io(error.to_string()))?;
+        file.flush().await?;
         if e
           .get_ref()
           .and_then(|source| source.downcast_ref::<reqwest::Error>())
           .is_some()
         {
-          return Err(TaskError::Network(e.to_string()));
+          return Err(TaskError::Network {
+            details: e.to_string(),
+          });
         }
-        return Err(TaskError::Io(e.to_string()));
+        return Err(e.into());
       }
     }
-    file
-      .flush()
-      .await
-      .map_err(|e| TaskError::Io(e.to_string()))?;
+    file.flush().await?;
     drop(file);
 
     // Report final progress, verify the content, and rename the file.
@@ -400,7 +397,7 @@ async fn finalize_download(
       })
       .await;
     let (actual_sha1, actual_sha256) = tokio::select! {
-      result = hash_file(part_path) => result.map_err(|e| TaskError::Io(e.to_string()))?,
+      result = hash_file(part_path) => result?,
       _ = ctx.run_token.cancelled() => {
         report_if_cancelled(ctx, part_path).await;
         return Ok(());
@@ -435,14 +432,10 @@ async fn finalize_download(
   }
   if let Err(error) = tokio::fs::rename(part_path, dest).await {
     if dest.exists() {
-      tokio::fs::remove_file(dest)
-        .await
-        .map_err(|e| TaskError::Io(e.to_string()))?;
-      tokio::fs::rename(part_path, dest)
-        .await
-        .map_err(|e| TaskError::Io(e.to_string()))?;
+      tokio::fs::remove_file(dest).await?;
+      tokio::fs::rename(part_path, dest).await?;
     } else {
-      return Err(TaskError::Io(error.to_string()));
+      return Err(error.into());
     }
   }
   let _ = ctx

@@ -109,10 +109,9 @@ const deriveGroup = (
     stats,
     progress,
     ...estimateDownloadGroupEta(summary.state, derivedTasks, summary.etaSample),
-    error: getDownloadErrorText(
+    error:
       derivedTasks.find((task) => task.retriesExhausted && task.error)?.error ??
-        null
-    ),
+      undefined,
   };
 };
 
@@ -154,8 +153,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const showCommandError = useCallback(
     (error: unknown) => {
       toast({
-        title: t("Services.task.submitDownloadGroup.error"),
-        description: String(error),
+        title: t("Services.task.common.title"),
+        description: getDownloadErrorText(error, t),
         status: "error",
       });
     },
@@ -514,7 +513,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     const stopError = DownloadService.onError((event) => {
       logger.error(
-        `Download ${event.taskId} in group ${event.groupId} failed: ${getDownloadErrorText(event.error)}`
+        `Download ${event.taskId} in group ${event.groupId} failed: ${JSON.stringify(event.error)}`
       );
       setTasks((groups) =>
         groups.map((group) =>

@@ -22,13 +22,10 @@ export enum DownloadFinishKind {
   Cancelled = "cancelled",
 }
 
-export type DownloadTaskError =
-  | { Network: string }
-  | { Http: number }
-  | { Io: string }
-  | { Checksum: { expected: string; actual: string } }
-  | { CorruptFiles: string[] }
-  | { Other: string };
+export interface DownloadError {
+  code: string;
+  params?: Record<string, string | number | string[]>;
+}
 
 export interface DownloadSpec {
   url: string;
@@ -80,7 +77,7 @@ export interface DownloadTask extends Omit<
   total: number;
   offset: number;
   attempts: number;
-  error: DownloadTaskError | null;
+  error: DownloadError | null;
   verified: boolean;
   retriesExhausted: boolean;
   speedBps?: number;
@@ -119,7 +116,7 @@ export interface DownloadGroup extends DownloadGroupSummary {
     filesPerSec?: number;
     bytesPerSec?: number;
   };
-  error?: string;
+  error?: DownloadError;
 }
 
 export interface DownloadProgress {
@@ -163,7 +160,7 @@ export interface DownloadErrorEvent {
   kind: "task_failed";
   groupId: string;
   taskId: string;
-  error: DownloadTaskError;
+  error: DownloadError;
 }
 
 export interface DownloadVerifiedEvent {

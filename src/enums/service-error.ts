@@ -52,6 +52,10 @@ export enum InstanceError {
   ProcessorExecutionFailed = "PROCESSOR_EXECUTION_FAILED",
   SemaphoreAcquireFailed = "SEMAPHORE_ACQUIRE_FAILED",
   LoaderInstallerNotFound = "LOADER_INSTALLER_NOT_FOUND",
+  InstallationInstanceMismatch = "INSTALLATION_INSTANCE_MISMATCH",
+  ModLoaderChanged = "MOD_LOADER_CHANGED",
+  OptifineMissing = "OPTIFINE_MISSING",
+  OptifineChanged = "OPTIFINE_CHANGED",
 }
 
 export enum ConfigServiceError {

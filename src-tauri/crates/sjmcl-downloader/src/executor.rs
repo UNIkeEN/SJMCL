@@ -8,7 +8,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 
-use crate::{ExecContext, TaskError, TaskOutcome, TaskReport};
+use crate::{EngineError, ExecContext, TaskError, TaskOutcome, TaskReport};
 
 pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
@@ -107,7 +107,10 @@ async fn worker_loop(executors: Arc<dyn ExecutorRegistry>, rx: async_channel::Re
         .send(TaskReport::Outcome {
           task_id,
           outcome: TaskOutcome::Failed {
-            error: TaskError::Other(format!("未知 executor: {}", job.ctx.executor)),
+            error: EngineError::UnknownExecutor {
+              executor: job.ctx.executor.clone(),
+            }
+            .into(),
           },
         })
         .await;

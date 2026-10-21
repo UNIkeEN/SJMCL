@@ -365,7 +365,7 @@ impl EngineActor {
           .iter()
           .find(|g| g.id == group_id)
           .map(|g| g.tasks.clone())
-          .ok_or(EngineError::UnknownGroup(group_id));
+          .ok_or(EngineError::UnknownGroup { group_id });
         let _ = reply.send(r);
       }
     }
@@ -373,15 +373,15 @@ impl EngineActor {
 
   fn cmd_submit(&mut self, sg: crate::SubmitGroup, reply: Reply<String>) {
     if sg.tasks.is_empty() {
-      let _ = reply.send(Err(EngineError::InvalidSubmission(
-        "任务组至少需要一个任务".into(),
-      )));
+      let _ = reply.send(Err(EngineError::EmptyGroup));
       return;
     }
     // Reject tasks with unregistered executors before persisting the group.
     for t in &sg.tasks {
       if self.executors.get(&t.executor).is_none() {
-        let _ = reply.send(Err(EngineError::UnknownExecutor(t.executor.clone())));
+        let _ = reply.send(Err(EngineError::UnknownExecutor {
+          executor: t.executor.clone(),
+        }));
         return;
       }
     }
@@ -426,12 +426,15 @@ impl EngineActor {
       .groups
       .iter()
       .position(|g| g.id == group_id)
-      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+      .ok_or_else(|| EngineError::UnknownGroup {
+        group_id: group_id.to_string(),
+      })?;
     let st = self.state.groups[gi].state;
     if !matches!(st, GroupState::Active | GroupState::Queued) {
-      return Err(EngineError::InvalidState(format!(
-        "{group_id} 状态 {st:?} 不允许 pause"
-      )));
+      return Err(EngineError::InvalidState {
+        group_id: group_id.to_string(),
+        state: st,
+      });
     }
     if st == GroupState::Active {
       // Invalidate queued and active work; pending tasks remain resumable.
@@ -459,9 +462,14 @@ impl EngineActor {
       .groups
       .iter()
       .position(|g| g.id == group_id)
-      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+      .ok_or_else(|| EngineError::UnknownGroup {
+        group_id: group_id.to_string(),
+      })?;
     if self.state.groups[gi].state != GroupState::Paused {
-      return Err(EngineError::InvalidState("只有 Paused 组可 resume".into()));
+      return Err(EngineError::InvalidState {
+        group_id: group_id.to_string(),
+        state: self.state.groups[gi].state,
+      });
     }
     // Cancelled tokens cannot be reused after resume.
     if let Some(rtg) = self.state.runtime.get_mut(group_id) {
@@ -494,13 +502,18 @@ impl EngineActor {
       .groups
       .iter()
       .position(|g| g.id == group_id)
-      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+      .ok_or_else(|| EngineError::UnknownGroup {
+        group_id: group_id.to_string(),
+      })?;
     let st = self.state.groups[gi].state;
     if !matches!(
       st,
       GroupState::Active | GroupState::Queued | GroupState::Paused | GroupState::Draining
     ) {
-      return Err(EngineError::InvalidState(format!("{group_id} 已终结")));
+      return Err(EngineError::InvalidState {
+        group_id: group_id.to_string(),
+        state: st,
+      });
     }
     // Cancel queued and active work, then wait for all tasks to become terminal.
     let rtg = self.state.runtime.get_mut(group_id).unwrap();
@@ -532,17 +545,20 @@ impl EngineActor {
       .groups
       .iter()
       .position(|g| g.id == group_id)
-      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+      .ok_or_else(|| EngineError::UnknownGroup {
+        group_id: group_id.to_string(),
+      })?;
     if self.state.groups[gi].finish != Some(FinishKind::Failed) {
-      return Err(EngineError::InvalidState(
-        "只有 Finished(Failed) 组可 retry".into(),
-      ));
+      return Err(EngineError::InvalidState {
+        group_id: group_id.to_string(),
+        state: self.state.groups[gi].state,
+      });
     }
     let corrupt_paths: Vec<_> = self.state.groups[gi]
       .tasks
       .iter()
       .filter_map(|task| match &task.error {
-        Some(TaskError::CorruptFiles(paths)) => Some(paths.as_slice()),
+        Some(TaskError::CorruptFiles { paths }) => Some(paths.as_slice()),
         _ => None,
       })
       .flatten()
@@ -616,16 +632,19 @@ impl EngineActor {
       .groups
       .iter()
       .position(|group| group.id == group_id)
-      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+      .ok_or_else(|| EngineError::UnknownGroup {
+        group_id: group_id.to_string(),
+      })?;
     if self.state.groups[index].state != GroupState::Finished {
-      return Err(EngineError::InvalidState(
-        "只有 Finished 组可从历史记录移除".into(),
-      ));
+      return Err(EngineError::InvalidState {
+        group_id: group_id.to_string(),
+        state: self.state.groups[index].state,
+      });
     }
     self
       .store
       .remove_group(group_id)
-      .map_err(EngineError::InvalidSubmission)?;
+      .map_err(|details| EngineError::Storage { details })?;
     self.state.groups.remove(index);
     self.state.runtime.remove(group_id);
     self.dequeue_group(group_id);
@@ -638,18 +657,21 @@ impl EngineActor {
       .groups
       .iter_mut()
       .find(|g| g.id == group_id)
-      .ok_or_else(|| EngineError::UnknownGroup(group_id.to_string()))?;
+      .ok_or_else(|| EngineError::UnknownGroup {
+        group_id: group_id.to_string(),
+      })?;
     if group.state != GroupState::Finished || group.finish != Some(FinishKind::Completed) {
-      return Err(EngineError::InvalidState(
-        "only successful completions can be acknowledged".into(),
-      ));
+      return Err(EngineError::InvalidState {
+        group_id: group_id.to_string(),
+        state: group.state,
+      });
     }
     let mut acknowledged = group.clone();
     acknowledged.completion_pending = false;
     self
       .store
       .save_group(&acknowledged)
-      .map_err(EngineError::InvalidSubmission)?;
+      .map_err(|details| EngineError::Storage { details })?;
     *group = acknowledged;
     Ok(())
   }
@@ -854,7 +876,13 @@ impl EngineActor {
         source_count > 1
           && matches!(
             t.error,
-            Some(TaskError::Network(_) | TaskError::Http(_) | TaskError::Checksum { .. })
+            Some(
+              TaskError::Network { .. }
+                | TaskError::Http { .. }
+                | TaskError::Checksum { .. }
+                | TaskError::InvalidContentRange
+                | TaskError::ResumeOffsetMismatch { .. }
+            )
           ),
       )
     };
@@ -1389,7 +1417,9 @@ fn advance_download_source(task: &mut Task) -> Result<bool, TaskError> {
     match std::fs::remove_file(std::path::PathBuf::from(path)) {
       Ok(()) => {}
       Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-      Err(error) => return Err(TaskError::Io(error.to_string())),
+      Err(error) => {
+        return Err(error.into());
+      }
     }
   }
   sources.rotate_left(1);

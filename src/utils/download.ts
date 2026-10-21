@@ -1,9 +1,10 @@
+import type { TFunction } from "i18next";
 import {
+  type DownloadError,
   type DownloadGroup,
   DownloadGroupState,
   type DownloadGroupStats,
   type DownloadTask,
-  type DownloadTaskError,
   DownloadTaskState,
 } from "@/models/download";
 
@@ -11,15 +12,17 @@ const MAX_DOWNLOAD_ETA_SECS = 24 * 60 * 60;
 const DOWNLOAD_ETA_SMOOTHING_SECS = 3;
 
 export const getDownloadErrorText = (
-  error: DownloadTaskError | null
+  error: unknown,
+  t: TFunction
 ): string | undefined => {
   if (!error) return undefined;
-  if ("Http" in error) return `HTTP ${error.Http}`;
-  if ("Checksum" in error) {
-    return `Checksum mismatch: ${error.Checksum.actual}`;
+  if (typeof error === "object" && "code" in error) {
+    const { code, params } = error as DownloadError;
+    return t(`Services.task.common.description.${code}`, params);
   }
-  if ("CorruptFiles" in error) return error.CorruptFiles.join(", ");
-  return Object.values(error)[0];
+  return t("Services.task.common.description.OTHER_ERROR", {
+    details: String(error),
+  });
 };
 
 export const shouldShowDownloadProgress = (

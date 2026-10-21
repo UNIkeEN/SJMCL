@@ -287,6 +287,10 @@ pub enum InstanceError {
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
   LoaderInstallerNotFound,
+  InstallationInstanceMismatch,
+  ModLoaderChanged,
+  OptifineMissing,
+  OptifineChanged,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]
