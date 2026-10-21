@@ -319,11 +319,13 @@ impl<R: AsyncRead + Unpin> AsyncRead for DownloadReader<R> {
       }
     }
     // Read the underlying stream.
+    let filled_before = buf.filled().len();
     match Pin::new(&mut self.inner).poll_read(cx, buf) {
       Poll::Pending => Poll::Pending,
       Poll::Ready(Err(e)) => Poll::Ready(Err(e)),
       Poll::Ready(Ok(())) => {
-        let n = buf.filled().len() as u64;
+        // Copy may top up a nonempty buffer while waiting for the writer.
+        let n = (buf.filled().len() - filled_before) as u64;
         if n > 0 {
           self.received += n;
           // Throttle progress reports; a later report can replace a dropped try_send.
