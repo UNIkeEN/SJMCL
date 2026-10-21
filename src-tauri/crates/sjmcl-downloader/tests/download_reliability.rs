@@ -365,11 +365,20 @@ async fn rejected_or_invalid_ranges_fall_back_without_using_the_retry_budget() {
   let expected = format!("{:x}", Sha1::digest(&body));
   for (status, headers) in [
     ("400 Bad Request", ""),
+    ("401 Unauthorized", ""),
     ("403 Forbidden", ""),
+    ("404 Not Found", ""),
     ("405 Method Not Allowed", ""),
+    ("406 Not Acceptable", ""),
+    ("408 Request Timeout", ""),
     ("416 Range Not Satisfiable", ""),
     ("416 Range Not Satisfiable", "Content-Range: bytes */3\r\n"),
+    ("422 Unprocessable Entity", ""),
+    ("429 Too Many Requests", ""),
+    ("500 Internal Server Error", ""),
     ("501 Not Implemented", ""),
+    ("502 Bad Gateway", ""),
+    ("503 Service Unavailable", ""),
     ("206 Partial Content", ""),
     ("206 Partial Content", "Content-Range: invalid\r\n"),
     ("206 Partial Content", "Content-Range: bytes 8-19/20\r\n"),
@@ -415,6 +424,105 @@ async fn rejected_or_invalid_ranges_fall_back_without_using_the_retry_budget() {
     assert!(tasks[0].verified);
     assert_eq!(tasks[0].received, body.len() as u64);
     assert_eq!(tasks[0].total, body.len() as u64);
+    server.await.unwrap();
+  }
+}
+
+#[tokio::test]
+async fn interrupted_range_requests_get_only_one_full_download_fallback() {
+  let body = b"0123456789abcdefghij".to_vec();
+  for (before_headers, full_succeeds) in
+    [(true, true), (false, true), (true, false), (false, false)]
+  {
+    let destination = TempDownload::new("range-network-fallback");
+    tokio::fs::write(destination.part_path(), &body[..7])
+      .await
+      .unwrap();
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let address = listener.local_addr().unwrap();
+    let response_body = body.clone();
+    let server = tokio::spawn(async move {
+      for range_start in [Some(7), None] {
+        let (mut socket, _) = listener.accept().await.unwrap();
+        let request = read_request(&mut socket).await;
+        assert!(request.contains("\r\naccept-encoding: identity\r\n"));
+        assert!(request.contains("\r\nx-api-key: test-key\r\n"));
+        if let Some(start) = range_start {
+          assert!(request.contains(&format!("\r\nrange: bytes={start}-\r\n")));
+          if !before_headers {
+            let headers = format!(
+              "HTTP/1.1 206 Partial Content\r\nContent-Length: {}\r\nContent-Range: bytes {start}-{}/{}\r\nConnection: close\r\n\r\n",
+              response_body.len() - start,
+              response_body.len() - 1,
+              response_body.len()
+            );
+            socket.write_all(headers.as_bytes()).await.unwrap();
+            // Close before the promised body is complete.
+            socket.write_all(&response_body[start..10]).await.unwrap();
+          }
+        } else {
+          assert!(!request.contains("\r\nrange:"));
+          if full_succeeds || !before_headers {
+            let headers = format!(
+              "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+              response_body.len()
+            );
+            socket.write_all(headers.as_bytes()).await.unwrap();
+            let full_body = if full_succeeds {
+              response_body.as_slice()
+            } else {
+              &response_body[..3]
+            };
+            socket.write_all(full_body).await.unwrap();
+          }
+        }
+        socket.shutdown().await.unwrap();
+      }
+    });
+    let engine = engine(decorated_executor());
+    let group_id = engine
+      .submit_group(SubmitGroup {
+        name: "range-network-fallback".into(),
+        tasks: vec![task(
+          format!("http://{address}/file"),
+          &destination.path,
+          Some(format!("{:x}", Sha1::digest(&body))),
+        )],
+        auto_resume: true,
+      })
+      .await
+      .unwrap();
+
+    assert_eq!(
+      wait_finished(&engine, &group_id).await,
+      if full_succeeds {
+        FinishKind::Completed
+      } else {
+        FinishKind::Failed
+      },
+      "connection interrupted before response headers: {before_headers}, full GET succeeds: {full_succeeds}"
+    );
+    let tasks = engine.list_tasks(group_id).await.unwrap();
+    assert_eq!(tasks[0].attempts, 0);
+    if full_succeeds {
+      assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+      assert!(!destination.part_path().exists());
+      assert!(tasks[0].verified);
+      assert_eq!(tasks[0].received, body.len() as u64);
+      assert_eq!(tasks[0].total, body.len() as u64);
+    } else {
+      assert!(matches!(tasks[0].error, Some(TaskError::Network { .. })));
+      assert!(!destination.path.exists());
+      let partial = tokio::fs::read(destination.part_path()).await.unwrap();
+      if before_headers {
+        // Neither request returned a usable response; retain the original partial file.
+        assert_eq!(partial, &body[..7]);
+      } else {
+        // The full response replaces the old partial file, even if it later breaks.
+        assert!(partial.len() <= 3);
+        assert!(body.starts_with(&partial));
+      }
+    }
     server.await.unwrap();
   }
 }

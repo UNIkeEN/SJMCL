@@ -104,13 +104,13 @@ impl DownloadExecutor {
     // The partial file size is authoritative for resumption.
     // After a crash, the database offset can lag because no Interrupted report was sent,
     // while the partial file still contains the downloaded bytes.
-    let resume = match tokio::fs::metadata(&part_path).await {
+    let mut resume = match tokio::fs::metadata(&part_path).await {
       Ok(m) if m.len() > 0 => m.len(),
       _ => 0,
     };
 
     let mut request_offset = resume;
-    let (resp, offset, total) = loop {
+    loop {
       // Rebuild both requests so authentication and cancellation also apply to the fallback.
       let req = self.client.get(&url).header("Accept-Encoding", "identity");
       let req = if request_offset > 0 {
@@ -126,6 +126,10 @@ impl DownloadExecutor {
       let resp = tokio::select! {
         r = req.send() => match r {
             Ok(r) => r,
+            Err(_) if request_offset > 0 => {
+              request_offset = 0;
+              continue;
+            }
             Err(e) => return Err(TaskError::Network { details: e.to_string() }),
         },
         _ = ctx.run_token.cancelled() => {
@@ -153,12 +157,10 @@ impl DownloadExecutor {
         return finalize_download(&ctx, &part_path, &dest).await;
       }
 
-      if status == reqwest::StatusCode::PARTIAL_CONTENT {
+      let (offset, total) = if status == reqwest::StatusCode::PARTIAL_CONTENT {
         // Only append a 206 whose range starts exactly at the requested offset.
         match content_range(resp.headers().get("content-range")) {
-          Some((start, total)) if start == request_offset => {
-            break (resp, request_offset, total);
-          }
+          Some((start, total)) if start == request_offset => (request_offset, total),
           Some((start, _)) if request_offset == 0 => {
             return Err(TaskError::ResumeOffsetMismatch {
               expected: request_offset,
@@ -166,7 +168,10 @@ impl DownloadExecutor {
             });
           }
           None if request_offset == 0 => return Err(TaskError::InvalidContentRange),
-          _ => {}
+          _ => {
+            request_offset = 0;
+            continue;
+          }
         }
       } else if status.is_success() {
         // A full response to a Range request can be used immediately, overwriting the part file.
@@ -174,78 +179,86 @@ impl DownloadExecutor {
           .content_length()
           .or_else(|| ctx.spec.get("size").and_then(|size| size.as_u64()))
           .unwrap_or(0);
-        break (resp, 0, total);
-      } else if request_offset == 0 || !matches!(status.as_u16(), 400 | 403 | 405 | 416 | 501) {
+        (0, total)
+      } else if request_offset == 0 {
         return Err(TaskError::Http {
           status: status.as_u16(),
         });
-      }
+      } else {
+        // Any rejected Range may still allow a full GET, regardless of its status code.
+        // Retry once within this attempt, preserving the normal retry budget.
+        request_offset = 0;
+        continue;
+      };
 
-      // Retry once without Range within this attempt, preserving the normal retry budget.
-      request_offset = 0;
-    };
+      // Wrap the response stream with cancellation, progress, and rate limiting.
+      let stream: Pin<Box<dyn Stream<Item = Result<bytes::Bytes, io::Error>> + Send>> =
+        Box::pin(resp.bytes_stream().map(|r| r.map_err(io::Error::other)));
+      let inner = StreamReader::new(stream);
+      let mut reader = DownloadReader::new(
+        inner,
+        ctx.task_id.clone(),
+        ctx.run_token.clone(),
+        Some(ctx.report.clone()),
+        self.report_interval,
+        offset,
+        total,
+        self.limiter.clone(),
+      );
 
-    // Wrap the response stream with cancellation, progress, and rate limiting.
-    let stream: Pin<Box<dyn Stream<Item = Result<bytes::Bytes, io::Error>> + Send>> =
-      Box::pin(resp.bytes_stream().map(|r| r.map_err(io::Error::other)));
-    let inner = StreamReader::new(stream);
-    let mut reader = DownloadReader::new(
-      inner,
-      ctx.task_id.clone(),
-      ctx.run_token.clone(),
-      Some(ctx.report.clone()),
-      self.report_interval,
-      offset,
-      total,
-      self.limiter.clone(),
-    );
+      let mut file = if offset > 0 {
+        tokio::fs::OpenOptions::new()
+          .append(true)
+          .create(true)
+          .open(&part_path)
+          .await?
+      } else {
+        tokio::fs::File::create(&part_path).await?
+      };
 
-    let mut file = if offset > 0 {
-      tokio::fs::OpenOptions::new()
-        .append(true)
-        .create(true)
-        .open(&part_path)
-        .await?
-    } else {
-      tokio::fs::File::create(&part_path).await?
-    };
-
-    // Copy into the partial file; an Interrupted reader stops the copy.
-    match tokio::io::copy(&mut reader, &mut file).await {
-      Ok(_) => {}
-      Err(e) if e.kind() == io::ErrorKind::Interrupted => {
-        let _ = file.flush().await;
-        report_interrupted(&ctx, reader.offset()).await;
-        return Ok(());
-      }
-      Err(e) => {
-        file.flush().await?;
-        if e
-          .get_ref()
-          .and_then(|source| source.downcast_ref::<reqwest::Error>())
-          .is_some()
-        {
-          return Err(TaskError::Network {
-            details: e.to_string(),
-          });
+      // Copy into the partial file; an Interrupted reader stops the copy.
+      match tokio::io::copy(&mut reader, &mut file).await {
+        Ok(_) => {}
+        Err(e) if e.kind() == io::ErrorKind::Interrupted => {
+          let _ = file.flush().await;
+          report_interrupted(&ctx, reader.offset()).await;
+          return Ok(());
         }
-        return Err(e.into());
+        Err(e) => {
+          file.flush().await?;
+          if e
+            .get_ref()
+            .and_then(|source| source.downcast_ref::<reqwest::Error>())
+            .is_some()
+          {
+            if offset > 0 {
+              // A broken partial response also gets one full-download fallback.
+              resume = reader.offset();
+              request_offset = 0;
+              continue;
+            }
+            return Err(TaskError::Network {
+              details: e.to_string(),
+            });
+          }
+          return Err(e.into());
+        }
       }
-    }
-    file.flush().await?;
-    drop(file);
+      file.flush().await?;
+      drop(file);
 
-    // Report final progress, verify the content, and rename the file.
-    let _ = ctx
-      .report
-      .send(TaskReport::Progress {
-        task_id: ctx.task_id.clone(),
-        received: reader.offset(),
-        // At EOF the actual size is known, even for chunked responses or stale size hints.
-        total: reader.offset(),
-      })
-      .await;
-    finalize_download(&ctx, &part_path, &dest).await
+      // Report final progress, verify the content, and rename the file.
+      let _ = ctx
+        .report
+        .send(TaskReport::Progress {
+          task_id: ctx.task_id.clone(),
+          received: reader.offset(),
+          // At EOF the actual size is known, even for chunked responses or stale size hints.
+          total: reader.offset(),
+        })
+        .await;
+      return finalize_download(&ctx, &part_path, &dest).await;
+    }
   }
 }
 
