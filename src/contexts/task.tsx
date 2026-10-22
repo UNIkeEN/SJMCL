@@ -33,10 +33,12 @@ import {
 } from "@/services/extension";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
 import {
+  type DownloadSnapshotUpdates,
   estimateDownloadGroupEta,
   getDownloadErrorText,
   getDownloadGroupProgress,
   getDownloadStats,
+  mergeDownloadSnapshot,
   shouldShowDownloadProgress,
 } from "@/utils/download";
 
@@ -141,10 +143,35 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const tasksRef = useRef<DownloadGroup[]>([]);
   const { t } = useTranslation();
   const refreshSequence = useRef(0);
+  const pendingSnapshots = useRef(new Set<DownloadSnapshotUpdates>());
   const completionInFlight = useRef<string | null>(null);
   const completionOnClose = useRef<(() => void) | null>(null);
   const handledCompletions = useRef(new Set<string>());
   const [completionProcessing, setCompletionProcessing] = useState(false);
+
+  const recordTaskUpdate = useCallback(
+    (taskId: string, update: Partial<DownloadTask>) => {
+      pendingSnapshots.current.forEach((snapshot) => {
+        snapshot.tasks.set(taskId, {
+          ...snapshot.tasks.get(taskId),
+          ...update,
+        });
+      });
+    },
+    []
+  );
+
+  const recordGroupUpdate = useCallback(
+    (groupId: string, update: Partial<DownloadGroupSummary>) => {
+      pendingSnapshots.current.forEach((snapshot) => {
+        snapshot.groups.set(groupId, {
+          ...snapshot.groups.get(groupId),
+          ...update,
+        });
+      });
+    },
+    []
+  );
 
   useEffect(() => {
     tasksRef.current = tasks;
@@ -181,6 +208,11 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const refreshDownloadGroups = useCallback(async () => {
     const sequence = ++refreshSequence.current;
+    const updates: DownloadSnapshotUpdates = {
+      tasks: new Map(),
+      groups: new Map(),
+    };
+    pendingSnapshots.current.add(updates);
     try {
       const summaries = await DownloadService.snapshot();
       const previous = tasksRef.current;
@@ -198,9 +230,16 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           Number(right.id.replace(/^\D+/, "")) -
           Number(left.id.replace(/^\D+/, ""))
       );
-      setTasks(groups);
+      setTasks(
+        groups.map((group) => {
+          const merged = mergeDownloadSnapshot(group, updates);
+          return deriveGroup(merged, merged.tasks);
+        })
+      );
     } catch (error) {
       showCommandError(error);
+    } finally {
+      pendingSnapshots.current.delete(updates);
     }
   }, [loadGroup, showCommandError]);
 
@@ -465,24 +504,26 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     let attached = true;
     const stopTick = DownloadService.onTick((updates) => {
+      const taskUpdates = new Map<string, Partial<DownloadTask>>();
+      const groupIds = new Set<string>();
+      updates.forEach((progress) => {
+        const update: Partial<DownloadTask> = {
+          state: progress.state,
+          received: progress.received,
+          total: progress.total,
+          speedBps: progress.speedBps,
+          etaSecs: progress.etaSecs ?? undefined,
+        };
+        taskUpdates.set(progress.taskId, update);
+        groupIds.add(progress.groupId);
+        recordTaskUpdate(progress.taskId, update);
+      });
       setTasks((groups) =>
         groups.map((group) => {
-          const relevant = updates.filter(
-            (progress) => progress.groupId === group.id
-          );
-          if (!relevant.length) return group;
+          if (!groupIds.has(group.id)) return group;
           const nextTasks = group.tasks.map((task) => {
-            const progress = relevant.find((item) => item.taskId === task.id);
-            return progress
-              ? {
-                  ...task,
-                  state: progress.state,
-                  received: progress.received,
-                  total: progress.total,
-                  speedBps: progress.speedBps,
-                  etaSecs: progress.etaSecs ?? undefined,
-                }
-              : task;
+            const update = taskUpdates.get(task.id);
+            return update ? { ...task, ...update } : task;
           });
           return deriveGroup(group, nextTasks);
         })
@@ -493,16 +534,39 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         void refreshDownloadGroups();
         return;
       }
+      const groupUpdate =
+        event.kind === "group_state_changed"
+          ? {
+              state: event.new,
+              ...(event.new !== DownloadGroupState.Finished
+                ? { finish: null, completionPending: false }
+                : {}),
+            }
+          : undefined;
+      const taskUpdate =
+        event.kind === "task_state_changed"
+          ? {
+              state: event.new,
+              ...(event.new === DownloadTaskState.Pending ||
+              event.new === DownloadTaskState.Downloading
+                ? { error: null, retriesExhausted: false }
+                : {}),
+            }
+          : undefined;
+      if (groupUpdate) recordGroupUpdate(event.groupId, groupUpdate);
+      if (taskUpdate && event.kind === "task_state_changed") {
+        recordTaskUpdate(event.taskId, taskUpdate);
+      }
       setTasks((groups) =>
         groups.map((group) => {
           if (group.id !== event.groupId) return group;
           if (event.kind === "group_state_changed") {
-            return deriveGroup({ ...group, state: event.new }, group.tasks);
+            return deriveGroup({ ...group, ...groupUpdate }, group.tasks);
           }
           return deriveGroup(
             group,
             group.tasks.map((task) =>
-              task.id === event.taskId ? { ...task, state: event.new } : task
+              task.id === event.taskId ? { ...task, ...taskUpdate } : task
             )
           );
         })
@@ -515,20 +579,19 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       logger.error(
         `Download ${event.taskId} in group ${event.groupId} failed: ${JSON.stringify(event.error)}`
       );
+      const update: Partial<DownloadTask> = {
+        state: DownloadTaskState.Failed,
+        error: event.error,
+        retriesExhausted: true,
+      };
+      recordTaskUpdate(event.taskId, update);
       setTasks((groups) =>
         groups.map((group) =>
           group.id === event.groupId
             ? deriveGroup(
                 group,
                 group.tasks.map((task) =>
-                  task.id === event.taskId
-                    ? {
-                        ...task,
-                        state: DownloadTaskState.Failed,
-                        error: event.error,
-                        retriesExhausted: true,
-                      }
-                    : task
+                  task.id === event.taskId ? { ...task, ...update } : task
                 )
               )
             : group
@@ -536,6 +599,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     });
     const stopVerified = DownloadService.onVerified((event) => {
+      recordTaskUpdate(event.taskId, { verified: true });
       setTasks((groups) =>
         groups.map((group) =>
           group.id === event.groupId
@@ -551,16 +615,28 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     });
     const stopFinished = DownloadService.onFinished(
       async (event: DownloadFinishedEvent) => {
+        const updates: DownloadSnapshotUpdates = {
+          tasks: new Map(),
+          groups: new Map(),
+        };
+        pendingSnapshots.current.add(updates);
         try {
           const summary = (await DownloadService.snapshot()).find(
             (group) => group.id === event.groupId
           );
           if (!summary) return;
-          const group = await loadGroup(summary);
+          const loaded = await loadGroup(summary);
+          const merged = mergeDownloadSnapshot(loaded, updates);
+          const group = deriveGroup(merged, merged.tasks);
           setTasks((groups) => [
             group,
             ...groups.filter((item) => item.id !== group.id),
           ]);
+          if (
+            group.state !== DownloadGroupState.Finished ||
+            group.finish !== event.finish
+          )
+            return;
           const statusKey =
             event.finish === DownloadFinishKind.Completed
               ? "Completed"
@@ -583,6 +659,8 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           });
         } catch (error) {
           showCommandError(error);
+        } finally {
+          pendingSnapshots.current.delete(updates);
         }
       }
     );
@@ -604,7 +682,15 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         void subscription.then((stop) => stop()).catch(showCommandError);
       });
     };
-  }, [loadGroup, refreshDownloadGroups, showCommandError, t, toast]);
+  }, [
+    loadGroup,
+    recordGroupUpdate,
+    recordTaskUpdate,
+    refreshDownloadGroups,
+    showCommandError,
+    t,
+    toast,
+  ]);
 
   const generalPercent = useMemo(() => {
     const active = tasks.filter(

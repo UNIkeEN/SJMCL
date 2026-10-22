@@ -65,11 +65,6 @@ pub fn init_plugin(
           }
         },
       )),
-      resume_redirect_filter: Some(Arc::new(|raw_url| {
-        raw_url
-          .parse::<Url>()
-          .is_ok_and(|url| url.scheme() == "https" && url.host_str() == Some("edge.forgecdn.net"))
-      })),
       ..DownloadExecutor::default()
     };
 

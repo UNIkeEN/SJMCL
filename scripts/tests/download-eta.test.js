@@ -23,9 +23,107 @@ const {
   getDownloadErrorText,
   getDownloadGroupProgress,
   getDownloadStats,
+  mergeDownloadSnapshot,
   shouldShowDownloadProgress,
 } = require("../../src/utils/download.ts");
 const { formatByteSize } = require("../../src/utils/string.ts");
+
+const archiveSnapshot = (overrides = {}) => ({
+  id: "g1",
+  name: "modpack",
+  state: "active",
+  finish: null,
+  completionPending: false,
+  tasks: [
+    {
+      id: "t1",
+      executor: "download",
+      state: "downloading",
+      received: 100,
+      total: 1000,
+      error: null,
+      retriesExhausted: false,
+    },
+  ],
+  ...overrides,
+});
+
+test("a delayed archive snapshot keeps live byte counts, speed and progress", () => {
+  const snapshot = archiveSnapshot();
+  const merged = mergeDownloadSnapshot(snapshot, {
+    tasks: new Map([
+      ["t1", { received: 375, total: 1000, speedBps: 125, etaSecs: 5 }],
+    ]),
+    groups: new Map(),
+  });
+  assert.equal(merged.tasks[0].received, 375);
+  assert.equal(merged.tasks[0].speedBps, 125);
+  assert.equal(merged.tasks[0].etaSecs, 5);
+  assert.equal(getDownloadGroupProgress(merged.tasks), 37.5);
+  assert.equal(snapshot.tasks[0].received, 100);
+});
+
+test("a full-download fallback can reset bytes while an old snapshot is loading", () => {
+  const merged = mergeDownloadSnapshot(archiveSnapshot(), {
+    tasks: new Map([["t1", { received: 25, total: 500, speedBps: 0 }]]),
+    groups: new Map(),
+  });
+  assert.equal(merged.tasks[0].received, 25);
+  assert.equal(merged.tasks[0].total, 500);
+  assert.equal(getDownloadGroupProgress(merged.tasks), 5);
+});
+
+test("a delayed finished snapshot cannot hide a restarted archive's progress", () => {
+  const error = { code: "HTTP_ERROR", params: { status: 403 } };
+  const snapshot = archiveSnapshot({
+    state: "finished",
+    finish: "failed",
+    tasks: [
+      {
+        ...archiveSnapshot().tasks[0],
+        state: "failed",
+        error,
+        retriesExhausted: true,
+      },
+    ],
+  });
+  const merged = mergeDownloadSnapshot(snapshot, {
+    tasks: new Map([
+      [
+        "t1",
+        {
+          state: "downloading",
+          error: null,
+          retriesExhausted: false,
+          received: 375,
+        },
+      ],
+    ]),
+    groups: new Map([
+      ["g1", { state: "active", finish: null, completionPending: false }],
+    ]),
+  });
+  assert.equal(shouldShowDownloadProgress(merged, merged.tasks[0]), true);
+  assert.equal(merged.tasks[0].error, null);
+  assert.equal(merged.tasks[0].retriesExhausted, false);
+  assert.equal(getDownloadGroupProgress(merged.tasks), 37.5);
+});
+
+test("live pause and completion events survive delayed archive snapshots", () => {
+  for (const state of ["paused", "done"]) {
+    const merged = mergeDownloadSnapshot(archiveSnapshot(), {
+      tasks: new Map([
+        ["t1", { state, received: 1000, total: 1000, verified: true }],
+      ]),
+      groups: new Map([
+        ["g1", { state: state === "paused" ? "paused" : "active" }],
+      ]),
+    });
+    assert.equal(merged.tasks[0].state, state);
+    assert.equal(merged.tasks[0].received, 1000);
+    assert.equal(merged.tasks[0].verified, true);
+  }
+});
 
 test("a single modpack archive reports progress before the file completes", () => {
   assert.equal(

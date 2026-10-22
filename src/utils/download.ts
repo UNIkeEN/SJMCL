@@ -4,12 +4,31 @@ import {
   type DownloadGroup,
   DownloadGroupState,
   type DownloadGroupStats,
+  type DownloadGroupSummary,
   type DownloadTask,
   DownloadTaskState,
 } from "@/models/download";
 
 const MAX_DOWNLOAD_ETA_SECS = 24 * 60 * 60;
 const DOWNLOAD_ETA_SMOOTHING_SECS = 3;
+
+export interface DownloadSnapshotUpdates {
+  tasks: Map<string, Partial<DownloadTask>>;
+  groups: Map<string, Partial<DownloadGroupSummary>>;
+}
+
+// Keep live events from being overwritten by an in-flight snapshot.
+export const mergeDownloadSnapshot = (
+  snapshot: DownloadGroup,
+  updates: DownloadSnapshotUpdates
+): DownloadGroup => ({
+  ...snapshot,
+  ...updates.groups.get(snapshot.id),
+  tasks: snapshot.tasks.map((task) => ({
+    ...task,
+    ...updates.tasks.get(task.id),
+  })),
+});
 
 export const getDownloadErrorText = (
   error: unknown,

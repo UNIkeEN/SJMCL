@@ -60,8 +60,21 @@ async fn serve_once(
   let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
   let address = listener.local_addr().unwrap();
   let handle = tokio::spawn(async move {
+    if range_start.is_some() {
+      let (mut socket, _) = listener.accept().await.unwrap();
+      let request = read_request(&mut socket).await;
+      assert!(request.starts_with("head /file "));
+      assert!(!request.contains("\r\nrange:"));
+      let headers = format!(
+        "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        body.len()
+      );
+      socket.write_all(headers.as_bytes()).await.unwrap();
+      socket.shutdown().await.unwrap();
+    }
     let (mut socket, _) = listener.accept().await.unwrap();
     let request = read_request(&mut socket).await;
+    assert!(request.starts_with("get /file "));
     if let Some(start) = range_start {
       assert!(request.contains(&format!("range: bytes={start}-")));
     }
@@ -109,10 +122,21 @@ async fn serve_once(
 }
 
 struct TestResponse {
+  expected_request: &'static str,
   expected_range: Option<usize>,
   status: &'static str,
   headers: String,
   body: Vec<u8>,
+}
+
+fn head_response() -> TestResponse {
+  TestResponse {
+    expected_request: "head /file ",
+    expected_range: None,
+    status: "200 OK",
+    headers: String::new(),
+    body: Vec::new(),
+  }
 }
 
 async fn serve_responses(responses: Vec<TestResponse>) -> (String, tokio::task::JoinHandle<()>) {
@@ -122,6 +146,7 @@ async fn serve_responses(responses: Vec<TestResponse>) -> (String, tokio::task::
     for response in responses {
       let (mut socket, _) = listener.accept().await.unwrap();
       let request = read_request(&mut socket).await;
+      assert!(request.starts_with(response.expected_request));
       if let Some(start) = response.expected_range {
         assert!(request.contains(&format!("\r\nrange: bytes={start}-\r\n")));
       } else {
@@ -149,6 +174,139 @@ fn decorated_executor() -> DownloadExecutor {
       request.header("x-api-key", "test-key")
     })),
     ..DownloadExecutor::default()
+  }
+}
+
+#[tokio::test]
+async fn head_redirects_resolve_before_resuming_and_falling_back_to_a_full_get() {
+  let body = b"0123456789abcdefghij".to_vec();
+  for reject_range in [false, true] {
+    let destination = TempDownload::new("head-redirect");
+    tokio::fs::write(destination.part_path(), &body[..7])
+      .await
+      .unwrap();
+    let mut responses = vec![
+      TestResponse {
+        expected_request: "head /file ",
+        expected_range: None,
+        status: "302 Found",
+        headers: "Location: /download\r\n".into(),
+        body: Vec::new(),
+      },
+      TestResponse {
+        expected_request: "head /download ",
+        expected_range: None,
+        status: "200 OK",
+        headers: String::new(),
+        body: Vec::new(),
+      },
+      TestResponse {
+        expected_request: "get /download ",
+        expected_range: Some(7),
+        status: if reject_range {
+          "403 Forbidden"
+        } else {
+          "206 Partial Content"
+        },
+        headers: if reject_range {
+          String::new()
+        } else {
+          "Content-Range: bytes 7-19/20\r\n".into()
+        },
+        body: if reject_range {
+          Vec::new()
+        } else {
+          body[7..].to_vec()
+        },
+      },
+    ];
+    if reject_range {
+      responses.push(TestResponse {
+        expected_request: "get /download ",
+        expected_range: None,
+        status: "200 OK",
+        headers: String::new(),
+        body: body.clone(),
+      });
+    }
+    let (url, server) = serve_responses(responses).await;
+    let engine = engine(decorated_executor());
+    let group_id = engine
+      .submit_group(SubmitGroup {
+        name: "head-redirect".into(),
+        tasks: vec![task(
+          url,
+          &destination.path,
+          Some(format!("{:x}", Sha1::digest(&body))),
+        )],
+        auto_resume: true,
+      })
+      .await
+      .unwrap();
+
+    assert_eq!(
+      wait_finished(&engine, &group_id).await,
+      FinishKind::Completed
+    );
+    assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+    assert!(!destination.part_path().exists());
+    let tasks = engine.list_tasks(group_id).await.unwrap();
+    assert_eq!(tasks[0].attempts, 0);
+    assert!(tasks[0].verified);
+    server.await.unwrap();
+  }
+}
+
+#[tokio::test]
+async fn rejected_head_requests_still_allow_range_resumption() {
+  let body = b"0123456789abcdefghij".to_vec();
+  for status in [
+    "403 Forbidden",
+    "405 Method Not Allowed",
+    "501 Not Implemented",
+  ] {
+    let destination = TempDownload::new("head-rejected");
+    tokio::fs::write(destination.part_path(), &body[..7])
+      .await
+      .unwrap();
+    let (url, server) = serve_responses(vec![
+      TestResponse {
+        expected_request: "head /file ",
+        expected_range: None,
+        status,
+        headers: String::new(),
+        body: Vec::new(),
+      },
+      TestResponse {
+        expected_request: "get /file ",
+        expected_range: Some(7),
+        status: "206 Partial Content",
+        headers: "Content-Range: bytes 7-19/20\r\n".into(),
+        body: body[7..].to_vec(),
+      },
+    ])
+    .await;
+    let engine = engine(decorated_executor());
+    let group_id = engine
+      .submit_group(SubmitGroup {
+        name: "head-rejected".into(),
+        tasks: vec![task(
+          url,
+          &destination.path,
+          Some(format!("{:x}", Sha1::digest(&body))),
+        )],
+        auto_resume: true,
+      })
+      .await
+      .unwrap();
+
+    assert_eq!(
+      wait_finished(&engine, &group_id).await,
+      FinishKind::Completed,
+      "HEAD response: {status}"
+    );
+    assert_eq!(tokio::fs::read(&destination.path).await.unwrap(), body);
+    server.await.unwrap();
   }
 }
 
@@ -388,13 +546,16 @@ async fn rejected_or_invalid_ranges_fall_back_without_using_the_retry_budget() {
       .await
       .unwrap();
     let (url, server) = serve_responses(vec![
+      head_response(),
       TestResponse {
+        expected_request: "get /file ",
         expected_range: Some(7),
         status,
         headers: headers.into(),
         body: b"unsupported range".to_vec(),
       },
       TestResponse {
+        expected_request: "get /file ",
         expected_range: None,
         status: "200 OK",
         headers: String::new(),
@@ -442,6 +603,13 @@ async fn interrupted_range_requests_get_only_one_full_download_fallback() {
     let address = listener.local_addr().unwrap();
     let response_body = body.clone();
     let server = tokio::spawn(async move {
+      let (mut socket, _) = listener.accept().await.unwrap();
+      let request = read_request(&mut socket).await;
+      assert!(request.starts_with("head /file "));
+      assert!(!request.contains("\r\nrange:"));
+      // A HEAD connection failure must not prevent the Range GET.
+      socket.shutdown().await.unwrap();
+      drop(socket);
       for range_start in [Some(7), None] {
         let (mut socket, _) = listener.accept().await.unwrap();
         let request = read_request(&mut socket).await;
@@ -534,12 +702,16 @@ async fn ignored_ranges_replace_the_partial_file_without_appending() {
   tokio::fs::write(destination.part_path(), b"stale partial contents")
     .await
     .unwrap();
-  let (url, server) = serve_responses(vec![TestResponse {
-    expected_range: Some(22),
-    status: "200 OK",
-    headers: String::new(),
-    body: body.clone(),
-  }])
+  let (url, server) = serve_responses(vec![
+    head_response(),
+    TestResponse {
+      expected_request: "get /file ",
+      expected_range: Some(22),
+      status: "200 OK",
+      headers: String::new(),
+      body: body.clone(),
+    },
+  ])
   .await;
   let engine = engine(decorated_executor());
   let group_id = engine
@@ -567,13 +739,16 @@ async fn failed_full_download_after_range_rejection_preserves_the_partial_file()
     .await
     .unwrap();
   let (url, server) = serve_responses(vec![
+    head_response(),
     TestResponse {
+      expected_request: "get /file ",
       expected_range: Some(partial.len()),
       status: "416 Range Not Satisfiable",
       headers: String::new(),
       body: Vec::new(),
     },
     TestResponse {
+      expected_request: "get /file ",
       expected_range: None,
       status: "403 Forbidden",
       headers: String::new(),
@@ -622,7 +797,9 @@ async fn invalid_full_responses_report_structured_range_errors() {
         tokio::fs::write(destination.part_path(), partial)
           .await
           .unwrap();
+        responses.push(head_response());
         responses.push(TestResponse {
+          expected_request: "get /file ",
           expected_range: Some(partial.len()),
           status: "416 Range Not Satisfiable",
           headers: String::new(),
@@ -630,6 +807,7 @@ async fn invalid_full_responses_report_structured_range_errors() {
         });
       }
       responses.push(TestResponse {
+        expected_request: "get /file ",
         expected_range: None,
         status: "206 Partial Content",
         headers: headers.into(),
@@ -671,12 +849,16 @@ async fn a_complete_partial_file_is_finalized_on_a_matching_416() {
   tokio::fs::write(destination.part_path(), &body)
     .await
     .unwrap();
-  let (url, server) = serve_responses(vec![TestResponse {
-    expected_range: Some(body.len()),
-    status: "416 Range Not Satisfiable",
-    headers: format!("Content-Range: bytes */{}\r\n", body.len()),
-    body: Vec::new(),
-  }])
+  let (url, server) = serve_responses(vec![
+    head_response(),
+    TestResponse {
+      expected_request: "get /file ",
+      expected_range: Some(body.len()),
+      status: "416 Range Not Satisfiable",
+      headers: format!("Content-Range: bytes */{}\r\n", body.len()),
+      body: Vec::new(),
+    },
+  ])
   .await;
   let engine = engine(decorated_executor());
   let group_id = engine

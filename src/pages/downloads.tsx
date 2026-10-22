@@ -104,7 +104,11 @@ export const DownloadTasksPage = () => {
     if (task.total) {
       parts[0] += ` / ${formatByteSize(task.total)}`;
     }
-    if (Number.isFinite(task.speedBps) && (task.speedBps ?? 0) > 0) {
+    if (
+      task.state === DownloadTaskState.Downloading &&
+      Number.isFinite(task.speedBps) &&
+      (task.speedBps ?? 0) > 0
+    ) {
       parts.push(`${formatByteSize(task.speedBps!)}/s`);
     }
     return parts.join(" - ");
@@ -294,8 +298,8 @@ export const DownloadTasksPage = () => {
                         key={`${task.id}-detail`}
                         title={task.name}
                         description={
-                          shouldShowDownloadProgress(group, task) &&
-                          (task.state === DownloadTaskState.Downloading ||
+                          (task.received > 0 ||
+                            task.state === DownloadTaskState.Downloading ||
                             task.state === DownloadTaskState.Verifying) && (
                             <Text
                               fontSize="xs"
