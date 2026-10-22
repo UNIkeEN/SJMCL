@@ -567,28 +567,33 @@ pub async fn build_mojang_java_download_params(
     tauri::path::BaseDirectory::AppData,
   )?;
 
-  let download_params: Vec<_> = manifest["files"]
+  let files = manifest["files"]
     .as_object()
-    .ok_or_else(|| SJMCLError("Invalid files data".into()))?
-    .iter()
-    .filter_map(|(path, info)| {
-      let raw = info["downloads"]["raw"].as_object()?;
-      let (url, sha1) = (raw["url"].as_str()?, raw["sha1"].as_str()?);
+    .ok_or_else(|| SJMCLError("Invalid files data".into()))?;
+  let mut download_params = Vec::new();
+  for (path, info) in files {
+    if info["type"] != "file" {
+      continue;
+    }
+    let raw = &info["downloads"]["raw"];
+    let (Some(url), Some(sha1)) = (raw["url"].as_str(), raw["sha1"].as_str()) else {
+      return Err(SJMCLError(format!(
+        "Invalid Java runtime file download: {path}"
+      )));
+    };
 
-      Some(DownloadTask {
-        sources: get_download_urls(
-          &url.parse().ok()?,
-          &[ResourceType::Launcher, ResourceType::LauncherMeta],
-          &priority_list,
-        )
-        .ok()?,
-        dest: runtime_dir.join(path),
-        filename: None,
-        size: raw.get("size").and_then(|size| size.as_u64()),
-        sha1: Some(sha1.into()),
-      })
-    })
-    .collect();
+    download_params.push(DownloadTask {
+      sources: get_download_urls(
+        &url.parse()?,
+        &[ResourceType::Launcher, ResourceType::LauncherMeta],
+        &priority_list,
+      )?,
+      dest: runtime_dir.join(path),
+      filename: None,
+      size: raw.get("size").and_then(|size| size.as_u64()),
+      sha1: Some(sha1.into()),
+    });
+  }
 
   Ok(download_params)
 }
