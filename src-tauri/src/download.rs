@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 
 use futures::future::join_all;
 use sjmcl_downloader::download::DownloadExecutor;
@@ -283,16 +282,9 @@ pub async fn submit_install_group(
     sha1: None,
     sha256: None,
   });
-  let mut engine = app.try_state::<EngineHandle>();
-  for _ in 0..100 {
-    if engine.is_some() {
-      break;
-    }
-    tokio::time::sleep(Duration::from_millis(10)).await;
-    engine = app.try_state::<EngineHandle>();
-  }
-  engine
-    .ok_or(EngineError::EngineNotInitialized)?
+
+  app
+    .state::<EngineHandle>()
     .0
     .submit_group(SubmitGroup {
       name,
