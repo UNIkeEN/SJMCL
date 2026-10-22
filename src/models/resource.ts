@@ -34,6 +34,8 @@ export interface OtherResourceSearchRes {
   total: number;
   page: number;
   pageSize: number;
+  /** Source that failed, when these results came from the other one instead. */
+  fallbackFrom?: OtherResourceSource;
 }
 
 export interface OtherResourceFileInfo {

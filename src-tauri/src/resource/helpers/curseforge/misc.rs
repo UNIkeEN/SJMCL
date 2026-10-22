@@ -27,23 +27,32 @@ pub fn is_curseforge_authenticated_url(url: &url::Url) -> bool {
   )
 }
 
-pub async fn make_curseforge_request<T, P>(
+async fn make_curseforge_request_with_timeout<T, P>(
   client: &reqwest::Client,
   url: &str,
   request_type: OtherResourceRequestType<'_, P>,
+  timeout: Option<std::time::Duration>,
 ) -> SJMCLResult<T>
 where
   T: serde::de::DeserializeOwned,
-  P: serde::Serialize,
+  P: Serialize,
 {
-  let request_builder = match request_type {
+  let mut request_builder = match request_type {
     OtherResourceRequestType::GetWithParams(params) => client.get(url).query(params),
     OtherResourceRequestType::Get => client.get(url),
     OtherResourceRequestType::Post(payload) => client.post(url).json(payload),
   };
 
+  // The mirror forwards with its own key, so sending an empty one would be at
+  // best ignored and at worst rejected. Only the official host is authenticated.
+  if is_curseforge_authenticated_host(url) {
+    request_builder = request_builder.header("x-api-key", CURSEFORGE_API_KEY.as_str());
+  }
+  if let Some(t) = timeout {
+    request_builder = request_builder.timeout(t);
+  }
+
   let response = request_builder
-    .header("x-api-key", CURSEFORGE_API_KEY.as_str())
     .send()
     .await
     .map_err(|_| ResourceError::NetworkError)?;
@@ -63,6 +72,69 @@ where
     .json::<T>()
     .await
     .map_err(|_| ResourceError::ParseError.into())
+}
+
+/// Try the official host and the mirror in order, returning the first success.
+///
+/// Mirrors PCL's `DlModRequest` (`ModDownload.vb:1176`): each candidate gets its
+/// own timeout so one hanging host cannot consume the whole budget, and the
+/// mirror is what makes CurseForge usable without a configured API key.
+pub async fn make_curseforge_request_multi_source<T, P>(
+  app: &AppHandle,
+  url: &str,
+  request_type: &OtherResourceRequestType<'_, P>,
+) -> SJMCLResult<T>
+where
+  T: serde::de::DeserializeOwned,
+  P: Serialize,
+{
+  let config = {
+    let state = app.state::<std::sync::Mutex<crate::launcher_config::models::LauncherConfig>>();
+    state
+      .lock()
+      .map_err(|_| SJMCLError::from(ResourceError::NetworkError))?
+      .clone()
+  };
+  let candidates = crate::resource::helpers::mod_source::source_candidates(url, false, &config);
+  let client = app.state::<reqwest::Client>();
+  let mut last_err: SJMCLResult<T> = Err(ResourceError::NetworkError.into());
+
+  for candidate in candidates {
+    let request_type = match request_type {
+      OtherResourceRequestType::GetWithParams(params) => {
+        OtherResourceRequestType::GetWithParams(params)
+      }
+      OtherResourceRequestType::Get => OtherResourceRequestType::Get,
+      OtherResourceRequestType::Post(payload) => OtherResourceRequestType::Post(payload),
+    };
+    let result = make_curseforge_request_with_timeout(
+      &client,
+      &candidate.url,
+      request_type,
+      Some(std::time::Duration::from_millis(candidate.timeout_ms)),
+    )
+    .await;
+    match result {
+      Ok(v) => return Ok(v),
+      Err(e) => {
+        log::info!(
+          "CurseForge 源不可用（{}ms）：{} —— {e:?}",
+          candidate.timeout_ms,
+          candidate.url
+        );
+        last_err = Err(e);
+      }
+    }
+  }
+
+  last_err
+}
+
+/// True for hosts that require the client's own CurseForge key.
+fn is_curseforge_authenticated_host(url: &str) -> bool {
+  url.contains("api.curseforge.com")
+    || url.contains("edge.forgecdn.net")
+    || url.contains("mediafilez.forgecdn.net")
 }
 
 pub fn get_curseforge_api(
@@ -317,6 +389,7 @@ impl From<CurseForgeSearchRes> for OtherResourceSearchRes {
       total: res.pagination.total_count,
       page: res.pagination.index / res.pagination.page_size,
       page_size: res.pagination.page_size,
+      fallback_from: None,
     }
   }
 }

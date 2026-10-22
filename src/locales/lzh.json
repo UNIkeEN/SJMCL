@@ -2233,6 +2233,11 @@
     },
     "versionList": {
       "All": "一覽無遺"
+    },
+    "fallbackNotice": "不能連 {{source}}，今所示者出自他源，或不全備。",
+    "source": {
+      "CurseForge": "CurseForge",
+      "Modrinth": "Modrinth"
     }
   },
   "RestartForUpdateConfirmDialog": {

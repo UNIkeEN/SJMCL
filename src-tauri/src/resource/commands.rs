@@ -106,9 +106,34 @@ pub async fn fetch_resource_list_by_name(
 ) -> SJMCLResult<OtherResourceSearchRes> {
   match download_source {
     OtherResourceSource::CurseForge => {
-      Ok(fetch_resource_list_by_name_curseforge(&app, &query).await?)
+      // PCL keys its fallback on the *platform*, not the source: when one fails
+      // the other still shows results, and the user is told the list may be
+      // incomplete instead of getting an error (ResourceSearcher.vb:436).
+      match fetch_resource_list_by_name_curseforge(&app, &query).await {
+        Ok(res) => Ok(res),
+        Err(e) => match fetch_resource_list_by_name_modrinth(&app, &query).await {
+          Ok(mut res) => {
+            res.fallback_from = Some(OtherResourceSource::CurseForge);
+            log::warn!("CurseForge 搜索失败，已改用 Modrinth：{e:?}");
+            Ok(res)
+          }
+          Err(_) => Err(e),
+        },
+      }
     }
-    OtherResourceSource::Modrinth => Ok(fetch_resource_list_by_name_modrinth(&app, &query).await?),
+    OtherResourceSource::Modrinth => {
+      match fetch_resource_list_by_name_modrinth(&app, &query).await {
+        Ok(res) => Ok(res),
+        Err(e) => match fetch_resource_list_by_name_curseforge(&app, &query).await {
+          Ok(mut res) => {
+            res.fallback_from = Some(OtherResourceSource::Modrinth);
+            log::warn!("Modrinth 搜索失败，已改用 CurseForge：{e:?}");
+            Ok(res)
+          }
+          Err(_) => Err(e),
+        },
+      }
+    }
     _ => Err(ResourceError::NoDownloadApi.into()),
   }
 }

@@ -10,20 +10,24 @@ use crate::resource::models::{
   ResourceError,
 };
 
-pub async fn make_modrinth_request<T, P>(
+async fn make_modrinth_request_with_timeout<T, P>(
   client: &reqwest::Client,
   url: &str,
   request_type: OtherResourceRequestType<'_, P>,
+  timeout: Option<std::time::Duration>,
 ) -> SJMCLResult<T>
 where
   T: serde::de::DeserializeOwned,
   P: serde::Serialize,
 {
-  let request_builder = match request_type {
+  let mut request_builder = match request_type {
     OtherResourceRequestType::GetWithParams(params) => client.get(url).query(params),
     OtherResourceRequestType::Get => client.get(url),
     OtherResourceRequestType::Post(payload) => client.post(url).json(payload),
   };
+  if let Some(t) = timeout {
+    request_builder = request_builder.timeout(t);
+  }
 
   let response = request_builder
     .send()
@@ -38,6 +42,59 @@ where
     .json::<T>()
     .await
     .map_err(|_| ResourceError::ParseError.into())
+}
+
+/// Try the official Modrinth API and the mirror in order, first success wins.
+/// Same shape as the CurseForge counterpart and PCL's `DlModRequest`.
+pub async fn make_modrinth_request_multi_source<T, P>(
+  app: &AppHandle,
+  url: &str,
+  request_type: &OtherResourceRequestType<'_, P>,
+) -> SJMCLResult<T>
+where
+  T: serde::de::DeserializeOwned,
+  P: serde::Serialize,
+{
+  let config = {
+    let state = app.state::<std::sync::Mutex<crate::launcher_config::models::LauncherConfig>>();
+    state
+      .lock()
+      .map_err(|_| SJMCLError::from(ResourceError::NetworkError))?
+      .clone()
+  };
+  let candidates = crate::resource::helpers::mod_source::source_candidates(url, true, &config);
+  let client = app.state::<reqwest::Client>();
+  let mut last_err: SJMCLResult<T> = Err(ResourceError::NetworkError.into());
+
+  for candidate in candidates {
+    let request_type = match request_type {
+      OtherResourceRequestType::GetWithParams(params) => {
+        OtherResourceRequestType::GetWithParams(params)
+      }
+      OtherResourceRequestType::Get => OtherResourceRequestType::Get,
+      OtherResourceRequestType::Post(payload) => OtherResourceRequestType::Post(payload),
+    };
+    let result = make_modrinth_request_with_timeout(
+      &client,
+      &candidate.url,
+      request_type,
+      Some(std::time::Duration::from_millis(candidate.timeout_ms)),
+    )
+    .await;
+    match result {
+      Ok(v) => return Ok(v),
+      Err(e) => {
+        log::info!(
+          "Modrinth 源不可用（{}ms）：{} —— {e:?}",
+          candidate.timeout_ms,
+          candidate.url
+        );
+        last_err = Err(e);
+      }
+    }
+  }
+
+  last_err
 }
 
 pub fn get_modrinth_api(
@@ -290,6 +347,7 @@ impl From<ModrinthSearchRes> for OtherResourceSearchRes {
       total: res.total_hits,
       page: res.offset / res.limit,
       page_size: res.limit,
+      fallback_from: None,
     }
   }
 }

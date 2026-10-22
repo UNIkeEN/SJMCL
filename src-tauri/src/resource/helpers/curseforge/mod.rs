@@ -4,7 +4,7 @@ use hex;
 use misc::{
   CurseForgeFileInfo, CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
   CurseForgeVersionPackSearchRes, cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id,
-  cvt_type_to_class_id, get_curseforge_api, make_curseforge_request,
+  cvt_type_to_class_id, get_curseforge_api, make_curseforge_request_multi_source,
   map_curseforge_file_to_version_pack,
 };
 use murmur2::murmur2;
@@ -12,8 +12,7 @@ use serde_json::json;
 use sha1::{Digest, Sha1};
 use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
+use tauri::AppHandle;
 
 use crate::resource::helpers::misc::{levenshtein_distance, sort_localized_search_results};
 use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
@@ -87,11 +86,10 @@ pub async fn fetch_resource_list_by_name_curseforge(
   params.insert("index".to_string(), (page * page_size).to_string());
   params.insert("pageSize".to_string(), page_size.to_string());
 
-  let client = app.state::<reqwest::Client>();
-  let results = make_curseforge_request::<CurseForgeSearchRes, ()>(
-    &client,
+  let results = make_curseforge_request_multi_source::<CurseForgeSearchRes, ()>(
+    app,
     &url,
-    OtherResourceRequestType::GetWithParams(&params),
+    &OtherResourceRequestType::GetWithParams(&params),
   )
   .await?;
 
@@ -183,12 +181,10 @@ pub async fn fetch_resource_version_packs_curseforge(
     params.insert("index".to_string(), (page * page_size).to_string());
     params.insert("pageSize".to_string(), page_size.to_string());
 
-    let client = app.state::<reqwest::Client>();
-
-    let results = make_curseforge_request::<CurseForgeVersionPackSearchRes, ()>(
-      &client,
+    let results = make_curseforge_request_multi_source::<CurseForgeVersionPackSearchRes, ()>(
+      app,
       &url,
-      OtherResourceRequestType::GetWithParams(&params),
+      &OtherResourceRequestType::GetWithParams(&params),
     )
     .await?;
 
@@ -230,11 +226,10 @@ pub async fn fetch_remote_resource_by_local_curseforge(
     "fingerprints": [hash]
   });
 
-  let client = app.state::<reqwest::Client>();
-  let fingerprint_response = make_curseforge_request::<CurseForgeFingerprintRes, _>(
-    &client,
+  let fingerprint_response = make_curseforge_request_multi_source::<CurseForgeFingerprintRes, _>(
+    app,
     &url,
-    OtherResourceRequestType::Post(&payload),
+    &OtherResourceRequestType::Post(&payload),
   )
   .await?;
 
@@ -261,12 +256,11 @@ pub async fn fetch_remote_resource_by_id_curseforge(
   resource_id: &str,
 ) -> SJMCLResult<OtherResourceInfo> {
   let url = get_curseforge_api(OtherResourceApiEndpoint::ById, Some(resource_id))?;
-  let client = app.state::<reqwest::Client>();
 
-  let results = make_curseforge_request::<CurseForgeGetProjectRes, ()>(
-    &client,
+  let results = make_curseforge_request_multi_source::<CurseForgeGetProjectRes, ()>(
+    app,
     &url,
-    OtherResourceRequestType::Get,
+    &OtherResourceRequestType::Get,
   )
   .await?;
 

@@ -2233,6 +2233,11 @@
     },
     "versionList": {
       "All": "全部"
+    },
+    "fallbackNotice": "无法连接到 {{source}}，目前显示的是来自另一来源的内容，搜索结果可能不全。",
+    "source": {
+      "CurseForge": "CurseForge",
+      "Modrinth": "Modrinth"
     }
   },
   "RestartForUpdateConfirmDialog": {

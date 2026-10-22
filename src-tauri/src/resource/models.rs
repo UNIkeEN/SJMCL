@@ -107,6 +107,11 @@ pub struct OtherResourceSearchRes {
   pub total: u64,
   pub page: u32,
   pub page_size: u32,
+  /// Set when the requested source failed and these results came from the other
+  /// one instead. The UI shows the results with a "may be incomplete" notice
+  /// rather than an error, which is what PCL does (ResourceSearcher.vb:436).
+  #[serde(default, skip_serializing_if = "Option::is_none")]
+  pub fallback_from: Option<OtherResourceSource>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

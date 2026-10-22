@@ -2233,6 +2233,11 @@
     },
     "versionList": {
       "All": "Tous"
+    },
+    "fallbackNotice": "Impossible de contacter {{source}} ; les résultats proviennent de l'autre source et peuvent être incomplets.",
+    "source": {
+      "CurseForge": "CurseForge",
+      "Modrinth": "Modrinth"
     }
   },
   "RestartForUpdateConfirmDialog": {

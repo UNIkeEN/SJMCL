@@ -1,5 +1,7 @@
 import type { ResponsiveValue } from "@chakra-ui/react";
 import {
+  Alert,
+  AlertIcon,
   Avatar,
   Box,
   Button,
@@ -312,6 +314,9 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [pageSize, setPageSize] = useState<number>(20);
+  // Source that failed when results had to come from the other one.
+  const [fallbackNotice, setFallbackNotice] =
+    useState<OtherResourceSource | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>(initialSearchQuery);
   const [gameVersion, setGameVersion] = useState<string>("");
@@ -384,8 +389,17 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
               setResourceList((prevList) => [...prevList, ...resourceData]);
             }
             setHasMore(response.data.total > (page + 1) * pageSize);
+            // The requested source failed and these results came from the other
+            // one. Show them with a notice instead of an error, the way PCL does
+            // (ResourceSearcher.vb:436) — a degraded list beats no list.
+            if (response.data.fallbackFrom) {
+              setFallbackNotice(response.data.fallbackFrom);
+            } else {
+              setFallbackNotice(null);
+            }
           } else {
             setResourceList([]);
+            setFallbackNotice(null);
             // Same query, source, and page can fire repeatedly (scroll paging,
             // re-opening the modal); one toast per distinct failure is enough.
             toast({
@@ -641,6 +655,16 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
         </Button>
       </HStack>
 
+      {fallbackNotice && (
+        <Alert status="warning" size="sm" w="100%" borderRadius="md">
+          <AlertIcon />
+          <Box fontSize="xs">
+            {t("ResourceDownloader.fallbackNotice", {
+              source: t(`ResourceDownloader.source.${fallbackNotice}`),
+            })}
+          </Box>
+        </Alert>
+      )}
       <Box flexGrow={1} w="100%" overflowX="hidden">
         {isLoadingResourceList ? (
           <VStack mt={8}>

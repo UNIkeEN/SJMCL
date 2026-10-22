@@ -2233,6 +2233,11 @@
     },
     "versionList": {
       "All": "すべて"
+    },
+    "fallbackNotice": "{{source}} に接続できないため、別のソースからの結果を表示しています。結果が不完全な可能性があります。",
+    "source": {
+      "CurseForge": "CurseForge",
+      "Modrinth": "Modrinth"
     }
   },
   "RestartForUpdateConfirmDialog": {
