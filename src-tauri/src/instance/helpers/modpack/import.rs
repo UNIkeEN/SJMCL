@@ -122,7 +122,7 @@ pub fn extract_overrides(file: &File, instance_path: &Path) -> SJMCLResult<()> {
   let mut archive = ZipArchive::new(file)?;
   for i in 0..archive.len() {
     let mut file = archive.by_index(i)?;
-    let path = file.mangled_name();
+    let path = file.mangled_name()?;
     let outpath = if path.starts_with(format!("{}/", overrides_path)) {
       // Remove "{overrides}/" prefix and join with instance path
       let relative_path = path.strip_prefix(format!("{}/", overrides_path)).unwrap();

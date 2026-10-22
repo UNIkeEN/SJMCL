@@ -84,7 +84,7 @@ pub async fn download_cleanroom_libraries(
   // Extract maven folder contents to lib_dir
   for i in 0..archive.len() {
     let mut file = archive.by_index(i)?;
-    let path = file.mangled_name();
+    let path = file.mangled_name()?;
     let Ok(relative_path) = path.strip_prefix("maven/") else {
       continue;
     };

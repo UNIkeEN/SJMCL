@@ -61,7 +61,7 @@ impl ModpackManifest for MultiMcManifest {
       let mut found_path = None;
       for i in 0..archive.len() {
         let file = archive.by_index(i)?;
-        let name = file.name();
+        let name = file.name()?;
 
         if name.ends_with("mmc-pack.json")
           && let Some(last_slash) = name.rfind('/')
