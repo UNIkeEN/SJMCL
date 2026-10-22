@@ -78,17 +78,17 @@ impl LauncherConfig {
 
       #[cfg(not(target_os = "macos"))]
       {
-        if *IS_PORTABLE || cfg!(debug_assertions) {
-          dirs.push(GameDirectory {
-            name: "CURRENT_DIR".to_string(),
-            dir: PathBuf::new(), // place holder, will be set later
-          });
-        } else {
-          dirs.push(GameDirectory {
-            name: "APP_DATA_SUBDIR".to_string(),
-            dir: APP_DATA_DIR.get().unwrap().join(".minecraft"),
-          });
-        }
+        // Offer both the system AppData location and the installation
+        // directory so the user can choose where the game data (".minecraft")
+        // lives. The installation directory is preferred by default.
+        dirs.push(GameDirectory {
+          name: "CURRENT_DIR".to_string(),
+          dir: PathBuf::new(), // place holder, will be set later
+        });
+        dirs.push(GameDirectory {
+          name: "APP_DATA_SUBDIR".to_string(),
+          dir: APP_DATA_DIR.get().unwrap().join(".minecraft"),
+        });
       }
 
       dirs.push(get_official_minecraft_directory(app));

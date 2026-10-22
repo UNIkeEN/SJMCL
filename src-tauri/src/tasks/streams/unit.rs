@@ -1,5 +1,6 @@
 use tokio_util::bytes::Bytes;
 
+#[allow(dead_code)]
 pub trait Unit {
   fn unit_size(&self) -> i64;
 }

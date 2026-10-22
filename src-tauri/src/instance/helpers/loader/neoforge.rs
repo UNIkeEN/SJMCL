@@ -13,7 +13,9 @@ use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{
+  build_source_candidates, convert_url_to_target_source, get_download_api,
+};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
@@ -66,8 +68,20 @@ pub async fn install_neoforge_loader(
     let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
     let installer_path = lib_dir.join(&installer_rel);
 
+    // The installer jar comes straight from the official NeoForge host, which is
+    // one of the least reliable endpoints from mainland China — always carry the
+    // mirror as a second source. Verified: BMCLAPI serves this path while the
+    // official host times out.
+    let (primary, alternates) = build_source_candidates(
+      &installer_url,
+      &[ResourceType::NeoforgeInstall],
+      &priority[0],
+    );
+    let src = primary.unwrap_or_else(|| installer_url.clone());
+
     task_params.push(PTaskParam::Download(DownloadParam {
-      src: installer_url,
+      srcs: (!alternates.is_empty()).then_some(alternates),
+      src,
       dest: installer_path,
       filename: None,
       sha1: None,
@@ -205,6 +219,7 @@ pub async fn download_neoforge_libraries(
         && let Some(client_mappings) = client_info.downloads.get("client_mappings")
       {
         task_params.push(PTaskParam::Download(DownloadParam {
+          srcs: None,
           src: client_mappings.url.parse()?,
           dest: lib_dir.join(mojmaps),
           filename: None,
@@ -272,12 +287,29 @@ pub async fn download_neoforge_libraries(
       continue;
     }
 
+    let primary = convert_url_to_target_source(
+      &Url::parse(url)?,
+      &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
+      &priority[0],
+    )?;
+    // Give the downloader the other source as a fallback so a dead or
+    // rate-limited mirror is switched away from instead of stalling the file.
+    let other = if priority[0] == SourceType::Official {
+      SourceType::BMCLAPIMirror
+    } else {
+      SourceType::Official
+    };
+    let fallback = convert_url_to_target_source(
+      &Url::parse(url)?,
+      &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
+      &other,
+    )
+    .ok()
+    .filter(|u| *u != primary);
+
     task_params.push(PTaskParam::Download(DownloadParam {
-      src: convert_url_to_target_source(
-        &Url::parse(url)?,
-        &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
-        &priority[0],
-      )?,
+      src: primary,
+      srcs: fallback.map(|u| vec![u]),
       dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
       filename: None,
       sha1: None,
@@ -314,12 +346,19 @@ pub async fn download_neoforge_libraries(
     }
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
+    // Same treatment as the version libraries above: keep the mirror as a
+    // fallback. `profile.libraries` is where `neoform-*.zip` comes from, and the
+    // official NeoForge host is frequently unreachable, so having only one
+    // source here turns a slow host into a hard timeout.
+    let (primary, alternates) = build_source_candidates(
+      &Url::parse(url)?,
+      &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
+      &priority[0],
+    );
+    let src = primary.ok_or(InstanceError::InvalidSourcePath)?;
     task_params.push(PTaskParam::Download(DownloadParam {
-      src: convert_url_to_target_source(
-        &Url::parse(url)?,
-        &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
-        &priority[0],
-      )?,
+      srcs: (!alternates.is_empty()).then_some(alternates),
+      src,
       dest: lib_dir.join(&rel),
       filename: None,
       sha1: None,

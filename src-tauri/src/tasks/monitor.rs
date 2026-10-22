@@ -26,7 +26,7 @@ pub struct GroupMonitor {
 pub struct TaskMonitor {
   app_handle: AppHandle,
   id_counter: AtomicU32,
-  phs: RwLock<HashMap<u32, Arc<RwLock<PTaskHandle>>>>,
+  phs: Arc<RwLock<HashMap<u32, Arc<RwLock<PTaskHandle>>>>>,
   ths: RwLock<HashMap<u32, THandle>>,
   tasks: Arc<Mutex<HashMap<u32, JoinHandle<()>>>>,
   concurrency: Arc<Semaphore>,
@@ -44,7 +44,7 @@ impl TaskMonitor {
     TaskMonitor {
       app_handle: app_handle.clone(),
       id_counter: AtomicU32::new(0),
-      phs: RwLock::new(HashMap::new()),
+      phs: Arc::new(RwLock::new(HashMap::new())),
       ths: RwLock::new(HashMap::new()),
       tasks: Arc::new(Mutex::new(HashMap::new())),
       concurrency: Arc::new(Semaphore::new(
@@ -85,6 +85,13 @@ impl TaskMonitor {
       if let Ok(task) = entry {
         match PTaskDesc::load(&task.clone()) {
           Ok(desc) => {
+            // Descriptors of already-finished tasks are stale leftovers: they
+            // would be re-queued on every launch and re-download files that are
+            // already complete. Skip (and clean up) anything terminal.
+            if desc.status.is_terminated() {
+              let _ = std::fs::remove_file(&task);
+              continue;
+            }
             let task_id = desc.task_id;
             let task_group = desc.task_group.clone();
             match desc.payload {
@@ -115,6 +122,32 @@ impl TaskMonitor {
     self
       .id_counter
       .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+  }
+
+  /// True when the given work is already queued or running.
+  ///
+  /// Any producer of task params can be re-entered while a previous run is
+  /// still in flight (instance refresh, modpack import, resource download,
+  /// Java install, updater). Without a shared check each one enqueues a fresh
+  /// copy of the same files, and the downloads page fills with duplicate groups
+  /// that never advance.
+  pub fn is_task_pending(&self, param: &PTaskParam) -> bool {
+    let key = param.task_key();
+    self.phs.read().unwrap().values().any(|h| {
+      let desc = h.read().unwrap().desc.clone();
+      !desc.status.is_terminated() && desc.payload.task_key() == key
+    })
+  }
+
+  /// Drop params that duplicate work already in flight, keeping the first of
+  /// each key. Returns the filtered list, so callers can also see whether
+  /// anything is left to schedule.
+  pub fn dedup_pending(&self, params: Vec<PTaskParam>) -> Vec<PTaskParam> {
+    let mut seen = std::collections::HashSet::new();
+    params
+      .into_iter()
+      .filter(|p| seen.insert(p.task_key()) && !self.is_task_pending(p))
+      .collect()
   }
 
   pub async fn enqueue_task<T>(
@@ -273,6 +306,7 @@ impl TaskMonitor {
       let tasks = self.tasks.clone();
       let group_map = self.group_map.clone();
       let app = self.app_handle.clone();
+      let phs = Arc::clone(&self.phs);
 
       self.tasks.lock().unwrap().insert(
         future.task_id,
@@ -299,9 +333,13 @@ impl TaskMonitor {
           let r = future.f.await;
           match r {
             Ok(_) => {
-              if let Some(group_name) = future.task_group
+              if let Some(group_name) = future.task_group.clone()
                 && let Some(group) = group_map.write().unwrap().get_mut(&group_name)
               {
+                // Remove the per-task handle as soon as it finishes so a large
+                // modpack (with hundreds of files) doesn't keep every handle in
+                // memory for the whole download. The group itself only completes
+                // once all its tasks are done.
                 group.phs.remove(&future.task_id);
                 if group.phs.is_empty() {
                   group.status = GEventStatus::Completed;
@@ -311,7 +349,7 @@ impl TaskMonitor {
             }
             Err(e) => {
               info!("Task failed: {e:?}");
-              if let Some(group_name) = future.task_group {
+              if let Some(group_name) = future.task_group.clone() {
                 GEvent::emit_group_failed(&app, &group_name);
                 if let Some(group) = group_map.write().unwrap().remove(&group_name) {
                   for (_, handle) in group.phs {
@@ -324,6 +362,9 @@ impl TaskMonitor {
               }
             }
           }
+          // Drop the per-task handle from the global registry so finished tasks
+          // don't accumulate in memory for the whole session.
+          phs.write().unwrap().remove(&future.task_id);
           tasks.lock().unwrap().remove(&future.task_id);
           // The permit will be automatically released when _permit is dropped
         }),
@@ -352,6 +393,7 @@ impl TaskMonitor {
     }
   }
 
+  #[allow(dead_code)]
   pub async fn restart_progress(&self, id: u32) {
     let handle = self.phs.write().unwrap().remove(&id);
     if let Some(handle) = handle {

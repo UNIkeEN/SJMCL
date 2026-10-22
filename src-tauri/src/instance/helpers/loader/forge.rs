@@ -18,7 +18,9 @@ use crate::instance::helpers::loader::common::add_library_entry;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{
+  build_source_candidates, convert_url_to_target_source, get_download_api,
+};
 use crate::resource::models::{ResourceType, SourceType};
 use crate::tasks::PTaskParam;
 use crate::tasks::commands::schedule_progressive_task_group;
@@ -100,6 +102,7 @@ pub async fn install_forge_loader(
   let installer_path = lib_dir.join(&installer_rel);
 
   task_params.push(PTaskParam::Download(DownloadParam {
+    srcs: None,
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
@@ -234,6 +237,7 @@ pub async fn download_forge_libraries(
           && let Some(client_mappings) = client_info.downloads.get("client_mappings")
         {
           task_params.push(PTaskParam::Download(DownloadParam {
+            srcs: None,
             src: client_mappings.url.parse()?,
             dest: lib_dir.join(mojmaps),
             filename: None,
@@ -301,16 +305,18 @@ pub async fn download_forge_libraries(
         continue;
       }
 
+      let (primary, alternates) = build_source_candidates(
+        &Url::parse(url)?,
+        &[
+          ResourceType::ForgeMaven,
+          ResourceType::ForgeMavenNew,
+          ResourceType::Libraries,
+        ],
+        &priority[0],
+      );
       task_params.push(PTaskParam::Download(DownloadParam {
-        src: convert_url_to_target_source(
-          &Url::parse(url)?,
-          &[
-            ResourceType::ForgeMaven,
-            ResourceType::ForgeMavenNew,
-            ResourceType::Libraries,
-          ],
-          &priority[0],
-        )?,
+        srcs: (!alternates.is_empty()).then_some(alternates),
+        src: primary.ok_or(InstanceError::InvalidSourcePath)?,
         dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
         filename: None,
         sha1: None,
@@ -351,6 +357,7 @@ pub async fn download_forge_libraries(
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
       task_params.push(PTaskParam::Download(DownloadParam {
+        srcs: None,
         src: convert_url_to_target_source(
           &Url::parse(url)?,
           &[
@@ -431,6 +438,7 @@ pub async fn download_forge_libraries(
         &priority[0],
       )?;
       task_params.push(PTaskParam::Download(DownloadParam {
+        srcs: None,
         src,
         dest: lib_dir.join(&rel),
         filename: None,

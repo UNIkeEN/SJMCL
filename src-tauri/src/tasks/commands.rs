@@ -28,6 +28,19 @@ pub async fn schedule_progressive_task_group(
     task_group.clone()
   };
 
+  // Collapse work that is already queued or running, and drop duplicates inside
+  // this very batch. Every producer (instance install, mod-loader refresh,
+  // modpack import, resource download, Java install, updater) shares this one
+  // check, so no caller needs its own guard.
+  let params = monitor.dedup_pending(params);
+  if params.is_empty() {
+    return Ok(PTaskGroupDesc {
+      task_group,
+      task_descs: Vec::new(),
+      status: GEventStatus::Completed,
+    });
+  }
+
   for param in params {
     let task_id = monitor.get_new_id();
     match param {
@@ -110,6 +123,9 @@ pub fn resume_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> 
   Ok(())
 }
 
+// Reserved command: not yet registered in the tauri invoke_handler and has no
+// frontend caller. Kept for future retry-from-scratch support.
+#[allow(dead_code)]
 #[tauri::command]
 pub async fn restart_progressive_task(app: AppHandle, task_id: u32) -> SJMCLResult<()> {
   let monitor = app.state::<Pin<Box<TaskMonitor>>>();

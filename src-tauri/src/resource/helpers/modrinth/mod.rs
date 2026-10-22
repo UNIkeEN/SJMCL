@@ -247,6 +247,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
   let dest_path = mods_dir.join(&filename);
 
   Ok(Some(DownloadParam {
+    srcs: None,
     src: download_url,
     dest: dest_path,
     filename: Some(filename),

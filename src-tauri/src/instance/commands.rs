@@ -38,6 +38,7 @@ use crate::instance::helpers::modpack::export::{
 use crate::instance::helpers::modpack::import::{
   ModpackMetaInfo, extract_overrides, get_download_params,
 };
+#[cfg_attr(not(debug_assertions), allow(unused_imports))]
 use crate::instance::helpers::mods::common::{
   check_potential_incompatibility, compress_icon, discover_local_mod_paths, get_mod_info_from_dir,
   get_mod_info_from_jar,
@@ -1155,6 +1156,7 @@ pub async fn create_instance(
     .ok_or(InstanceError::ClientJsonParseError)?;
 
   task_params.push(PTaskParam::Download(DownloadParam {
+    srcs: None,
     src: Url::parse(&client_download_info.url.clone())
       .map_err(|_| InstanceError::ClientJsonParseError)?,
     dest: instance.version_path.join(format!("{}.jar", name)),

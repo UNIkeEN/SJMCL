@@ -306,7 +306,9 @@ export const DownloadTasksPage = () => {
                             value={task.progress}
                             colorScheme={primaryColor}
                             isIndeterminate={
-                              task.status === TaskDescStatusEnums.Waiting
+                              task.status === TaskDescStatusEnums.Waiting ||
+                              (task.status === TaskDescStatusEnums.InProgress &&
+                                !task.total)
                             }
                             borderRadius="sm"
                           />
@@ -332,7 +334,7 @@ export const DownloadTasksPage = () => {
                 : []),
             ]}
             maxFirstVisibleItems={6}
-            enableShowAll={false}
+            showMoreStep={10}
           />
         ))}
       </VStack>

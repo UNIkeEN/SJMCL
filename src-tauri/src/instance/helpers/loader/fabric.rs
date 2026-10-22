@@ -112,6 +112,7 @@ pub async fn install_fabric_loader(
     }
     if let Some(src) = src_opt {
       task_params.push(PTaskParam::Download(DownloadParam {
+        srcs: None,
         src,
         dest: lib_dir.join(&rel),
         filename: None,

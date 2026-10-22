@@ -111,11 +111,17 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       )?),
       ResourceType::OptiFine => Ok(Url::parse("https://bmclapi2.bangbang93.com/optifine/")?),
       ResourceType::QuiltMaven => Ok(Url::parse("https://bmclapi2.bangbang93.com/maven/")?),
-      ResourceType::QuiltMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/quilt-meta/")?), // seems 'not found'
+      // This endpoint returns 404 on BMCLAPI, so advertise no mirror and let
+      // the caller fall through to the official Quilt meta instead.
+      ResourceType::QuiltMeta => Err(ResourceError::NoDownloadApi.into()),
       ResourceType::CleanroomInstall => Ok(Url::parse(
         "https://alist.8mi.tech/d/mirror/HMCL-Metadata/Auto/cleanroom/files/",
       )?),
-      ResourceType::CleanroomMaven => Ok(Url::parse("https://maven.cleanroommc.com/")?),
+      // BMCLAPI has no Cleanroom Maven mirror: returning the same root as the
+      // official source made source-switching a no-op that still cost a full
+      // timeout (the retry would hit the identical URL). Signal "no mirror" so
+      // callers fall back to the original URL instead.
+      ResourceType::CleanroomMaven => Err(ResourceError::NoDownloadApi.into()),
       ResourceType::CleanroomMeta => Ok(Url::parse(
         "https://alist.8mi.tech/d/mirror/HMCL-Metadata/Auto/cleanroom/index.json",
       )?),
@@ -142,6 +148,34 @@ pub fn convert_url_source_type(
   } else {
     Err(ResourceError::NoDownloadApi.into())
   }
+}
+
+/// Build the *primary* source for a download plus every alternative mirror we
+/// can derive for it.
+///
+/// This mirrors PCL's `DlSourceOrder`: every file carries both an official and
+/// a mirrored URL, so a mirror outage (or an unreachable official host, which is
+/// common from mainland China) becomes a source switch instead of a timeout.
+pub fn build_source_candidates(
+  url: &Url,
+  resource_types: &[ResourceType],
+  preferred: &SourceType,
+) -> (Option<Url>, Vec<Url>) {
+  let primary = convert_url_to_target_source(url, resource_types, preferred).ok();
+  let mut alternates: Vec<Url> = Vec::new();
+  for source in SourceType::iter() {
+    if source == *preferred {
+      continue;
+    }
+    if let Ok(candidate) = convert_url_to_target_source(url, resource_types, &source) {
+      let already_primary = primary.as_ref() == Some(&candidate);
+      if !already_primary && !alternates.contains(&candidate) && Some(candidate.clone()) != primary
+      {
+        alternates.push(candidate);
+      }
+    }
+  }
+  (primary, alternates)
 }
 
 pub fn convert_url_to_target_source(

@@ -138,6 +138,7 @@ pub async fn install_quilt_loader(
           )))?;
 
           task_params.push(PTaskParam::Download(DownloadParam {
+            srcs: None,
             src,
             dest: lib_dir.join(&rel),
             filename: None,
@@ -175,6 +176,7 @@ pub async fn install_quilt_loader(
     )))?;
 
     task_params.push(PTaskParam::Download(DownloadParam {
+      srcs: None,
       src,
       dest: lib_dir.join(&rel),
       filename: None,

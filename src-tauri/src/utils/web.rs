@@ -35,8 +35,15 @@ use crate::launcher_config::models::{LauncherConfig, ProxyType};
 /// let client = build_sjmcl_client(&app, true);
 /// ```
 pub fn build_sjmcl_client(app: &AppHandle, use_proxy: bool) -> Client {
+  // Use `connect_timeout` instead of `timeout`. reqwest's `timeout` caps the
+  // *entire* request including reading the response body, so any download that
+  // takes longer than the cap is aborted mid-transfer — that is why large jars
+  // failed with "download timeout" even on healthy connections. Limiting only
+  // the handshake keeps the door open for long transfers; the download itself
+  // applies its own adaptive connect timeout plus a slow-transfer cut-off.
+  // (Same fix as PCL's #8488.)
   let mut builder = ClientBuilder::new()
-    .timeout(Duration::from_secs(10))
+    .connect_timeout(Duration::from_secs(15))
     .tcp_keepalive(Duration::from_secs(10));
 
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {

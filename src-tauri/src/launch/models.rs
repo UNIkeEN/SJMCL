@@ -9,6 +9,7 @@ use crate::launcher_config::models::{GameConfig, JavaInfo};
 
 #[derive(Debug, Display)]
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[allow(dead_code)]
 pub enum LaunchError {
   ModLoaderNotInstalled,
   NoSuitableJava,

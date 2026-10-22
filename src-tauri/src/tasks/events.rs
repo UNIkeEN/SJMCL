@@ -207,6 +207,7 @@ impl Sink for TauriEventSink {
   fn report_completion(&self, task_id: u32, task_group: Option<&str>) {
     PEvent::emit_completed(&self.app, task_id, task_group);
   }
+  #[allow(unused_variables)]
   fn report_progress(
     &self,
     task_id: u32,

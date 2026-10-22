@@ -7,7 +7,6 @@ pub mod streams;
 
 use download::DownloadParam;
 use events::TauriEventSink;
-use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use sjmcl_types::error::SJMCLResult;
 use std::future::Future;
@@ -47,4 +46,65 @@ pub struct THandle {
 #[serde(tag = "taskType", rename_all = "camelCase")]
 pub enum PTaskParam {
   Download(DownloadParam),
+}
+
+/// Identity of a task, used to detect work that is already queued or running.
+///
+/// Every producer of download params (instance install, mod-loader refresh,
+/// modpack import, resource download, Java install, updater) can be re-entered
+/// while a previous run is still in flight. Comparing this key lets the
+/// scheduler collapse duplicates at one place instead of each caller growing its
+/// own ad-hoc guard. Two tasks are duplicates when they write the same bytes to
+/// the same place; the source list is deliberately excluded so a retry that
+/// rotates to a mirror is still recognised as the same work.
+pub trait TaskKey {
+  fn task_key(&self) -> String;
+}
+
+impl TaskKey for PTaskParam {
+  fn task_key(&self) -> String {
+    match self {
+      PTaskParam::Download(p) => format!("download:{}", normalize_path_key(&p.dest)),
+    }
+  }
+}
+
+/// Canonical form of a destination path for identity comparison.
+///
+/// The same file is reached through different spellings: `a/../b`, mixed
+/// separators, and differing case on Windows. Two entries must compare equal
+/// even when they came from different producers, otherwise the dedup silently
+/// lets a duplicate through.
+fn normalize_path_key(path: &std::path::Path) -> String {
+  let mut key = path.to_string_lossy().replace('\\', "/");
+  // Collapse `.` and `..` without touching the filesystem (the file may not
+  // exist yet — this runs before the download starts).
+  let mut out: Vec<&str> = Vec::new();
+  let absolute =
+    key.starts_with('/') || key.chars().nth(1).is_some_and(|c| c == ':') || key.starts_with("//");
+  for part in key.split('/') {
+    match part {
+      "" | "." => {}
+      ".." => {
+        if out.last().is_some_and(|p| !p.is_empty() && *p != "..") {
+          out.pop();
+        } else if !absolute {
+          out.push("..");
+        }
+      }
+      other => out.push(other),
+    }
+  }
+  key = if absolute {
+    format!("/{}", out.join("/"))
+  } else {
+    out.join("/")
+  };
+  // Windows paths are case-insensitive; Linux ones are not. Compare on the
+  // platform's own terms so a duplicate is never missed locally.
+  if cfg!(windows) {
+    key.to_lowercase()
+  } else {
+    key
+  }
 }

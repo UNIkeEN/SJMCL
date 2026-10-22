@@ -85,6 +85,7 @@ pub trait LocalModMetadataParser {
     jar: &mut ZipArchive<R>,
   ) -> SJMCLResult<Self::Metadata>;
 
+  #[allow(dead_code)]
   async fn get_mod_metadata_from_dir(dir_path: &Path) -> SJMCLResult<Self::Metadata>;
 
   fn get_icon_from_jar<R: Read + Seek>(
@@ -94,6 +95,7 @@ pub trait LocalModMetadataParser {
     ImageWrapper::default()
   }
 
+  #[allow(dead_code)]
   async fn get_icon_from_dir(_meta: &mut Self::Metadata, _dir_path: &Path) -> ImageWrapper {
     ImageWrapper::default()
   }
@@ -109,6 +111,7 @@ pub trait LocalModMetadataParser {
     Some(info)
   }
 
+  #[allow(dead_code)]
   async fn parse_mod_info_from_dir(dir_path: &Path) -> Option<LocalModInfo>
   where
     Self::Metadata: Send,
@@ -193,6 +196,7 @@ impl ModLoaderType {
     }
   }
 
+  #[allow(dead_code)]
   async fn parse_mod_info_from_dir(self, dir_path: &Path) -> Option<LocalModInfo> {
     match self {
       Self::Fabric => fabric::FabricModMetadataParser::parse_mod_info_from_dir(dir_path).await,
@@ -260,6 +264,7 @@ pub async fn get_mod_info_from_jar(
   )))
 }
 
+#[allow(dead_code)]
 pub async fn get_mod_info_from_dir(
   path: &Path,
   prior_loader_type: Option<ModLoaderType>,

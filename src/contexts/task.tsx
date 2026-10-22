@@ -1,4 +1,4 @@
-import { ToastId, useToast as useChakraToast } from "@chakra-ui/react";
+import { useToast as useChakraToast } from "@chakra-ui/react";
 import { emit } from "@tauri-apps/api/event";
 import React, {
   createContext,
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { useToast } from "@/contexts/toast";
+import { toastKey, useToast } from "@/contexts/toast";
 import { OtherResourceType } from "@/enums/resource";
 import {
   CreatedPTaskEventStatus,
@@ -64,8 +64,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [tasks, setTasks] = useState<TaskGroupDesc[]>([]);
   const [generalPercent, setGeneralPercent] = useState<number>();
   const { t } = useTranslation();
-  const modLoaderLoadingToastRef = React.useRef<ToastId | null>(null);
-  const optifineLoadingToastRef = React.useRef<ToastId | null>(null);
+  // Instances whose post-download install step is already running. Keyed per
+  // instance so different instances install concurrently, while duplicate task
+  // groups for the same instance trigger the install only once.
+  const finishingInstalls = React.useRef(new Set<string>());
 
   const updateGroupInfo = useCallback((group: TaskGroupDesc) => {
     if (group.status === GTaskEventStatusEnums.Completed) {
@@ -91,11 +93,17 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         knownTotal +
         (group.taskDescs.length - knownTotalArr.length) *
           (knownTotal / knownTotalArr.length); // Estimate unknown task's size based on known tasks' average size
+      group.progress = (knownCurrent * 100) / estimatedTotal;
+    } else if (group.taskDescs.length > 0) {
+      // No download reported a known size (server omitted Content-Length, or the
+      // task is still connecting). Fall back to how many files have finished so
+      // the group bar still advances as each file completes instead of staying
+      // pinned at 0.
+      group.progress = (group.finishedCount / group.taskDescs.length) * 100;
     } else {
-      estimatedTotal = knownTotal; // Fallback when no known tasks exist
+      estimatedTotal = knownTotal; // 0
+      group.progress = 0;
     }
-
-    group.progress = estimatedTotal ? (knownCurrent * 100) / estimatedTotal : 0;
 
     group.estimatedTime = undefined;
     group.taskDescs.forEach((t) => {
@@ -127,6 +135,25 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       return level(a) - level(b);
     });
   }, []);
+
+  // Throttle high-frequency progress updates. A large modpack fires an
+  // InProgress event for every file every second; without coalescing, the
+  // whole task tree is re-mapped and re-sorted on every event, which janks the
+  // UI. Structural events (created/completed/failed/...) bypass this and update
+  // immediately so nothing is dropped.
+  const progressFlushTimer = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const flushProgressUpdate = React.useCallback(
+    (updater: (prev: TaskGroupDesc[]) => TaskGroupDesc[]) => {
+      if (progressFlushTimer.current) return;
+      progressFlushTimer.current = setTimeout(() => {
+        progressFlushTimer.current = null;
+        setTasks(updater);
+      }, 200);
+    },
+    []
+  );
 
   const handleRetrieveProgressTasks = useCallback(() => {
     TaskService.retrieveProgressiveTaskList().then((response) => {
@@ -174,6 +201,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           // success toast will now be called by task context group listener
           if (response.status !== "success") {
             toast({
+              id: toastKey("schedule-failed", taskGroup),
               title: response.message,
               description: response.details,
               status: "error",
@@ -229,10 +257,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     },
     [toast]
   );
-
-  const isActiveGroup = (t: TaskGroupDesc) =>
-    t.status === GTaskEventStatusEnums.Started ||
-    t.status === GTaskEventStatusEnums.Stopped;
 
   const handleClearHistoryTaskGroups = useCallback(() => {
     setTasks((prev) => {
@@ -296,7 +320,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   taskDescs: [payload.event.desc],
                 };
                 updateGroupInfo(newGroup);
-                return [newGroup, ...(prevTasks || [])];
+                return capGroups([newGroup, ...(prevTasks || [])]);
               }
               break;
             }
@@ -368,11 +392,19 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
                 return t;
               });
-              updateGroupInfo(group);
-              // info(
-              //   `Task ${payload.id} in progress in group ${payload.taskGroup}`
-              // );
-              break;
+              // Coalesce: mutate the data in place but skip the per-event
+              // re-render by returning the same array reference (React bails
+              // out). The throttled flush below recomputes the per-group
+              // derived stats (finishedCount / progress / sort) once and
+              // triggers a single refresh, instead of sorting and reducing
+              // the whole group on every progress tick. Without this, a
+              // large modpack re-sorts hundreds of tasks every second and
+              // starves UI input (the multi-second page-switch lag).
+              flushProgressUpdate((prevGroups) => {
+                prevGroups.forEach((g) => updateGroupInfo(g));
+                return [...prevGroups];
+              });
+              return prevTasks;
             }
 
             case PTaskEventStatusEnums.Failed: {
@@ -406,7 +438,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       unlisten();
     };
-  }, [t, toast, updateGroupInfo]);
+  }, [t, toast, updateGroupInfo, flushProgressUpdate]);
 
   useEffect(() => {
     const unlisten = TaskService.onTaskGroupUpdate(
@@ -434,9 +466,15 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             return task;
           });
 
+          newTasks = capGroups(newTasks);
+
           const { name, params } = parseTaskGroup(payload.taskGroup);
 
+          // Key on group + outcome: the same group reports once per duplicate
+          // copy, and refreshes can emit the same completion repeatedly. One
+          // toast per actual outcome.
           toast({
+            id: toastKey("group-update", payload.event, payload.taskGroup),
             status:
               payload.event === GTaskEventStatusEnums.Failed
                 ? "error"
@@ -470,8 +508,14 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   let instanceName = getInstanceList()?.find(
                     (i) => i.id === instanceId
                   )?.name;
-                  if (modLoaderLoadingToastRef.current) return newTasks;
-                  modLoaderLoadingToastRef.current = toast({
+                  // Per-instance guard, not a single global ref: different
+                  // instances must be able to finish concurrently, while the
+                  // same instance completing through several duplicate groups
+                  // must trigger the install only once.
+                  if (finishingInstalls.current.has(instanceId))
+                    return newTasks;
+                  finishingInstalls.current.add(instanceId);
+                  const loadingId = toast({
                     title: t(
                       "Services.instance.finishModLoaderInstall.loading",
                       {
@@ -482,18 +526,22 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   });
                   InstanceService.finishModLoaderInstall(instanceId).then(
                     (response) => {
-                      if (modLoaderLoadingToastRef.current) {
-                        closeToast(modLoaderLoadingToastRef.current);
-                        modLoaderLoadingToastRef.current = null;
-                      }
+                      closeToast(loadingId);
+                      finishingInstalls.current.delete(instanceId);
                       if (response.status === "success") {
                         getInstanceList(true);
                         toast({
+                          id: toastKey("finish-mod-loader", "ok", instanceId),
                           title: response.message,
                           status: "success",
                         });
                       } else {
                         toast({
+                          id: toastKey(
+                            "finish-mod-loader",
+                            "failed",
+                            instanceId
+                          ),
                           title: response.message,
                           description: response.details,
                           status: "error",
@@ -509,8 +557,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   let instanceName = getInstanceList()?.find(
                     (i) => i.id === instanceId
                   )?.name;
-                  if (optifineLoadingToastRef.current) return newTasks;
-                  optifineLoadingToastRef.current = toast({
+                  if (finishingInstalls.current.has(instanceId))
+                    return newTasks;
+                  finishingInstalls.current.add(instanceId);
+                  const loadingId = toast({
                     title: t(
                       "Services.instance.finishOptiFineLoaderInstall.loading",
                       {
@@ -521,18 +571,18 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                   });
                   InstanceService.finishOptiFineLoaderInstall(instanceId).then(
                     (response) => {
-                      if (optifineLoadingToastRef.current) {
-                        closeToast(optifineLoadingToastRef.current);
-                        optifineLoadingToastRef.current = null;
-                      }
+                      closeToast(loadingId);
+                      finishingInstalls.current.delete(instanceId);
                       if (response.status === "success") {
                         getInstanceList(true);
                         toast({
+                          id: toastKey("finish-optifine", "ok", instanceId),
                           title: response.message,
                           status: "success",
                         });
                       } else {
                         toast({
+                          id: toastKey("finish-optifine", "failed", instanceId),
                           title: response.message,
                           description: response.details,
                           status: "error",
@@ -673,6 +723,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     closeToast,
     getInstanceList,
     updateGroupInfo,
+    flushProgressUpdate,
     getJavaInfos,
     openSharedModal,
     openGenericConfirmDialog,
@@ -760,4 +811,34 @@ export const parseTaskGroup = (
     timestamp: timestamp,
     rawName,
   };
+};
+
+const isActiveGroup = (t: TaskGroupDesc) =>
+  t.status === GTaskEventStatusEnums.Started ||
+  t.status === GTaskEventStatusEnums.Stopped;
+
+// Bound the number of task groups kept in memory. The backend only drops a
+// group from the active list once the user clears history, so repeatedly
+// importing/downloading would otherwise accumulate an unbounded number of
+// group objects (and their task descriptors) in React state.
+//
+// Module scope, not inside the provider: as a closure it was a new function on
+// every render, which made it an unstable dependency for the effects and
+// callbacks that call it.
+const MAX_RETAINED_GROUPS = 30;
+const capGroups = (groups: TaskGroupDesc[]): TaskGroupDesc[] => {
+  if (groups.length <= MAX_RETAINED_GROUPS) return groups;
+  const active = groups.filter(isActiveGroup);
+  const inactive = groups
+    .filter((g) => !isActiveGroup(g))
+    .sort(
+      (a, b) =>
+        parseTaskGroup(b.taskGroup).timestamp -
+        parseTaskGroup(a.taskGroup).timestamp
+    );
+  const keepInactive = inactive.slice(
+    0,
+    Math.max(0, MAX_RETAINED_GROUPS - active.length)
+  );
+  return [...active, ...keepInactive];
 };

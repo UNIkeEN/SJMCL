@@ -5,14 +5,19 @@ use serde_with::formats::PreferMany;
 use serde_with::{OneOrMany, serde_as};
 use sjmcl_macros::serialize_skip_none;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
+#[cfg(all(target_arch = "aarch64", target_os = "macos"))]
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::str::FromStr;
+#[cfg(all(target_arch = "aarch64", target_os = "macos"))]
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
+#[cfg(all(target_arch = "aarch64", target_os = "macos"))]
+use tauri::Manager;
 
 use crate::instance::models::misc::{Instance, ModLoaderType};
+#[cfg(all(target_arch = "aarch64", target_os = "macos"))]
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::models::OptiFineResourceInfo;
 use crate::utils::fs::get_app_resource_filepath;
@@ -627,6 +632,11 @@ pub fn load_native_libraries_replace_map(
   Ok(map)
 }
 
+// On Windows these three params are only read inside the aarch64-macOS
+// branch below; the surrounding `#[cfg(windows)]` early-return makes them
+// unused on this target. Allow instead of deleting so the macOS path keeps
+// compiling.
+#[allow(unused_variables)]
 pub async fn replace_native_libraries(
   app: &AppHandle,
   client_info: &mut McClientInfo,
@@ -653,53 +663,67 @@ pub async fn replace_native_libraries(
     }
   }
 
-  let all_replace_map = load_native_libraries_replace_map(app)?;
+  // The body below only runs on Apple Silicon macOS; every other target
+  // (including Windows) returns early via the cfg block above. Gate it so
+  // the rest of the function is not compiled as unreachable code on those
+  // targets.
+  #[cfg(all(target_arch = "aarch64", target_os = "macos"))]
+  {
+    let all_replace_map = load_native_libraries_replace_map(app)?;
 
-  let (os, arch) = {
-    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
-    let cfg = launcher_config_state.lock().unwrap();
-    (cfg.basic_info.os_type.clone(), cfg.basic_info.arch.clone())
-  };
-  let platform_key = format!("{}-{}", os.to_lowercase(), arch.to_lowercase());
-  let platform_map = match all_replace_map.get(platform_key.as_str()) {
-    Some(m) if !m.is_empty() => m,
-    _ => {
-      return Ok(());
-    }
-  };
+    let (os, arch) = {
+      let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
+      let cfg = launcher_config_state.lock().unwrap();
+      (cfg.basic_info.os_type.clone(), cfg.basic_info.arch.clone())
+    };
+    let platform_key = format!("{}-{}", os.to_lowercase(), arch.to_lowercase());
+    let platform_map = match all_replace_map.get(platform_key.as_str()) {
+      Some(m) if !m.is_empty() => m,
+      _ => {
+        return Ok(());
+      }
+    };
 
-  for lib in &mut client_info.libraries {
-    let key = lib.name.clone();
+    for lib in &mut client_info.libraries {
+      let key = lib.name.clone();
 
-    if lib.natives.is_some() {
-      let natives_key = format!("{key}:natives");
-      if let Some(Some(new_lib)) = platform_map.get(&natives_key) {
-        lib.name = new_lib.name.clone();
-        if new_lib.downloads.is_some() {
-          lib.downloads = new_lib.downloads.clone();
+      if lib.natives.is_some() {
+        let natives_key = format!("{key}:natives");
+        if let Some(Some(new_lib)) = platform_map.get(&natives_key) {
+          lib.name = new_lib.name.clone();
+          if new_lib.downloads.is_some() {
+            lib.downloads = new_lib.downloads.clone();
+          }
+          if new_lib.natives.is_some() {
+            lib.natives = new_lib.natives.clone();
+          }
+          if new_lib.extract.is_some() {
+            lib.extract = new_lib.extract.clone();
+          }
+          continue;
         }
-        if new_lib.natives.is_some() {
-          lib.natives = new_lib.natives.clone();
-        }
-        if new_lib.extract.is_some() {
-          lib.extract = new_lib.extract.clone();
-        }
-        continue;
       }
-    }
 
-    if let Some(Some(new_lib_opt)) = platform_map.get(&key) {
-      lib.name = new_lib_opt.name.clone();
-      if new_lib_opt.downloads.is_some() {
-        lib.downloads = new_lib_opt.downloads.clone();
-      }
-      if new_lib_opt.natives.is_some() {
-        lib.natives = new_lib_opt.natives.clone();
-      }
-      if new_lib_opt.extract.is_some() {
-        lib.extract = new_lib_opt.extract.clone();
+      if let Some(Some(new_lib_opt)) = platform_map.get(&key) {
+        lib.name = new_lib_opt.name.clone();
+        if new_lib_opt.downloads.is_some() {
+          lib.downloads = new_lib_opt.downloads.clone();
+        }
+        if new_lib_opt.natives.is_some() {
+          lib.natives = new_lib_opt.natives.clone();
+        }
+        if new_lib_opt.extract.is_some() {
+          lib.extract = new_lib_opt.extract.clone();
+        }
       }
     }
+    Ok(())
   }
+  // Only reached on targets that are neither Windows (early-return above) nor
+  // Apple Silicon macOS (handled by the cfg block above).
+  #[cfg(all(
+    not(target_os = "windows"),
+    not(all(target_arch = "aarch64", target_os = "macos"))
+  ))]
   Ok(())
 }

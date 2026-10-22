@@ -38,7 +38,7 @@ import { VirtualOptionItemGroup } from "@/components/common/option-item-virtual"
 import DownloadSpecificResourceModal from "@/components/modals/download-specific-resource-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
-import { useToast } from "@/contexts/toast";
+import { toastKey, useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import {
   OtherResourceSource,
@@ -386,7 +386,16 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
             setHasMore(response.data.total > (page + 1) * pageSize);
           } else {
             setResourceList([]);
+            // Same query, source, and page can fire repeatedly (scroll paging,
+            // re-opening the modal); one toast per distinct failure is enough.
             toast({
+              id: toastKey(
+                "resource-list",
+                resourceType,
+                downloadSource,
+                searchQuery,
+                page
+              ),
               title: response.message,
               description: response.details,
               status: "error",

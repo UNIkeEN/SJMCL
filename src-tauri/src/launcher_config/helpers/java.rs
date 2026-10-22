@@ -538,6 +538,7 @@ pub async fn build_mojang_java_download_params(
       let (url, sha1) = (raw["url"].as_str()?, raw["sha1"].as_str()?);
 
       Some(PTaskParam::Download(DownloadParam {
+        srcs: None,
         src: url.parse().ok()?,
         dest: runtime_dir.join(path),
         filename: None,

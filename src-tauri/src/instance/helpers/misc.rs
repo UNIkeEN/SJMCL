@@ -8,6 +8,7 @@ use std::io::Cursor;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+use tokio::sync::Mutex as AsyncMutex;
 use zip::ZipArchive;
 
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
@@ -131,6 +132,21 @@ pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJM
   Ok(dst_dir)
 }
 
+/// Serialises instance refreshes.
+///
+/// `retrieve_instance_list` refreshes *every* instance on each call, and the
+/// frontend fires it repeatedly (list page, task-completion handlers, config
+/// changes). Overlapping calls all read the same on-disk config, so they all
+/// see `NotDownloaded` and each one schedules a full mod-loader library group —
+/// that is what fills the downloads page with duplicate, never-finishing
+/// NeoForge groups. A single lock makes the second caller observe the status
+/// the first one already persisted.
+static REFRESH_LOCK: std::sync::OnceLock<AsyncMutex<()>> = std::sync::OnceLock::new();
+
+fn refresh_lock() -> &'static AsyncMutex<()> {
+  REFRESH_LOCK.get_or_init(|| AsyncMutex::new(()))
+}
+
 async fn refresh_instance(
   app: &AppHandle,
   mut version_path: PathBuf,
@@ -175,15 +191,22 @@ async fn refresh_instance(
           match cfg_read.mod_loader.loader_type {
             ModLoaderType::Forge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              // Persist *before* scheduling: the downloader runs in the
+              // background and only reports back through task events, so
+              // without this the on-disk status stays `NotDownloaded` and the
+              // next refresh re-schedules the whole library group.
+              cfg_read.save_json_cfg().await?;
               download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
             }
             ModLoaderType::Cleanroom => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              cfg_read.save_json_cfg().await?;
               download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data)
                 .await?;
             }
             ModLoaderType::NeoForge => {
               cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+              cfg_read.save_json_cfg().await?;
               download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
             }
             _ => {}
@@ -198,14 +221,17 @@ async fn refresh_instance(
         ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
           ModLoaderType::Forge => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+            cfg_read.save_json_cfg().await?;
             download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
           }
           ModLoaderType::Cleanroom => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+            cfg_read.save_json_cfg().await?;
             download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await
           }
           ModLoaderType::NeoForge => {
             cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
+            cfg_read.save_json_cfg().await?;
             download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
           }
           _ => Ok(()),
@@ -337,7 +363,14 @@ pub async fn refresh_instances(
   game_directory: &GameDirectory,
   is_first_run: bool,
 ) -> SJMCLResult<Vec<Instance>> {
+  // Hold the lock for the whole directory walk: `refresh_instance` may schedule
+  // download groups, and only the holder may decide that. See `REFRESH_LOCK`.
+  let _guard = refresh_lock().lock().await;
   let mut instances = vec![];
+  // A directory name can collide with a rewritten instance id (`unify_instance_name`
+  // renormalises the folder), which would process the same instance twice in one
+  // pass and schedule its library group twice.
+  let mut visited = std::collections::HashSet::new();
   // traverse the "versions" directory
   let versions_dir = game_directory.dir.join("versions");
   for entry in fs::read_dir(versions_dir)? {
@@ -362,6 +395,9 @@ pub async fn refresh_instances(
     let json_path = version_path.join(format!("{}.json", name));
     if !jar_path.exists() || !json_path.exists() {
       continue; // not a valid instance
+    }
+    if !visited.insert(version_path.clone()) {
+      continue;
     }
 
     match refresh_instance(

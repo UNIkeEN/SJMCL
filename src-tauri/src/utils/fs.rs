@@ -520,6 +520,7 @@ pub fn create_zip_from_dirs(paths: Vec<PathBuf>, zip_file_path: PathBuf) -> SJMC
 
 /// Enum to define the permission operation
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum PermissionOperation {
   Upgrade,
   Downgrade,
@@ -542,6 +543,7 @@ pub enum PermissionOperation {
 /// manage_permissions_unix("/path/to/your/file", 0o111, PermissionOperation::Downgrade)?;
 /// manage_permissions_unix("/path/to/your/file", 0o755, PermissionOperation::Exact)?;
 /// ```
+#[cfg_attr(target_os = "windows", allow(unused_variables))]
 pub fn manage_permissions_unix<P>(
   path: P,
   perm_mask: u32,
@@ -594,9 +596,8 @@ where
         log::info!("Set exact permissions for {}", path.as_ref().display());
       }
     }
+    Ok(())
   }
-
-  Ok(())
 }
 
 /// RAII guard that removes a directory on drop unless [`commit`](RemoveDirGuard::commit) is called.

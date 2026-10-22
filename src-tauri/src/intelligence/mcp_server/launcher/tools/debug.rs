@@ -3,6 +3,7 @@ use rmcp::handler::server::tool::ToolRoute;
 use crate::intelligence::mcp_server::launcher::McpContext;
 use crate::mcp_tool;
 
+#[allow(dead_code)]
 pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
   vec![mcp_tool!(
     "echo_text",

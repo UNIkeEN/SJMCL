@@ -153,6 +153,7 @@ pub async fn download_game_server(
     app,
     format!("game-server?{}", resource_info.id),
     vec![PTaskParam::Download(DownloadParam {
+      srcs: None,
       src: url::Url::parse(&download_info.url.clone()).map_err(|_| ResourceError::ParseError)?,
       dest: dest.clone().into(),
       filename: None,
@@ -203,6 +204,7 @@ pub async fn update_mods(
   let mut download_tasks = Vec::new();
   for (query, (_, new_file_path)) in queries.iter().zip(&update_paths) {
     let download_param = DownloadParam {
+      srcs: None,
       src: url::Url::parse(&query.url).map_err(|_| ResourceError::ParseError)?,
       dest: new_file_path.clone(),
       filename: None,

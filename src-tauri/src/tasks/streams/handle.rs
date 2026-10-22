@@ -11,6 +11,7 @@ where
   S: Sink,
   P: Clone + Serialize + for<'de> Deserialize<'de>,
 {
+  #[allow(dead_code)]
   pub interval: Interval,
   pub desc: PDesc<P>,
   pub path: PathBuf,
@@ -58,7 +59,7 @@ where
 
   pub fn mark_cancelled(&mut self) {
     self.desc.cancel();
-    self.desc.save(&self.path).unwrap();
+    Self::drop_descriptor(&self.path);
     self
       .reporter
       .report_cancelled(self.desc.task_id, self.desc.task_group.as_deref());
@@ -66,7 +67,7 @@ where
 
   pub fn mark_completed(&mut self) {
     self.desc.complete();
-    self.desc.save(&self.path).unwrap();
+    Self::drop_descriptor(&self.path);
     self
       .reporter
       .report_completion(self.desc.task_id, self.desc.task_group.as_deref());
@@ -84,16 +85,25 @@ where
 
   pub fn mark_failed(&mut self, reason: String) {
     self.desc.fail();
-    self.desc.save(&self.path).unwrap();
+    Self::drop_descriptor(&self.path);
     self
       .reporter
       .report_failed(self.desc.task_id, self.desc.task_group.as_deref(), reason);
+  }
+
+  /// Remove the on-disk descriptor once a task reaches a terminal state.
+  /// Descriptors are only read at startup to resume unfinished downloads, so
+  /// keeping finished ones around makes every restart re-enqueue work that is
+  /// already done (and would re-download files that are already complete).
+  fn drop_descriptor(path: &PathBuf) {
+    let _ = std::fs::remove_file(path);
   }
 
   pub fn status(&self) -> &PStatus {
     &self.desc.status
   }
 
+  #[allow(dead_code)]
   pub fn store_waker(&mut self, waker: Waker) {
     self.waker = Some(waker);
   }
@@ -106,6 +116,7 @@ where
     }
   }
 
+  #[allow(dead_code)]
   pub fn report_progress(&mut self, cx: &mut Context<'_>, incr: i64) {
     self.desc.increment_progress(incr);
     if self.interval.poll_tick(cx).is_ready() {

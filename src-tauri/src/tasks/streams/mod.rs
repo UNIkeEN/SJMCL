@@ -17,6 +17,7 @@ pub use handle::PHandle;
 use reporter::*;
 
 #[pin_project]
+#[allow(dead_code)]
 pub struct ProgressStream<M, U, S, P>
 where
   M: Stream<Item = U>,
@@ -36,6 +37,7 @@ where
   S: Sink,
   P: Clone + Serialize + for<'de> Deserialize<'de>,
 {
+  #[allow(dead_code)]
   pub fn new(stream: M, handle: Arc<RwLock<PHandle<S, P>>>) -> Self {
     Self { stream, handle }
   }

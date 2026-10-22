@@ -5,9 +5,13 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 use std::str::FromStr;
+use std::sync::Arc;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use tokio::sync::Semaphore;
 use zip::ZipArchive;
+
+use futures::stream::{self, StreamExt};
 
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
@@ -141,13 +145,21 @@ impl ModpackManifest for CurseForgeManifest {
     let client = app.state::<reqwest::Client>();
     let instance_path = instance_path.to_path_buf();
 
-    let tasks = self.files.iter().map(|file| {
+    let semaphore = Arc::new(Semaphore::new(8));
+    let files = self.files.clone();
+    let tasks = stream::iter(files.into_iter().map(move |file| {
       let client = client.clone();
       let instance_path = instance_path.clone();
+      let semaphore = semaphore.clone();
       let file_id = file.file_id;
       let project_id = file.project_id;
 
       async move {
+        let _permit = semaphore
+          .acquire()
+          .await
+          .map_err(|_| InstanceError::NetworkError)?;
+
         let class_id = {
           let project_resp = client
             .get(format!("https://api.curseforge.com/v1/mods/{project_id}"))
@@ -195,6 +207,7 @@ impl ModpackManifest for CurseForgeManifest {
           .map(|h| h.value.clone());
 
         let task_param = PTaskParam::Download(DownloadParam {
+          srcs: None,
           src: url::Url::parse(&download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
           sha1,
           dest: instance_path
@@ -209,12 +222,11 @@ impl ModpackManifest for CurseForgeManifest {
 
         Ok::<PTaskParam, SJMCLError>(task_param)
       }
-    });
-
-    let results = futures::future::join_all(tasks).await;
+    }));
 
     let mut task_params = Vec::new();
-    for result in results {
+    let mut stream = tasks.buffer_unordered(8);
+    while let Some(result) = stream.next().await {
       task_params.push(result?);
     }
     Ok(task_params)

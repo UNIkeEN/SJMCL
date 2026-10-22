@@ -109,6 +109,7 @@ pub async fn get_invalid_library_files(
         &source,
       )?;
       Ok(Some(PTaskParam::Download(DownloadParam {
+        srcs: None,
         src,
         dest: file_path,
         filename: None,
@@ -196,6 +197,7 @@ pub async fn get_invalid_windows_mesa_loader_file(
     &source,
   )?;
   Ok(vec![PTaskParam::Download(DownloadParam {
+    srcs: None,
     src,
     dest: file_path,
     filename: None,
@@ -510,6 +512,7 @@ pub async fn get_invalid_assets(
           .join(&path_in_repo)
           .map_err(sjmcl_types::error::SJMCLError::from)?;
         Ok(Some(PTaskParam::Download(DownloadParam {
+          srcs: None,
           src,
           dest,
           filename: None,

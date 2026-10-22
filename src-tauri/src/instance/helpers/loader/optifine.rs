@@ -40,6 +40,7 @@ pub async fn download_optifine_installer(
   let installer_path = lib_dir.join(&installer_rel);
 
   task_params.push(PTaskParam::Download(DownloadParam {
+    srcs: None,
     src: installer_url,
     dest: installer_path.clone(),
     filename: None,
@@ -147,6 +148,7 @@ pub async fn download_optifine_libraries(
   )?;
 
   task_params.push(PTaskParam::Download(DownloadParam {
+    srcs: None,
     src,
     dest: lw_dest,
     filename: None,

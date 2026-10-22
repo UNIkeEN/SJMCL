@@ -46,6 +46,15 @@ where
     self.total = total;
   }
 
+  /// Override the interval used to derive speed / ETA. Callers that report
+  /// progress at a cadence different from the one the reporter was built with
+  /// must set this, otherwise the derived speed is wrong by the ratio of the
+  /// two intervals.
+  pub fn set_report_interval(&mut self, interval: Duration) {
+    self.interval = interval;
+  }
+
+  #[allow(dead_code)]
   pub fn from_desc_interval<T: Clone + Serialize + for<'de> Deserialize<'de>>(
     desc: &PDesc<T>,
     interval: &Duration,
@@ -116,8 +125,10 @@ where
   }
 }
 
+#[allow(dead_code)]
 pub struct EventPayload {}
 
+#[allow(dead_code)]
 pub struct EventReporter {
   app: AppHandle,
   task_id: u32,

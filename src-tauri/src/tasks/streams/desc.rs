@@ -36,6 +36,7 @@ impl PStatus {
     *self == PStatus::Stopped
   }
 
+  #[allow(dead_code)]
   pub fn is_completed(&self) -> bool {
     *self == PStatus::Completed
   }
@@ -85,6 +86,7 @@ where
     Ok(desc)
   }
 
+  #[allow(dead_code)]
   pub fn increment_progress(&mut self, size: i64) {
     if self.status != PStatus::InProgress {
       return;
