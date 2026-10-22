@@ -119,13 +119,11 @@ impl From<serde_json::Error> for TaskError {
 #[serde(rename_all = "camelCase")]
 pub struct Task {
   pub id: String,
-  #[serde(alias = "group_id")]
   pub group_id: String,
   pub name: String,
   pub executor: String,
   pub spec: serde_json::Value,
   pub dest: Option<PathBuf>,
-  #[serde(default)]
   pub sha1: Option<String>,
   pub sha256: Option<String>,
   pub state: TaskState,
@@ -138,10 +136,8 @@ pub struct Task {
   pub attempts: u32,
   pub error: Option<TaskError>,
   /// Whether checksum verification actually ran and succeeded.
-  #[serde(default)]
   pub verified: bool,
   /// No retry remains, either because it is ineligible or retries were exhausted.
-  #[serde(default, alias = "retries_exhausted")]
   pub retries_exhausted: bool,
 }
 

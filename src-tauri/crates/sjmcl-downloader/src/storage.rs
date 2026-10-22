@@ -84,25 +84,6 @@ impl SqliteStore {
              );",
       )
       .map_err(|e| e.to_string())?;
-    // Support older databases; a duplicate-column error means this migration already ran.
-    let _ = conn.execute(
-      "ALTER TABLE groups ADD COLUMN auto_resume INTEGER NOT NULL DEFAULT 0",
-      [],
-    );
-    // Existing history has no acknowledgement record and must not be replayed.
-    let _ = conn.execute(
-      "ALTER TABLE groups ADD COLUMN completion_pending INTEGER NOT NULL DEFAULT 0",
-      [],
-    );
-    let _ = conn.execute("ALTER TABLE groups ADD COLUMN finished_at INTEGER", []);
-    // Legacy history has no reliable age. Start its retention period at this upgrade.
-    conn
-      .execute(
-        "UPDATE groups SET finished_at = unixepoch()
-         WHERE state = '\"finished\"' AND finished_at IS NULL",
-        [],
-      )
-      .map_err(|e| e.to_string())?;
     // Prune before the engine restores groups, so expired failures cannot reappear in memory.
     conn
       .execute(
@@ -200,13 +181,8 @@ impl StateStore for SqliteStore {
       .map_err(|e| e.to_string())?;
     let mut groups = Vec::new();
     for row in rows {
-      let (id, mut name, mut auto_resume, state, finish, tasks_json, completion_pending) =
+      let (id, name, auto_resume, state, finish, tasks_json, completion_pending) =
         row.map_err(|e| e.to_string())?;
-      // Version 0.1 encoded auto_resume in the name prefix; restore the real field on load.
-      if !auto_resume && let Some(original) = name.strip_prefix("[auto]") {
-        name = original.to_string();
-        auto_resume = true;
-      }
       let tasks: Vec<Task> = serde_json::from_str(&tasks_json).map_err(|e| e.to_string())?;
       let state: GroupState = serde_json::from_str(&state).map_err(|e| e.to_string())?;
       let finish: Option<crate::model::FinishKind> = finish
