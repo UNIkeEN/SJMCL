@@ -13,7 +13,7 @@ members = ["crates/sjmcl-macros", "crates/sjmcl-types"]
 resolver = "3"
 
 [workspace.package]
-version = "1.4.2"
+version = "1.4.3"
 edition = "2024"
 rust-version = "1.98.1"
 

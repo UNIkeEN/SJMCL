@@ -140,14 +140,14 @@ const AboutSettingsPage = () => {
           title: t("AboutSettingsPage.about.settings.sourceCode.title"),
           children: (
             <CommonIconButton
-              label="https://github.com/UNIkeEN/SJMCL"
+              label="https://github.com/YGHHT/SJMCL"
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               h={18}
               onClick={() => {
-                openUrl("https://github.com/UNIkeEN/SJMCL");
+                openUrl("https://github.com/YGHHT/SJMCL");
               }}
             />
           ),
