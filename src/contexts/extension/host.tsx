@@ -460,6 +460,13 @@ const ActiveExtensionHostContextProvider: React.FC<{
         throw new Error(`Direct invoke is not allowed for ${command}`);
       }
 
+      // Compatibility aliases for command changes introduced in #1952.
+      const aliases = new Map([
+        ["retrieve_download_groups", "plugin:sjmcl-downloader|snapshot"],
+        ["retrieve_download_tasks", "plugin:sjmcl-downloader|list_tasks"],
+      ]);
+      command = aliases.get(command) ?? command;
+
       return await tauriInvoke<T>(command, payload);
     },
     []
