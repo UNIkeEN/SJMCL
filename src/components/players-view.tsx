@@ -45,26 +45,19 @@ const PlayersView: React.FC<PlayersViewProps> = ({
     title: player.name,
     description: showDesc ? generatePlayerDesc(player, true) : undefined,
     prefixElement: (
-      <HStack spacing={2.5}>
-        <Radio
-          value={player.id}
-          onClick={() => handleSelectPlayer(player)}
-          colorScheme={primaryColor}
-        />
+      <HStack spacing={2.5} pointerEvents="none">
+        <Radio value={player.id} colorScheme={primaryColor} />
         <PlayerAvatar avatar={player.avatar} boxSize="32px" objectFit="cover" />
       </HStack>
     ),
-    ...(withMenu
-      ? {}
-      : {
-          isFullClickZone: true,
-          onClick: () => handleSelectPlayer(player),
-        }),
+    isFullClickZone: true,
+    onClick: () => handleSelectPlayer(player),
     children: withMenu ? (
       <PlayerMenu player={player} variant="buttonGroup" />
     ) : (
       <></>
     ),
+    isChildrenIndependent: true,
   }));
 
   const gridItems = players.map((player) => ({
@@ -77,7 +70,12 @@ const PlayersView: React.FC<PlayersViewProps> = ({
       ...(withMenu
         ? {
             extraContent: (
-              <Box position="absolute" top={0.5} right={1}>
+              <Box
+                position="absolute"
+                top={0.5}
+                right={1}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <PlayerMenu
                   player={player}
                   withFriendsButton={player.playerType === PlayerType.Microsoft}
@@ -88,6 +86,7 @@ const PlayersView: React.FC<PlayersViewProps> = ({
         : {}),
     },
     isSelected: selectedPlayer?.id === player.id,
+    isFullClickZone: true,
     onSelect: () => handleSelectPlayer(player),
     radioValue: player.id,
   }));
