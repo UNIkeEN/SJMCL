@@ -1666,6 +1666,7 @@
     },
     "serverList": {
       "title": "伺服器",
+      "showHidden": "顯所隱",
       "players": "戲者",
       "tag": {
         "online": "線上",
