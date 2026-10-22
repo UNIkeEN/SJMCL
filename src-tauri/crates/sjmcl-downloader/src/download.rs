@@ -40,6 +40,7 @@ use crate::{ExecContext, TaskError, TaskOutcome, TaskReport};
 
 pub type RequestDecorator =
   Arc<dyn Fn(&str, reqwest::RequestBuilder) -> reqwest::RequestBuilder + Send + Sync>;
+pub type ResumeRedirectFilter = Arc<dyn Fn(&str) -> bool + Send + Sync>;
 
 pub struct DownloadExecutor {
   pub client: reqwest::Client,
@@ -49,6 +50,8 @@ pub struct DownloadExecutor {
   pub limiter: Option<Arc<TokenBucket>>,
   /// Let the host add authentication headers per URL without persisting credentials in task specs.
   pub request_decorator: Option<RequestDecorator>,
+  /// Resolve redirects without Range before resuming URLs selected by the host.
+  pub resume_redirect_filter: Option<ResumeRedirectFilter>,
 }
 
 impl Default for DownloadExecutor {
@@ -58,6 +61,7 @@ impl Default for DownloadExecutor {
       report_interval: Duration::from_millis(100),
       limiter: None,
       request_decorator: None,
+      resume_redirect_filter: None,
     }
   }
 }
@@ -69,6 +73,7 @@ impl Clone for DownloadExecutor {
       report_interval: self.report_interval,
       limiter: self.limiter.clone(),
       request_decorator: self.request_decorator.clone(),
+      resume_redirect_filter: self.resume_redirect_filter.clone(),
     }
   }
 }
@@ -86,7 +91,7 @@ impl TaskExecutor for DownloadExecutor {
 
 impl DownloadExecutor {
   async fn run_inner(&self, ctx: ExecContext) -> Result<(), TaskError> {
-    let url = ctx
+    let mut url = ctx
       .spec
       .get("url")
       .and_then(|v| v.as_str())
@@ -110,10 +115,15 @@ impl DownloadExecutor {
     };
 
     let mut request_offset = resume;
+    let mut resolve_resume_redirect = resume > 0
+      && self
+        .resume_redirect_filter
+        .as_ref()
+        .is_some_and(|filter| filter(&url));
     loop {
-      // Rebuild both requests so authentication and cancellation also apply to the fallback.
+      // Rebuild requests so authentication and cancellation also apply to redirects and fallbacks.
       let req = self.client.get(&url).header("Accept-Encoding", "identity");
-      let req = if request_offset > 0 {
+      let req = if request_offset > 0 && !resolve_resume_redirect {
         req.header("Range", format!("bytes={request_offset}-"))
       } else {
         req
@@ -126,7 +136,7 @@ impl DownloadExecutor {
       let resp = tokio::select! {
         r = req.send() => match r {
             Ok(r) => r,
-            Err(_) if request_offset > 0 => {
+            Err(_) if request_offset > 0 && !resolve_resume_redirect => {
               request_offset = 0;
               continue;
             }
@@ -140,6 +150,21 @@ impl DownloadExecutor {
       };
 
       let status = resp.status();
+      if resolve_resume_redirect {
+        resolve_resume_redirect = false;
+        if !status.is_success() {
+          return Err(TaskError::Http {
+            status: status.as_u16(),
+          });
+        }
+        if resp.url().as_str() != url {
+          // Drop the full response body and resume directly from the final URL.
+          url = resp.url().to_string();
+          continue;
+        }
+        // Without a redirect, use the full response as the existing fallback.
+        request_offset = 0;
+      }
       // A 416 whose total matches the partial file means all bytes are already present.
       if status == reqwest::StatusCode::RANGE_NOT_SATISFIABLE
         && request_offset > 0
