@@ -298,6 +298,7 @@ export const DownloadTasksPage = () => {
                         key={`${task.id}-detail`}
                         title={task.name}
                         description={
+                          task.total > 0 &&
                           (task.received > 0 ||
                             task.state === DownloadTaskState.Downloading ||
                             task.state === DownloadTaskState.Verifying) && (
