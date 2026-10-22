@@ -1,37 +1,75 @@
 # SJMCL CLI
 
-A CLI for SJMCL that connects to the GUI app through its MCP server.
+A command-line client for the SJMCL GUI app, connected through its MCP server.
 
-Build: 
+## Build
+
+From the repository root:
 
 ```bash
 cargo build --release --manifest-path cli/Cargo.toml
 ```
 
-The launcher must have its MCP server enabled. Use `-p <port>` if it does not use the default port (18970).
+The binary is `cli/target/release/sjmcl-cli` (`sjmcl-cli.exe` on Windows). The examples below assume it is on your `PATH`.
 
-Install a Minecraft version into an instance:
+## Connect to the GUI app
+
+Enable **Launcher MCP Service** in SJMCL's **Intelligence** settings. The CLI connects to `127.0.0.1:18970` by default. For a different port, place `-p <port>` before the command:
+
+```bash
+sjmcl-cli -p 18971 downloads
+```
+
+## Commands
+
+### MCP Tools
+
+MCP tools cover configuration, accounts, instances, launching, downloads, resources, etc.
+
+Call a tool by name, with arguments as a single JSON object. When connected, `--help` lists available tools and their parameters; otherwise, it shows basic usage and connection hints.
+
+```bash
+sjmcl-cli --help
+sjmcl-cli retrieve_launcher_config
+sjmcl-cli retrieve_download_tasks '{"group_id":"<group-id>"}'
+```
+
+The CLI prints the tool response and returns. For tools that queue tasks, completion must be checked separately.
+
+### Shortcuts
+
+These commands wrap MCP tools with simpler arguments and formatted output. `install` and `download` wait for their task groups by default, show progress on stderr, and exit with status `1` on failure or cancellation. Add `--no-wait` to return after submission.
+
+#### Install an instance
+
+Create a Minecraft instance in a configured game directory, optionally with a mod loader:
 
 ```bash
 sjmcl-cli install 1.21.5 MyInstance
 sjmcl-cli install 1.21.5 MyFabricInstance --directory Main --loader fabric
-sjmcl-cli install 1.21.5 MyForgeInstance --loader forge
 ```
 
-`install` waits for the client download, loader installation, and verification to finish. It exits with a nonzero status when a task group fails. If more than one game directory is configured, select one by its display name with `--directory`. Use `--loader-version` to select an exact loader version, `--optifine <patch>` to install OptiFine, or `--no-wait` to queue the work and return immediately.
+| Option                       | Description                                                                                          |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `--directory <name>`         | Game directory display name. Automatically selected when only one is configured; required otherwise. |
+| `--loader <type>`            | Mod loader to install, such as `fabric`, `forge`, `neoforge`, or `quilt`.                            |
+| `--loader-version <version>` | Exact loader version. Requires `--loader`.                                                           |
+| `--optifine <patch>`         | OptiFine patch or filename to install.                                                               |
 
-Download a file through SJMCL's download engine:
+#### Download a file
+
+Download an HTTP(S) URL to a destination file path:
 
 ```bash
 sjmcl-cli download https://example.com/file.jar /path/to/file.jar
 ```
 
-Use `--sha1` to verify the downloaded file against an expected checksum. In a terminal, both commands show live progress bars with transferred bytes and speed. When output is redirected, they print task state updates. `download` also accepts `--no-wait`.
+Use `--sha1 <hash>` to verify the file against an expected SHA-1 checksum.
 
-Show current and past task groups:
+#### List task groups
+
+Show download and installation task groups:
 
 ```bash
 sjmcl-cli downloads
 ```
-
-The generic MCP tool command remains available. MCP clients can create instances with `create_instance`, submit files with `submit_download`, query `retrieve_download_groups`, `retrieve_download_progress`, and `retrieve_download_tasks`, and pause, resume, retry, cancel, or remove groups.
