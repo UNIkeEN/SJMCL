@@ -2,13 +2,17 @@ use futures::future;
 use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
 use std::sync::Mutex;
+use std::time::Duration;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
+use tokio::time::timeout;
 
 use crate::discover::helpers::mc_news::{MC_NEWS_ENDPOINT, fetch_mc_news_page};
 use crate::discover::models::{NewsPostRequest, NewsPostResponse, NewsSourceInfo};
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::web::with_retry;
+
+const NEWS_SOURCE_TIMEOUT: Duration = Duration::from_secs(8);
 
 #[tauri::command]
 pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSourceInfo>> {
@@ -24,7 +28,11 @@ pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSour
     .into_iter()
     .map(|(url, _)| {
       let client = client.clone();
-      async move {
+      let fallback = NewsSourceInfo {
+        endpoint_url: url.clone(),
+        ..Default::default()
+      };
+      let query = async move {
         let mut news_source = NewsSourceInfo {
           name: "".to_string(),
           full_name: "".to_string(),
@@ -49,6 +57,11 @@ pub async fn fetch_news_sources_info(app: AppHandle) -> SJMCLResult<Vec<NewsSour
         }
 
         news_source
+      };
+      async move {
+        timeout(NEWS_SOURCE_TIMEOUT, query)
+          .await
+          .unwrap_or(fallback)
       }
     })
     .collect();
@@ -66,7 +79,7 @@ pub async fn fetch_news_post_summaries(
     .into_iter()
     .map(|NewsPostRequest { url, cursor }| {
       let client = client.clone();
-      async move {
+      let query = async move {
         if url.starts_with(MC_NEWS_ENDPOINT) {
           return fetch_mc_news_page(&client, &url, cursor).await;
         }
@@ -90,7 +103,8 @@ pub async fn fetch_news_post_summaries(
           }
           _ => None,
         }
-      }
+      };
+      async move { timeout(NEWS_SOURCE_TIMEOUT, query).await.ok().flatten() }
     })
     .collect();
 
