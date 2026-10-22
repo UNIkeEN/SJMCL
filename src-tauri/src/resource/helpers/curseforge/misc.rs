@@ -48,7 +48,14 @@ where
     .await
     .map_err(|_| ResourceError::NetworkError)?;
 
-  if !response.status().is_success() {
+  let status = response.status();
+  // A 401/403 is the server rejecting the key, not a broken connection. Say so,
+  // otherwise the user chases a network problem that does not exist — which is
+  // exactly what a missing CurseForge key looks like when built locally.
+  if status == reqwest::StatusCode::UNAUTHORIZED || status == reqwest::StatusCode::FORBIDDEN {
+    return Err(ResourceError::Unauthorized.into());
+  }
+  if !status.is_success() {
     return Err(ResourceError::NetworkError.into());
   }
 

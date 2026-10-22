@@ -2695,7 +2695,8 @@
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NETWORK_ERROR": "Échec du démarrage du jeu",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
+            "UNAUTHORIZED": "Le serveur a rejeté la requête (clé API invalide ou non configurée)"
           }
         }
       },
@@ -2705,7 +2706,8 @@
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
             "NETWORK_ERROR": "Échec du démarrage du jeu",
-            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
+            "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau",
+            "UNAUTHORIZED": "Le serveur a rejeté la requête (clé API invalide ou non configurée)"
           }
         }
       },

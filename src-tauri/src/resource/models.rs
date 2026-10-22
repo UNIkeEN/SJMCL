@@ -203,6 +203,10 @@ pub enum ResourceError {
   ParseError,
   NoDownloadApi,
   NetworkError,
+  /// The endpoint answered but rejected the request (401/403). Reporting this
+  /// as a network failure sends the user hunting for a connection problem when
+  /// the real cause is an absent or invalid API key.
+  Unauthorized,
   FileOperationError,
   ClientVersionNotFound,
 }

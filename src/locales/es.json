@@ -2695,7 +2695,8 @@
           "description": {
             "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
             "NETWORK_ERROR": "Error al conectar con el servidor",
-            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet"
+            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet",
+            "UNAUTHORIZED": "El servidor rechazó la solicitud (clave API inválida o no configurada)"
           }
         }
       },
@@ -2705,7 +2706,8 @@
           "description": {
             "PARSE_ERROR": "El servidor devolvió datos en un formato incorrecto",
             "NETWORK_ERROR": "Error al conectar con el servidor",
-            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet"
+            "NO_DOWNLOAD_API": "No hay estrategia de descarga disponible, verifique su conexión a internet",
+            "UNAUTHORIZED": "El servidor rechazó la solicitud (clave API inválida o no configurada)"
           }
         }
       },

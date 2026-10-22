@@ -2695,7 +2695,8 @@
           "description": {
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "不能連線到伺服器",
-            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線",
+            "UNAUTHORIZED": "伺服器拒請求（API 密鑰或未設）"
           }
         }
       },
@@ -2705,7 +2706,8 @@
           "description": {
             "PARSE_ERROR": "伺服器返回資料正規化謬矣",
             "NETWORK_ERROR": "不能連線到伺服器",
-            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線"
+            "NO_DOWNLOAD_API": "無可用的引策略，請驗網路連線",
+            "UNAUTHORIZED": "伺服器拒請求（API 密鑰或未設）"
           }
         }
       },

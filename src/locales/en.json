@@ -2695,6 +2695,7 @@
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
+            "UNAUTHORIZED": "The server rejected the request (API key invalid or not configured)",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }
@@ -2705,6 +2706,7 @@
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
+            "UNAUTHORIZED": "The server rejected the request (API key invalid or not configured)",
             "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
           }
         }

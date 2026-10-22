@@ -2695,7 +2695,8 @@
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
-            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
+            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線",
+            "UNAUTHORIZED": "伺服器拒絕了請求（API 密鑰無效或未設定）"
           }
         }
       },
@@ -2705,7 +2706,8 @@
           "description": {
             "PARSE_ERROR": "伺服器返回資料格式錯誤",
             "NETWORK_ERROR": "無法連線到伺服器",
-            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線"
+            "NO_DOWNLOAD_API": "無可用的下載策略，請檢查網路連線",
+            "UNAUTHORIZED": "伺服器拒絕了請求（API 密鑰無效或未設定）"
           }
         }
       },
