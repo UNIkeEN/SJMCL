@@ -8,6 +8,7 @@ import {
   VStack,
   Wrap,
   WrapItem,
+  useColorModeValue,
   useTheme,
 } from "@chakra-ui/react";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
@@ -28,6 +29,7 @@ export interface WrapCardProps extends CardProps {
   variant?: "normal" | "radio";
   radioValue?: string;
   isSelected?: boolean;
+  isFullClickZone?: boolean;
   onSelect?: () => void;
 }
 
@@ -46,22 +48,20 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   variant = "normal",
   radioValue = "",
   isSelected = false,
-  onSelect = () => {},
+  isFullClickZone = false,
+  onSelect,
   ...cardProps
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const borderWidth = "1px";
+  const hasBorder = isSelected || isFullClickZone;
   const basePadding = cardProps.padding || "12px";
-  const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
-
-  const isCardClickable = variant === "radio" && !!onSelect;
-
-  const handleInteractiveAreaClick = (e: React.MouseEvent) => {
-    // prevent clicks on interactive elements (e.g. menu button) inside
-    // extraContent from selecting the card
-    e.stopPropagation();
-  };
+  const borderedPadding = `calc(${basePadding} - ${borderWidth})`;
+  const hoverBorderColor = useColorModeValue(
+    `${primaryColor}.300`,
+    `${primaryColor}.700`
+  );
 
   const renderContent = () => {
     if (!cardContent) return null;
@@ -104,17 +104,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
         <Text fontSize="xs" className="secondary-text ellipsis-text">
           {description}
         </Text>
-        {extraContent &&
-          (isCardClickable ? (
-            <Box
-              onClick={handleInteractiveAreaClick}
-              onDoubleClick={handleInteractiveAreaClick}
-            >
-              {extraContent}
-            </Box>
-          ) : (
-            extraContent
-          ))}
+        {extraContent}
       </VStack>
     );
   };
@@ -122,20 +112,35 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   return (
     <Card
       className={cardStyles["card-front"]}
-      borderColor={`${primaryColor}.500`}
+      borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
-      borderWidth={isSelected ? borderWidth : 0}
-      p={isSelected ? selectedPadding : basePadding}
-      {...cardProps}
-      {...(isCardClickable && {
+      borderWidth={hasBorder ? borderWidth : 0}
+      p={hasBorder ? borderedPadding : basePadding}
+      transition="border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out"
+      {...(isFullClickZone && {
         cursor: "pointer",
+        _hover: {
+          borderColor: isSelected ? `${primaryColor}.500` : hoverBorderColor,
+          boxShadow: "md",
+        },
+        _active: { boxShadow: "sm" },
         onClick: onSelect,
       })}
+      {...cardProps}
     >
       {variant === "radio" && (
-        <Box position="absolute" top={2} left={2}>
-          <Radio value={radioValue} colorScheme={primaryColor} />
+        <Box
+          position="absolute"
+          top={2}
+          left={2}
+          pointerEvents={isFullClickZone ? "none" : undefined}
+        >
+          <Radio
+            value={radioValue}
+            onClick={onSelect}
+            colorScheme={primaryColor}
+          />
         </Box>
       )}
       {renderContent()}
@@ -187,7 +192,7 @@ export const WrapCardGroup: React.FC<WrapCardGroupProps> = ({
   }, [resizeCard]);
 
   return (
-    <Box {...props} overflow="hidden" ref={boxRef}>
+    <Box {...props} ref={boxRef}>
       <Section
         title={props.title}
         headExtra={props.headExtra}

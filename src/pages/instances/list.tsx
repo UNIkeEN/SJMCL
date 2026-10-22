@@ -201,7 +201,7 @@ const InstanceListPage = () => {
           instances={instanceList}
           selectedInstance={selectedInstance}
           viewType={selectedViewType}
-          onDoubleClickInstance={() => {
+          onDoubleClick={() => {
             if (!selectedInstance) return;
             router.push({
               pathname: "/instances/details/[id]",
