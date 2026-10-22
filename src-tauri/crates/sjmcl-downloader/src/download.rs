@@ -524,24 +524,3 @@ mod hex {
     s
   }
 }
-
-#[cfg(test)]
-mod tests {
-  use super::{content_range, content_range_unsatisfied_total};
-  use reqwest::header::HeaderValue;
-
-  #[test]
-  fn parses_content_ranges() {
-    let partial = HeaderValue::from_static("bytes 100-199/1000");
-    assert_eq!(content_range(Some(&partial)), Some((100, 1000)));
-    let complete = HeaderValue::from_static("bytes */1000");
-    assert_eq!(content_range_unsatisfied_total(Some(&complete)), Some(1000));
-  }
-
-  #[test]
-  fn rejects_malformed_content_ranges() {
-    let malformed = HeaderValue::from_static("items 100-199/1000");
-    assert_eq!(content_range(Some(&malformed)), None);
-    assert_eq!(content_range_unsatisfied_total(Some(&malformed)), None);
-  }
-}

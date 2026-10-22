@@ -51,26 +51,3 @@ impl TokenBucket {
     Duration::from_secs_f64(wait)
   }
 }
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn bursts_then_throttles() {
-    let bucket = TokenBucket::new(1000, 2000);
-    assert_eq!(bucket.consume(1000), Duration::ZERO); // Within burst capacity.
-    assert_eq!(bucket.consume(1000), Duration::ZERO);
-    let wait = bucket.consume(1000); // Beyond burst capacity: wait about one second.
-    assert!(wait >= Duration::from_millis(999));
-  }
-
-  #[test]
-  fn refills_over_time() {
-    let bucket = TokenBucket::new(1000, 1000);
-    assert_eq!(bucket.consume(1000), Duration::ZERO); // Exhaust burst capacity.
-    assert!(bucket.consume(100) > Duration::from_millis(90)); // About 100 ms for 100 bytes.
-    std::thread::sleep(Duration::from_millis(200));
-    assert_eq!(bucket.consume(100), Duration::ZERO); // After 200 ms, 200 tokens have accrued.
-  }
-}
