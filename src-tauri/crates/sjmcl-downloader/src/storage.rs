@@ -3,7 +3,6 @@
 //! Persist state transitions and key milestones. On resume, the partial file size
 //! is the authoritative offset, so progress does not need frequent database writes.
 
-use std::collections::HashSet;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -69,7 +68,7 @@ pub struct SqliteStore {
 
 impl SqliteStore {
   pub fn open(path: &Path) -> Result<Self, String> {
-    let mut conn = Connection::open(path).map_err(|e| e.to_string())?;
+    let conn = Connection::open(path).map_err(|e| e.to_string())?;
     conn
       .execute_batch(
         "PRAGMA journal_mode=WAL;
@@ -86,53 +85,6 @@ impl SqliteStore {
              );",
       )
       .map_err(|e| e.to_string())?;
-    let has_parent: bool = conn
-      .query_row(
-        "SELECT EXISTS(SELECT 1 FROM pragma_table_info('groups') WHERE name = 'parent_group_id')",
-        [],
-        |row| row.get(0),
-      )
-      .map_err(|e| e.to_string())?;
-    if !has_parent {
-      let transaction = conn.transaction().map_err(|e| e.to_string())?;
-      transaction
-        .execute("ALTER TABLE groups ADD COLUMN parent_group_id TEXT", [])
-        .map_err(|e| e.to_string())?;
-      // Decode the old display-name convention only during the schema upgrade.
-      let legacy: Vec<(String, String)> = {
-        let mut statement = transaction
-          .prepare("SELECT id, name FROM groups")
-          .map_err(|e| e.to_string())?;
-        statement
-          .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))
-          .map_err(|e| e.to_string())?
-          .collect::<Result<_, _>>()
-          .map_err(|e| e.to_string())?
-      };
-      let ids: HashSet<&str> = legacy.iter().map(|(id, _)| id.as_str()).collect();
-      for (id, name) in &legacy {
-        if let Some((display_name, parent)) = name.rsplit_once('@')
-          && ids.contains(parent)
-          && display_name.split_once('?').is_some_and(|(kind, _)| {
-            matches!(
-              kind,
-              "forge-libraries"
-                | "cleanroom-libraries"
-                | "neoforge-libraries"
-                | "optifine-libraries"
-            )
-          })
-        {
-          transaction
-            .execute(
-              "UPDATE groups SET parent_group_id = ?1 WHERE id = ?2",
-              rusqlite::params![parent, id],
-            )
-            .map_err(|e| e.to_string())?;
-        }
-      }
-      transaction.commit().map_err(|e| e.to_string())?;
-    }
     // Prune before the engine restores groups, so expired failures cannot reappear in memory.
     conn
       .execute(
