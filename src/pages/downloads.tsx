@@ -26,7 +26,6 @@ import { Section } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
 import { parseTaskGroup, useTaskContext } from "@/contexts/task";
 import {
-  DownloadError,
   DownloadFinishKind,
   DownloadGroup,
   DownloadGroupState,
@@ -40,11 +39,7 @@ import {
 } from "@/utils/download";
 import { formatByteSize } from "@/utils/string";
 
-const downloadProgressStyles = {
-  "& > div": { transition: "width 0.2s linear" },
-};
-
-const DownloadErrorLabel = ({ error }: { error?: DownloadError | null }) => {
+const DownloadErrorLabel = ({ error }: { error?: unknown }) => {
   const { t } = useTranslation();
   return (
     <Tooltip
@@ -72,6 +67,7 @@ export const DownloadTasksPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const {
     tasks,
+    completionFailures,
     handleCancelDownloadGroup,
     handlePauseDownloadGroup,
     handleResumeDownloadGroup,
@@ -191,14 +187,20 @@ export const DownloadTasksPage = () => {
                         {t("DownloadTasksPage.label.paused")}
                       </Text>
                     )}
-                    {group.finish === DownloadFinishKind.Completed && (
-                      <Text fontSize="xs" className="secondary-text">
-                        {t("DownloadTasksPage.label.completed")}
-                      </Text>
-                    )}
+                    {group.finish === DownloadFinishKind.Completed &&
+                      !completionFailures[group.id] && (
+                        <Text fontSize="xs" className="secondary-text">
+                          {t("DownloadTasksPage.label.completed")}
+                        </Text>
+                      )}
                     {(group.finish === DownloadFinishKind.Failed ||
-                      group.error) && (
-                      <DownloadErrorLabel error={group.error} />
+                      group.error ||
+                      completionFailures[group.id]) && (
+                      <DownloadErrorLabel
+                        error={
+                          completionFailures[group.id]?.error ?? group.error
+                        }
+                      />
                     )}
                     {group.finish === DownloadFinishKind.Cancelled && (
                       <Text fontSize="xs" color="red.600">
@@ -239,7 +241,8 @@ export const DownloadTasksPage = () => {
                         />
                       </Tooltip>
                     )}
-                    {group.finish === DownloadFinishKind.Failed && (
+                    {(group.finish === DownloadFinishKind.Failed ||
+                      completionFailures[group.id]) && (
                       <Tooltip label={t("DownloadTasksPage.button.retry")}>
                         <IconButton
                           aria-label="retry"
@@ -249,7 +252,11 @@ export const DownloadTasksPage = () => {
                           h={21}
                           ml={1}
                           variant="ghost"
-                          onClick={() => handleRetryDownloadGroup(group.id)}
+                          onClick={() =>
+                            completionFailures[group.id]
+                              ? completionFailures[group.id].retry()
+                              : handleRetryDownloadGroup(group.id)
+                          }
                         />
                       </Tooltip>
                     )}
@@ -283,7 +290,7 @@ export const DownloadTasksPage = () => {
                       size="xs"
                       value={group.progress}
                       isIndeterminate={group.progress == null}
-                      sx={downloadProgressStyles}
+                      sx={{ "& > div": { transition: "width 0.2s linear" } }}
                       colorScheme={primaryColor}
                       borderRadius="sm"
                       mb={1}
@@ -320,7 +327,9 @@ export const DownloadTasksPage = () => {
                             flexShrink={0}
                             size="xs"
                             value={task.progress}
-                            sx={downloadProgressStyles}
+                            sx={{
+                              "& > div": { transition: "width 0.2s linear" },
+                            }}
                             colorScheme={primaryColor}
                             isIndeterminate={
                               task.total === 0 &&

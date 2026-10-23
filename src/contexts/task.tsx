@@ -42,8 +42,14 @@ import {
   shouldShowDownloadProgress,
 } from "@/utils/download";
 
+interface DownloadCompletion {
+  onHandled: (onAcknowledged?: () => void) => Promise<void>;
+  acknowledgement?: Promise<void>;
+}
+
 interface TaskContextType {
   tasks: DownloadGroup[];
+  completionFailures: Record<string, { error: unknown; retry: () => void }>;
   generalPercent: number | undefined;
   handleSubmitDownloadGroup: (
     name: string,
@@ -144,10 +150,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const { t } = useTranslation();
   const refreshSequence = useRef(0);
   const pendingSnapshots = useRef(new Set<DownloadSnapshotUpdates>());
-  const completionInFlight = useRef<string | null>(null);
-  const completionOnClose = useRef<(() => void) | null>(null);
-  const handledCompletions = useRef(new Set<string>());
-  const [completionProcessing, setCompletionProcessing] = useState(false);
+  const completion = useRef<DownloadCompletion | null>(null);
+  const [completionFailures, setCompletionFailures] = useState<
+    TaskContextType["completionFailures"]
+  >({});
 
   const recordTaskUpdate = useCallback(
     (taskId: string, update: Partial<DownloadTask>) => {
@@ -297,7 +303,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [showCommandError, tasks]);
 
   const handleCompletedGroup = useCallback(
-    (group: DownloadGroup, onHandled: () => Promise<boolean>) => {
+    (group: DownloadGroup, onHandled: DownloadCompletion["onHandled"]) => {
       const { name, params } = parseTaskGroup(group.name);
       switch (name) {
         case "game-client":
@@ -348,34 +354,34 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 `RestartForUpdateConfirmDialog.button.${isWinInstaller ? "install" : "restart"}`
               ),
               btnCancel: t("RestartForUpdateConfirmDialog.button.later"),
-              onOKCallback: async () => {
-                if (!(await onHandled())) return;
-                ConfigService.installLauncherUpdate(task.name, true).then(
-                  (response) => {
-                    if (response.status !== "success") {
-                      toast({
-                        title: response.message,
-                        description: response.details,
-                        status: "error",
-                      });
+              onOKCallback: () =>
+                onHandled(() => {
+                  ConfigService.installLauncherUpdate(task.name, true).then(
+                    (response) => {
+                      if (response.status !== "success") {
+                        toast({
+                          title: response.message,
+                          description: response.details,
+                          status: "error",
+                        });
+                      }
                     }
-                  }
-                );
-              },
-              onCancelCallback: async () => {
-                if (!(await onHandled())) return;
-                ConfigService.installLauncherUpdate(task.name, false).then(
-                  (response) => {
-                    if (response.status !== "success") {
-                      toast({
-                        title: response.message,
-                        description: response.details,
-                        status: "error",
-                      });
+                  );
+                }),
+              onCancelCallback: () =>
+                onHandled(() => {
+                  ConfigService.installLauncherUpdate(task.name, false).then(
+                    (response) => {
+                      if (response.status !== "success") {
+                        toast({
+                          title: response.message,
+                          description: response.details,
+                          status: "error",
+                        });
+                      }
                     }
-                  }
-                );
-              },
+                  );
+                }),
             });
             return;
           }
@@ -393,24 +399,24 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
                 version: newVersion,
                 src: task.spec.url,
               }),
-              onOKCallback: async () => {
-                if (!(await onHandled())) return;
-                ExtensionService.addExtension(
-                  task.dest!,
-                  expectedIdentifier
-                ).then((response) => {
-                  if (response.status === "success") {
-                    toast({ title: response.message, status: "success" });
-                    emit(EXTENSION_REFRESH_EVENT);
-                  } else {
-                    toast({
-                      title: response.message,
-                      description: response.details,
-                      status: "error",
-                    });
-                  }
-                });
-              },
+              onOKCallback: () =>
+                onHandled(() => {
+                  ExtensionService.addExtension(
+                    task.dest!,
+                    expectedIdentifier
+                  ).then((response) => {
+                    if (response.status === "success") {
+                      toast({ title: response.message, status: "success" });
+                      emit(EXTENSION_REFRESH_EVENT);
+                    } else {
+                      toast({
+                        title: response.message,
+                        description: response.details,
+                        status: "error",
+                      });
+                    }
+                  });
+                }),
             });
             return;
           }
@@ -435,68 +441,78 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   useEffect(() => {
-    if (
-      completionInFlight.current &&
-      !handledCompletions.current.has(completionInFlight.current)
-    ) {
+    if (completion.current && !completion.current.acknowledgement) {
       const visible = Object.values(modalStates).some(
-        (modal) => modal.onCloseCallback === completionOnClose.current
+        (modal) => modal.onCloseCallback === completion.current?.onHandled
       );
       if (!visible) {
         // Another dialog replaced this prompt. Keep its action pending for later.
-        completionInFlight.current = null;
-        setCompletionProcessing(false);
+        completion.current = null;
       }
-      return;
     }
     if (
       getCurrentWebview().label !== "main" ||
-      completionInFlight.current ||
-      completionProcessing ||
+      completion.current ||
       modalStates["generic-confirm"]?.isOpen ||
       modalStates["import-modpack"]?.isOpen
     )
       return;
     const group = tasks.find(
-      (item) =>
-        item.completionPending && !handledCompletions.current.has(item.id)
+      (item) => item.completionPending && !completionFailures[item.id]
     );
     if (!group) return;
-    completionInFlight.current = group.id;
-    setCompletionProcessing(true);
-    let acknowledgement: Promise<boolean> | undefined;
-    const onHandled = (): Promise<boolean> => {
-      if (acknowledgement) return acknowledgement;
-      handledCompletions.current.add(group.id);
-      acknowledgement = DownloadService.acknowledgeCompletion(group.id)
-        .then(() => {
-          setTasks((current) =>
-            current.map((item) =>
-              item.id === group.id
-                ? { ...item, completionPending: false }
-                : item
-            )
-          );
-          return true;
-        })
-        .catch((error) => {
-          showCommandError(error);
-          return false;
-        })
-        .finally(() => {
-          if (completionInFlight.current === group.id) {
-            completionInFlight.current = null;
-            setCompletionProcessing(false);
-          }
-        });
-      return acknowledgement;
+    const current: DownloadCompletion = {
+      onHandled: (onAcknowledged) => {
+        if (current.acknowledgement) return current.acknowledgement;
+        current.acknowledgement = DownloadService.acknowledgeCompletion(
+          group.id
+        )
+          .then(
+            () => {
+              recordGroupUpdate(group.id, { completionPending: false });
+              setTasks((current) =>
+                current.map((item) =>
+                  item.id === group.id
+                    ? { ...item, completionPending: false }
+                    : item
+                )
+              );
+              setCompletionFailures((failures) => {
+                const { [group.id]: _, ...remaining } = failures;
+                return remaining;
+              });
+              onAcknowledged?.();
+            },
+            (error) => {
+              current.acknowledgement = undefined;
+              setCompletionFailures((failures) => ({
+                ...failures,
+                [group.id]: {
+                  error,
+                  // Retry acknowledgement with the original choice, without replaying the prompt.
+                  retry: () => {
+                    void current.onHandled(onAcknowledged);
+                  },
+                },
+              }));
+              showCommandError(error);
+            }
+          )
+          .finally(() => {
+            if (completion.current === current) {
+              completion.current = null;
+            }
+          });
+        return current.acknowledgement;
+      },
     };
-    completionOnClose.current = onHandled;
-    handleCompletedGroup(group, onHandled);
+    completion.current = current;
+    handleCompletedGroup(group, current.onHandled);
   }, [
-    completionProcessing,
+    completionFailures,
     handleCompletedGroup,
     modalStates,
+    recordGroupUpdate,
     showCommandError,
     tasks,
   ]);
@@ -560,48 +576,32 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
         void refreshDownloadGroups();
         return;
       }
-      const groupUpdate =
-        event.kind === "group_state_changed"
-          ? {
-              state: event.new,
-              ...(event.new !== DownloadGroupState.Finished
-                ? { finish: null, completionPending: false }
-                : {}),
-            }
-          : undefined;
-      const taskUpdate =
-        event.kind === "task_state_changed"
-          ? {
-              state: event.new,
-              ...(event.new === DownloadTaskState.Pending ||
-              event.new === DownloadTaskState.Downloading
-                ? { error: null, retriesExhausted: false }
-                : {}),
-            }
-          : undefined;
-      if (groupUpdate) recordGroupUpdate(event.groupId, groupUpdate);
-      if (taskUpdate && event.kind === "task_state_changed") {
-        queueTaskUpdate(event.groupId, event.taskId, taskUpdate);
+      if (event.kind === "task_state_changed") {
+        queueTaskUpdate(event.groupId, event.taskId, {
+          state: event.new,
+          ...(event.new === DownloadTaskState.Pending ||
+          event.new === DownloadTaskState.Downloading
+            ? { error: null, retriesExhausted: false }
+            : {}),
+        });
         return;
       }
+      const groupUpdate = {
+        state: event.new,
+        ...(event.new !== DownloadGroupState.Finished
+          ? { finish: null, completionPending: false }
+          : {}),
+      };
+      recordGroupUpdate(event.groupId, groupUpdate);
       flushTaskUpdates();
       setTasks((groups) =>
-        groups.map((group) => {
-          if (group.id !== event.groupId) return group;
-          if (event.kind === "group_state_changed") {
-            return deriveGroup({ ...group, ...groupUpdate }, group.tasks);
-          }
-          return deriveGroup(
-            group,
-            group.tasks.map((task) =>
-              task.id === event.taskId ? { ...task, ...taskUpdate } : task
-            )
-          );
-        })
+        groups.map((group) =>
+          group.id === event.groupId
+            ? deriveGroup({ ...group, ...groupUpdate }, group.tasks)
+            : group
+        )
       );
-      if (event.kind === "group_state_changed") {
-        void refreshDownloadGroups();
-      }
+      void refreshDownloadGroups();
     });
     const stopError = DownloadService.onError((event) => {
       flushTaskUpdates();
@@ -729,6 +729,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     <TaskContext.Provider
       value={{
         tasks,
+        completionFailures,
         generalPercent,
         handleSubmitDownloadGroup,
         handleCancelDownloadGroup,
