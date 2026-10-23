@@ -100,31 +100,26 @@ async fn worker_loop(executors: Arc<dyn ExecutorRegistry>, rx: async_channel::Re
     if start_confirmed.await != Ok(true) {
       continue;
     }
-    let Some(ex) = executors.get(&job.ctx.executor) else {
-      let _ = job
-        .ctx
-        .report
-        .send(TaskReport::Outcome {
-          task_id,
-          outcome: TaskOutcome::Failed {
-            error: EngineError::UnknownExecutor {
-              executor: job.ctx.executor.clone(),
-            }
-            .into(),
-          },
-        })
-        .await;
-      continue;
-    };
     // Executors normally report outcomes through ctx.report; a returned error is reported here.
     let report = job.ctx.report.clone();
-    if let Err(error) = ex.run(job.ctx).await {
+    let result = if let Some(ex) = executors.get(&job.ctx.executor) {
+      ex.run(job.ctx).await
+    } else {
+      Err(
+        EngineError::UnknownExecutor {
+          executor: job.ctx.executor.clone(),
+        }
+        .into(),
+      )
+    };
+    if let Err(error) = result {
       let _ = report
         .send(TaskReport::Outcome {
-          task_id,
+          task_id: task_id.clone(),
           outcome: TaskOutcome::Failed { error },
         })
         .await;
     }
+    let _ = report.send(TaskReport::WorkerStopped { task_id }).await;
   }
 }

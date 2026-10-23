@@ -55,6 +55,7 @@ impl Engine {
     rx.await.map_err(|_| EngineError::ChannelClosed)?
   }
 
+  /// Return after all accepted executions have exited and their final offsets are persisted.
   pub async fn pause(&self, group_id: String) -> Result<(), EngineError> {
     let (tx, rx) = oneshot::channel();
     self
@@ -66,6 +67,7 @@ impl Engine {
     rx.await.map_err(|_| EngineError::ChannelClosed)?
   }
 
+  /// Wait for an in-progress pause before renewing tokens and scheduling the group.
   pub async fn resume(&self, group_id: String) -> Result<(), EngineError> {
     let (tx, rx) = oneshot::channel();
     self
@@ -200,6 +202,7 @@ impl EngineBuilder {
       dirty_groups: HashSet::new(),
       pending_finishes: HashSet::new(),
       completed_progress: HashMap::new(),
+      pause_handoffs: HashMap::new(),
     };
     // Reconcile persisted groups after restart, including auto-resume eligibility.
     if let Ok(mut groups) = actor.store.load_all() {
@@ -244,6 +247,12 @@ struct EngineState {
   task_index: HashMap<String, (usize, usize)>,
 }
 
+#[derive(Default)]
+struct PauseHandoff {
+  pauses: Vec<Reply<()>>,
+  resumes: Vec<Reply<()>>,
+}
+
 struct EngineActor {
   cfg: EngineConfig,
   sink: Arc<dyn EventSink>,
@@ -262,6 +271,7 @@ struct EngineActor {
   dirty_groups: HashSet<String>,
   pending_finishes: HashSet<String>,
   completed_progress: HashMap<String, Progress>,
+  pause_handoffs: HashMap<String, PauseHandoff>,
 }
 
 impl EngineActor {
@@ -381,16 +391,41 @@ impl EngineActor {
   async fn handle_cmd(&mut self, cmd: Command) {
     match cmd {
       Command::SubmitGroup(sg, reply) => self.cmd_submit(sg, reply).await,
-      Command::Pause { group_id, reply } => {
-        let r = self.cmd_pause(&group_id).await;
-        let _ = reply.send(r);
-      }
+      Command::Pause { group_id, reply } => match self.cmd_pause(&group_id) {
+        Ok(()) => {
+          self
+            .pause_handoffs
+            .entry(group_id.clone())
+            .or_default()
+            .pauses
+            .push(reply);
+          self.complete_pause(&group_id).await;
+        }
+        Err(error) => {
+          let _ = reply.send(Err(error));
+        }
+      },
       Command::Resume { group_id, reply } => {
-        let r = self.cmd_resume(&group_id).await;
-        let _ = reply.send(r);
+        let stopping = self.state.groups.iter().any(|group| {
+          group.id == group_id
+            && group.state == GroupState::Paused
+            && !self.state.runtime[&group_id].running.is_empty()
+        });
+        if stopping {
+          self
+            .pause_handoffs
+            .entry(group_id)
+            .or_default()
+            .resumes
+            .push(reply);
+        } else {
+          let r = self.cmd_resume(&group_id).await;
+          let _ = reply.send(r);
+        }
       }
       Command::Cancel { group_id, reply } => {
         let r = self.cmd_cancel(&group_id).await;
+        self.complete_pause(&group_id).await;
         let _ = reply.send(r);
       }
       Command::Retry { group_id, reply } => {
@@ -482,7 +517,7 @@ impl EngineActor {
     let _ = reply.send(Ok(gid));
   }
 
-  async fn cmd_pause(&mut self, group_id: &str) -> Result<(), EngineError> {
+  fn cmd_pause(&mut self, group_id: &str) -> Result<(), EngineError> {
     let gi = self
       .state
       .groups
@@ -510,8 +545,45 @@ impl EngineActor {
       self.state.groups[gi].state = GroupState::Paused;
     }
     self.emit_group_state(group_id, st, GroupState::Paused);
-    self.persist_group(group_id).await?;
     Ok(())
+  }
+
+  async fn complete_pause(&mut self, group_id: &str) {
+    if !self.pause_handoffs.contains_key(group_id) {
+      return;
+    }
+    let state = self
+      .state
+      .groups
+      .iter()
+      .find(|group| group.id == group_id)
+      .unwrap()
+      .state;
+    if state == GroupState::Paused && !self.state.runtime[group_id].running.is_empty() {
+      return;
+    }
+    let handoff = self.pause_handoffs.remove(group_id).unwrap();
+    let result = if state == GroupState::Paused {
+      // All old executors have returned; offsets are final and file handles are released.
+      self.persist_group(group_id).await
+    } else {
+      Err(EngineError::InvalidState {
+        group_id: group_id.into(),
+        state,
+      })
+    };
+    for reply in handoff.pauses {
+      let _ = reply.send(result.clone());
+    }
+    if !handoff.resumes.is_empty() {
+      let resumed = match result {
+        Ok(()) => self.try_resume_group(group_id).await,
+        Err(error) => Err(error),
+      };
+      for reply in handoff.resumes {
+        let _ = reply.send(resumed.clone());
+      }
+    }
   }
 
   async fn cmd_resume(&mut self, group_id: &str) -> Result<(), EngineError> {
@@ -555,6 +627,7 @@ impl EngineActor {
       self.enqueue_group(group_id);
     }
     self.persist_group(group_id).await?;
+    self.maybe_finish_group(group_id).await;
     Ok(())
   }
 
@@ -788,8 +861,18 @@ impl EngineActor {
         let old = self.state.groups[gi].tasks[ti].state;
         let accepted = old == TaskState::Pending
           && self.state.groups[gi].state == GroupState::Active
-          && !start_token.is_cancelled();
+          && !start_token.is_cancelled()
+          && !self.state.runtime[&self.state.groups[gi].id]
+            .running
+            .contains(&task_id);
         if accepted {
+          self
+            .state
+            .runtime
+            .get_mut(&self.state.groups[gi].id)
+            .unwrap()
+            .running
+            .insert(task_id.clone());
           self.completed_progress.remove(&task_id);
           self.set_task_state(gi, ti, TaskState::Downloading);
           self.emit_task_state(
@@ -838,6 +921,30 @@ impl EngineActor {
         }
       }
       TaskReport::Outcome { task_id, outcome } => self.handle_outcome(&task_id, outcome).await,
+      TaskReport::WorkerStopped { task_id } => {
+        let Some((gi, ti)) = self.find(&task_id) else {
+          return;
+        };
+        let group_id = self.state.groups[gi].id.clone();
+        if !self
+          .state
+          .runtime
+          .get_mut(&group_id)
+          .unwrap()
+          .running
+          .remove(&task_id)
+        {
+          return;
+        }
+        // A delayed retry may already be pending, but must not overlap its old executor.
+        if self.state.groups[gi].state == GroupState::Active
+          && self.state.groups[gi].tasks[ti].state == TaskState::Pending
+        {
+          self.enqueue_one(&group_id, &task_id);
+        }
+        self.complete_pause(&group_id).await;
+        self.maybe_finish_group(&group_id).await;
+      }
     }
   }
 
@@ -890,8 +997,11 @@ impl EngineActor {
               new_state = TaskState::Cancelled;
             }
             None => {
-              // Draining preserves run tokens; treat any interruption defensively as a pause.
-              new_state = TaskState::Paused;
+              new_state = TaskState::Failed;
+              task_error = Some(TaskError::Other {
+                details: "executor interrupted without a cancellation request".into(),
+              });
+              emit_failed = true;
             }
           }
         }
@@ -1070,6 +1180,7 @@ impl EngineActor {
     }
     self.recount_runtime(group_id);
     self.dirty_groups.insert(group_id.into());
+    self.complete_pause(group_id).await;
     self.maybe_finish_group(group_id).await;
   }
 
@@ -1078,6 +1189,9 @@ impl EngineActor {
       return;
     };
     let st = self.state.groups[gi].state;
+    if !self.state.runtime[group_id].running.is_empty() {
+      return;
+    }
     match st {
       GroupState::Active => {
         // An active group completes only when every task is Done.
@@ -1261,7 +1375,9 @@ impl EngineActor {
   fn enqueue_one(&mut self, group_id: &str, task_id: &str) {
     // Avoid re-enqueueing tasks already in the ready queue or worker channel.
     // queued is set only after try_send succeeds; entries still in ready have queued=false.
-    if self.state.ready_ids.contains(task_id) {
+    if self.state.ready_ids.contains(task_id)
+      || self.state.runtime[group_id].running.contains(task_id)
+    {
       return;
     }
     if let Some(rt) = self
@@ -1322,7 +1438,7 @@ impl EngineActor {
     }
   }
 
-  /// Create fresh tokens after resume or retry.
+  /// Create fresh tokens after resume or retry, once all previous executions have exited.
   fn renew_tokens(&mut self, group_id: &str) {
     let Some(rtg) = self.state.runtime.get_mut(group_id) else {
       return;

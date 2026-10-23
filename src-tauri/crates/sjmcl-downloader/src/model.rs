@@ -1,6 +1,6 @@
 //! Task and task-group data models and state machines.
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -353,6 +353,8 @@ impl RuntimeTask {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct RuntimeGroup {
   pub cancel_reason: Option<CancelReason>,
+  /// Accepted executions that have not yet returned to their worker.
+  pub running: HashSet<String>,
   /// Runtime task information, which is not persisted.
   pub tasks: HashMap<String, RuntimeTask>,
   /// Unfinished tasks per execution stage; stages advance only when this count reaches zero.
@@ -364,6 +366,7 @@ impl RuntimeGroup {
   pub fn new() -> Self {
     RuntimeGroup {
       cancel_reason: None,
+      running: HashSet::new(),
       tasks: HashMap::new(),
       remaining: BTreeMap::new(),
       nonterminal: 0,

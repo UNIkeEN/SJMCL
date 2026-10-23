@@ -99,6 +99,10 @@ pub enum TaskReport {
     task_id: String,
     outcome: TaskOutcome,
   },
+  /// Sent only by the worker, after the executor returns and releases its resources.
+  WorkerStopped {
+    task_id: String,
+  },
 }
 
 #[derive(Debug)]
