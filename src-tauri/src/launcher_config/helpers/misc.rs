@@ -1,10 +1,11 @@
 use rand::Rng;
+use sjmcl_downloader::storage::DOWNLOAD_HISTORY_RETENTION;
 use sjmcl_types::error::SJMCLResult;
 use sjmcl_types::partial::{PartialAccess, PartialUpdate};
 use std::fs;
 use std::path::{MAIN_SEPARATOR, PathBuf};
 use std::sync::Mutex;
-use std::time::{Duration, SystemTime};
+use std::time::SystemTime;
 use tauri::path::BaseDirectory;
 use tauri::{AppHandle, Manager};
 
@@ -15,8 +16,6 @@ use crate::launcher_config::models::{
 use crate::utils::fs::calculate_sha256;
 use crate::utils::portable::extract_assets;
 use crate::{APP_DATA_DIR, EXE_PATH, IS_PORTABLE};
-
-const DOWNLOAD_CACHE_RETENTION_DAYS: u64 = 30;
 
 impl LauncherConfig {
   pub fn setup_with_app(&mut self, app: &AppHandle) -> SJMCLResult<()> {
@@ -259,7 +258,7 @@ pub async fn auto_clear_download_cache(app: &AppHandle) -> SJMCLResult<()> {
   };
 
   let now = SystemTime::now();
-  let retention = Duration::from_secs(DOWNLOAD_CACHE_RETENTION_DAYS * 24 * 60 * 60);
+  let retention = DOWNLOAD_HISTORY_RETENTION;
 
   let mut entries = match tokio::fs::read_dir(&cache_dir).await {
     Ok(entries) => entries,

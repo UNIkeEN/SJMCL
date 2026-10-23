@@ -4,23 +4,61 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
+use crate::download::DownloadTask;
 use crate::launcher_config::models::{JavaInfo, LauncherConfig};
-use crate::resource::helpers::misc::{get_download_api, get_source_priority_list};
+use crate::resource::helpers::misc::{
+  get_download_api, get_download_urls, get_source_priority_list,
+};
 use crate::resource::models::ResourceType;
-use crate::tasks::{PTaskParam, download::DownloadParam};
 use crate::utils::fs::{PermissionOperation, manage_permissions_unix};
 
 #[cfg(target_os = "windows")]
 use crate::utils::sys_info::get_all_drive_mount_points;
 
-pub async fn refresh_and_update_javas(app: &AppHandle) {
+/// Serializes discovery and distinguishes an empty result from an unfinished scan.
+#[derive(Default)]
+pub struct JavaDiscovery(Arc<tokio::sync::Mutex<bool>>);
+
+impl JavaDiscovery {
+  async fn update(&self, force: bool, discover: impl FnOnce() + Send + 'static) -> SJMCLResult<()> {
+    let mut initialized = self.0.clone().lock_owned().await;
+    if force || !*initialized {
+      // Keep the lock in the blocking job even if its caller pauses or cancels.
+      tokio::task::spawn_blocking(move || {
+        discover();
+        *initialized = true;
+      })
+      .await
+      .map_err(|error| SJMCLError(error.to_string()))?;
+    }
+    Ok(())
+  }
+}
+
+pub async fn ensure_java_discovery(app: &AppHandle) -> SJMCLResult<()> {
+  let discovery = app.state::<JavaDiscovery>();
+  let app = app.clone();
+  discovery
+    .update(false, move || discover_and_update_javas(&app))
+    .await
+}
+
+pub async fn refresh_and_update_javas(app: &AppHandle) -> SJMCLResult<()> {
+  let discovery = app.state::<JavaDiscovery>();
+  let app = app.clone();
+  discovery
+    .update(true, move || discover_and_update_javas(&app))
+    .await
+}
+
+fn discover_and_update_javas(app: &AppHandle) {
   // get java paths from system PATH, etc.
   let mut java_paths = get_java_paths(app);
 
@@ -484,7 +522,7 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
 pub async fn build_mojang_java_download_params(
   app: &AppHandle,
   version: &str,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let client = app.state::<reqwest::Client>();
 
@@ -529,22 +567,33 @@ pub async fn build_mojang_java_download_params(
     tauri::path::BaseDirectory::AppData,
   )?;
 
-  let download_params: Vec<_> = manifest["files"]
+  let files = manifest["files"]
     .as_object()
-    .ok_or_else(|| SJMCLError("Invalid files data".into()))?
-    .iter()
-    .filter_map(|(path, info)| {
-      let raw = info["downloads"]["raw"].as_object()?;
-      let (url, sha1) = (raw["url"].as_str()?, raw["sha1"].as_str()?);
+    .ok_or_else(|| SJMCLError("Invalid files data".into()))?;
+  let mut download_params = Vec::new();
+  for (path, info) in files {
+    if info["type"] != "file" {
+      continue;
+    }
+    let raw = &info["downloads"]["raw"];
+    let (Some(url), Some(sha1)) = (raw["url"].as_str(), raw["sha1"].as_str()) else {
+      return Err(SJMCLError(format!(
+        "Invalid Java runtime file download: {path}"
+      )));
+    };
 
-      Some(PTaskParam::Download(DownloadParam {
-        src: url.parse().ok()?,
-        dest: runtime_dir.join(path),
-        filename: None,
-        sha1: Some(sha1.into()),
-      }))
-    })
-    .collect();
+    download_params.push(DownloadTask {
+      sources: get_download_urls(
+        &url.parse()?,
+        &[ResourceType::Launcher, ResourceType::LauncherMeta],
+        &priority_list,
+      )?,
+      dest: runtime_dir.join(path),
+      filename: None,
+      size: raw.get("size").and_then(|size| size.as_u64()),
+      sha1: Some(sha1.into()),
+    });
+  }
 
   Ok(download_params)
 }

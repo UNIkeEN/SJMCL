@@ -15,6 +15,7 @@ use std::sync::Mutex;
 #[cfg(target_os = "windows")]
 use tauri::Manager;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
 use crate::instance::helpers::client_json::{
@@ -23,11 +24,9 @@ use crate::instance::helpers::client_json::{
 use crate::instance::models::misc::{InstanceError, ModLoaderType};
 use crate::launch::helpers::misc::get_natives_string;
 use crate::launch::models::LaunchError;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::download::DownloadParam;
-use crate::utils::fs::validate_sha1;
+use crate::utils::fs::{is_local_file_valid, validate_sha1};
 
 #[cfg(target_os = "windows")]
 use crate::instance::helpers::client_json::load_native_libraries_replace_map;
@@ -84,20 +83,19 @@ pub async fn get_invalid_library_files(
   library_path: &Path,
   client_info: &McClientInfo,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let mut artifacts = Vec::new();
   artifacts.extend(get_native_library_artifacts(client_info));
   artifacts.extend(get_nonnative_library_artifacts(client_info));
 
   let futs = artifacts.into_iter().map(move |artifact| async move {
     let file_path = library_path.join(&artifact.path);
-    let exists = fs::try_exists(&file_path).await?;
-    if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
+    if is_local_file_valid(&file_path, Some(&artifact.sha1), check_hash).await? {
       Ok(None)
     } else if artifact.url.is_empty() {
       Err(LaunchError::GameFilesIncomplete.into())
     } else {
-      let src = convert_url_to_target_source(
+      let sources = get_download_urls(
         &url::Url::parse(&artifact.url)?,
         &[
           ResourceType::Libraries,
@@ -106,18 +104,19 @@ pub async fn get_invalid_library_files(
           ResourceType::ForgeMavenNew,
           ResourceType::NeoforgeMaven,
         ],
-        &source,
+        &[source],
       )?;
-      Ok(Some(PTaskParam::Download(DownloadParam {
-        src,
+      Ok(Some(DownloadTask {
+        sources,
         dest: file_path,
         filename: None,
+        size: u64::try_from(artifact.size).ok(),
         sha1: Some(artifact.sha1.clone()),
-      })))
+      }))
     }
   });
 
-  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+  let results: Vec<SJMCLResult<Option<DownloadTask>>> = join_all(futs).await;
 
   let mut params = Vec::new();
   for r in results {
@@ -167,7 +166,7 @@ pub async fn get_invalid_windows_mesa_loader_file(
   library_path: &Path,
   game_config: &GameConfig,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   if mesa_driver_name(
     &game_config.advanced.graphics.api,
     &game_config.advanced.graphics.renderer,
@@ -185,22 +184,22 @@ pub async fn get_invalid_windows_mesa_loader_file(
   };
 
   let file_path = library_path.join(&artifact.path);
-  let exists = fs::try_exists(&file_path).await?;
-  if exists && (!check_hash || validate_sha1(file_path.clone(), artifact.sha1.clone()).is_ok()) {
+  if is_local_file_valid(&file_path, Some(&artifact.sha1), check_hash).await? {
     return Ok(Vec::new());
   }
 
-  let src = convert_url_to_target_source(
+  let sources = get_download_urls(
     &url::Url::parse(&artifact.url)?,
     &[ResourceType::Libraries],
-    &source,
+    &[source],
   )?;
-  Ok(vec![PTaskParam::Download(DownloadParam {
-    src,
+  Ok(vec![DownloadTask {
+    sources,
     dest: file_path,
     filename: None,
+    size: u64::try_from(artifact.size).ok(),
     sha1: Some(artifact.sha1),
-  })])
+  }])
 }
 
 pub struct LibraryParts {
@@ -320,6 +319,19 @@ pub fn convert_library_name_to_path(name: &str, native: Option<String>) -> SJMCL
   Ok(format!("{path}/{pack_name}/{pack_version}/{file_name}"))
 }
 
+pub fn get_library_artifact_path(library: &LibrariesValue) -> SJMCLResult<String> {
+  // Cleanroom library names may not encode the artifact's actual Maven path.
+  if let Some(artifact) = library
+    .downloads
+    .as_ref()
+    .and_then(|downloads| downloads.artifact.as_ref())
+    .filter(|artifact| !artifact.path.is_empty())
+  {
+    return Ok(artifact.path.clone());
+  }
+  convert_library_name_to_path(&library.name, None)
+}
+
 pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
@@ -354,7 +366,12 @@ pub fn get_nonnative_library_paths(
   libraries = merge_library_lists(&libraries, &[]); // remove duplicates to prevent launch errors
   let mut result = Vec::new();
   for library in libraries {
-    result.push(library_path.join(convert_library_name_to_path(&library.name, None)?));
+    let path = if mod_loader_type == ModLoaderType::Cleanroom {
+      get_library_artifact_path(&library)?
+    } else {
+      convert_library_name_to_path(&library.name, None)?
+    };
+    result.push(library_path.join(path));
   }
   Ok(result)
 }
@@ -488,7 +505,7 @@ pub async fn get_invalid_assets(
   source: SourceType,
   asset_path: &Path,
   check_hash: bool,
-) -> SJMCLResult<Vec<PTaskParam>> {
+) -> SJMCLResult<Vec<DownloadTask>> {
   let assets_download_api = get_download_api(source, ResourceType::Assets)?;
 
   let asset_index_path = asset_path.join(format!("indexes/{}.json", client_info.asset_index.id));
@@ -504,22 +521,23 @@ pub async fn get_invalid_assets(
       let exists = fs::try_exists(&dest).await?;
 
       if exists && (!check_hash || validate_sha1(dest.clone(), item.hash.clone()).is_ok()) {
-        Ok::<Option<PTaskParam>, sjmcl_types::error::SJMCLError>(None)
+        Ok::<Option<DownloadTask>, sjmcl_types::error::SJMCLError>(None)
       } else {
         let src = assets_download_api
           .join(&path_in_repo)
           .map_err(sjmcl_types::error::SJMCLError::from)?;
-        Ok(Some(PTaskParam::Download(DownloadParam {
-          src,
+        Ok(Some(DownloadTask {
+          sources: get_download_urls(&src, &[ResourceType::Assets], &[source])?,
           dest,
           filename: None,
+          size: u64::try_from(item.size).ok(),
           sha1: Some(item.hash.clone()),
-        })))
+        }))
       }
     }
   });
 
-  let results: Vec<SJMCLResult<Option<PTaskParam>>> = join_all(futs).await;
+  let results: Vec<SJMCLResult<Option<DownloadTask>>> = join_all(futs).await;
 
   let mut params = Vec::new();
   for r in results {

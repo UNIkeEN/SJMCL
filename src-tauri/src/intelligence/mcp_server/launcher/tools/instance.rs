@@ -132,7 +132,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     ),
     mcp_tool!(
       "create_instance",
-      "Create a Minecraft instance and schedule required client/mod-loader downloads. Resolves game and loader metadata from version IDs. Use `retrieve_instance_icon_options` when choosing a manual `icon_src`. If `icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
+      "Create a Minecraft instance and schedule required client/mod-loader downloads. Returns the initial download group ID; use `retrieve_download_groups` to monitor installation. Resolves game and loader metadata from version IDs. Use `retrieve_instance_icon_options` when choosing a manual `icon_src`. If `icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
       |app, params|
       #[serde(deny_unknown_fields)]
       {

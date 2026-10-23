@@ -18,6 +18,7 @@ use crate::account::helpers::misc::get_selected_player_info;
 use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
+use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
@@ -40,7 +41,6 @@ use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::{FileValidatePolicy, LauncherConfig, LauncherVisiablity};
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::tasks::commands::schedule_progressive_task_group;
 use crate::utils::fs::create_zip_from_dirs;
 use crate::utils::logging::get_launcher_log_path;
 use crate::utils::shell::{execute_command_line, split_command_line};
@@ -69,7 +69,7 @@ pub async fn select_suitable_jre(
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&client_path).await?;
 
-  refresh_and_update_javas(&app).await;
+  refresh_and_update_javas(&app).await?;
 
   let selected_java = select_java_runtime(
     &app,
@@ -119,6 +119,13 @@ pub async fn validate_game_files(
 
   if instance.mod_loader.status != ModLoaderStatus::Installed {
     return Err(LaunchError::ModLoaderNotInstalled.into());
+  }
+  if instance
+    .optifine
+    .as_ref()
+    .is_some_and(|optifine| optifine.status != ModLoaderStatus::Installed)
+  {
+    return Err(LaunchError::OptifineNotInstalled.into());
   }
 
   replace_native_libraries(&app, &mut client_info, &instance)
@@ -202,7 +209,7 @@ pub async fn validate_game_files(
     prepare_legacy_assets(root_dir, assets_dir, &client_info.asset_index.id).await?;
     Ok(())
   } else {
-    schedule_progressive_task_group(
+    submit_download_group(
       app,
       format!("patch-files?{}", client_info.id),
       incomplete_files,
