@@ -635,6 +635,7 @@
     },
     "label": {
       "paused": "En pause",
+      "finalizing": "Finalisation de l'installation",
       "completed": "Terminé.",
       "error": "Erreur",
       "cancelled": "Annulé."
@@ -2338,7 +2339,10 @@
       },
       "downloadMojangJava": {
         "error": {
-          "title": "Échec du téléchargement du runtime Java Mojang."
+          "title": "Échec du téléchargement du runtime Java Mojang.",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
+          }
         }
       },
       "checkGameDirectory": {
@@ -2356,7 +2360,16 @@
           "title": "Échec du nettoyage du cache de téléchargement",
           "description": {
             "HAS_ACTIVE_DOWNLOAD_TASKS": "Une tâche de téléchargement est en cours d'exécution. Veuillez réessayer ultérieurement.",
-            "FILE_DELETION_FAILED": "Impossible de supprimer le fichier de cache. Le fichier est peut-être en cours d'utilisation."
+            "FILE_DELETION_FAILED": "Impossible de supprimer le fichier de cache. Le fichier est peut-être en cours d'utilisation.",
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "Échec du téléchargement de la mise à jour du lanceur",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
       }
@@ -2621,9 +2634,11 @@
           "title": "Échec de la vérification des fichiers du jeu",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Le chargeur de mods n'est pas encore installé",
+            "OPTIFINE_NOT_INSTALLED": "L'installation d'OptiFine n'est pas terminée",
             "INSTANCE_NOT_FOUND_BY_ID": "ID d'instance introuvable",
             "GAME_FILES_INCOMPLETE": "Les fichiers du jeu sont incomplets ou manquants",
-            "LAUNCHING_STATE_NOT_FOUND": "L'état de démarrage est perdu"
+            "LAUNCHING_STATE_NOT_FOUND": "L'état de démarrage est perdu",
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
       },
@@ -2714,7 +2729,8 @@
           "title": "Échec du téléchargement du serveur de jeu",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu"
+            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
       },
@@ -2734,7 +2750,8 @@
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
             "NETWORK_ERROR": "Échec du démarrage du jeu",
-            "FILE_OPERATION_ERROR": "Impossible de renommer l'ancien fichier de mod"
+            "FILE_OPERATION_ERROR": "Impossible de renommer l'ancien fichier de mod",
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
       }
@@ -2760,7 +2777,8 @@
             "FILE_CREATION_FAILED": "Échec de la création du fichier cible",
             "NETWORK_ERROR": "Erreur réseau",
             "CLIENT_JSON_PARSE_ERROR": "Erreur d'analyse des informations de version de l'instance",
-            "ASSET_INDEX_PARSE_ERROR": "Erreur d'analyse du fichier d'index des ressources"
+            "ASSET_INDEX_PARSE_ERROR": "Erreur d'analyse du fichier d'index des ressources",
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
       },
@@ -2941,37 +2959,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "Installation du chargeur de mods pour {{instanceName}} en cours",
-        "success": "Installation du chargeur de mods terminée",
-        "error": {
-          "title": "Échec de l'installation du chargeur de mods",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "L'ID de l'instance n'existe pas",
-            "INSTALLATION_DUPLICATED": "Un autre processus est déjà détecté en cours d'installation",
-            "MAIN_CLASS_NOT_FOUND": "Classe principale non trouvée",
-            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution de la tâche d'installation",
-            "LOADER_INSTALLER_NOT_FOUND": "Fichier d'installation du loader introuvable"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "Installation d'OptiFine pour {{instanceName}}",
-        "success": "OptiFine installé avec succès",
-        "error": {
-          "title": "Échec de l'installation d'OptiFine",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "L'identifiant de l'instance n'existe pas",
-            "INSTALLATION_DUPLICATED": "Un autre processus d'installation est déjà en cours",
-            "PROCESSOR_EXECUTION_FAILED": "Échec de l'exécution du processus d'installation",
-            "LOADER_INSTALLER_NOT_FOUND": "Fichier d'installation d'OptiFine introuvable",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "Échec de l'analyse des informations de version d'OptiFine",
-            "INVALID_SOURCE_PATH": "Chemin source invalide",
-            "NO_SUITABLE_JAVA": "Aucun runtime Java adapté trouvé",
-            "SELECTED_JAVA_UNAVAILABLE": "Le runtime Java sélectionné est indisponible"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "Impossible de changer le chargeur de mods",
@@ -2984,13 +2971,17 @@
         "error": {
           "title": "Échec de la modification du chargeur de mods",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Version installée par un processus externe, impossible de la désinstaller ou de la remplacer"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Version installée par un processus externe, impossible de la désinstaller ou de la remplacer",
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
       },
       "changeOptiFine": {
         "error": {
-          "title": "Échec de la modification d'OptiFine"
+          "title": "Échec de la modification d'OptiFine",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
+          }
         }
       },
       "removeModLoader": {
@@ -3074,10 +3065,32 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
-        "error": "Échec de la création de la tâche"
+      "common": {
+        "title": "Échec de l’opération de téléchargement",
+        "description": {
+          "NETWORK_ERROR": "Erreur réseau : {{details}}",
+          "HTTP_ERROR": "Erreur HTTP : {{status}}",
+          "IO_ERROR": "Échec de l’opération sur le fichier : {{details}}",
+          "CHECKSUM_MISMATCH": "La somme de contrôle ne correspond pas : {{expected}} attendu, {{actual}} obtenu",
+          "CORRUPT_FILES": "Fichiers corrompus : {{paths, list}}",
+          "MISSING_FIELD": "Champ de tâche manquant : {{field}}",
+          "UNKNOWN_EXECUTOR": "Exécuteur de tâches inconnu : {{executor}}",
+          "INVALID_CONTENT_RANGE": "Le serveur a renvoyé un Content-Range invalide",
+          "RESUME_OFFSET_MISMATCH": "La position de reprise ne correspond pas : {{expected}} attendu, {{actual}} obtenu",
+          "OTHER_ERROR": "Échec de la tâche : {{details}}",
+          "EMPTY_GROUP": "Un groupe doit contenir au moins une tâche",
+          "CHANNEL_CLOSED": "La connexion au moteur de téléchargement a été fermée",
+          "UNKNOWN_GROUP": "Le groupe de tâches {{groupId}} est introuvable",
+          "INVALID_STATE": "L’état actuel du groupe {{groupId}} ne permet pas cette opération",
+          "STORAGE_ERROR": "Échec de l’enregistrement de l’état du téléchargement : {{details}}",
+          "ENGINE_NOT_INITIALIZED": "Le moteur de téléchargement n’est pas initialisé",
+          "INSTALLATION_INSTANCE_MISMATCH": "L’instance d’installation ne correspond pas à la tâche",
+          "MOD_LOADER_CHANGED": "Le chargeur de mods a changé pendant l’installation",
+          "OPTIFINE_MISSING": "OptiFine est introuvable",
+          "OPTIFINE_CHANGED": "OptiFine a changé pendant l’installation"
+        }
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} La tâche de téléchargement a commencé",
           "Failed": "{{param}} Une partie du téléchargement a échoué. Veuillez réessayer",

@@ -284,10 +284,13 @@ pub enum InstanceError {
   UnsupportedModLoader,
   NotSupportChangeModLoader,
   MainClassNotFound,
-  InstallationDuplicated,
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
   LoaderInstallerNotFound,
+  InstallationInstanceMismatch,
+  ModLoaderChanged,
+  OptifineMissing,
+  OptifineChanged,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

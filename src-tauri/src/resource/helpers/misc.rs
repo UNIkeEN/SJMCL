@@ -180,6 +180,39 @@ pub fn convert_url_to_target_source(
   Ok(url.clone())
 }
 
+pub fn get_download_urls(
+  url: &Url,
+  resource_types: &[ResourceType],
+  priority: &[SourceType],
+) -> SJMCLResult<Vec<Url>> {
+  let mut mirror_url = url.clone();
+  // Mojang's newer CDN hosts use the same mirrored object paths.
+  match url.host_str() {
+    Some("piston-data.mojang.com") => mirror_url.set_host(Some("launcher.mojang.com"))?,
+    Some("piston-meta.mojang.com") => mirror_url.set_host(Some("launchermeta.mojang.com"))?,
+    _ => {}
+  }
+  let mut urls = Vec::new();
+  let sources = priority
+    .iter()
+    .copied()
+    .chain(SourceType::iter().filter(|source| !priority.contains(source)));
+  for source in sources {
+    let candidate = if source == SourceType::Official {
+      convert_url_to_target_source(url, resource_types, &source)?
+    } else {
+      convert_url_to_target_source(&mirror_url, resource_types, &source)?
+    };
+    if !urls.contains(&candidate) {
+      urls.push(candidate);
+    }
+  }
+  if !urls.contains(url) {
+    urls.push(url.clone());
+  }
+  Ok(urls)
+}
+
 pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionPack) -> Ordering {
   fn parse_version(version: &str) -> (Vec<u32>, String) {
     let mut version_numbers = Vec::new();

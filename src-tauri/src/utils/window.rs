@@ -124,11 +124,6 @@ pub async fn create_webview_window_with_config(
       config.decorations = false;
     }
 
-    #[cfg(target_os = "linux")]
-    {
-      config.transparent = true;
-    }
-
     #[cfg(target_os = "macos")]
     {
       config.decorations = true;
@@ -136,6 +131,11 @@ pub async fn create_webview_window_with_config(
       config.hidden_title = true;
       config.traffic_light_position = Some(LogicalPosition { x: 10.0, y: 12.0 });
     }
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    config.transparent = false;
   }
 
   #[allow(unused_variables)]

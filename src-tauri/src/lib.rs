@@ -1,21 +1,21 @@
 mod account;
 mod discover;
+mod download;
 mod extension;
 mod instance;
 mod intelligence;
 mod launch;
 mod launcher_config;
 mod resource;
-mod tasks;
 mod utils;
 
 use account::helpers::authlib_injector::info::refresh_and_update_auth_servers;
 use account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use account::models::AccountInfo;
-use instance::helpers::misc::refresh_and_update_instances;
+use instance::helpers::misc::{InstanceRefreshLock, refresh_and_update_instances};
 use instance::models::misc::Instance;
 use launch::models::LaunchingState;
-use launcher_config::helpers::java::refresh_and_update_javas;
+use launcher_config::helpers::java::{JavaDiscovery, ensure_java_discovery};
 use launcher_config::helpers::misc::auto_clear_download_cache;
 use launcher_config::models::{JavaInfo, LauncherConfig};
 use resource::helpers::mod_db::{ModDataBase, initialize_mod_db};
@@ -25,10 +25,9 @@ use sjmcl_types::storage::Storage;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
-use tasks::monitor::TaskMonitor;
 use tauri::Manager;
 use utils::portable::is_portable;
-use utils::web::build_sjmcl_client;
+use utils::web::{build_sjmcl_download_client, build_sjmcl_general_client};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
@@ -149,8 +148,6 @@ pub async fn run() {
         instance::commands::retrieve_screenshot_list,
         instance::commands::toggle_mod_by_extension,
         instance::commands::create_launch_desktop_shortcut,
-        instance::commands::finish_mod_loader_install,
-        instance::commands::finish_optifine_loader_install,
         instance::commands::check_change_mod_loader_availablity,
         instance::commands::change_mod_loader,
         instance::commands::change_optifine,
@@ -184,19 +181,6 @@ pub async fn run() {
         extension::commands::retrieve_extension_list,
         extension::commands::add_extension,
         extension::commands::delete_extension,
-        tasks::commands::schedule_progressive_task_group,
-        tasks::commands::cancel_progressive_task,
-        tasks::commands::resume_progressive_task,
-        tasks::commands::stop_progressive_task,
-        tasks::commands::retrieve_progressive_task_list,
-        tasks::commands::create_transient_task,
-        tasks::commands::get_transient_task,
-        tasks::commands::set_transient_task_state,
-        tasks::commands::cancel_transient_task,
-        tasks::commands::cancel_progressive_task_group,
-        tasks::commands::stop_progressive_task_group,
-        tasks::commands::resume_progressive_task_group,
-        tasks::commands::delete_progressive_task_group,
         utils::commands::retrieve_memory_info,
         utils::commands::retrieve_resolution_upbound,
         utils::commands::retrieve_truetype_font_list,
@@ -238,14 +222,14 @@ pub async fn run() {
 
         let instances: HashMap<String, Instance> = HashMap::new();
         app.manage(Mutex::new(instances));
+        app.manage(InstanceRefreshLock::default());
 
         let javas: Vec<JavaInfo> = vec![];
         app.manage(Mutex::new(javas));
+        app.manage(JavaDiscovery::default());
 
         let mod_database = ModDataBase::new();
         app.manage(Mutex::new(mod_database));
-
-        app.manage(Box::pin(TaskMonitor::new(app.handle().clone())));
 
         let local_mod_translations = LocalModTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(local_mod_translations));
@@ -253,8 +237,13 @@ pub async fn run() {
         let resource_translations = ResourceTranslationsCache::load().unwrap_or_default();
         app.manage(Mutex::new(resource_translations));
 
-        let client = build_sjmcl_client(app.handle(), true);
+        let client = build_sjmcl_general_client(app.handle(), true);
         app.manage(client);
+
+        let download_client = build_sjmcl_download_client(app.handle(), true);
+        app
+          .handle()
+          .plugin(download::init_plugin(download_client))?;
 
         let launching_queue = Vec::<LaunchingState>::new();
         app.manage(Mutex::new(launching_queue));
@@ -285,24 +274,21 @@ pub async fn run() {
         // Refresh all instances
         let app_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
-          refresh_and_update_instances(&app_handle, true).await;
+          refresh_and_update_instances(&app_handle).await;
         });
 
         // Refresh all javas
         let app_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
-          refresh_and_update_javas(&app_handle).await;
+          if let Err(error) = ensure_java_discovery(&app_handle).await {
+            log::warn!("Java discovery failed: {:?}", error);
+          }
         });
 
         // Initialize mod database
         let app_handle = app.handle().clone();
         tauri::async_runtime::spawn(async move {
           initialize_mod_db(&app_handle).await.unwrap_or_default();
-        });
-
-        let app_handle = app.handle().clone();
-        tauri::async_runtime::spawn(async move {
-          tasks::background::monitor_background_process(app_handle).await;
         });
 
         // Send statistics

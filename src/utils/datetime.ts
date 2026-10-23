@@ -76,6 +76,7 @@ export const formatRelativeTime = (
 };
 
 export const formatTimeInterval = (sec: number) => {
+  sec = Math.floor(sec);
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
   const remainingSeconds = sec % 60;

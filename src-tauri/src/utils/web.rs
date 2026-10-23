@@ -15,7 +15,7 @@ use url::Url;
 use crate::launcher_config::models::{LauncherConfig, ProxyType};
 
 /// Builds a reqwest client with SJMCL User-Agent and proxy support.
-/// Defaults to 10s timeout.
+/// Uses a 10s total request timeout.
 ///
 /// # Arguments
 ///
@@ -32,12 +32,29 @@ use crate::launcher_config::models::{LauncherConfig, ProxyType};
 /// # Example
 ///
 /// ```rust,ignore
-/// let client = build_sjmcl_client(&app, true);
+/// let client = build_sjmcl_general_client(&app, true);
 /// ```
-pub fn build_sjmcl_client(app: &AppHandle, use_proxy: bool) -> Client {
-  let mut builder = ClientBuilder::new()
+pub fn build_sjmcl_general_client(app: &AppHandle, use_proxy: bool) -> Client {
+  let builder = ClientBuilder::new()
     .timeout(Duration::from_secs(10))
     .tcp_keepalive(Duration::from_secs(10));
+
+  build_sjmcl_client(app, use_proxy, Some(builder))
+}
+
+/// Builds a separate streaming download client with the launcher User-Agent and proxy settings.
+/// Uses a 10s connect timeout and a 30s read timeout, without a total request deadline.
+pub fn build_sjmcl_download_client(app: &AppHandle, use_proxy: bool) -> Client {
+  let builder = ClientBuilder::new()
+    .connect_timeout(Duration::from_secs(10))
+    .read_timeout(Duration::from_secs(30))
+    .tcp_keepalive(Duration::from_secs(10));
+
+  build_sjmcl_client(app, use_proxy, Some(builder))
+}
+
+fn build_sjmcl_client(app: &AppHandle, use_proxy: bool, builder: Option<ClientBuilder>) -> Client {
+  let mut builder = builder.unwrap_or_default();
 
   if let Ok(config) = app.state::<Mutex<LauncherConfig>>().lock() {
     // According to the User-Agent requirements of mozilla and BMCLAPI, the User-Agent is set to start with ${NAME}/${VERSION}

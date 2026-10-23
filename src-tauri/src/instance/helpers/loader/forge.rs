@@ -1,5 +1,3 @@
-use reqwest::redirect::Policy;
-use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
@@ -7,60 +5,33 @@ use std::fs::{self, File};
 use std::io::Read;
 use std::path::PathBuf;
 use tauri::AppHandle;
-use tauri_plugin_http::reqwest;
 use url::Url;
 use zip::ZipArchive;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{
   LibrariesValue, McClientInfo, reset_fields_from_patches,
 };
-use crate::instance::helpers::loader::common::add_library_entry;
+use crate::instance::helpers::loader::common::{InstallPlan, add_library_entry};
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
-
-async fn fetch_bmcl_forge_installer_url(
-  root: Url,
-  game_version: &str,
-  loader_ver: &str,
-  branch: Option<&str>,
-) -> Result<String, Error> {
-  let client = Client::builder().redirect(Policy::limited(5)).build()?;
-
-  let response = client
-    .get(root)
-    .query(&[
-      ("mcversion", game_version),
-      ("version", loader_ver),
-      ("branch", branch.unwrap_or("")),
-      ("category", "installer"),
-      ("format", "jar"),
-    ])
-    .send()
-    .await?;
-
-  let final_url = response.url().to_string();
-  Ok(final_url)
-}
 
 pub async fn install_forge_loader(
   priority: &[SourceType],
   game_version: &str,
   loader: &ModLoader,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
-  let mut installer_url_opt: Option<Url> = None;
+  let mut sources = Vec::new();
   for source_type in priority.iter() {
     if let Ok(root) = get_download_api(*source_type, ResourceType::ForgeInstall) {
-      let url_res: SJMCLResult<Url> = match source_type {
+      let url = match source_type {
         SourceType::Official => {
           let full_ver = vec![
             game_version,
@@ -71,40 +42,39 @@ pub async fn install_forge_loader(
           .filter(|s| !s.is_empty())
           .collect::<Vec<_>>()
           .join("-");
-          Ok(root.join(&format!("{full_ver}/forge-{full_ver}-installer.jar"))?)
+          root.join(&format!("{full_ver}/forge-{full_ver}-installer.jar"))?
         }
         SourceType::BMCLAPIMirror => {
-          let s = fetch_bmcl_forge_installer_url(
-            root,
-            game_version,
-            loader_ver,
-            loader.branch.as_deref(),
-          )
-          .await?;
-          Ok(Url::parse(&s)?)
+          let mut url = root;
+          url.query_pairs_mut().extend_pairs([
+            ("mcversion", game_version),
+            ("version", loader_ver.as_str()),
+            ("branch", loader.branch.as_deref().unwrap_or("")),
+            ("category", "installer"),
+            ("format", "jar"),
+          ]);
+          url
         }
       };
-      if let Ok(url) = url_res {
-        installer_url_opt = Some(url);
-        break;
-      }
+      sources.push(url);
     }
   }
 
-  let installer_url = installer_url_opt.ok_or(SJMCLError(
-    "failed to resolve Forge installer URL".to_string(),
-  ))?;
+  if sources.is_empty() {
+    return Err(SJMCLError("failed to resolve Forge installer URL".into()));
+  }
 
   let installer_coord = format!("net.minecraftforge:forge:{}-installer", loader.version);
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
-  task_params.push(PTaskParam::Download(DownloadParam {
-    src: installer_url,
+  task_params.push(DownloadTask {
+    sources,
     dest: installer_path.clone(),
     filename: None,
+    size: None,
     sha1: None,
-  }));
+  });
 
   Ok(())
 }
@@ -114,7 +84,7 @@ pub async fn download_forge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<InstallPlan> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -125,6 +95,7 @@ pub async fn download_forge_libraries(
     return Err(InstanceError::InvalidSourcePath.into());
   };
   let mut task_params = vec![];
+  let mut processors = vec![];
 
   let installer_coord = format!(
     "net.minecraftforge:forge:{}-installer",
@@ -233,12 +204,17 @@ pub async fn download_forge_libraries(
         if let Some(mojmaps) = args_map.get("{MOJMAPS}")
           && let Some(client_mappings) = client_info.downloads.get("client_mappings")
         {
-          task_params.push(PTaskParam::Download(DownloadParam {
-            src: client_mappings.url.parse()?,
+          task_params.push(DownloadTask {
+            sources: get_download_urls(
+              &client_mappings.url.parse()?,
+              &[ResourceType::Launcher],
+              priority,
+            )?,
             dest: lib_dir.join(mojmaps),
             filename: None,
+            size: u64::try_from(client_mappings.size).ok(),
             sha1: Some(client_mappings.sha1.clone()),
-          }));
+          });
         }
         processor.args.clear();
         continue;
@@ -277,10 +253,7 @@ pub async fn download_forge_libraries(
       }
     });
 
-    fs::write(
-      instance.version_path.join("install_profile.json"),
-      &serde_json::to_vec_pretty(&profile)?,
-    )?;
+    processors = profile.processors;
 
     let forge_info: McClientInfo = serde_json::from_str(&version)?;
     client_info.main_class = forge_info.main_class.clone();
@@ -291,30 +264,26 @@ pub async fn download_forge_libraries(
       add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
       add_library_entry(&mut loader_libraries, name, Some(lib.clone()))?;
 
-      let url = lib
-        .downloads
-        .as_ref()
-        .and_then(|d| d.artifact.as_ref())
-        .map(|a| a.url.as_str())
-        .unwrap_or_default();
-      if url.is_empty() {
+      let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
+      let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
         continue;
-      }
+      };
 
-      task_params.push(PTaskParam::Download(DownloadParam {
-        src: convert_url_to_target_source(
-          &Url::parse(url)?,
+      task_params.push(DownloadTask {
+        sources: get_download_urls(
+          &Url::parse(&artifact.url)?,
           &[
             ResourceType::ForgeMaven,
             ResourceType::ForgeMavenNew,
             ResourceType::Libraries,
           ],
-          &priority[0],
+          priority,
         )?,
         dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
         filename: None,
-        sha1: None,
-      }));
+        size: u64::try_from(artifact.size).ok(),
+        sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
+      });
     }
 
     let arguments = forge_info.arguments.clone();
@@ -338,32 +307,28 @@ pub async fn download_forge_libraries(
 
     for lib in profile.libraries.iter() {
       let name = &lib.name;
-      let url = lib
-        .downloads
-        .as_ref()
-        .and_then(|d| d.artifact.as_ref())
-        .map(|a| a.url.as_str())
-        .unwrap_or_default();
+      let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
 
-      if url.is_empty() {
+      let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
         continue;
-      }
+      };
 
       let rel = convert_library_name_to_path(&name.to_string(), None)?;
-      task_params.push(PTaskParam::Download(DownloadParam {
-        src: convert_url_to_target_source(
-          &Url::parse(url)?,
+      task_params.push(DownloadTask {
+        sources: get_download_urls(
+          &Url::parse(&artifact.url)?,
           &[
             ResourceType::ForgeMaven,
             ResourceType::ForgeMavenNew,
             ResourceType::Libraries,
           ],
-          &priority[0],
+          priority,
         )?,
         dest: lib_dir.join(&rel),
         filename: None,
-        sha1: None,
-      }));
+        size: u64::try_from(artifact.size).ok(),
+        sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
+      });
     }
   } else {
     // It's legacy version Forge installer
@@ -421,21 +386,22 @@ pub async fn download_forge_libraries(
       };
 
       let rel = convert_library_name_to_path(&name, None)?;
-      let src = convert_url_to_target_source(
+      let sources = get_download_urls(
         &url.join(&rel)?,
         &[
           ResourceType::ForgeMaven,
           ResourceType::ForgeMavenNew,
           ResourceType::Libraries,
         ],
-        &priority[0],
+        priority,
       )?;
-      task_params.push(PTaskParam::Download(DownloadParam {
-        src,
+      task_params.push(DownloadTask {
+        sources,
         dest: lib_dir.join(&rel),
         filename: None,
+        size: None,
         sha1: None,
-      }));
+      });
     }
     client_info.patches.push(new_patch);
   }
@@ -443,19 +409,12 @@ pub async fn download_forge_libraries(
   reset_fields_from_patches(client_info);
 
   let mut seen = std::collections::HashSet::new();
-  task_params.retain(|param| match param {
-    PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
-  });
+  task_params.retain(|param| seen.insert(param.dest.clone()));
 
-  schedule_progressive_task_group(
-    app.clone(),
-    format!("forge-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(InstallPlan {
+    tasks: task_params,
+    processors,
+  })
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

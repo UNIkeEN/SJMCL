@@ -635,6 +635,7 @@
     },
     "label": {
       "paused": "Paused",
+      "finalizing": "Finishing installation",
       "completed": "Completed",
       "error": "Failed",
       "cancelled": "Cancelled"
@@ -2338,7 +2339,10 @@
       },
       "downloadMojangJava": {
         "error": {
-          "title": "Failed to download Mojang Java runtime"
+          "title": "Failed to download Mojang Java runtime",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
         }
       },
       "checkGameDirectory": {
@@ -2356,7 +2360,16 @@
           "title": "Failed to clear download cache",
           "description": {
             "HAS_ACTIVE_DOWNLOAD_TASKS": "There are active download tasks in progress.",
-            "FILE_DELETION_FAILED": "Failed to delete files, they may be in use."
+            "FILE_DELETION_FAILED": "Failed to delete files, they may be in use.",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "Failed to download launcher update",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
           }
         }
       }
@@ -2621,9 +2634,11 @@
           "title": "Failed to validate game files",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine installation not completed",
             "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
             "GAME_FILES_INCOMPLETE": "Game files are incomplete",
-            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
           }
         }
       },
@@ -2714,7 +2729,8 @@
           "title": "Failed to download game server",
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
-            "NETWORK_ERROR": "Failed to connect to the server"
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
           }
         }
       },
@@ -2734,7 +2750,8 @@
           "description": {
             "PARSE_ERROR": "The server returned data in an incorrect format",
             "NETWORK_ERROR": "Failed to connect to the server",
-            "FILE_OPERATION_ERROR": "Failed to rename old mod file"
+            "FILE_OPERATION_ERROR": "Failed to rename old mod file",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
           }
         }
       }
@@ -2760,7 +2777,8 @@
             "FILE_CREATION_FAILED": "Failed to create target file",
             "NETWORK_ERROR": "Failed to connect to the server",
             "CLIENT_JSON_PARSE_ERROR": "Failed to parse instance version info",
-            "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index"
+            "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
           }
         }
       },
@@ -2941,37 +2959,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "Installing mod loader for {{instanceName}}",
-        "success": "Mod loader installed successfully",
-        "error": {
-          "title": "Failed to install mod loader",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "INSTALLATION_DUPLICATED": "Another installation process is already in progress",
-            "MAIN_CLASS_NOT_FOUND": "Main class not found in the mod loader version",
-            "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process",
-            "LOADER_INSTALLER_NOT_FOUND": "Mod loader installer file not found"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "Installing OptiFine for {{instanceName}}",
-        "success": "OptiFine installed successfully",
-        "error": {
-          "title": "Failed to install OptiFine",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
-            "INSTALLATION_DUPLICATED": "Another installation process is already in progress",
-            "PROCESSOR_EXECUTION_FAILED": "Failed to execute the install process",
-            "LOADER_INSTALLER_NOT_FOUND": "OptiFine installer file not found",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "Failed to parse OptiFine version information",
-            "INVALID_SOURCE_PATH": "Invalid source path",
-            "NO_SUITABLE_JAVA": "No suitable Java runtime found",
-            "SELECTED_JAVA_UNAVAILABLE": "The selected Java runtime is unavailable"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "Unable to Change Mod Loader",
@@ -2984,13 +2971,17 @@
         "error": {
           "title": "Failed to Change Mod Loader",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
           }
         }
       },
       "changeOptiFine": {
         "error": {
-          "title": "Failed to Change OptiFine"
+          "title": "Failed to Change OptiFine",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
         }
       },
       "removeModLoader": {
@@ -3074,10 +3065,32 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
-        "error": "Failed to create task"
+      "common": {
+        "title": "Download operation failed",
+        "description": {
+          "NETWORK_ERROR": "Network error: {{details}}",
+          "HTTP_ERROR": "HTTP error: {{status}}",
+          "IO_ERROR": "File operation failed: {{details}}",
+          "CHECKSUM_MISMATCH": "File checksum mismatch: expected {{expected}}, got {{actual}}",
+          "CORRUPT_FILES": "Corrupt files: {{paths, list}}",
+          "MISSING_FIELD": "Missing task field: {{field}}",
+          "UNKNOWN_EXECUTOR": "Unknown task executor: {{executor}}",
+          "INVALID_CONTENT_RANGE": "The server returned an invalid Content-Range",
+          "RESUME_OFFSET_MISMATCH": "Resume offset mismatch: expected {{expected}}, got {{actual}}",
+          "OTHER_ERROR": "Task failed: {{details}}",
+          "EMPTY_GROUP": "A task group must contain at least one task",
+          "CHANNEL_CLOSED": "The download engine connection was closed",
+          "UNKNOWN_GROUP": "Task group {{groupId}} was not found",
+          "INVALID_STATE": "Task group {{groupId}} cannot perform this operation in its current state",
+          "STORAGE_ERROR": "Failed to save download state: {{details}}",
+          "ENGINE_NOT_INITIALIZED": "The download engine is not initialized",
+          "INSTALLATION_INSTANCE_MISMATCH": "The installation instance does not match the task",
+          "MOD_LOADER_CHANGED": "The mod loader changed during installation",
+          "OPTIFINE_MISSING": "OptiFine is missing",
+          "OPTIFINE_CHANGED": "OptiFine changed during installation"
+        }
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} download has started",
           "Failed": "{{param}} download partially failed, please retry",
