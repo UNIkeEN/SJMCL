@@ -159,6 +159,7 @@ pub async fn submit_download_group(
     .0
     .submit_group(SubmitGroup {
       name,
+      parent_group_id: None,
       tasks: tasks.into_iter().map(Into::into).collect(),
       auto_resume,
     })
@@ -185,6 +186,7 @@ pub async fn submit_java_download_group(
     .0
     .submit_group(SubmitGroup {
       name,
+      parent_group_id: None,
       tasks,
       auto_resume: true,
     })
@@ -236,6 +238,7 @@ pub async fn submit_instance_download_group(
     .0
     .submit_group(SubmitGroup {
       name,
+      parent_group_id: None,
       tasks,
       auto_resume: true,
     })
@@ -249,6 +252,7 @@ pub async fn submit_install_group(
   plan: InstallPlan,
   instance: &Instance,
   kind: InstallKind,
+  parent_group_id: &str,
 ) -> Result<String, TaskError> {
   let mut tasks: Vec<SubmitTask> = get_invalid_download_tasks(plan.tasks, false)
     .await
@@ -288,6 +292,7 @@ pub async fn submit_install_group(
     .0
     .submit_group(SubmitGroup {
       name,
+      parent_group_id: Some(parent_group_id.to_string()),
       tasks,
       auto_resume: true,
     })

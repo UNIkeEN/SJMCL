@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::{self, IsTerminal};
 use std::time::Duration;
 use std::time::Instant;
@@ -50,9 +50,13 @@ struct Items<T> {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct DownloadGroup {
   id: String,
   name: String,
+  // Reject responses that cannot describe relationships instead of reporting success too early.
+  #[serde(deserialize_with = "Option::deserialize")]
+  parent_group_id: Option<String>,
   state: String,
   finish: Option<String>,
   stats: DownloadStats,
@@ -358,7 +362,7 @@ pub async fn run(client: &LauncherClient, options: InstallOptions) -> Result<(),
     .ok_or_else(|| "create_instance did not return a download group ID".to_string())?;
   println!("Installation queued: {instance_id} (group {group_id})");
   if options.wait {
-    wait_for_groups(client, group_id, Some(&instance_id)).await?;
+    wait_for_groups(client, group_id).await?;
     println!("Installed: {instance_id}");
   }
   Ok(())
@@ -382,7 +386,7 @@ pub async fn run_download(
     .ok_or_else(|| "submit_download did not return a download group ID".to_string())?;
   println!("Download queued: {} (group {group_id})", options.dest);
   if options.wait {
-    wait_for_groups(client, group_id, None).await?;
+    wait_for_groups(client, group_id).await?;
     println!("Downloaded: {}", options.dest);
   }
   Ok(())
@@ -429,11 +433,7 @@ fn choose_directory<'a>(
   }
 }
 
-async fn wait_for_groups(
-  client: &LauncherClient,
-  initial_group_id: &str,
-  instance_id: Option<&str>,
-) -> Result<(), String> {
+async fn wait_for_groups(client: &LauncherClient, initial_group_id: &str) -> Result<(), String> {
   let mut display = ProgressDisplay::new();
   loop {
     let groups = retrieve_groups(client).await?;
@@ -441,10 +441,7 @@ async fn wait_for_groups(
       .iter()
       .find(|group| group.id == initial_group_id)
       .ok_or_else(|| format!("download group `{initial_group_id}` was removed"))?;
-    let related = match instance_id {
-      Some(instance_id) => installation_groups(&groups, instance_id, initial_group_id),
-      None => vec![initial],
-    };
+    let related = installation_groups(&groups, initial_group_id);
     for group in &related {
       let progress = if display.multi.is_some() {
         Some(retrieve_progress(client, &group.id).await?)
@@ -475,16 +472,27 @@ async fn wait_for_groups(
 
 fn installation_groups<'a>(
   groups: &'a [DownloadGroup],
-  instance_id: &str,
   initial_group_id: &str,
 ) -> Vec<&'a DownloadGroup> {
-  let suffix = format!("?{instance_id}");
+  let mut related_ids = HashSet::from([initial_group_id]);
+  loop {
+    let previous_count = related_ids.len();
+    for group in groups {
+      if group
+        .parent_group_id
+        .as_deref()
+        .is_some_and(|parent| related_ids.contains(parent))
+      {
+        related_ids.insert(group.id.as_str());
+      }
+    }
+    if related_ids.len() == previous_count {
+      break;
+    }
+  }
   groups
     .iter()
-    .filter(|group| {
-      group.id == initial_group_id
-        || (group.name.contains("-libraries?") && group.name.ends_with(&suffix))
-    })
+    .filter(|group| related_ids.contains(group.id.as_str()))
     .collect()
 }
 

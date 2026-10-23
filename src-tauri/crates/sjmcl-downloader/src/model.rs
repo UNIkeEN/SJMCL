@@ -176,6 +176,7 @@ impl Task {
 pub struct TaskGroup {
   pub id: String,
   pub name: String,
+  pub parent_group_id: Option<String>,
   /// Resume unfinished tasks automatically after application restart.
   pub auto_resume: bool,
   pub state: GroupState,

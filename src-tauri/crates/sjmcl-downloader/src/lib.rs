@@ -39,6 +39,8 @@ pub use tauri::{
 pub struct GroupSummary {
   pub id: String,
   pub name: String,
+  #[serde(default)]
+  pub parent_group_id: Option<String>,
   pub state: GroupState,
   pub finish: Option<FinishKind>,
   #[serde(default)]

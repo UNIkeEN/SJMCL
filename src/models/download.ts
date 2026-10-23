@@ -54,6 +54,7 @@ export interface SubmitDownloadTask {
 
 export interface SubmitDownloadGroup {
   name: string;
+  parentGroupId?: string;
   tasks: SubmitDownloadTask[];
   autoResume: boolean;
 }
@@ -98,6 +99,7 @@ export interface DownloadGroupStats {
 export interface DownloadGroupSummary {
   id: string;
   name: string;
+  parentGroupId: string | null;
   state: DownloadGroupState;
   finish: DownloadFinishKind | null;
   completionPending: boolean;

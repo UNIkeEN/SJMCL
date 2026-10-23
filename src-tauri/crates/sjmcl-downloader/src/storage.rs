@@ -3,6 +3,7 @@
 //! Persist state transitions and key milestones. On resume, the partial file size
 //! is the authoritative offset, so progress does not need frequent database writes.
 
+use std::collections::HashSet;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -68,13 +69,14 @@ pub struct SqliteStore {
 
 impl SqliteStore {
   pub fn open(path: &Path) -> Result<Self, String> {
-    let conn = Connection::open(path).map_err(|e| e.to_string())?;
+    let mut conn = Connection::open(path).map_err(|e| e.to_string())?;
     conn
       .execute_batch(
         "PRAGMA journal_mode=WAL;
              CREATE TABLE IF NOT EXISTS groups (
                  id TEXT PRIMARY KEY,
                  name TEXT NOT NULL,
+                 parent_group_id TEXT,
                  auto_resume INTEGER NOT NULL DEFAULT 0,
                  state TEXT NOT NULL,
                  finish TEXT,
@@ -84,6 +86,53 @@ impl SqliteStore {
              );",
       )
       .map_err(|e| e.to_string())?;
+    let has_parent: bool = conn
+      .query_row(
+        "SELECT EXISTS(SELECT 1 FROM pragma_table_info('groups') WHERE name = 'parent_group_id')",
+        [],
+        |row| row.get(0),
+      )
+      .map_err(|e| e.to_string())?;
+    if !has_parent {
+      let transaction = conn.transaction().map_err(|e| e.to_string())?;
+      transaction
+        .execute("ALTER TABLE groups ADD COLUMN parent_group_id TEXT", [])
+        .map_err(|e| e.to_string())?;
+      // Decode the old display-name convention only during the schema upgrade.
+      let legacy: Vec<(String, String)> = {
+        let mut statement = transaction
+          .prepare("SELECT id, name FROM groups")
+          .map_err(|e| e.to_string())?;
+        statement
+          .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))
+          .map_err(|e| e.to_string())?
+          .collect::<Result<_, _>>()
+          .map_err(|e| e.to_string())?
+      };
+      let ids: HashSet<&str> = legacy.iter().map(|(id, _)| id.as_str()).collect();
+      for (id, name) in &legacy {
+        if let Some((display_name, parent)) = name.rsplit_once('@')
+          && ids.contains(parent)
+          && display_name.split_once('?').is_some_and(|(kind, _)| {
+            matches!(
+              kind,
+              "forge-libraries"
+                | "cleanroom-libraries"
+                | "neoforge-libraries"
+                | "optifine-libraries"
+            )
+          })
+        {
+          transaction
+            .execute(
+              "UPDATE groups SET parent_group_id = ?1 WHERE id = ?2",
+              rusqlite::params![parent, id],
+            )
+            .map_err(|e| e.to_string())?;
+        }
+      }
+      transaction.commit().map_err(|e| e.to_string())?;
+    }
     // Prune before the engine restores groups, so expired failures cannot reappear in memory.
     conn
       .execute(
@@ -112,10 +161,11 @@ impl StateStore for SqliteStore {
     };
     let conn = self.conn.lock().unwrap();
     conn.execute(
-            "INSERT INTO groups (id, name, auto_resume, state, finish, tasks_json, completion_pending, finished_at)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, CASE WHEN ?4 = '\"finished\"' THEN unixepoch() END)
+            "INSERT INTO groups (id, name, auto_resume, state, finish, tasks_json, completion_pending, finished_at, parent_group_id)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, CASE WHEN ?4 = '\"finished\"' THEN unixepoch() END, ?8)
              ON CONFLICT(id) DO UPDATE SET
                  name=excluded.name, auto_resume=excluded.auto_resume, state=excluded.state,
+                 parent_group_id=excluded.parent_group_id,
                  finish=excluded.finish, tasks_json=excluded.tasks_json,
                  completion_pending=excluded.completion_pending,
                  finished_at=CASE WHEN excluded.state = '\"finished\"'
@@ -127,7 +177,8 @@ impl StateStore for SqliteStore {
                 serde_json::to_string(&g.state).unwrap(),
                 finish,
                 tasks_json,
-                g.completion_pending
+                g.completion_pending,
+                g.parent_group_id
             ],
         )
         .map_err(|e| e.to_string())?;
@@ -163,7 +214,7 @@ impl StateStore for SqliteStore {
     let conn = self.conn.lock().unwrap();
     let mut stmt = conn
       .prepare(
-        "SELECT id, name, auto_resume, state, finish, tasks_json, completion_pending FROM groups",
+        "SELECT id, name, auto_resume, state, finish, tasks_json, completion_pending, parent_group_id FROM groups",
       )
       .map_err(|e| e.to_string())?;
     let rows = stmt
@@ -176,12 +227,13 @@ impl StateStore for SqliteStore {
           r.get::<_, Option<String>>(4)?,
           r.get::<_, String>(5)?,
           r.get::<_, bool>(6)?,
+          r.get::<_, Option<String>>(7)?,
         ))
       })
       .map_err(|e| e.to_string())?;
     let mut groups = Vec::new();
     for row in rows {
-      let (id, name, auto_resume, state, finish, tasks_json, completion_pending) =
+      let (id, name, auto_resume, state, finish, tasks_json, completion_pending, parent_group_id) =
         row.map_err(|e| e.to_string())?;
       let tasks: Vec<Task> = serde_json::from_str(&tasks_json).map_err(|e| e.to_string())?;
       let state: GroupState = serde_json::from_str(&state).map_err(|e| e.to_string())?;
@@ -191,6 +243,7 @@ impl StateStore for SqliteStore {
       groups.push(TaskGroup {
         id,
         name,
+        parent_group_id,
         auto_resume,
         state,
         finish,

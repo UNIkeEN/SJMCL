@@ -25,6 +25,9 @@ pub struct SubmitTask {
 #[serde(rename_all = "camelCase")]
 pub struct SubmitGroup {
   pub name: String,
+  /// Parent installation group; None for a top-level group.
+  #[serde(default)]
+  pub parent_group_id: Option<String>,
   pub tasks: Vec<SubmitTask>,
   /// Resume unfinished tasks after an application restart; otherwise wait for an explicit resume.
   pub auto_resume: bool,

@@ -32,7 +32,7 @@ use crate::launcher_config::helpers::java::refresh_and_update_javas;
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::get_source_priority_list;
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InstallKind {
   ModLoader,
@@ -136,16 +136,25 @@ async fn prepare_installation(
     })?;
     get_source_priority_list(&config)
   };
-  let submitted_groups = app
+  let engine = app
     .try_state::<EngineHandle>()
-    .ok_or(EngineError::EngineNotInitialized)?
-    .0
-    .snapshot()
-    .await?;
+    .ok_or(EngineError::EngineNotInitialized)?;
+  let submitted_groups = engine.0.snapshot().await?;
+  let mut submitted_kinds = Vec::new();
+  for group in submitted_groups
+    .iter()
+    .filter(|group| group.parent_group_id.as_deref() == Some(group_id))
+  {
+    let tasks = engine.0.list_tasks(group.id.clone()).await?;
+    if let Some(task) = tasks.into_iter().find(|task| task.executor == "install") {
+      let target: InstallTarget = serde_json::from_value(task.spec)?;
+      submitted_kinds.push(target.kind);
+    }
+  }
   let mut install_groups: Vec<(String, InstallPlan, InstallKind)> = Vec::new();
 
   let kind = instance.mod_loader.loader_type;
-  // Keep child group names stable across retries, but distinct from other installations.
+  // The parent ID distinguishes retries from other installations of the same instance.
   let loader_group_name = format!(
     "{}-libraries?{}@{}",
     kind.to_string().to_lowercase(),
@@ -158,9 +167,7 @@ async fn prepare_installation(
   ) && matches!(
     kind,
     ModLoaderType::Forge | ModLoaderType::Cleanroom | ModLoaderType::NeoForge
-  ) && !submitted_groups
-    .iter()
-    .any(|group| group.name == loader_group_name)
+  ) && !submitted_kinds.contains(&InstallKind::ModLoader)
   {
     instance.mod_loader.status = ModLoaderStatus::Downloading;
     // A previous preparation may have saved this patch before submission failed.
@@ -192,9 +199,7 @@ async fn prepare_installation(
       optifine.status,
       ModLoaderStatus::NotDownloaded | ModLoaderStatus::Downloading
     )
-  }) && !submitted_groups
-    .iter()
-    .any(|group| group.name == optifine_group_name)
+  }) && !submitted_kinds.contains(&InstallKind::Optifine)
   {
     instance.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
     if client_info
@@ -222,7 +227,7 @@ async fn prepare_installation(
     save_json_async(&client_info, &json_path).await?;
     instance.save_json_cfg().await?;
     for (name, plan, kind) in install_groups {
-      submit_install_group(app.clone(), name, plan, &instance, kind).await?;
+      submit_install_group(app.clone(), name, plan, &instance, kind, group_id).await?;
     }
   }
   Ok(())

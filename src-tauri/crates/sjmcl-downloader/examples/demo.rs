@@ -147,6 +147,7 @@ async fn main() {
   println!("== Scenario 1: Normal download ==");
   let g1 = engine
     .submit_group(SubmitGroup {
+      parent_group_id: None,
       name: "normal".into(),
       tasks: vec![
         task("a", "/file/2000000", "/tmp/opencode/dl/a.bin", None),
@@ -177,6 +178,7 @@ async fn main() {
   };
   let g2 = engine
     .submit_group(SubmitGroup {
+      parent_group_id: None,
       name: "pause-resume".into(),
       tasks: vec![task(
         "slow",
@@ -198,6 +200,7 @@ async fn main() {
   println!("== Scenario 3: Retry transient failures ==");
   let g3 = engine
     .submit_group(SubmitGroup {
+      parent_group_id: None,
       name: "flaky".into(),
       tasks: vec![task("f", "/flaky/1000000", "/tmp/opencode/dl/f.bin", None)],
       auto_resume: false,
@@ -222,6 +225,7 @@ async fn main() {
   };
   let g4 = engine
     .submit_group(SubmitGroup {
+      parent_group_id: None,
       name: "corrupt".into(),
       tasks: vec![
         task("good", "/slow/1000000", "/tmp/opencode/dl/g.bin", None),
@@ -258,6 +262,7 @@ async fn main() {
   println!("== Scenario 5: Cancel group ==");
   let g5 = engine
     .submit_group(SubmitGroup {
+      parent_group_id: None,
       name: "cancel".into(),
       tasks: vec![task("x", "/slow/8000000", "/tmp/opencode/dl/x.bin", None)],
       auto_resume: false,
@@ -294,6 +299,7 @@ async fn main() {
   let _h2 = tokio::spawn(actor);
   let g6 = engine2
     .submit_group(SubmitGroup {
+      parent_group_id: None,
       name: "ratelimit".into(),
       tasks: vec![task("rl", "/file/5000000", "/tmp/opencode/dl/rl.bin", None)],
       auto_resume: false,
@@ -346,6 +352,7 @@ async fn main() {
       let _handle1 = tokio::spawn(actor);
       engine1
         .submit_group(SubmitGroup {
+          parent_group_id: None,
           name: "crash".into(),
           tasks: vec![task(
             "cr",

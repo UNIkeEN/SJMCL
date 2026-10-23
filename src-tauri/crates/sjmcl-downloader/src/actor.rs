@@ -449,6 +449,7 @@ impl EngineActor {
           .map(|g| GroupSummary {
             id: g.id.clone(),
             name: g.name.clone(),
+            parent_group_id: g.parent_group_id.clone(),
             state: g.state,
             finish: g.finish,
             completion_pending: g.completion_pending,
@@ -475,6 +476,14 @@ impl EngineActor {
       let _ = reply.send(Err(EngineError::EmptyGroup));
       return;
     }
+    if let Some(parent_id) = &sg.parent_group_id
+      && !self.state.groups.iter().any(|group| &group.id == parent_id)
+    {
+      let _ = reply.send(Err(EngineError::UnknownGroup {
+        group_id: parent_id.clone(),
+      }));
+      return;
+    }
     // Reject tasks with unregistered executors before persisting the group.
     for t in &sg.tasks {
       if self.executors.get(&t.executor).is_none() {
@@ -497,6 +506,7 @@ impl EngineActor {
     let group = TaskGroup {
       id: gid.clone(),
       name: sg.name,
+      parent_group_id: sg.parent_group_id,
       auto_resume: sg.auto_resume,
       state: GroupState::Queued,
       finish: None,

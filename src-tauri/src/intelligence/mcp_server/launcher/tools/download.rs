@@ -92,7 +92,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     ),
     mcp_tool!(
       "retrieve_download_groups",
-      "Retrieve download and installation task groups, including their progress and final result.",
+      "Retrieve download and installation task groups, including parentGroupId relationships, progress and final result.",
       |app, _params: rmcp::model::JsonObject| async move {
         app
           .state::<EngineHandle>()
