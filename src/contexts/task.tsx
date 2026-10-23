@@ -503,34 +503,60 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     let attached = true;
+    const pendingTaskUpdates = new Map<
+      string,
+      { groupId: string; update: Partial<DownloadTask> }
+    >();
+    let updateTimer: ReturnType<typeof setTimeout> | undefined;
+    const flushTaskUpdates = () => {
+      clearTimeout(updateTimer);
+      updateTimer = undefined;
+      if (!pendingTaskUpdates.size) return;
+      const updates = new Map(pendingTaskUpdates);
+      pendingTaskUpdates.clear();
+      const groupIds = new Set(
+        [...updates.values()].map((item) => item.groupId)
+      );
+      setTasks((groups) =>
+        groups.map((group) => {
+          if (!groupIds.has(group.id)) return group;
+          return deriveGroup(
+            group,
+            group.tasks.map((task) => {
+              const pending = updates.get(task.id);
+              return pending ? { ...task, ...pending.update } : task;
+            })
+          );
+        })
+      );
+    };
+    const queueTaskUpdate = (
+      groupId: string,
+      taskId: string,
+      update: Partial<DownloadTask>
+    ) => {
+      // Snapshot overlays must see events immediately, before the batched render.
+      recordTaskUpdate(taskId, update);
+      pendingTaskUpdates.set(taskId, {
+        groupId,
+        update: { ...pendingTaskUpdates.get(taskId)?.update, ...update },
+      });
+      updateTimer ??= setTimeout(flushTaskUpdates, 200);
+    };
     const stopTick = DownloadService.onTick((updates) => {
-      const taskUpdates = new Map<string, Partial<DownloadTask>>();
-      const groupIds = new Set<string>();
       updates.forEach((progress) => {
-        const update: Partial<DownloadTask> = {
+        queueTaskUpdate(progress.groupId, progress.taskId, {
           state: progress.state,
           received: progress.received,
           total: progress.total,
           speedBps: progress.speedBps,
           etaSecs: progress.etaSecs ?? undefined,
-        };
-        taskUpdates.set(progress.taskId, update);
-        groupIds.add(progress.groupId);
-        recordTaskUpdate(progress.taskId, update);
+        });
       });
-      setTasks((groups) =>
-        groups.map((group) => {
-          if (!groupIds.has(group.id)) return group;
-          const nextTasks = group.tasks.map((task) => {
-            const update = taskUpdates.get(task.id);
-            return update ? { ...task, ...update } : task;
-          });
-          return deriveGroup(group, nextTasks);
-        })
-      );
     });
     const stopState = DownloadService.onState((event) => {
       if (event.kind === "group_submitted") {
+        flushTaskUpdates();
         void refreshDownloadGroups();
         return;
       }
@@ -555,8 +581,10 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
           : undefined;
       if (groupUpdate) recordGroupUpdate(event.groupId, groupUpdate);
       if (taskUpdate && event.kind === "task_state_changed") {
-        recordTaskUpdate(event.taskId, taskUpdate);
+        queueTaskUpdate(event.groupId, event.taskId, taskUpdate);
+        return;
       }
+      flushTaskUpdates();
       setTasks((groups) =>
         groups.map((group) => {
           if (group.id !== event.groupId) return group;
@@ -576,6 +604,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     });
     const stopError = DownloadService.onError((event) => {
+      flushTaskUpdates();
       logger.error(
         `Download ${event.taskId} in group ${event.groupId} failed: ${JSON.stringify(event.error)}`
       );
@@ -599,22 +628,11 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       );
     });
     const stopVerified = DownloadService.onVerified((event) => {
-      recordTaskUpdate(event.taskId, { verified: true });
-      setTasks((groups) =>
-        groups.map((group) =>
-          group.id === event.groupId
-            ? deriveGroup(
-                group,
-                group.tasks.map((task) =>
-                  task.id === event.taskId ? { ...task, verified: true } : task
-                )
-              )
-            : group
-        )
-      );
+      queueTaskUpdate(event.groupId, event.taskId, { verified: true });
     });
     const stopFinished = DownloadService.onFinished(
       async (event: DownloadFinishedEvent) => {
+        flushTaskUpdates();
         const updates: DownloadSnapshotUpdates = {
           tasks: new Map(),
           groups: new Map(),
@@ -678,6 +696,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       .catch(showCommandError);
     return () => {
       attached = false;
+      clearTimeout(updateTimer);
       subscriptions.forEach((subscription) => {
         void subscription.then((stop) => stop()).catch(showCommandError);
       });

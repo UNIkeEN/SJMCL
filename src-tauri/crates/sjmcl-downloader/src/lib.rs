@@ -13,6 +13,7 @@ pub mod download;
 pub mod event;
 pub mod executor;
 pub mod model;
+mod persistence;
 pub mod rate;
 pub mod storage;
 pub mod tauri;

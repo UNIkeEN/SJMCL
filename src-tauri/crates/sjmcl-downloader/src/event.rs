@@ -13,7 +13,7 @@ use serde::Serialize;
   rename_all_fields = "camelCase"
 )]
 pub enum EngineEvent {
-  /// Periodic batched progress, plus a final snapshot when each download completes.
+  /// Batched progress, including final byte counts for downloads completed since the last tick.
   Tick(Vec<Progress>),
   /// A new group was persisted. The frontend should refresh even if it is still queued.
   GroupSubmitted { group_id: String },

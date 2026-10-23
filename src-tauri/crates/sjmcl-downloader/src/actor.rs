@@ -12,9 +12,9 @@
 //! - start_token stops queued work; run_token interrupts active work;
 //! - terminal failures drain the group: stop scheduling and let active work finish.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use tokio::sync::{mpsc, oneshot};
 use tokio::time::{MissedTickBehavior, interval};
@@ -27,6 +27,7 @@ use crate::model::{
   CancelReason, EngineConfig, EngineError, FinishKind, GroupState, RuntimeGroup, RuntimeTask, Task,
   TaskError, TaskGroup, TaskState,
 };
+use crate::persistence::Persistence;
 use crate::storage::StateStore;
 use crate::{ExecContext, GroupSummary, Progress, TaskOutcome, TaskReport};
 
@@ -180,6 +181,7 @@ impl EngineBuilder {
     let (report_tx, report_rx) = mpsc::channel(1024);
     let executors: Arc<dyn ExecutorRegistry> = Arc::new(self.executors);
     let (worker_handles, ready_tx) = spawn_worker_pool(executors.clone(), self.cfg.concurrency);
+    let persistence = Persistence::new(self.store.clone());
 
     let mut actor = EngineActor {
       cfg: self.cfg,
@@ -194,6 +196,10 @@ impl EngineBuilder {
       state: EngineState::default(),
       seq: 0,
       _worker_handles: worker_handles,
+      persistence,
+      dirty_groups: HashSet::new(),
+      pending_finishes: HashSet::new(),
+      completed_progress: HashMap::new(),
     };
     // Reconcile persisted groups after restart, including auto-resume eligibility.
     if let Ok(mut groups) = actor.store.load_all() {
@@ -234,6 +240,8 @@ struct EngineState {
   runtime: HashMap<String, RuntimeGroup>,
   /// Global ready queue in task submission order.
   ready: VecDeque<String>,
+  ready_ids: HashSet<String>,
+  task_index: HashMap<String, (usize, usize)>,
 }
 
 struct EngineActor {
@@ -250,26 +258,39 @@ struct EngineActor {
   state: EngineState,
   seq: u64,
   _worker_handles: Vec<tokio::task::JoinHandle<()>>,
+  persistence: Persistence,
+  dirty_groups: HashSet<String>,
+  pending_finishes: HashSet<String>,
+  completed_progress: HashMap<String, Progress>,
 }
 
 impl EngineActor {
   async fn run(mut self) {
     let mut dispatch = interval(self.cfg.dispatch_interval);
     let mut emit = interval(self.cfg.emit_interval);
+    let mut persist = interval(Duration::from_millis(200));
+    persist.set_missed_tick_behavior(MissedTickBehavior::Skip);
     dispatch.set_missed_tick_behavior(MissedTickBehavior::Skip);
     emit.set_missed_tick_behavior(MissedTickBehavior::Skip);
     loop {
       tokio::select! {
           cmd = self.cmd_rx.recv() => match cmd {
-              Some(c) => self.handle_cmd(c),
+              Some(c) => self.handle_cmd(c).await,
               None => break,
           },
           rep = self.report_rx.recv() => match rep {
-              Some(r) => self.handle_report(r),
+              Some(r) => self.handle_report(r).await,
               None => break,
           },
-          _ = dispatch.tick() => self.dispatch_step(),
+          _ = dispatch.tick() => self.dispatch_step().await,
           _ = emit.tick() => self.emit_progress(),
+          _ = persist.tick() => {
+            self.flush_persistence();
+            let pending: Vec<_> = self.pending_finishes.iter().cloned().collect();
+            for id in pending {
+              self.maybe_finish_group(&id).await;
+            }
+          },
       }
     }
     tracing::info!("engine actor stopped");
@@ -278,14 +299,7 @@ impl EngineActor {
   // ---------- Queries and helpers ----------
 
   fn find(&self, task_id: &str) -> Option<(usize, usize)> {
-    for (gi, g) in self.state.groups.iter().enumerate() {
-      for (ti, t) in g.tasks.iter().enumerate() {
-        if t.id == task_id {
-          return Some((gi, ti));
-        }
-      }
-    }
-    None
+    self.state.task_index.get(task_id).copied()
   }
 
   fn emit(&self, ev: EngineEvent) {
@@ -294,8 +308,9 @@ impl EngineActor {
 
   fn init_runtime(&mut self, group_id: &str) {
     let mut rtg = RuntimeGroup::new();
-    if let Some(g) = self.state.groups.iter().find(|g| g.id == group_id) {
-      for t in &g.tasks {
+    if let Some(gi) = self.state.groups.iter().position(|g| g.id == group_id) {
+      for (ti, t) in self.state.groups[gi].tasks.iter().enumerate() {
+        self.state.task_index.insert(t.id.clone(), (gi, ti));
         rtg.tasks.insert(
           t.id.clone(),
           RuntimeTask {
@@ -310,35 +325,84 @@ impl EngineActor {
       }
     }
     self.state.runtime.insert(group_id.to_string(), rtg);
+    self.recount_runtime(group_id);
+  }
+
+  // Bulk changes are rare; ordinary outcomes update these counters in constant time.
+  fn recount_runtime(&mut self, group_id: &str) {
+    let Some(group) = self.state.groups.iter().find(|g| g.id == group_id) else {
+      return;
+    };
+    let runtime = self.state.runtime.get_mut(group_id).unwrap();
+    runtime.remaining.clear();
+    runtime.nonterminal = 0;
+    for task in &group.tasks {
+      if task.state != TaskState::Done {
+        let stage = self
+          .executors
+          .get(&task.executor)
+          .map_or(0, |ex| ex.postprocess_order());
+        *runtime.remaining.entry(stage).or_default() += 1;
+      }
+      runtime.nonterminal += usize::from(!task.state.is_terminal());
+    }
+  }
+
+  fn set_task_state(&mut self, gi: usize, ti: usize, state: TaskState) -> bool {
+    let task = &mut self.state.groups[gi].tasks[ti];
+    let old = task.state;
+    task.state = state;
+    let runtime = self.state.runtime.get_mut(&task.group_id).unwrap();
+    if old.is_terminal() && !state.is_terminal() {
+      runtime.nonterminal += 1;
+    }
+    if !old.is_terminal() && state.is_terminal() {
+      runtime.nonterminal -= 1;
+    }
+    let stage = self
+      .executors
+      .get(&task.executor)
+      .map_or(0, |ex| ex.postprocess_order());
+    if old == TaskState::Done && state != TaskState::Done {
+      *runtime.remaining.entry(stage).or_default() += 1;
+    } else if old != TaskState::Done && state == TaskState::Done {
+      let count = runtime.remaining.get_mut(&stage).unwrap();
+      *count -= 1;
+      if *count == 0 {
+        runtime.remaining.remove(&stage);
+        return true;
+      }
+    }
+    false
   }
 
   // ---------- Command handling ----------
 
-  fn handle_cmd(&mut self, cmd: Command) {
+  async fn handle_cmd(&mut self, cmd: Command) {
     match cmd {
-      Command::SubmitGroup(sg, reply) => self.cmd_submit(sg, reply),
+      Command::SubmitGroup(sg, reply) => self.cmd_submit(sg, reply).await,
       Command::Pause { group_id, reply } => {
-        let r = self.cmd_pause(&group_id);
+        let r = self.cmd_pause(&group_id).await;
         let _ = reply.send(r);
       }
       Command::Resume { group_id, reply } => {
-        let r = self.cmd_resume(&group_id);
+        let r = self.cmd_resume(&group_id).await;
         let _ = reply.send(r);
       }
       Command::Cancel { group_id, reply } => {
-        let r = self.cmd_cancel(&group_id);
+        let r = self.cmd_cancel(&group_id).await;
         let _ = reply.send(r);
       }
       Command::Retry { group_id, reply } => {
-        let r = self.cmd_retry(&group_id);
+        let r = self.cmd_retry(&group_id).await;
         let _ = reply.send(r);
       }
       Command::Remove { group_id, reply } => {
-        let r = self.cmd_remove(&group_id);
+        let r = self.cmd_remove(&group_id).await;
         let _ = reply.send(r);
       }
       Command::AcknowledgeCompletion { group_id, reply } => {
-        let r = self.cmd_acknowledge_completion(&group_id);
+        let r = self.cmd_acknowledge_completion(&group_id).await;
         let _ = reply.send(r);
       }
       Command::RetryTask { group_id, task_id } => self.cmd_retry_task(&group_id, &task_id),
@@ -371,7 +435,7 @@ impl EngineActor {
     }
   }
 
-  fn cmd_submit(&mut self, sg: crate::SubmitGroup, reply: Reply<String>) {
+  async fn cmd_submit(&mut self, sg: crate::SubmitGroup, reply: Reply<String>) {
     if sg.tasks.is_empty() {
       let _ = reply.send(Err(EngineError::EmptyGroup));
       return;
@@ -404,14 +468,12 @@ impl EngineActor {
       completion_pending: false,
       tasks,
     };
+    if let Err(error) = self.persistence.save(group.clone()).await {
+      let _ = reply.send(Err(error));
+      return;
+    }
     self.state.groups.push(group);
     self.init_runtime(&gid);
-    if let Err(e) = self
-      .store
-      .save_group(self.state.groups.iter().find(|g| g.id == gid).unwrap())
-    {
-      tracing::warn!("persist submit failed: {e}");
-    }
     self.emit(EngineEvent::GroupSubmitted {
       group_id: gid.clone(),
     });
@@ -420,7 +482,7 @@ impl EngineActor {
     let _ = reply.send(Ok(gid));
   }
 
-  fn cmd_pause(&mut self, group_id: &str) -> Result<(), EngineError> {
+  async fn cmd_pause(&mut self, group_id: &str) -> Result<(), EngineError> {
     let gi = self
       .state
       .groups
@@ -448,15 +510,15 @@ impl EngineActor {
       self.state.groups[gi].state = GroupState::Paused;
     }
     self.emit_group_state(group_id, st, GroupState::Paused);
-    self.persist_group(group_id);
+    self.persist_group(group_id).await?;
     Ok(())
   }
 
-  fn cmd_resume(&mut self, group_id: &str) -> Result<(), EngineError> {
-    self.try_resume_group(group_id)
+  async fn cmd_resume(&mut self, group_id: &str) -> Result<(), EngineError> {
+    self.try_resume_group(group_id).await
   }
 
-  fn try_resume_group(&mut self, group_id: &str) -> Result<(), EngineError> {
+  async fn try_resume_group(&mut self, group_id: &str) -> Result<(), EngineError> {
     let gi = self
       .state
       .groups
@@ -492,11 +554,11 @@ impl EngineActor {
     if target == GroupState::Active {
       self.enqueue_group(group_id);
     }
-    self.persist_group(group_id);
+    self.persist_group(group_id).await?;
     Ok(())
   }
 
-  fn cmd_cancel(&mut self, group_id: &str) -> Result<(), EngineError> {
+  async fn cmd_cancel(&mut self, group_id: &str) -> Result<(), EngineError> {
     let gi = self
       .state
       .groups
@@ -534,12 +596,13 @@ impl EngineActor {
       self.state.groups[gi].state = GroupState::Draining;
       self.emit_group_state(group_id, old, GroupState::Draining);
     }
-    self.persist_group(group_id);
-    self.maybe_finish_group(group_id);
+    self.recount_runtime(group_id);
+    self.persist_group(group_id).await?;
+    self.maybe_finish_group(group_id).await;
     Ok(())
   }
 
-  fn cmd_retry(&mut self, group_id: &str) -> Result<(), EngineError> {
+  async fn cmd_retry(&mut self, group_id: &str) -> Result<(), EngineError> {
     let gi = self
       .state
       .groups
@@ -554,6 +617,9 @@ impl EngineActor {
         state: self.state.groups[gi].state,
       });
     }
+    self
+      .completed_progress
+      .retain(|_, progress| progress.group_id != group_id);
     let corrupt_paths: Vec<_> = self.state.groups[gi]
       .tasks
       .iter()
@@ -618,15 +684,16 @@ impl EngineActor {
     };
     self.state.groups[gi].state = target;
     self.state.groups[gi].finish = None;
+    self.recount_runtime(group_id);
     self.emit_group_state(group_id, GroupState::Finished, target);
     if target == GroupState::Active {
       self.enqueue_group(group_id);
     }
-    self.persist_group(group_id);
+    self.persist_group(group_id).await?;
     Ok(())
   }
 
-  fn cmd_remove(&mut self, group_id: &str) -> Result<(), EngineError> {
+  async fn cmd_remove(&mut self, group_id: &str) -> Result<(), EngineError> {
     let index = self
       .state
       .groups
@@ -641,17 +708,25 @@ impl EngineActor {
         state: self.state.groups[index].state,
       });
     }
-    self
-      .store
-      .remove_group(group_id)
-      .map_err(|details| EngineError::Storage { details })?;
+    self.persistence.remove(group_id).await?;
+    self.dequeue_group(group_id);
     self.state.groups.remove(index);
     self.state.runtime.remove(group_id);
-    self.dequeue_group(group_id);
+    self.dirty_groups.remove(group_id);
+    self.pending_finishes.remove(group_id);
+    self
+      .completed_progress
+      .retain(|_, progress| progress.group_id != group_id);
+    self.state.task_index.clear();
+    for (gi, group) in self.state.groups.iter().enumerate() {
+      for (ti, task) in group.tasks.iter().enumerate() {
+        self.state.task_index.insert(task.id.clone(), (gi, ti));
+      }
+    }
     Ok(())
   }
 
-  fn cmd_acknowledge_completion(&mut self, group_id: &str) -> Result<(), EngineError> {
+  async fn cmd_acknowledge_completion(&mut self, group_id: &str) -> Result<(), EngineError> {
     let group = self
       .state
       .groups
@@ -668,10 +743,7 @@ impl EngineActor {
     }
     let mut acknowledged = group.clone();
     acknowledged.completion_pending = false;
-    self
-      .store
-      .save_group(&acknowledged)
-      .map_err(|details| EngineError::Storage { details })?;
+    self.persistence.save(acknowledged.clone()).await?;
     *group = acknowledged;
     Ok(())
   }
@@ -693,16 +765,16 @@ impl EngineActor {
     if self.state.groups[gi].tasks[ti].state != TaskState::Failed {
       return;
     }
-    self.state.groups[gi].tasks[ti].state = TaskState::Pending;
+    self.set_task_state(gi, ti, TaskState::Pending);
     self.state.groups[gi].tasks[ti].error = None;
     self.emit_task_state(group_id, task_id, TaskState::Failed, TaskState::Pending);
     self.enqueue_one(group_id, task_id);
-    self.persist_group(group_id);
+    self.dirty_groups.insert(group_id.into());
   }
 
   // ---------- Worker reports ----------
 
-  fn handle_report(&mut self, rep: TaskReport) {
+  async fn handle_report(&mut self, rep: TaskReport) {
     match rep {
       TaskReport::StartRequested {
         task_id,
@@ -718,7 +790,8 @@ impl EngineActor {
           && self.state.groups[gi].state == GroupState::Active
           && !start_token.is_cancelled();
         if accepted {
-          self.state.groups[gi].tasks[ti].state = TaskState::Downloading;
+          self.completed_progress.remove(&task_id);
+          self.set_task_state(gi, ti, TaskState::Downloading);
           self.emit_task_state(
             &self.state.groups[gi].id,
             &task_id,
@@ -754,7 +827,7 @@ impl EngineActor {
         if let Some((gi, ti)) = self.find(&task_id) {
           let old = self.state.groups[gi].tasks[ti].state;
           if old == TaskState::Downloading {
-            self.state.groups[gi].tasks[ti].state = TaskState::Verifying;
+            self.set_task_state(gi, ti, TaskState::Verifying);
             self.emit_task_state(
               &self.state.groups[gi].id,
               &task_id,
@@ -764,11 +837,11 @@ impl EngineActor {
           }
         }
       }
-      TaskReport::Outcome { task_id, outcome } => self.handle_outcome(&task_id, outcome),
+      TaskReport::Outcome { task_id, outcome } => self.handle_outcome(&task_id, outcome).await,
     }
   }
 
-  fn handle_outcome(&mut self, task_id: &str, outcome: TaskOutcome) {
+  async fn handle_outcome(&mut self, task_id: &str, outcome: TaskOutcome) {
     let Some((gi, ti)) = self.find(task_id) else {
       return;
     };
@@ -827,9 +900,9 @@ impl EngineActor {
       }
     }
     // Commit the task state.
+    let stage_finished = self.set_task_state(gi, ti, new_state);
     {
       let t = &mut self.state.groups[gi].tasks[ti];
-      t.state = new_state;
       t.verified = matches!(outcome, TaskOutcome::Done { verified: true });
       if new_state == TaskState::Done {
         if t.total > 0 {
@@ -846,15 +919,18 @@ impl EngineActor {
     // counts so the frontend can include them in group throughput samples.
     let task = &self.state.groups[gi].tasks[ti];
     if new_state == TaskState::Done && task.executor == "download" {
-      self.emit(EngineEvent::Tick(vec![Progress {
-        task_id: task_id.into(),
-        group_id: gid.clone(),
-        state: new_state,
-        received: task.received,
-        total: task.total,
-        speed_bps: 0.0,
-        eta_secs: None,
-      }]));
+      self.completed_progress.insert(
+        task_id.into(),
+        Progress {
+          task_id: task_id.into(),
+          group_id: gid.clone(),
+          state: new_state,
+          received: task.received,
+          total: task.total,
+          speed_bps: 0.0,
+          eta_secs: None,
+        },
+      );
     }
     // Emit state and verification events.
     self.emit_task_state(&gid, task_id, old, new_state);
@@ -934,17 +1010,14 @@ impl EngineActor {
         error: e.clone(),
       });
     }
-    self.persist_group(&gid);
-
-    if new_state == TaskState::Done
-      && self.state.groups[gi].tasks.iter().any(|task| {
-        task.state == TaskState::Pending
-          && self
-            .executors
-            .get(&task.executor)
-            .is_some_and(|executor| executor.postprocess_order() > 0)
-      })
+    self.dirty_groups.insert(gid.clone());
+    if matches!(outcome, TaskOutcome::Interrupted { .. })
+      && let Err(error) = self.persist_group(&gid).await
     {
+      tracing::warn!("persist interrupted group {gid} failed: {error}");
+    }
+
+    if stage_finished && group_active {
       self.enqueue_group(&gid);
     }
 
@@ -967,14 +1040,14 @@ impl EngineActor {
       && self.state.groups[gi].tasks[ti].retries_exhausted
       && self.state.groups[gi].state != GroupState::Draining
     {
-      self.fail_group(&gid, task_id);
+      self.fail_group(&gid, task_id).await;
       return;
     }
-    self.maybe_finish_group(&gid);
+    self.maybe_finish_group(&gid).await;
   }
 
   /// Enter Draining: stop queued work, cancel pending tasks, and let active tasks finish.
-  fn fail_group(&mut self, group_id: &str, _failed_task_id: &str) {
+  async fn fail_group(&mut self, group_id: &str, _failed_task_id: &str) {
     let Some(gi) = self.state.groups.iter().position(|g| g.id == group_id) else {
       return;
     };
@@ -995,11 +1068,12 @@ impl EngineActor {
         t.state = TaskState::Cancelled;
       }
     }
-    self.persist_group(group_id);
-    self.maybe_finish_group(group_id);
+    self.recount_runtime(group_id);
+    self.dirty_groups.insert(group_id.into());
+    self.maybe_finish_group(group_id).await;
   }
 
-  fn maybe_finish_group(&mut self, group_id: &str) {
+  async fn maybe_finish_group(&mut self, group_id: &str) {
     let Some(gi) = self.state.groups.iter().position(|g| g.id == group_id) else {
       return;
     };
@@ -1009,16 +1083,12 @@ impl EngineActor {
         // An active group completes only when every task is Done.
         // A failed task may still be waiting for an automatic retry and return to Pending.
         // Otherwise fail_group moves the group to Draining before it can finish.
-        if self.state.groups[gi]
-          .tasks
-          .iter()
-          .any(|t| t.state != TaskState::Done)
-        {
+        if !self.state.runtime[group_id].remaining.is_empty() {
           return;
         }
       }
       GroupState::Draining => {
-        if !self.state.groups[gi].all_terminal() {
+        if self.state.runtime[group_id].nonterminal != 0 {
           return;
         }
       }
@@ -1037,11 +1107,20 @@ impl EngineActor {
       _ => FinishKind::Completed,
     };
     let old = self.state.groups[gi].state;
-    self.state.groups[gi].state = GroupState::Finished;
-    self.state.groups[gi].finish = Some(finish);
-    self.state.groups[gi].completion_pending = finish == FinishKind::Completed;
+    let mut finished = self.state.groups[gi].clone();
+    finished.state = GroupState::Finished;
+    finished.finish = Some(finish);
+    finished.completion_pending = finish == FinishKind::Completed;
     // Persist the action before notifying subscribers so snapshots can reconcile it.
-    self.persist_group(group_id);
+    if let Err(error) = self.persistence.save(finished.clone()).await {
+      tracing::warn!("persist finished group {group_id} failed: {error}");
+      self.pending_finishes.insert(group_id.into());
+      return;
+    }
+    self.state.groups[gi] = finished;
+    self.pending_finishes.remove(group_id);
+    self.dirty_groups.remove(group_id);
+    self.emit_completed_progress();
     self.emit_group_state(group_id, old, GroupState::Finished);
     let (failed, summary) = {
       let g = &self.state.groups[gi];
@@ -1064,7 +1143,7 @@ impl EngineActor {
 
   // ---------- Scheduling ----------
 
-  fn dispatch_step(&mut self) {
+  async fn dispatch_step(&mut self) {
     // Activate queued groups while group slots are available.
     loop {
       let active = self
@@ -1089,9 +1168,14 @@ impl EngineActor {
       self.state.groups[gi].state = GroupState::Active;
       self.emit_group_state(&gid, old, GroupState::Active);
       self.enqueue_group(&gid);
+      // A crash can leave the last task durable before the group's completion record.
+      if self.state.runtime[&gid].remaining.is_empty() {
+        self.maybe_finish_group(&gid).await;
+      }
     }
     // Dispatch tasks from the ready queue.
     while let Some(tid) = self.state.ready.pop_front() {
+      self.state.ready_ids.remove(&tid);
       let Some((gi, ti)) = self.find(&tid) else {
         continue;
       };
@@ -1130,6 +1214,7 @@ impl EngineActor {
       };
       if self.ready_tx.try_send(Job { ctx }).is_err() {
         // The worker channel is full; retry this task on the next dispatch tick.
+        self.state.ready_ids.insert(tid.clone());
         self.state.ready.push_front(tid);
         break;
       }
@@ -1149,17 +1234,10 @@ impl EngineActor {
     let Some(gi) = self.state.groups.iter().position(|g| g.id == group_id) else {
       return;
     };
-    let next_order = self.state.groups[gi]
-      .tasks
-      .iter()
-      .filter(|task| task.state != TaskState::Done)
-      .map(|task| {
-        self
-          .executors
-          .get(&task.executor)
-          .map_or(0, |executor| executor.postprocess_order())
-      })
-      .min();
+    let next_order = self.state.runtime[group_id]
+      .remaining
+      .first_key_value()
+      .map(|(stage, _)| *stage);
     let tids: Vec<String> = self.state.groups[gi]
       .tasks
       .iter()
@@ -1183,7 +1261,7 @@ impl EngineActor {
   fn enqueue_one(&mut self, group_id: &str, task_id: &str) {
     // Avoid re-enqueueing tasks already in the ready queue or worker channel.
     // queued is set only after try_send succeeds; entries still in ready have queued=false.
-    if self.state.ready.contains(&task_id.to_string()) {
+    if self.state.ready_ids.contains(task_id) {
       return;
     }
     if let Some(rt) = self
@@ -1193,6 +1271,7 @@ impl EngineActor {
       .and_then(|g| g.tasks.get_mut(task_id))
       && !rt.queued
     {
+      self.state.ready_ids.insert(task_id.into());
       self.state.ready.push_back(task_id.to_string());
     }
   }
@@ -1206,6 +1285,7 @@ impl EngineActor {
         .map(|(gi, _)| self.state.groups[gi].id == group_id)
         .unwrap_or(false);
       if belongs {
+        self.state.ready_ids.remove(&tid);
         if let Some(rt) = self
           .state
           .runtime
@@ -1284,7 +1364,11 @@ impl EngineActor {
 
   fn emit_progress(&mut self) {
     let now = Instant::now();
-    let mut out: Vec<Progress> = Vec::new();
+    let mut out: Vec<Progress> = self
+      .completed_progress
+      .drain()
+      .map(|(_, progress)| progress)
+      .collect();
     for gi in 0..self.state.groups.len() {
       let gid = self.state.groups[gi].id.clone();
       let mut items: Vec<(String, TaskState, u64, u64, f64, Option<f64>)> = Vec::new();
@@ -1356,12 +1440,33 @@ impl EngineActor {
     }
   }
 
-  fn persist_group(&self, group_id: &str) {
-    if let Some(g) = self.state.groups.iter().find(|g| g.id == group_id)
-      && let Err(e) = self.store.save_group(g)
-    {
-      tracing::warn!("persist group {group_id} failed: {e}");
+  fn emit_completed_progress(&mut self) {
+    if !self.completed_progress.is_empty() {
+      let progress = self
+        .completed_progress
+        .drain()
+        .map(|(_, progress)| progress)
+        .collect();
+      self.emit(EngineEvent::Tick(progress));
     }
+  }
+
+  fn flush_persistence(&mut self) {
+    self.dirty_groups.extend(self.persistence.take_failed());
+    for id in self.dirty_groups.drain() {
+      if let Some(group) = self.state.groups.iter().find(|g| g.id == id) {
+        self.persistence.schedule(group.clone());
+      }
+    }
+  }
+
+  async fn persist_group(&mut self, group_id: &str) -> Result<(), EngineError> {
+    if let Some(group) = self.state.groups.iter().find(|g| g.id == group_id) {
+      self.dirty_groups.insert(group_id.into());
+      self.persistence.save(group.clone()).await?;
+      self.dirty_groups.remove(group_id);
+    }
+    Ok(())
   }
 }
 
