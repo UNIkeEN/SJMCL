@@ -87,7 +87,14 @@
               description = "A Minecraft launcher from SJMC";
               homepage = "https://mc.sjtu.cn/sjmcl";
               changelog = "https://github.com/UNIkeEN/SJMCL/releases";
-              license = pkgs.lib.licenses.gpl3Only;
+              license = with pkgs.lib.licenses; [
+                gpl3Only
+                (mkLicense {
+                  shortName = "SJMCL-additional-terms";
+                  fullName = "SJMCL additional terms";
+                  url = "https://github.com/UNIkeEN/SJMCL/blob/main/LICENSE.EXTRA";
+                })
+              ];
               mainProgram = "SJMCL";
               platforms = pkgs.lib.platforms.linux;
               sourceProvenance = [ pkgs.lib.sourceTypes.fromSource ];
