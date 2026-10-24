@@ -1581,11 +1581,6 @@
       "title": "Esquemáticos"
     }
   },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "details": "Detalles"
-    }
-  },
   "InstanceSettingsPage": {
     "name": "Nombre de la Instancia",
     "description": "Descripción de la Instancia",

@@ -1581,11 +1581,6 @@
       "title": "Schémas"
     }
   },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "details": "Détails"
-    }
-  },
   "InstanceSettingsPage": {
     "name": "Nom de l'instance",
     "description": "Description de l'instance",

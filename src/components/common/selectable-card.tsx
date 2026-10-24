@@ -8,6 +8,7 @@ import {
   Image,
   Text,
   VStack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -41,18 +42,37 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
+  const isCancellable = displayMode === "selector" && isSelected && !!onCancel;
+  const isFullClickZone = isChevronShown && !isCancellable;
+  const isInteractive = isFullClickZone && !isLoading && !isDisabled;
+  const hasBorder = isSelected || isFullClickZone;
   const borderWidth = "1px";
   const basePadding = boxProps.padding || "12px";
-  const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
+  const borderedPadding = `calc(${basePadding} - ${borderWidth})`;
+  const hoverBorderColor = useColorModeValue(
+    `${primaryColor}.300`,
+    `${primaryColor}.700`
+  );
 
   return (
     <Card
       className={cardStyles["card-front"]}
+      data-group=""
       pr={1.5}
       variant={isSelected ? "outline" : "elevated"}
       borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
-      borderWidth={isSelected ? borderWidth : 0}
-      p={isSelected ? selectedPadding : basePadding}
+      borderWidth={hasBorder ? borderWidth : 0}
+      p={hasBorder ? borderedPadding : basePadding}
+      transition="border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out"
+      {...(isInteractive && {
+        cursor: "pointer",
+        _hover: {
+          borderColor: isSelected ? `${primaryColor}.500` : hoverBorderColor,
+          boxShadow: "md",
+        },
+        _active: { boxShadow: "sm" },
+        onClick: onSelect,
+      })}
       {...boxProps}
     >
       <Flex justify="space-between" alignItems="center">
@@ -88,7 +108,10 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
               variant="ghost"
               size="xs"
               disabled={isLoading || isDisabled}
-              onClick={() => onCancel()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onCancel();
+              }}
             />
           )}
           {isChevronShown && (
@@ -97,8 +120,21 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
               icon={<Icon as={LuChevronRight} boxSize={3.5} />}
               variant="ghost"
               size="xs"
+              {...(isFullClickZone && {
+                _hover: { bg: "transparent" },
+                _active: { bg: "transparent" },
+              })}
+              {...(isInteractive && {
+                color: isSelected ? `${primaryColor}.500` : undefined,
+                _groupHover: {
+                  color: isSelected ? `${primaryColor}.500` : hoverBorderColor,
+                },
+              })}
               disabled={isLoading || isDisabled}
-              onClick={() => onSelect()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelect();
+              }}
             />
           )}
         </HStack>
