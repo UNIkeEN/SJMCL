@@ -635,6 +635,7 @@
     },
     "label": {
       "paused": "一時停止中",
+      "finalizing": "インストールの最終処理中",
       "completed": "完了",
       "error": "エラー",
       "cancelled": "キャンセル済み"
@@ -2343,7 +2344,10 @@
       },
       "downloadMojangJava": {
         "error": {
-          "title": "Mojang Java ランタイムのダウンロードに失敗"
+          "title": "Mojang Java ランタイムのダウンロードに失敗",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
+          }
         }
       },
       "checkGameDirectory": {
@@ -2361,7 +2365,16 @@
           "title": "ダウンロードキャッシュのクリアに失敗",
           "description": {
             "HAS_ACTIVE_DOWNLOAD_TASKS": "現在ダウンロードタスクが進行中です。後でもう一度お試しください",
-            "FILE_DELETION_FAILED": "キャッシュファイルを削除できません。ファイルが使用中の可能性があります"
+            "FILE_DELETION_FAILED": "キャッシュファイルを削除できません。ファイルが使用中の可能性があります",
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "ランチャーの更新をダウンロードできませんでした",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
           }
         }
       }
@@ -2626,9 +2639,11 @@
           "title": "ゲームファイルの検証に失敗",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "モッドローダーのインストールが完了していません",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine のインストールが完了していません",
             "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
             "GAME_FILES_INCOMPLETE": "ゲームファイルが不完全しています",
-            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました"
+            "LAUNCHING_STATE_NOT_FOUND": "起動状態が失われました",
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
           }
         }
       },
@@ -2721,7 +2736,8 @@
           "title": "ゲームサーバーのダウンロードに失敗",
           "description": {
             "PARSE_ERROR": "サーバー応答データ形式エラー",
-            "NETWORK_ERROR": "サーバーに接続できません"
+            "NETWORK_ERROR": "サーバーに接続できません",
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
           }
         }
       },
@@ -2741,7 +2757,8 @@
           "description": {
             "PARSE_ERROR": "サーバー応答データ形式エラー",
             "NETWORK_ERROR": "サーバーに接続できません",
-            "FILE_OPERATION_ERROR": "古いモッドファイルの名前を変更できません"
+            "FILE_OPERATION_ERROR": "古いモッドファイルの名前を変更できません",
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
           }
         }
       }
@@ -2767,7 +2784,8 @@
             "FILE_CREATION_FAILED": "ターゲットファイルの作成に失敗",
             "NETWORK_ERROR": "ネットワークエラー",
             "CLIENT_JSON_PARSE_ERROR": "インスタンスバージョン情報の解析エラー",
-            "ASSET_INDEX_PARSE_ERROR": "リソースインデックスファイルの解析エラー"
+            "ASSET_INDEX_PARSE_ERROR": "リソースインデックスファイルの解析エラー",
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
           }
         }
       },
@@ -2948,37 +2966,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "{{instanceName}} にモッドローダーをインストール中",
-        "success": "モッドローダーのインストールが完了しました",
-        "error": {
-          "title": "モッドローダーのインストールに失敗",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
-            "INSTALLATION_DUPLICATED": "別のプロセスが既にインストール中です",
-            "MAIN_CLASS_NOT_FOUND": "メインクラスが見つかりません",
-            "PROCESSOR_EXECUTION_FAILED": "インストールタスクの実行に失敗",
-            "LOADER_INSTALLER_NOT_FOUND": "ローダーインストーラーのファイルが見つかりません"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "{{instanceName}} に OptiFine をインストール中",
-        "success": "OptiFine のインストールが完了",
-        "error": {
-          "title": "OptiFine のインストールに失敗",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "インスタンス ID が存在しません",
-            "INSTALLATION_DUPLICATED": "別のインストール処理がすでに進行中です",
-            "PROCESSOR_EXECUTION_FAILED": "インストール処理の実行に失敗",
-            "LOADER_INSTALLER_NOT_FOUND": "OptiFine インストーラーが見つかりません",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine のバージョン情報の解析に失敗",
-            "INVALID_SOURCE_PATH": "ソースパスが無効です",
-            "NO_SUITABLE_JAVA": "適切な Java ランタイムが見つかりません",
-            "SELECTED_JAVA_UNAVAILABLE": "選択した Java ランタイムは利用できません"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "モッドローダーを変更できません",
@@ -2991,13 +2978,17 @@
         "error": {
           "title": "モッドローダーの変更に失敗",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "外部からインストールされたバージョンのため、アンインストールまたは変更できません"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "外部からインストールされたバージョンのため、アンインストールまたは変更できません",
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
           }
         }
       },
       "changeOptiFine": {
         "error": {
-          "title": "OptiFine の変更に失敗"
+          "title": "OptiFine の変更に失敗",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
+          }
         }
       },
       "removeModLoader": {
@@ -3081,10 +3072,32 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
-        "error": "タスクの作成に失敗"
+      "common": {
+        "title": "ダウンロード操作に失敗しました",
+        "description": {
+          "NETWORK_ERROR": "ネットワークエラー：{{details}}",
+          "HTTP_ERROR": "HTTP エラー：{{status}}",
+          "IO_ERROR": "ファイル操作に失敗しました：{{details}}",
+          "CHECKSUM_MISMATCH": "ファイルのチェックサムが一致しません：期待値 {{expected}}、実際の値 {{actual}}",
+          "CORRUPT_FILES": "破損したファイル：{{paths, list}}",
+          "MISSING_FIELD": "タスクに必要なフィールドがありません：{{field}}",
+          "UNKNOWN_EXECUTOR": "不明なタスク実行器：{{executor}}",
+          "INVALID_CONTENT_RANGE": "サーバーが無効な Content-Range を返しました",
+          "RESUME_OFFSET_MISMATCH": "再開位置が一致しません：期待値 {{expected}}、実際の値 {{actual}}",
+          "OTHER_ERROR": "タスクに失敗しました：{{details}}",
+          "EMPTY_GROUP": "タスクグループには少なくとも 1 つのタスクが必要です",
+          "CHANNEL_CLOSED": "ダウンロードエンジンとの接続が閉じられました",
+          "UNKNOWN_GROUP": "タスクグループ {{groupId}} が見つかりません",
+          "INVALID_STATE": "タスクグループ {{groupId}} の現在の状態ではこの操作を実行できません",
+          "STORAGE_ERROR": "ダウンロード状態の保存に失敗しました：{{details}}",
+          "ENGINE_NOT_INITIALIZED": "ダウンロードエンジンが初期化されていません",
+          "INSTALLATION_INSTANCE_MISMATCH": "インストール対象のインスタンスがタスクと一致しません",
+          "MOD_LOADER_CHANGED": "インストール中に Mod ローダーが変更されました",
+          "OPTIFINE_MISSING": "OptiFine が見つかりません",
+          "OPTIFINE_CHANGED": "インストール中に OptiFine が変更されました"
+        }
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} ダウンロードタスクを開始しました",
           "Failed": "{{param}} 一部のダウンロードに失敗しました。再試行してください",

@@ -12,6 +12,7 @@ use crate::launcher_config::models::{GameConfig, JavaInfo};
 #[allow(dead_code)]
 pub enum LaunchError {
   ModLoaderNotInstalled,
+  OptifineNotInstalled,
   NoSuitableJava,
   SelectedJavaUnavailable,
   GameFilesIncomplete,

@@ -68,3 +68,5 @@ package-lock.json
 !.claude/skills
 .gemini/
 .cursor/
+
+/.prototools

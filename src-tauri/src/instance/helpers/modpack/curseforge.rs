@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use futures::stream::{self, StreamExt};
 use serde::{Deserialize, Serialize};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::fs::File;
@@ -11,14 +12,11 @@ use tauri_plugin_http::reqwest;
 use tokio::sync::Semaphore;
 use zip::ZipArchive;
 
-use futures::stream::{self, StreamExt};
-
+use crate::download::DownloadTask;
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{InstanceError, ModLoader, ModLoaderType};
 use crate::resource::helpers::curseforge::misc::{CURSEFORGE_API_KEY, CurseForgeProject};
 use crate::resource::models::OtherResourceSource;
-use crate::tasks::PTaskParam;
-use crate::tasks::download::DownloadParam;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -141,10 +139,13 @@ impl ModpackManifest for CurseForgeManifest {
     &self,
     app: &AppHandle,
     instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>> {
+  ) -> SJMCLResult<Vec<DownloadTask>> {
     let client = app.state::<reqwest::Client>();
     let instance_path = instance_path.to_path_buf();
 
+    // Large modpacks fire two CurseForge API calls per file; an unbounded
+    // join_all bursts hundreds of requests at once and the API starts
+    // rejecting them, so cap the manifest lookups.
     let semaphore = Arc::new(Semaphore::new(8));
     let files = self.files.clone();
     let tasks = stream::iter(files.into_iter().map(move |file| {
@@ -206,9 +207,10 @@ impl ModpackManifest for CurseForgeManifest {
           .and_then(|hs| hs.iter().find(|h| h.algo == 1))
           .map(|h| h.value.clone());
 
-        let task_param = PTaskParam::Download(DownloadParam {
-          srcs: None,
-          src: url::Url::parse(&download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
+        let task_param = DownloadTask {
+          sources: vec![
+            url::Url::parse(&download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
+          ],
           sha1,
           dest: instance_path
             .join(match class_id {
@@ -218,14 +220,15 @@ impl ModpackManifest for CurseForgeManifest {
             })
             .join(&file_manifest.data.file_name),
           filename: Some(file_manifest.data.file_name.clone()),
-        });
+          size: None,
+        };
 
-        Ok::<PTaskParam, SJMCLError>(task_param)
+        Ok::<DownloadTask, SJMCLError>(task_param)
       }
     }));
 
-    let mut task_params = Vec::new();
     let mut stream = tasks.buffer_unordered(8);
+    let mut task_params = Vec::new();
     while let Some(result) = stream.next().await {
       task_params.push(result?);
     }

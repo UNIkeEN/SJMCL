@@ -12,6 +12,7 @@ use std::path::PathBuf;
 use tauri::AppHandle;
 use url::Url;
 
+use crate::download::DownloadTask;
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::sort_localized_search_results;
 use crate::resource::helpers::mod_db::{HandledSearchQuery, handle_localized_search_query};
@@ -23,7 +24,6 @@ use crate::resource::models::{
   OtherResourceSearchQuery, OtherResourceSearchRes, OtherResourceVersionPack,
   OtherResourceVersionPackQuery, ResourceError,
 };
-use crate::tasks::download::DownloadParam;
 use crate::utils::string::contains_chinese;
 
 const ALL_FILTER: &str = "All";
@@ -149,7 +149,6 @@ pub async fn fetch_remote_resource_by_local_modrinth(
   params.insert("algorithm".to_string(), "sha1".to_string());
 
   let url = get_modrinth_api(OtherResourceApiEndpoint::FromLocal, Some(&hash_string))?;
-
   let version_pack = make_modrinth_request_multi_source::<ModrinthVersionPack, ()>(
     app,
     &url,
@@ -203,7 +202,7 @@ pub async fn fetch_latest_mod_download_param_modrinth(
   mod_loader: ModLoaderType,
   game_version: &str,
   mods_dir: PathBuf,
-) -> SJMCLResult<Option<DownloadParam>> {
+) -> SJMCLResult<Option<DownloadTask>> {
   log::info!(
     "fetch_latest_mod_download_param_modrinth called: mod_id={}, mod_loader={}, game_version={}, mods_dir={}",
     mod_id,
@@ -243,11 +242,11 @@ pub async fn fetch_latest_mod_download_param_modrinth(
   let filename = latest_file.file_name.clone();
   let dest_path = mods_dir.join(&filename);
 
-  Ok(Some(DownloadParam {
-    srcs: None,
-    src: download_url,
+  Ok(Some(DownloadTask {
+    sources: vec![download_url],
     dest: dest_path,
     filename: Some(filename),
+    size: None,
     sha1: Some(latest_file.sha1.clone()),
   }))
 }

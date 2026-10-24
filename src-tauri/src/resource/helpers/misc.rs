@@ -150,34 +150,6 @@ pub fn convert_url_source_type(
   }
 }
 
-/// Build the *primary* source for a download plus every alternative mirror we
-/// can derive for it.
-///
-/// This mirrors PCL's `DlSourceOrder`: every file carries both an official and
-/// a mirrored URL, so a mirror outage (or an unreachable official host, which is
-/// common from mainland China) becomes a source switch instead of a timeout.
-pub fn build_source_candidates(
-  url: &Url,
-  resource_types: &[ResourceType],
-  preferred: &SourceType,
-) -> (Option<Url>, Vec<Url>) {
-  let primary = convert_url_to_target_source(url, resource_types, preferred).ok();
-  let mut alternates: Vec<Url> = Vec::new();
-  for source in SourceType::iter() {
-    if source == *preferred {
-      continue;
-    }
-    if let Ok(candidate) = convert_url_to_target_source(url, resource_types, &source) {
-      let already_primary = primary.as_ref() == Some(&candidate);
-      if !already_primary && !alternates.contains(&candidate) && Some(candidate.clone()) != primary
-      {
-        alternates.push(candidate);
-      }
-    }
-  }
-  (primary, alternates)
-}
-
 pub fn convert_url_to_target_source(
   url: &Url,
   resource_types: &[ResourceType],
@@ -212,6 +184,39 @@ pub fn convert_url_to_target_source(
 
   // If no replacement occurred, return the original URL
   Ok(url.clone())
+}
+
+pub fn get_download_urls(
+  url: &Url,
+  resource_types: &[ResourceType],
+  priority: &[SourceType],
+) -> SJMCLResult<Vec<Url>> {
+  let mut mirror_url = url.clone();
+  // Mojang's newer CDN hosts use the same mirrored object paths.
+  match url.host_str() {
+    Some("piston-data.mojang.com") => mirror_url.set_host(Some("launcher.mojang.com"))?,
+    Some("piston-meta.mojang.com") => mirror_url.set_host(Some("launchermeta.mojang.com"))?,
+    _ => {}
+  }
+  let mut urls = Vec::new();
+  let sources = priority
+    .iter()
+    .copied()
+    .chain(SourceType::iter().filter(|source| !priority.contains(source)));
+  for source in sources {
+    let candidate = if source == SourceType::Official {
+      convert_url_to_target_source(url, resource_types, &source)?
+    } else {
+      convert_url_to_target_source(&mirror_url, resource_types, &source)?
+    };
+    if !urls.contains(&candidate) {
+      urls.push(candidate);
+    }
+  }
+  if !urls.contains(url) {
+    urls.push(url.clone());
+  }
+  Ok(urls)
 }
 
 pub fn version_pack_sort(a: &OtherResourceVersionPack, b: &OtherResourceVersionPack) -> Ordering {

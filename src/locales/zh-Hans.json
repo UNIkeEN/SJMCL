@@ -635,6 +635,7 @@
     },
     "label": {
       "paused": "已暂停",
+      "finalizing": "正在完成安装",
       "completed": "已完成",
       "error": "失败",
       "cancelled": "已取消"
@@ -2343,7 +2344,10 @@
       },
       "downloadMojangJava": {
         "error": {
-          "title": "Mojang Java 运行时下载失败"
+          "title": "Mojang Java 运行时下载失败",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
+          }
         }
       },
       "checkGameDirectory": {
@@ -2361,7 +2365,16 @@
           "title": "清除下载缓存失败",
           "description": {
             "HAS_ACTIVE_DOWNLOAD_TASKS": "当前有下载任务正在进行中，请稍后再试",
-            "FILE_DELETION_FAILED": "无法删除缓存文件，可能是文件正在被使用"
+            "FILE_DELETION_FAILED": "无法删除缓存文件，可能是文件正在被使用",
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "下载启动器更新失败",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
           }
         }
       }
@@ -2626,9 +2639,11 @@
           "title": "验证游戏文件失败",
           "description": {
             "MOD_LOADER_NOT_INSTALLED": "模组加载器未完成安装",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine 未完成安装",
             "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
             "GAME_FILES_INCOMPLETE": "游戏文件不完整或缺失",
-            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失"
+            "LAUNCHING_STATE_NOT_FOUND": "启动状态丢失",
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
           }
         }
       },
@@ -2721,7 +2736,8 @@
           "title": "下载游戏服务器失败",
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
-            "NETWORK_ERROR": "无法连接到服务器"
+            "NETWORK_ERROR": "无法连接到服务器",
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
           }
         }
       },
@@ -2741,7 +2757,8 @@
           "description": {
             "PARSE_ERROR": "服务器返回数据格式错误",
             "NETWORK_ERROR": "无法连接到服务器",
-            "FILE_OPERATION_ERROR": "无法重命名旧模组文件"
+            "FILE_OPERATION_ERROR": "无法重命名旧模组文件",
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
           }
         }
       }
@@ -2767,7 +2784,8 @@
             "FILE_CREATION_FAILED": "目标文件创建失败",
             "NETWORK_ERROR": "网络错误",
             "CLIENT_JSON_PARSE_ERROR": "实例版本信息解析错误",
-            "ASSET_INDEX_PARSE_ERROR": "资源索引文件解析错误"
+            "ASSET_INDEX_PARSE_ERROR": "资源索引文件解析错误",
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
           }
         }
       },
@@ -2948,37 +2966,6 @@
           }
         }
       },
-      "finishModLoaderInstall": {
-        "loading": "正在为 {{instanceName}} 安装模组加载器",
-        "success": "模组加载器安装完成",
-        "error": {
-          "title": "模组加载器安装失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
-            "MAIN_CLASS_NOT_FOUND": "主类未找到",
-            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
-            "LOADER_INSTALLER_NOT_FOUND": "加载器安装程序不存在"
-          }
-        }
-      },
-      "finishOptiFineLoaderInstall": {
-        "loading": "正在为 {{instanceName}} 安装 OptiFine",
-        "success": "OptiFine 安装完成",
-        "error": {
-          "title": "OptiFine 安装失败",
-          "description": {
-            "INSTANCE_NOT_FOUND_BY_ID": "实例 ID 不存在",
-            "INSTALLATION_DUPLICATED": "检测到另一个进程已在安装中",
-            "PROCESSOR_EXECUTION_FAILED": "安装任务执行失败",
-            "LOADER_INSTALLER_NOT_FOUND": "OptiFine 安装程序不存在",
-            "MOD_LOADER_VERSION_PARSE_ERROR": "OptiFine 版本信息解析失败",
-            "INVALID_SOURCE_PATH": "资源路径无效",
-            "NO_SUITABLE_JAVA": "没有找到可用的 Java 运行时",
-            "SELECTED_JAVA_UNAVAILABLE": "所选 Java 运行时不可用"
-          }
-        }
-      },
       "checkChangeModLoaderAvailablity": {
         "error": {
           "title": "无法更改模组加载器",
@@ -2991,13 +2978,17 @@
         "error": {
           "title": "修改模组加载器失败",
           "description": {
-            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换"
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "由外部安装的版本，无法卸载或更换",
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
           }
         }
       },
       "changeOptiFine": {
         "error": {
-          "title": "修改 OptiFine 失败"
+          "title": "修改 OptiFine 失败",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
+          }
         }
       },
       "removeModLoader": {
@@ -3081,10 +3072,32 @@
       }
     },
     "task": {
-      "scheduleProgressiveTaskGroup": {
-        "error": "任务创建失败"
+      "common": {
+        "title": "下载操作失败",
+        "description": {
+          "NETWORK_ERROR": "网络错误：{{details}}",
+          "HTTP_ERROR": "HTTP 错误：{{status}}",
+          "IO_ERROR": "文件操作失败：{{details}}",
+          "CHECKSUM_MISMATCH": "文件校验失败：预期 {{expected}}，实际 {{actual}}",
+          "CORRUPT_FILES": "文件损坏：{{paths, list}}",
+          "MISSING_FIELD": "任务缺少字段：{{field}}",
+          "UNKNOWN_EXECUTOR": "未知的任务执行器：{{executor}}",
+          "INVALID_CONTENT_RANGE": "服务器返回了无效的 Content-Range",
+          "RESUME_OFFSET_MISMATCH": "断点位置不匹配：预期 {{expected}}，实际 {{actual}}",
+          "OTHER_ERROR": "任务失败：{{details}}",
+          "EMPTY_GROUP": "任务组至少需要一个任务",
+          "CHANNEL_CLOSED": "与下载引擎的连接已关闭",
+          "UNKNOWN_GROUP": "找不到任务组 {{groupId}}",
+          "INVALID_STATE": "任务组 {{groupId}} 当前状态不允许此操作",
+          "STORAGE_ERROR": "保存下载状态失败：{{details}}",
+          "ENGINE_NOT_INITIALIZED": "下载引擎尚未初始化",
+          "INSTALLATION_INSTANCE_MISMATCH": "安装实例与任务不匹配",
+          "MOD_LOADER_CHANGED": "安装过程中模组加载器已更改",
+          "OPTIFINE_MISSING": "找不到 OptiFine",
+          "OPTIFINE_CHANGED": "安装过程中 OptiFine 已更改"
+        }
       },
-      "onTaskGroupUpdate": {
+      "onDownloadGroupUpdate": {
         "status": {
           "Started": "{{param}} 下载任务已开始",
           "Failed": "{{param}} 部分下载失败，请重试",

@@ -5,7 +5,10 @@ interface SharedModalContextType {
   openSharedModal: (key: string, params?: any) => void;
   closeSharedModal: (key: string) => void;
   openGenericConfirmDialog: (params?: any) => void;
-  modalStates: Record<string, { isOpen: boolean; params: any }>;
+  modalStates: Record<
+    string,
+    { isOpen: boolean; params: any; onCloseCallback?: () => void }
+  >;
 }
 
 export const SharedModalContext = createContext<
@@ -16,7 +19,10 @@ export const SharedModalContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [modalStates, setModalStates] = useState<
-    Record<string, { isOpen: boolean; params: any }>
+    Record<
+      string,
+      { isOpen: boolean; params: any; onCloseCallback?: () => void }
+    >
   >({});
   const { config } = useLauncherConfig();
 

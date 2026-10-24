@@ -54,13 +54,17 @@ const SharedModals: React.FC<{ children: React.ReactNode }> = ({
       {Object.keys(modals).map((key) => {
         const modalParams = modalStates[key];
         if (!modalParams) return null;
+        const { onCloseCallback, ...modalProps } = modalParams;
 
         const SpecModal = modals[key];
         return (
           <SpecModal
             key={key}
-            {...modalParams}
-            onClose={() => closeSharedModal(key)}
+            {...modalProps}
+            onClose={() => {
+              closeSharedModal(key);
+              onCloseCallback?.();
+            }}
           />
         );
       })}

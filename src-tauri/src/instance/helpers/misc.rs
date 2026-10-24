@@ -8,21 +8,18 @@ use std::io::Cursor;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
-use tokio::sync::Mutex as AsyncMutex;
 use zip::ZipArchive;
 
 use crate::instance::helpers::client_jar::load_game_version_from_jar;
 use crate::instance::helpers::client_json::{McClientInfo, libraries_to_info, patches_to_info};
-use crate::instance::helpers::loader::cleanroom::download_cleanroom_libraries;
-use crate::instance::helpers::loader::forge::download_forge_libraries;
-use crate::instance::helpers::loader::neoforge::download_neoforge_libraries;
-use crate::instance::helpers::loader::optifine::download_optifine_libraries;
 use crate::instance::models::misc::{
-  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, ModLoaderType, OptiFine,
+  Instance, InstanceError, InstanceSubdirType, ModLoader, ModLoaderStatus, OptiFine,
 };
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
-use crate::resource::helpers::misc::get_source_priority_list;
+
+#[derive(Default)]
+pub struct InstanceRefreshLock(pub tokio::sync::Mutex<()>);
 
 pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameConfig {
   if instance.use_spec_game_config
@@ -132,30 +129,13 @@ pub fn unify_instance_name(src_version_path: &PathBuf, tgt_name: &String) -> SJM
   Ok(dst_dir)
 }
 
-/// Serialises instance refreshes.
-///
-/// `retrieve_instance_list` refreshes *every* instance on each call, and the
-/// frontend fires it repeatedly (list page, task-completion handlers, config
-/// changes). Overlapping calls all read the same on-disk config, so they all
-/// see `NotDownloaded` and each one schedules a full mod-loader library group —
-/// that is what fills the downloads page with duplicate, never-finishing
-/// NeoForge groups. A single lock makes the second caller observe the status
-/// the first one already persisted.
-static REFRESH_LOCK: std::sync::OnceLock<AsyncMutex<()>> = std::sync::OnceLock::new();
-
-fn refresh_lock() -> &'static AsyncMutex<()> {
-  REFRESH_LOCK.get_or_init(|| AsyncMutex::new(()))
-}
-
 async fn refresh_instance(
-  app: &AppHandle,
   mut version_path: PathBuf,
   name: String,
   jar_path: PathBuf,
   json_path: PathBuf,
-  is_first_run: bool,
 ) -> SJMCLResult<Option<Instance>> {
-  let mut client_data = match load_json_async::<McClientInfo>(&json_path).await {
+  let client_data = match load_json_async::<McClientInfo>(&json_path).await {
     Ok(v) => v,
     Err(e) => {
       log::warn!("Failed to load client info for {}: {}", name, e);
@@ -178,128 +158,6 @@ async fn refresh_instance(
   .load_json_cfg()
   .await
   .unwrap_or_default();
-
-  if cfg_read.mod_loader.status != ModLoaderStatus::Installed {
-    let priority_list = {
-      let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
-      let launcher_config = launcher_config_state.lock()?;
-      get_source_priority_list(&launcher_config)
-    };
-    if let Err(e) = {
-      match cfg_read.mod_loader.status {
-        ModLoaderStatus::NotDownloaded => {
-          match cfg_read.mod_loader.loader_type {
-            ModLoaderType::Forge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              // Persist *before* scheduling: the downloader runs in the
-              // background and only reports back through task events, so
-              // without this the on-disk status stays `NotDownloaded` and the
-              // next refresh re-schedules the whole library group.
-              cfg_read.save_json_cfg().await?;
-              download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
-            }
-            ModLoaderType::Cleanroom => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              cfg_read.save_json_cfg().await?;
-              download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data)
-                .await?;
-            }
-            ModLoaderType::NeoForge => {
-              cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-              cfg_read.save_json_cfg().await?;
-              download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
-            }
-            _ => {}
-          }
-          let vjson_path = cfg_read
-            .version_path
-            .join(format!("{}.json", cfg_read.name));
-          fs::write(vjson_path, serde_json::to_vec_pretty(&client_data)?)?;
-
-          Ok(())
-        }
-        ModLoaderStatus::DownloadFailed => match cfg_read.mod_loader.loader_type {
-          ModLoaderType::Forge => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            cfg_read.save_json_cfg().await?;
-            download_forge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-          }
-          ModLoaderType::Cleanroom => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            cfg_read.save_json_cfg().await?;
-            download_cleanroom_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-          }
-          ModLoaderType::NeoForge => {
-            cfg_read.mod_loader.status = ModLoaderStatus::Downloading;
-            cfg_read.save_json_cfg().await?;
-            download_neoforge_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-          }
-          _ => Ok(()),
-        },
-        ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
-          if is_first_run {
-            // The instance failed to install mod loader during last run.
-            cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
-          }
-          Ok(())
-        }
-        ModLoaderStatus::Installed => Ok(()),
-      }
-    } {
-      log::warn!("Failed to install mod loader for {}: {:?}", name, e);
-      cfg_read.mod_loader.status = ModLoaderStatus::DownloadFailed;
-      cfg_read.save_json_cfg().await?;
-      return Ok(None);
-    }
-  }
-
-  if cfg_read
-    .optifine
-    .as_ref()
-    .is_some_and(|o| o.status != ModLoaderStatus::Installed)
-  {
-    let priority_list = {
-      let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
-      let launcher_config = launcher_config_state.lock()?;
-      get_source_priority_list(&launcher_config)
-    };
-    if let Err(e) = {
-      match cfg_read.optifine.as_ref().unwrap().status {
-        ModLoaderStatus::Downloading | ModLoaderStatus::Installing => {
-          if is_first_run {
-            // The instance failed to install OptiFine during last run.
-            if let Some(optifine_cfg) = &mut cfg_read.optifine {
-              optifine_cfg.status = ModLoaderStatus::DownloadFailed;
-            }
-          }
-          Ok(())
-        }
-        ModLoaderStatus::NotDownloaded => {
-          cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
-          download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await?;
-
-          let vjson_path = cfg_read
-            .version_path
-            .join(format!("{}.json", cfg_read.name));
-          fs::write(vjson_path, serde_json::to_vec_pretty(&client_data)?)?;
-
-          Ok(())
-        }
-        ModLoaderStatus::DownloadFailed => {
-          cfg_read.optifine.as_mut().unwrap().status = ModLoaderStatus::Downloading;
-          download_optifine_libraries(app, &priority_list, &cfg_read, &mut client_data).await
-        }
-        ModLoaderStatus::Installed => Ok(()),
-      }
-    } {
-      log::warn!("Failed to install OptiFine for {}: {:?}", name, e);
-      if let Some(optifine_cfg) = &mut cfg_read.optifine {
-        optifine_cfg.status = ModLoaderStatus::DownloadFailed;
-      }
-      cfg_read.save_json_cfg().await?;
-      return Ok(None);
-    }
-  }
 
   let (mut game_version, loader_version, loader_type, optifine_info) =
     if !client_data.patches.is_empty() {
@@ -352,25 +210,13 @@ async fn refresh_instance(
     },
     ..cfg_read
   };
-  // ignore error here, for now
   instance.save_json_cfg().await?;
 
   Ok(Some(instance))
 }
 
-pub async fn refresh_instances(
-  app: &AppHandle,
-  game_directory: &GameDirectory,
-  is_first_run: bool,
-) -> SJMCLResult<Vec<Instance>> {
-  // Hold the lock for the whole directory walk: `refresh_instance` may schedule
-  // download groups, and only the holder may decide that. See `REFRESH_LOCK`.
-  let _guard = refresh_lock().lock().await;
+pub async fn refresh_instances(game_directory: &GameDirectory) -> SJMCLResult<Vec<Instance>> {
   let mut instances = vec![];
-  // A directory name can collide with a rewritten instance id (`unify_instance_name`
-  // renormalises the folder), which would process the same instance twice in one
-  // pass and schedule its library group twice.
-  let mut visited = std::collections::HashSet::new();
   // traverse the "versions" directory
   let versions_dir = game_directory.dir.join("versions");
   for entry in fs::read_dir(versions_dir)? {
@@ -396,20 +242,8 @@ pub async fn refresh_instances(
     if !jar_path.exists() || !json_path.exists() {
       continue; // not a valid instance
     }
-    if !visited.insert(version_path.clone()) {
-      continue;
-    }
 
-    match refresh_instance(
-      app,
-      version_path.clone(),
-      name.clone(),
-      jar_path,
-      json_path,
-      is_first_run,
-    )
-    .await
-    {
+    match refresh_instance(version_path.clone(), name.clone(), jar_path, json_path).await {
       Ok(Some(instance)) => instances.push(instance),
       Ok(None) => {}
       Err(e) => {
@@ -427,15 +261,13 @@ pub async fn refresh_instances(
 }
 
 pub async fn refresh_all_instances(
-  app: &AppHandle,
   game_directories: &[GameDirectory],
-  is_first_run: bool,
 ) -> HashMap<String, Instance> {
   let mut instance_map = HashMap::new();
 
   for game_directory in game_directories {
     let dir_name = game_directory.name.clone();
-    match refresh_instances(app, game_directory, is_first_run).await {
+    match refresh_instances(game_directory).await {
       Ok(vs) => {
         for mut instance in vs {
           let composed_id = format!("{}:{}", dir_name, instance.name);
@@ -450,14 +282,16 @@ pub async fn refresh_all_instances(
   instance_map
 }
 
-pub async fn refresh_and_update_instances(app: &AppHandle, is_first_run: bool) {
+pub async fn refresh_and_update_instances(app: &AppHandle) {
+  let binding = app.state::<InstanceRefreshLock>();
+  let _refresh_guard = binding.0.lock().await;
   // get launcher config -> local game directories
   let local_game_directories = {
     let binding = app.state::<Mutex<LauncherConfig>>();
     let state = binding.lock().unwrap();
     state.local_game_directories.clone()
   };
-  let instances = refresh_all_instances(app, &local_game_directories, is_first_run).await;
+  let instances = refresh_all_instances(&local_game_directories).await;
   // update the instances in the app state
   let binding = app.state::<Mutex<HashMap<String, Instance>>>();
   let mut state = binding.lock().unwrap();

@@ -424,6 +424,20 @@ Terminal=false
   Ok(())
 }
 
+/// Checks existence, and verifies SHA-1 only when full validation is requested.
+pub async fn is_local_file_valid(
+  path: &Path,
+  sha1: Option<&str>,
+  check_hash: bool,
+) -> SJMCLResult<bool> {
+  let exists = tokio::fs::try_exists(path).await?;
+  Ok(
+    exists
+      && (!check_hash
+        || sha1.is_some_and(|sha1| validate_sha1(path.to_path_buf(), sha1.to_string()).is_ok())),
+  )
+}
+
 pub fn validate_sha1(dest_path: PathBuf, truth: String) -> SJMCLResult<()> {
   let mut f = std::fs::File::options()
     .read(true)

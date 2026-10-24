@@ -170,6 +170,7 @@ const GameSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                       label: buildJavaMenuLabel(java),
                     }))}
                     placeholder={""}
+                    menuListProps={{ maxH: "40vh", overflowY: "auto" }}
                   />
                 ),
               },
