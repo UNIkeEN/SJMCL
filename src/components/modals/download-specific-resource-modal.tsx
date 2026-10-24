@@ -233,14 +233,18 @@ const DownloadSpecificResourceModal: React.FC<
     (action: () => void) => {
       if (!selectedItem) return;
       if (selectedItem.dependencies.length > 0 && !isModpack) {
-        openSharedModal("alert-resource-dependency", {
-          dependencies: selectedItem.dependencies,
-          downloadSource: resource.source as OtherResourceSource,
-          curInstanceMajorVersion,
-          curInstanceVersion,
-          curInstanceModLoader,
-          downloadOriginalResource: action,
-        });
+        openSharedModal(
+          "alert-resource-dependency",
+          {
+            dependencies: selectedItem.dependencies,
+            downloadSource: resource.source as OtherResourceSource,
+            curInstanceMajorVersion,
+            curInstanceVersion,
+            curInstanceModLoader,
+            downloadOriginalResource: action,
+          },
+          { stack: true }
+        );
       } else {
         action();
       }
@@ -293,7 +297,7 @@ const DownloadSpecificResourceModal: React.FC<
           sha1: selectedItem.sha1,
         },
       ]);
-      closeSharedModal("download-specific-resource");
+      modalProps.onClose();
       if (isModpack) closeSharedModal("download-modpack");
       router.push("/downloads");
     });
@@ -306,6 +310,7 @@ const DownloadSpecificResourceModal: React.FC<
     resource.type,
     handleSubmitDownloadGroup,
     closeSharedModal,
+    modalProps,
     router,
   ]);
 
@@ -371,7 +376,7 @@ const DownloadSpecificResourceModal: React.FC<
         sha1: selectedItem.sha1,
       },
     ]);
-    closeSharedModal("download-specific-resource");
+    modalProps.onClose();
     closeSharedModal("download-modpack");
     router.push("/downloads");
   }, [
@@ -379,6 +384,7 @@ const DownloadSpecificResourceModal: React.FC<
     config.download.cache.directory,
     handleSubmitDownloadGroup,
     closeSharedModal,
+    modalProps,
     router,
   ]);
 
