@@ -78,6 +78,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   const [selectedId, setSelectedId] = useState("");
 
   const selectableCardListRef = useRef<HTMLDivElement>(null);
+  const fetchTokenRef = useRef<Symbol | null>(null);
 
   useEffect(() => {
     if (mode === "optifine") {
@@ -153,9 +154,15 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
 
   const handleFetchModLoaderVersionList = useCallback(
     (type: ModLoaderType) => {
+      const token = Symbol();
+      fetchTokenRef.current = token;
+
       setIsLoading(true);
+
       ResourceService.fetchModLoaderVersionList(selectedGameVersion.id, type)
         .then((res) => {
+          if (fetchTokenRef.current !== token) return;
+
           if (res.status === "success") {
             setVersionList(
               res.data
@@ -178,15 +185,23 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
             });
           }
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          if (fetchTokenRef.current === token) setIsLoading(false);
+        });
     },
     [selectedGameVersion.id, buildOptionItems, t, toast]
   );
 
   const handleFetchOptiFineVersionList = useCallback(() => {
+    const token = Symbol();
+    fetchTokenRef.current = token;
+
     setIsLoading(true);
+
     ResourceService.fetchOptiFineVersionList(selectedGameVersion.id)
       .then((res) => {
+        if (fetchTokenRef.current !== token) return;
+
         if (res.status === "success") {
           setVersionList(res.data.map(buildOptionItems));
         } else {
@@ -198,7 +213,9 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
           });
         }
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (fetchTokenRef.current === token) setIsLoading(false);
+      });
   }, [selectedGameVersion.id, buildOptionItems, toast]);
 
   let selectableCardItems = modLoaderTypes
@@ -220,7 +237,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
                 })
             : t("LoaderSelector.noVersionSelected"),
         displayMode: "selector",
-        isLoading,
         isSelected: type === selectedModLoader.loaderType,
         isChevronShown: selectedType !== type,
         onSelect: () => {
@@ -271,7 +287,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
               item: selectedModLoader.loaderType,
             }),
       displayMode: "selector",
-      isLoading,
       isSelected: !!selectedOptiFine,
       isDisabled: !(
         selectedModLoader.loaderType === ModLoaderType.Forge ||
@@ -319,7 +334,9 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     } else if (selectedType !== ModLoaderType.Unknown) {
       handleFetchModLoaderVersionList(selectedType);
     } else {
+      fetchTokenRef.current = null;
       setVersionList([]);
+      setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]);
