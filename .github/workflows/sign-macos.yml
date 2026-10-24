@@ -119,14 +119,14 @@ jobs:
           codesign --deep --force --options runtime \
             --entitlements "$ENTITLEMENTS_PATH" \
             --sign "$SIGNING_IDENTITY" \
-            "SJMCL.app"
+            "仙建世界客户端.app"
           
           # Verify signing
-          codesign --verify --deep --strict --verbose=2 SJMCL.app
+          codesign --verify --deep --strict --verbose=2 仙建世界客户端.app
           
           # Re-compress the signed .app
           rm SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
-          tar -czf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz SJMCL.app
+          tar -czf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz 仙建世界客户端.app
 
       - name: Create DMG configuration
         working-directory: artifacts
@@ -150,7 +150,7 @@ jobs:
                 "x": 180,
                 "y": 170,
                 "type": "file",
-                "path": "SJMCL.app"
+                "path": "仙建世界客户端.app"
               },
               {
                 "x": 480,
@@ -181,7 +181,7 @@ jobs:
           codesign --verify --deep --strict --verbose=2 SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.dmg
           
           # Clean up extracted .app and config file
-          rm -rf SJMCL.app dmg-config.json
+          rm -rf 仙建世界客户端.app dmg-config.json
 
       - name: Notarize .app
         env:
@@ -194,7 +194,7 @@ jobs:
           tar -xzf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
           
           # Create zip for notarization
-          ditto -c -k --keepParent SJMCL.app SJMCL.zip
+          ditto -c -k --keepParent 仙建世界客户端.app SJMCL.zip
           
           # Submit for notarization
           xcrun notarytool submit SJMCL.zip \
@@ -204,12 +204,12 @@ jobs:
             --wait
           
           # Staple the notarization
-          xcrun stapler staple SJMCL.app
+          xcrun stapler staple 仙建世界客户端.app
           
           # Re-compress the notarized .app
           rm SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz SJMCL.zip
-          tar -czf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz SJMCL.app
-          rm -rf SJMCL.app
+          tar -czf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz 仙建世界客户端.app
+          rm -rf 仙建世界客户端.app
 
       - name: Notarize DMG
         env:
@@ -235,15 +235,15 @@ jobs:
           tar -xzf SJMCL_${{ inputs.version }}_macos_${{ matrix.arch }}.app.tar.gz
           
           echo "=== Testing Gatekeeper assessment on notarized app ==="
-          spctl --verbose=4 --assess --type execute SJMCL.app
+          spctl --verbose=4 --assess --type execute 仙建世界客户端.app
           
           echo "=== Final signature verification ==="
-          codesign --verify --deep --strict --verbose=2 SJMCL.app
+          codesign --verify --deep --strict --verbose=2 仙建世界客户端.app
 
       - name: Calculate SHA256
         working-directory: artifacts
         run: |
-          CORE_EXECUTABLE="SJMCL.app/Contents/MacOS/SJMCL"
+          CORE_EXECUTABLE="仙建世界客户端.app/Contents/MacOS/SJMCL"
           if [ -f "$CORE_EXECUTABLE" ]; then
             EXECUTABLE_SHA256=$(shasum -a 256 "$CORE_EXECUTABLE" | awk '{print $1}')
             echo "Signed core executable SHA256: $EXECUTABLE_SHA256"
@@ -254,7 +254,7 @@ jobs:
       - name: Cleanup artifacts
         working-directory: artifacts
         run: |
-          rm -rf SJMCL.app
+          rm -rf 仙建世界客户端.app
           ls -la .
 
       - name: Cleanup keychain

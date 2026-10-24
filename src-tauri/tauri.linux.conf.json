@@ -1,10 +1,10 @@
 {
-  "identifier": "SJMCL",
+  "identifier": "com.xauatcraft.launcher",
   "app": {
     "windows": [
       {
         "label": "main",
-        "title": "SJMC Launcher",
+        "title": "仙建世界客户端",
         "url": "/",
         "width": 800,
         "height": 550,

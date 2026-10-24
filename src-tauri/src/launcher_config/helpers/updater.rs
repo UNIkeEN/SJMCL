@@ -12,41 +12,59 @@ use crate::download::DownloadTask;
 use crate::download::submit_download_group;
 use crate::launcher_config::models::{LauncherConfig, LauncherConfigError};
 
-type SourceTuple = (&'static str, &'static str, fn(&str, &str) -> String);
-const SOURCES: [SourceTuple; 2] = [
-  (
-    "https://mc.sjtu.cn/api-sjmcl/releases/latest",
-    "version",
-    |_, fname| format!("https://mc.sjtu.cn/sjmcl/releases/{}", fname),
-  ),
-  (
-    "https://api.github.com/repos/UNIkeEN/SJMCL/releases/latest",
-    "tag_name",
-    |ver, fname| {
-      format!(
-        "https://github.com/UNIkeEN/SJMCL/releases/download/v{}/{}",
-        ver, fname
-      )
-    },
-  ),
-];
+// Base URL of the update service (the "Downloader" install center used by iOS Club).
+// Injected at build time from `XJMC_UPDATE_BASE`; when unset, update checking is disabled
+// instead of falling back to an unknown host.
+const UPDATE_SERVICE_BASE: Option<&str> = option_env!("XJMC_UPDATE_BASE");
+// Identifier of this client inside the update service.
+const UPDATE_SERVICE_APP_ID: Option<&str> = option_env!("XJMC_UPDATE_APP_ID");
 
-// Generate the new version filename on remote origin according to the current os, arch and is_portable
-fn build_resource_filename(ver: &str, os: &str, arch: &str, is_portable: bool) -> String {
-  let arch = if arch == "x86" { "i686" } else { arch };
-  let suffix = match os {
-    "windows" => {
-      if is_portable {
-        "_portable.exe"
-      } else {
-        "_setup.exe"
-      }
-    }
-    "linux" => "_portable",
-    "macos" => ".app.tar.gz",
-    _ => "",
+fn update_service_endpoint() -> Option<String> {
+  let base = UPDATE_SERVICE_BASE?.trim().trim_end_matches('/');
+  let app_id = UPDATE_SERVICE_APP_ID?.trim();
+  if base.is_empty() || app_id.is_empty() {
+    return None;
+  }
+  Some(format!("{base}/api/app/{app_id}/latest"))
+}
+
+// Score how well an asset URL matches the current platform, so that a release
+// carrying several platform builds still resolves to a single downloadable file.
+fn soft_score(url: &str, os: &str, arch: &str) -> u8 {
+  let url = url.to_ascii_lowercase();
+  let os_tokens: &[&str] = match os {
+    "windows" => &["windows", "win64", "win32"],
+    "macos" => &["macos", "darwin", "osx"],
+    "linux" => &["linux", "appimage", "deb", "rpm"],
+    _ => &[],
   };
-  format!("SJMCL_{}_{}_{}{}", ver, os, arch, suffix)
+  let arch_tokens: &[&str] = match arch {
+    "aarch64" => &["aarch64", "arm64"],
+    "x86" => &["i686", "x86_32", "win32"],
+    _ => &["x86_64", "x64", "amd64"],
+  };
+
+  let mut score = 0;
+  if os_tokens.iter().any(|token| url.contains(token)) {
+    score += 2;
+  }
+  if arch_tokens.iter().any(|token| url.contains(token)) {
+    score += 1;
+  }
+  score
+}
+
+// Pick the asset of the current platform; a release asset must at least match the OS.
+fn pick_soft_url(softs: &[Value], os: &str, arch: &str) -> Option<String> {
+  softs
+    .iter()
+    .filter_map(|soft| {
+      let url = soft.get("softUrl")?.as_str()?.to_string();
+      Some((soft_score(&url, os, arch), url))
+    })
+    .filter(|(score, _)| *score >= 2)
+    .max_by_key(|(score, _)| *score)
+    .map(|(_, url)| url)
 }
 
 // Generate the new filename on the local disk.
@@ -67,82 +85,76 @@ fn build_local_new_filename(old_name: &str, old_version: &str, new_version: &str
 pub async fn fetch_latest_version(
   app: &AppHandle,
 ) -> SJMCLResult<Option<(String, String, String, String)>> {
+  let Some(endpoint) = update_service_endpoint() else {
+    return Ok(None);
+  };
+
   let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let (os, arch, is_portable, is_china_mainland_ip) = {
+  let (os, arch) = {
     let config_state = config_binding.lock()?;
     (
       config_state.basic_info.os_type.clone(),
       config_state.basic_info.arch.clone(),
-      config_state.basic_info.is_portable,
-      config_state.basic_info.is_china_mainland_ip,
     )
   };
   let client = app.state::<reqwest::Client>();
 
-  let mut sources = SOURCES;
-  // If not in China (mainland), firstly try GitHub.
-  if !is_china_mainland_ip {
-    sources.reverse();
-  }
+  let response = client
+    .get(&endpoint)
+    .send()
+    .await
+    .map_err(|_| LauncherConfigError::FetchError)?
+    .json::<Value>()
+    .await
+    .map_err(|_| LauncherConfigError::FetchError)?;
 
-  for (endpoint, field, _) in sources {
-    if let Ok(resp) = client.get(endpoint).send().await
-      && let Ok(j) = resp.json::<Value>().await
-      && let Some(mut ver) = j.get(field).and_then(|v| v.as_str()).map(|s| s.to_string())
-    {
-      if ver.starts_with('v') {
-        ver.remove(0);
-      }
-      let fname = build_resource_filename(&ver, os.as_str(), arch.as_str(), is_portable);
+  let version = response
+    .get("releaseId")
+    .and_then(|value| value.as_str())
+    .map(|version| version.trim_start_matches('v').to_string())
+    .ok_or(LauncherConfigError::FetchError)?;
 
-      let release_notes = j
-        .get("body")
-        .and_then(|v| v.as_str())
-        .unwrap_or_default()
-        .to_string();
-      let published_at = j
-        .get("published_at")
-        .and_then(|v| v.as_str())
-        .unwrap_or_default()
-        .to_string();
+  let softs = response
+    .get("softs")
+    .and_then(|value| value.as_array())
+    .map(Vec::as_slice)
+    .unwrap_or_default();
+  let download_url =
+    pick_soft_url(softs, os.as_str(), arch.as_str()).ok_or(LauncherConfigError::FetchError)?;
 
-      return Ok(Some((ver, fname, release_notes, published_at)));
-    }
-  }
+  let release_notes = response
+    .get("context")
+    .and_then(|value| value.as_str())
+    .unwrap_or_default()
+    .to_string();
+  let published_at = response
+    .get("releaseDate")
+    .and_then(|value| value.as_str())
+    .unwrap_or_default()
+    .to_string();
 
-  Err(LauncherConfigError::FetchError.into())
+  Ok(Some((version, download_url, release_notes, published_at)))
 }
 
-pub async fn download_target_version(
-  app: &AppHandle,
-  version: String,
-  fname: String,
-) -> SJMCLResult<()> {
-  let config_binding = app.state::<Mutex<LauncherConfig>>();
-  let (download_cache_dir, is_china_mainland_ip) = {
-    let config_state = config_binding.lock()?;
-    (
-      config_state.download.cache.directory.clone(),
-      config_state.basic_info.is_china_mainland_ip,
-    )
+pub async fn download_target_version(app: &AppHandle, download_url: String) -> SJMCLResult<()> {
+  let download_cache_dir = {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    config_binding.lock()?.download.cache.directory.clone()
   };
 
-  let mut sources = SOURCES;
-  if !is_china_mainland_ip {
-    sources.reverse();
-  }
+  let source = url::Url::parse(&download_url).map_err(|_| LauncherConfigError::FetchError)?;
+  let fname = source
+    .path_segments()
+    .and_then(|mut segments| segments.next_back())
+    .filter(|name| !name.is_empty())
+    .map(str::to_string)
+    .ok_or(LauncherConfigError::FetchError)?;
 
-  let sources = sources
-    .into_iter()
-    .map(|(_, _, mk_url)| {
-      url::Url::parse(&mk_url(&version, &fname)).map_err(|_| LauncherConfigError::FetchError.into())
-    })
-    .collect::<SJMCLResult<Vec<_>>>()?;
   submit_download_group(
     app.clone(),
     format!("launcher-update?{}", fname),
     vec![DownloadTask {
-      sources,
+      sources: vec![source],
       dest: download_cache_dir.join(&fname),
       filename: Some(fname),
       size: None,
@@ -357,6 +369,42 @@ rm -rf "$TMPDIR" || true
     .spawn()?;
 
   if restart {
+    app.exit(0);
+  }
+  Ok(())
+}
+
+// Linux portable builds ship as an AppImage-like executable, so the update is
+// installed by marking the downloaded file executable and launching it.
+#[cfg(target_os = "linux")]
+pub async fn install_update_linux(
+  app: &AppHandle,
+  downloaded_filename: String,
+  restart: bool,
+) -> SJMCLResult<()> {
+  use std::os::unix::fs::PermissionsExt;
+  use tauri_plugin_opener::OpenerExt;
+
+  let downloaded_path = {
+    let config_binding = app.state::<Mutex<LauncherConfig>>();
+    config_binding
+      .lock()?
+      .download
+      .cache
+      .directory
+      .join(&downloaded_filename)
+  };
+
+  if let Ok(metadata) = fs::metadata(&downloaded_path) {
+    let mut permissions = metadata.permissions();
+    permissions.set_mode(permissions.mode() | 0o111);
+    let _ = fs::set_permissions(&downloaded_path, permissions);
+  }
+
+  if restart {
+    app
+      .opener()
+      .open_path(downloaded_path.to_string_lossy().to_string(), None::<&str>)?;
     app.exit(0);
   }
   Ok(())

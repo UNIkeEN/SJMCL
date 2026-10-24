@@ -1,5 +1,5 @@
 {
-  "identifier": "SJMCL",
+  "identifier": "com.xauatcraft.launcher",
   "bundle": {
     "windows": {
       "nsis": {
@@ -21,7 +21,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "SJMC Launcher",
+        "title": "仙建世界客户端",
         "url": "/",
         "width": 820,
         "height": 550,

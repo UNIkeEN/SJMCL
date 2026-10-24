@@ -62,7 +62,7 @@
       "settings": {
         "copyright": {
           "title": "版權",
-          "description": "持權所有 © 2024-2026 SJMCL 開發諸君。"
+          "description": "基於 SJMCL 而作 · 持權所有 © 2024-2026 SJMCL 開發諸君 · 仙建世界客戶端 © 2026 仙建世界"
         },
         "userAgreement": {
           "title": "客契",
@@ -176,7 +176,7 @@
         "title": "進階之選",
         "uuid": {
           "label": "戶碼",
-          "placeholder": "（由 SJMCL 自調生成）",
+          "placeholder": "（由仙建世界客戶端自調生成）",
           "errorMessage": "UUID 格式不正確"
         }
       }
@@ -205,7 +205,7 @@
       "description": {
         "start": {
           "3rdparty": "此鑒權之源援 Yggdrasil Connect 規範提案",
-          "microsoft": "SJMCL 援微軟 OAuth 2.0 裝置授權流"
+          "microsoft": "仙建世界客戶端援微軟 OAuth 2.0 裝置授權流"
         },
         "next": "請擊續登入之鈕以轉登入頁，書上碼（已自鈔）。"
       },
@@ -529,7 +529,7 @@
       "type": "型別"
     },
     "warning": {
-      "mojang": "Mojang 所布之爪哇行時，將由 SJMCL 置於特定夾。",
+      "mojang": "Mojang 所布之爪哇行時，將由仙建世界客戶端置於特定夾。",
       "oracle": "自 Oracle 源引之，或須登入。"
     }
   },
@@ -842,10 +842,10 @@
     "title": "{{name}} 置設"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL 不能制第三方擴充之行，亦不能保其私據之處置。惟可信源之擴充，可置而啟之。",
+    "alert": "仙建世界客戶端不能制第三方擴充之行，亦不能保其私據之處置。惟可信源之擴充，可置而啟之。",
     "fileDnD": {
-      "title": "置 SJMCL 擴充套件",
-      "desc": "將擴充套件案 {{fileName}} 置於 SJMCL"
+      "title": "置仙建世界客戶端擴充套件",
+      "desc": "將擴充套件案 {{fileName}} 置於仙建世界客戶端"
     },
     "installed": "已裝擴充套件",
     "menu": {
@@ -1280,14 +1280,14 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "今案夾",
-            "APP_DATA_SUBDIR": "SJMCL 資料案夾",
+            "APP_DATA_SUBDIR": "仙建世界客戶端資料案夾",
             "OFFICIAL_DIR": "官方啟者案夾"
           }
         }
       },
       "deleteDialog": {
         "title": "刪戲案夾",
-        "content": "誠欲刪戲案夾 {{dirName}} 乎？（SJMCL 將不會掃描此夾，但不會刪硬碟上的案）"
+        "content": "誠欲刪戲案夾 {{dirName}} 乎？（仙建世界客戶端將不會掃描此夾，但不會刪硬碟上的案）"
       },
       "directoryNotExist": "該夾無，請刪並復增"
     },
@@ -1676,7 +1676,7 @@
     }
   },
   "IntelligenceSettingsPage": {
-    "title": "SJMCL 智慧",
+    "title": "仙建世界客戶端智慧",
     "description": "將人工智慧形整合進您的啟者使用與 礦藝 遊玩體驗",
     "mcpServer": {
       "title": "MCP 服務",
@@ -1718,7 +1718,7 @@
     },
     "confirmDelete": {
       "title": "卸此爪哇",
-      "description": "誠欲移除此版爪哇乎？（SJMCL 將不能用此爪哇啟戲，然不刪硬碟上之案。）"
+      "description": "誠欲移除此版爪哇乎？（仙建世界客戶端將不能用此爪哇啟戲，然不刪硬碟上之案。）"
     }
   },
   "LanguageMenu": {
@@ -1735,7 +1735,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次行異常退出",
-      "content": "SJMCL 上次行時異常退出。您可將誌傳送到<community>使用者社群</community>，或在 <github>群碼之匯</github> 發起 Issue 以尋求助",
+      "content": "仙建世界客戶端上次行時異常退出。您可將誌傳送到<community>使用者社群</community>，或在 <github>群碼之匯</github> 發起 Issue 以尋求助",
       "viewLog": "察誌"
     }
   },
@@ -1782,7 +1782,7 @@
   "MainLayout": {
     "fileDnD": {
       "title": "導入改囊集",
-      "desc": "將改囊集案 {{fileName}} 導入 SJMCL"
+      "desc": "將改囊集案 {{fileName}} 導入仙建世界客戶端"
     }
   },
   "ManageSkinModal": {
@@ -2238,8 +2238,8 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "啟者迭更",
-    "body": "新版已畢引，復啟 SJMCL 以畢迭更",
-    "bodyWinInstaller": "新版已畢引，點選置將關閉 SJMCL 並行置程式",
+    "body": "新版已畢引，復啟仙建世界客戶端以畢迭更",
+    "bodyWinInstaller": "新版已畢引，點選置將關閉仙建世界客戶端並行置程式",
     "button": {
       "restart": "復啟",
       "install": "置",
@@ -3174,7 +3174,7 @@
     "header": {
       "title": "於群碼之匯爲我輩點星"
     },
-    "body": "若您喜愛 SJMCL，並希望支援我輩，可於群碼之匯爲我輩點一星乎？此小舉義甚重，足以勉我輩持續爲君增益其用。",
+    "body": "若您喜愛仙建世界客戶端，並希望支援我輩，可於群碼之匯爲我輩點一星乎？此小舉義甚重，足以勉我輩持續爲君增益其用。",
     "button": {
       "later": "稍後",
       "starUs": "點亮星標"
@@ -3208,7 +3208,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "無效的行徑",
-      "content": "您方臨時或非法夾下行 SJMCL，您的置設和戲資料或丟失。請將 SJMCL 徙到他者所後再次行。",
+      "content": "您方臨時或非法夾下行仙建世界客戶端，您的置設和戲資料或丟失。請將仙建世界客戶端徙到他者所後再次行。",
       "btnContinue": "仍要行"
     }
   },
@@ -3251,11 +3251,11 @@
       "title": "歡迎！"
     },
     "body": {
-      "text": "歡迎使用 SJMCL！在始使用之前，請務必閱讀並許我們的<terms>客契</terms>。"
+      "text": "歡迎使用仙建世界客戶端！在始使用之前，請務必閱讀並許我們的<terms>客契</terms>。"
     },
     "warning": {
-      "unstableVersion": "您方使用{{versionLabel}}的 SJMCL，部分功用或不穩定或未開發畢，歡迎報告使用問題與功用薦。",
-      "winArm64Notice": "SJMCL 現已支援 Windows on Arm 平臺。<br/>如您方使用 <b>高通</b> 平臺，您或須置 <glpack>OpenGL 相容包</glpack> 後才能進行戲。"
+      "unstableVersion": "您方使用{{versionLabel}}的仙建世界客戶端，部分功用或不穩定或未開發畢，歡迎報告使用問題與功用薦。",
+      "winArm64Notice": "仙建世界客戶端現已支援 Windows on Arm 平臺。<br/>如您方使用 <b>高通</b> 平臺，您或須置 <glpack>OpenGL 相容包</glpack> 後才能進行戲。"
     },
     "button": {
       "agree": "許並續"

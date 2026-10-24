@@ -62,7 +62,7 @@
       "settings": {
         "copyright": {
           "title": "Derechos de Autor",
-          "description": "Derechos de Autor © 2024-2026 Equipo SJMCL."
+          "description": "Basado en SJMCL · Derechos de Autor © 2024-2026 Equipo SJMCL · Xianjian Client © 2026 Xianjian World"
         },
         "userAgreement": {
           "title": "Acuerdo de Usuario",
@@ -176,7 +176,7 @@
         "title": "Opciones Avanzadas",
         "uuid": {
           "label": "UUID",
-          "placeholder": "(Generado por SJMCL)",
+          "placeholder": "(Generado por Xianjian Client)",
           "errorMessage": "Forma de UUID inválida"
         }
       }
@@ -529,7 +529,7 @@
       "type": "Tipo"
     },
     "warning": {
-      "mojang": "El tiempo de ejecución de Java de Mojang será instalado por SJMCL en un directorio específico.",
+      "mojang": "El tiempo de ejecución de Java de Mojang será instalado por Xianjian Client en un directorio específico.",
       "oracle": "Descargar desde Oracle puede requerir inicio de sesión."
     }
   },
@@ -842,10 +842,10 @@
     "title": "Configuración de {{name}}"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL no puede controlar el comportamiento de las extensiones de terceros, incluyendo cómo manejan tus datos personales. Solo instala y habilita extensiones de fuentes confiables.",
+    "alert": "Xianjian Client no puede controlar el comportamiento de las extensiones de terceros, incluyendo cómo manejan tus datos personales. Solo instala y habilita extensiones de fuentes confiables.",
     "fileDnD": {
-      "title": "Instalar Extensión de SJMCL",
-      "desc": "Instalar archivo de extensión {{fileName}} en SJMCL"
+      "title": "Instalar Extensión de Xianjian Client",
+      "desc": "Instalar archivo de extensión {{fileName}} en Xianjian Client"
     },
     "installed": "Extensiones Instaladas",
     "menu": {
@@ -1280,14 +1280,14 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "Actual",
-            "APP_DATA_SUBDIR": "Datos de SJMCL",
+            "APP_DATA_SUBDIR": "Datos de Xianjian Client",
             "OFFICIAL_DIR": "Lanzador Oficial"
           }
         }
       },
       "deleteDialog": {
         "title": "Eliminar Directorio del Juego",
-        "content": "¿Confirmar la eliminación del directorio del juego {{dirName}}? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
+        "content": "¿Confirmar la eliminación del directorio del juego {{dirName}}? (Xianjian Client ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
       },
       "directoryNotExist": "El directorio no existe, por favor agrega la ruta de nuevo."
     },
@@ -1676,7 +1676,7 @@
     }
   },
   "IntelligenceSettingsPage": {
-    "title": "SJMCL Intelligence",
+    "title": "Xianjian Client Intelligence",
     "description": "Integra modelos de IA en tu lanzador y experiencia de juego de Minecraft.",
     "mcpServer": {
       "title": "Servicio MCP",
@@ -1718,7 +1718,7 @@
     },
     "confirmDelete": {
       "title": "Eliminar Java",
-      "description": "¿Confirmar la eliminación de este Java? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
+      "description": "¿Confirmar la eliminación de este Java? (Xianjian Client ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
     }
   },
   "LanguageMenu": {
@@ -1735,7 +1735,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La ejecución anterior terminó anormalmente",
-      "content": "SJMCL terminó anormalmente durante la última ejecución. Puedes enviar los registros a la <community>comunidad</community>, o abrir un issue en <github>GitHub</github> para obtener ayuda.",
+      "content": "Xianjian Client terminó anormalmente durante la última ejecución. Puedes enviar los registros a la <community>comunidad</community>, o abrir un issue en <github>GitHub</github> para obtener ayuda.",
       "viewLog": "Ver registros"
     }
   },
@@ -1782,7 +1782,7 @@
   "MainLayout": {
     "fileDnD": {
       "title": "Importar Modpack",
-      "desc": "Importar archivo de modpack {{fileName}} a SJMCL"
+      "desc": "Importar archivo de modpack {{fileName}} a Xianjian Client"
     }
   },
   "ManageSkinModal": {
@@ -2238,8 +2238,8 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "Actualización del lanzador",
-    "body": "La nueva versión ha sido descargada. Reinicia SJMCL para completar la actualización.",
-    "bodyWinInstaller": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará SJMCL y se ejecutará el instalador.",
+    "body": "La nueva versión ha sido descargada. Reinicia Xianjian Client para completar la actualización.",
+    "bodyWinInstaller": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará Xianjian Client y se ejecutará el instalador.",
     "button": {
       "restart": "Reiniciar",
       "install": "Instalar",
@@ -3208,7 +3208,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "Ruta de Ejecución No Segura",
-      "content": "SJMCL se está ejecutando actualmente desde un directorio temporal o no válido. Tu configuración y datos del juego podrían perderse. Por favor, mueve SJMCL a otra ubicación y ejecútalo nuevamente.",
+      "content": "Xianjian Client se está ejecutando actualmente desde un directorio temporal o no válido. Tu configuración y datos del juego podrían perderse. Por favor, mueve Xianjian Client a otra ubicación y ejecútalo nuevamente.",
       "btnContinue": "Ejecutar de Todas Formas"
     }
   },
@@ -3251,11 +3251,11 @@
       "title": "¡Bienvenido!"
     },
     "body": {
-      "text": "¡Bienvenido a SJMCL! Antes de comenzar, por favor asegúrate de leer y aceptar nuestro <terms>Acuerdo de Usuario</terms>."
+      "text": "¡Bienvenido a Xianjian Client! Antes de comenzar, por favor asegúrate de leer y aceptar nuestro <terms>Acuerdo de Usuario</terms>."
     },
     "warning": {
-      "unstableVersion": "Estás usando la versión {{versionLabel}} de SJMCL. Algunas funciones pueden ser inestables o incompletas. Los reportes de errores y solicitudes de funciones son bienvenidos.",
-      "winArm64Notice": "SJMCL ahora es compatible con Windows en Arm. Si estás usando una plataforma <b>QUALCOMM</b>, es posible que necesites instalar el <glpack>OpenGL Compatibility Pack</glpack> antes de iniciar el juego."
+      "unstableVersion": "Estás usando la versión {{versionLabel}} de Xianjian Client. Algunas funciones pueden ser inestables o incompletas. Los reportes de errores y solicitudes de funciones son bienvenidos.",
+      "winArm64Notice": "Xianjian Client ahora es compatible con Windows en Arm. Si estás usando una plataforma <b>QUALCOMM</b>, es posible que necesites instalar el <glpack>OpenGL Compatibility Pack</glpack> antes de iniciar el juego."
     },
     "button": {
       "agree": "Aceptar"

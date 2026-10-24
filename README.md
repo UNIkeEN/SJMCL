@@ -1,5 +1,12 @@
 <img src="docs/figs/banner.png" alt="SJMCL" />
 
+> [!IMPORTANT]
+> 本仓库是 **仙建世界客户端** —— 由[仙建世界（西安建筑科技大学 MC 社）](https://www.xauatcraft.com)基于
+> [SJMCL](https://github.com/UNIkeEN/SJMCL) 二次开发的 Minecraft 启动器。
+>
+> 上游 SJMCL 版权归 **SJMCL 开发团队** 所有；本仓库的全部改动同样以 GPLv3 及其附加条款开源，
+> 与上游的差异集中在品牌标识、预置认证服务器与更新源对接，详见 [docs/PRD.zh-Hans.md](docs/PRD.zh-Hans.md)。
+
 [![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
 ![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?logo=github&style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)

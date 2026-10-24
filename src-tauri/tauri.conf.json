@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "SJMCL",
-  "version": "1.4.0-beta.1",
-  "identifier": "SJMCL",
+  "productName": "仙建世界客户端",
+  "version": "0.1.0",
+  "identifier": "com.xauatcraft.launcher",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",

@@ -9,10 +9,8 @@ import {
   ModalOverlay,
   ModalProps,
 } from "@chakra-ui/react";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { LuExternalLink } from "react-icons/lu";
 import MarkdownContainer from "@/components/common/markdown-container";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -33,25 +31,19 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
   const { config, isZh } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
 
-  const isLinux = config.basicInfo.osType === "linux"; // for Linux, navigate to the website.
-
   const handleDownloadUpdate = () => {
-    if (isLinux) {
-      openUrl(`https://mc.sjtu.cn/sjmcl${isZh ? "" : "/en"}`);
-    } else {
-      ConfigService.downloadLauncherUpdate(newVersion).then((response) => {
-        if (response.status !== "success") {
-          toast({
-            title: response.message,
-            description: response.details,
-            status: "error",
-          });
-          return;
-        } else {
-          router.push("/downloads");
-        }
-      });
-    }
+    ConfigService.downloadLauncherUpdate(newVersion).then((response) => {
+      if (response.status !== "success") {
+        toast({
+          title: response.message,
+          description: response.details,
+          status: "error",
+        });
+        return;
+      } else {
+        router.push("/downloads");
+      }
+    });
     props.onClose();
   };
 
@@ -89,7 +81,6 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
           <Button
             variant="solid"
             colorScheme={primaryColor}
-            rightIcon={isLinux ? <LuExternalLink /> : undefined}
             onClick={handleDownloadUpdate}
           >
             {t("General.download")}

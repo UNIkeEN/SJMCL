@@ -1,8 +1,10 @@
 pub static AUTHLIB_INJECTOR_JAR_NAME: &str = "authlib-injector.jar";
-pub static PRESET_AUTH_SERVERS: [&str; 3] = [
+pub static PRESET_AUTH_SERVERS: [&str; 4] = [
   "https://skin.mc.sjtu.cn/api/yggdrasil",
   "https://skin.mualliance.ltd/api/yggdrasil",
   "https://littleskin.cn/api/yggdrasil",
+  // 仙建世界（西安建筑科技大学 MC 社）皮肤站
+  "https://skin.xauatcraft.com/api/yggdrasil",
 ];
 pub static SCOPE: &str =
   "openid offline_access Yggdrasil.PlayerProfiles.Select Yggdrasil.Server.Join";

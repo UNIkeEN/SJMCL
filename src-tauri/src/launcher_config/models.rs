@@ -18,7 +18,7 @@ use crate::{APP_DATA_DIR, EXE_DIR, IS_PORTABLE};
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VersionMetaInfo {
   pub version: String,
-  pub file_name: String,
+  pub download_url: String,
   pub release_notes: String,
   pub published_at: String,
 }
@@ -306,7 +306,8 @@ structstruck::strike! {
     },
     pub download: struct DownloadConfig {
       pub source: struct {
-        #[default = "auto"]
+        // 校园网环境优先走 BMCLAPI 镜像，配置项仍可自行切换回官方源
+        #[default = "mirror"]
         pub strategy: String,
       },
       pub transmission: struct {

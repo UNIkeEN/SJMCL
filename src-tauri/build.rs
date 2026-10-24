@@ -13,11 +13,11 @@ fn main() {
   let dest_path = Path::new(&out_dir).join("secrets.rs");
   let _ = fs::remove_file(&dest_path);
 
-  // Iterate over all env variables and print those starting with "SJMCL_" for compilation (env variables can not be accessed directly in compile time)
+  // Iterate over all env variables and print those starting with "SJMCL_" or "XJMC_" for compilation (env variables can not be accessed directly in compile time)
   // ref: https://users.rust-lang.org/t/std-set-var-in-build-rs-not-setting-environment-variable/34924/6
   // original naive impl, see: https://github.com/UNIkeEN/SJMCL/pull/412/files
   for (key, value) in env::vars() {
-    if key.starts_with("SJMCL_") {
+    if key.starts_with("SJMCL_") || key.starts_with("XJMC_") {
       println!("cargo:rerun-if-env-changed={}", key);
       println!("cargo:rustc-env={}={}", key, value);
     }

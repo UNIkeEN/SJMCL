@@ -124,6 +124,9 @@ jobs:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
           SJMCL_BUILD_TYPE: ${{ inputs.build_type }}
           SJMCL_COMMIT_SHA: ${{ steps.build_metadata.outputs.commit_sha }}
+          # 仙建世界客户端更新服务（iOS Club Downloader），在仓库 Variables 中配置
+          XJMC_UPDATE_BASE: ${{ vars.XJMC_UPDATE_BASE }}
+          XJMC_UPDATE_APP_ID: ${{ vars.XJMC_UPDATE_APP_ID }}
 
       - name: Patch portable executable
         if: matrix.platform == 'windows' || matrix.platform == 'linux'
@@ -175,7 +178,7 @@ jobs:
           elif [ "${{ matrix.platform }}" = "macos" ]; then
             ls src-tauri/target/${{ matrix.target }}/release/bundle/macos
             # For MacOS, compress the .app folder
-            tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
+            tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "仙建世界客户端.app"
           elif [ "${{ matrix.platform }}" = "linux" ]; then
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/deb/"*.deb artifacts/"$ARTIFACT_NAME".deb
             mv "src-tauri/target/${{ matrix.target }}/release/bundle/rpm/"*.rpm artifacts/"$ARTIFACT_NAME".rpm

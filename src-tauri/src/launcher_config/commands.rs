@@ -332,7 +332,7 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
     return Ok(VersionMetaInfo::default());
   }
 
-  if let Ok(Some((new_version, fname, release_notes, published_at))) =
+  if let Ok(Some((new_version, download_url, release_notes, published_at))) =
     fetch_latest_version(&app).await
     && let (Ok(current), Ok(latest)) = (
       semver::Version::parse(&current_version),
@@ -342,7 +342,7 @@ pub async fn check_launcher_update(app: AppHandle) -> SJMCLResult<VersionMetaInf
     return Ok(match latest.cmp(&current) {
       std::cmp::Ordering::Greater => VersionMetaInfo {
         version: new_version,
-        file_name: fname,
+        download_url,
         release_notes,
         published_at,
       },
@@ -363,7 +363,7 @@ pub async fn download_launcher_update(app: AppHandle, version: VersionMetaInfo) 
     Ok(())
   } else {
     // TODO: handle already downloaded case
-    return download_target_version(&app, version.version, version.file_name).await;
+    return download_target_version(&app, version.download_url).await;
   }
 }
 
@@ -383,7 +383,7 @@ pub async fn install_launcher_update(
   }
   #[cfg(target_os = "linux")]
   {
-    Ok(()) // No supported
+    updater::install_update_linux(&app, downloaded_filename, restart).await
   }
 }
 
