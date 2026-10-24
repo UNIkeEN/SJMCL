@@ -214,14 +214,7 @@ async fn build_local_mod_candidate(
   };
 
   let bytes = tokio::fs::read(path).await.ok();
-  let sha1 = match &bytes {
-    Some(bytes) => {
-      let mut hasher = Sha1::new();
-      hasher.update(bytes);
-      hex::encode(hasher.finalize())
-    }
-    None => String::new(),
-  };
+  let sha1 = bytes.as_deref().map_or_else(String::new, compute_sha1);
   let (local_side, local_uncertain) = bytes
     .as_deref()
     .and_then(detect_local_mod_side_from_bytes)
@@ -574,20 +567,41 @@ fn write_start_scripts(dir: &Path) {
   write_jar_start_scripts(dir, "server.jar");
 }
 
+fn compute_sha1(bytes: &[u8]) -> String {
+  let mut hasher = Sha1::new();
+  hasher.update(bytes);
+  hex::encode(hasher.finalize())
+}
+
+fn verify_sha1(bytes: &[u8], expected: &str) -> SJMCLResult<()> {
+  let expected = expected.trim();
+  if expected.is_empty() {
+    return Ok(());
+  }
+
+  if !compute_sha1(bytes).eq_ignore_ascii_case(expected) {
+    return Err(SJMCLError("server file checksum mismatch".to_string()));
+  }
+
+  Ok(())
+}
+
 async fn download_vanilla_server_jar(app: &AppHandle, instance: &Instance) -> SJMCLResult<PathBuf> {
   let json_path = instance
     .version_path
     .join(format!("{}.json", instance.name));
   let client_info = load_json_async::<McClientInfo>(&json_path).await?;
-  let url = client_info
+  let download = client_info
     .downloads
     .get("server")
-    .map(|download| download.url.clone())
     .ok_or_else(|| SJMCLError("vanilla server download not found".to_string()))?;
+  let url = download.url.clone();
+  let expected_sha1 = download.sha1.clone();
 
   let client = app.state::<reqwest::Client>();
   let response = client.get(&url).send().await?;
   let bytes = response.bytes().await?;
+  verify_sha1(&bytes, &expected_sha1)?;
 
   let dest = std::env::temp_dir().join(format!("sjmcl-server-{}.jar", uuid::Uuid::new_v4()));
   tokio::fs::write(&dest, &bytes).await?;
@@ -642,6 +656,20 @@ async fn run_installer(
   let client = app.state::<reqwest::Client>();
   let response = client.get(installer_url).send().await?;
   let bytes = response.bytes().await?;
+
+  let expected_sha1 = client
+    .get(format!("{}.sha1", installer_url))
+    .send()
+    .await?
+    .text()
+    .await?
+    .trim()
+    .to_string();
+  if expected_sha1.is_empty() {
+    return Err(SJMCLError("installer checksum unavailable".to_string()));
+  }
+  verify_sha1(&bytes, &expected_sha1)?;
+
   tokio::fs::write(&installer_path, &bytes).await?;
 
   let java = resolve_server_java(app, instance).await?;
