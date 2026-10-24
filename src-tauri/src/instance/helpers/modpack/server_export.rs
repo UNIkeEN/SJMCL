@@ -112,41 +112,6 @@ fn classify_fabric_environment(env: &str) -> Option<(String, bool)> {
   }
 }
 
-fn classify_forge_dependencies(value: &toml::Value) -> Option<(String, bool)> {
-  let deps = value.get("dependencies")?.as_table()?;
-  let mut has_client = false;
-  let mut has_server = false;
-
-  for dep in deps.values() {
-    let entries = match dep.as_array() {
-      Some(entries) => entries,
-      None => continue,
-    };
-
-    for entry in entries {
-      let Some(side) = entry.get("side").and_then(|s| s.as_str()) else {
-        continue;
-      };
-
-      match side.to_ascii_uppercase().as_str() {
-        "CLIENT" => has_client = true,
-        "SERVER" | "BOTH" => has_server = true,
-        _ => {}
-      }
-    }
-  }
-
-  // A server-capable mod may be either required or optional on the server;
-  // treat it as required with an "or optional" note so it is kept by default.
-  if has_server {
-    Some((SIDE_REQUIRED.to_string(), true))
-  } else if has_client {
-    Some((SIDE_UNSUPPORTED.to_string(), false))
-  } else {
-    None
-  }
-}
-
 fn classify_modrinth_environment(envs: &[String]) -> String {
   let mut best_rank = 0u8;
   let mut best = SIDE_UNKNOWN.to_string();
@@ -183,18 +148,6 @@ fn detect_local_mod_side_from_bytes(bytes: &[u8]) -> Option<(String, bool)> {
         && let Ok(json) = serde_json::from_str::<serde_json::Value>(&content)
         && let Some(env) = json.get("environment").and_then(|value| value.as_str())
         && let Some(side) = classify_fabric_environment(env)
-      {
-        return Some(side);
-      }
-    }
-  }
-
-  for entry_name in ["META-INF/mods.toml", "META-INF/neoforge.mods.toml"] {
-    if let Ok(mut file) = jar.by_name(entry_name) {
-      let mut content = String::new();
-      if file.read_to_string(&mut content).is_ok()
-        && let Ok(value) = toml::from_str::<toml::Value>(&content)
-        && let Some(side) = classify_forge_dependencies(&value)
       {
         return Some(side);
       }
@@ -240,7 +193,7 @@ async fn build_local_mod_candidate(
     .file_name()
     .map(|name| name.to_string_lossy().to_string())
     .unwrap_or_default();
-  let enabled = !file_name.ends_with(".disabled");
+  let enabled = !file_name.to_ascii_lowercase().ends_with(".disabled");
 
   let stem = path
     .file_stem()
@@ -500,12 +453,17 @@ pub async fn analyze_server_export(
   Ok(plan)
 }
 
-fn collect_dir_entries(entries: &mut Vec<(String, PathBuf)>, dir: &Path, prefix: &str) {
+fn collect_dir_entries(
+  entries: &mut Vec<(String, PathBuf)>,
+  dir: &Path,
+  prefix: &str,
+) -> SJMCLResult<()> {
   if !dir.exists() {
-    return;
+    return Ok(());
   }
 
-  for entry in WalkDir::new(dir).into_iter().filter_map(|entry| entry.ok()) {
+  for entry in WalkDir::new(dir) {
+    let entry = entry?;
     if entry.file_type().is_file()
       && let Ok(rel) = entry.path().strip_prefix(dir)
     {
@@ -518,6 +476,8 @@ fn collect_dir_entries(entries: &mut Vec<(String, PathBuf)>, dir: &Path, prefix:
       entries.push((name, entry.into_path()));
     }
   }
+
+  Ok(())
 }
 
 fn is_safe_dir_name(name: &str) -> bool {
@@ -831,7 +791,7 @@ async fn prepare_server_runtime(
   }
 
   let mut entries = Vec::new();
-  collect_dir_entries(&mut entries, &temp_dir, "");
+  collect_dir_entries(&mut entries, &temp_dir, "")?;
   Ok((entries, temp_dir))
 }
 
@@ -868,7 +828,7 @@ pub async fn export_server_pack(
       }
       let src = root.join(folder);
       if src.is_dir() {
-        collect_dir_entries(&mut entries, &src, folder);
+        collect_dir_entries(&mut entries, &src, folder)?;
       }
     }
   }
@@ -876,7 +836,7 @@ pub async fn export_server_pack(
   if let Some(dir) =
     get_instance_subdir_path_by_id(app, &instance.id, &InstanceSubdirType::ServerResourcePacks)
   {
-    collect_dir_entries(&mut entries, &dir, "server-resource-packs");
+    collect_dir_entries(&mut entries, &dir, "server-resource-packs")?;
   }
 
   if let Some(save_name) = &options.keep_save
@@ -887,7 +847,7 @@ pub async fn export_server_pack(
     if src.is_dir() {
       // A dedicated server keeps the world at the root, and the generated
       // server.properties defaults to `level-name=world`.
-      collect_dir_entries(&mut entries, &src, "world");
+      collect_dir_entries(&mut entries, &src, "world")?;
     }
   }
 

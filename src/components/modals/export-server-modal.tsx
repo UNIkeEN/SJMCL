@@ -105,23 +105,20 @@ const ExportServerModal: React.FC<ExportServerModalProps> = ({
     return 0;
   }, []);
 
-  useEffect(() => {
-    if (!modalProps.isOpen) return;
-    let isActive = true;
+  const handleAnalyzeServerExport = useCallback(
+    async (instanceId: string) => {
+      setPlan(null);
+      setKeepSave("none");
+      setAcceptEula(false);
+      setDownloadAndInstall(true);
+      setSelectedMods(new Set());
+      setSelectedFolders(new Set());
+      setServerPackName(`${instanceName}-server`);
+      setIsAnalyzing(true);
+      setActiveStep(0);
 
-    setPlan(null);
-    setKeepSave("none");
-    setAcceptEula(false);
-    setDownloadAndInstall(true);
-    setSelectedMods(new Set());
-    setSelectedFolders(new Set());
-    setServerPackName(`${instanceName}-server`);
-    setIsAnalyzing(true);
-    setActiveStep(0);
-
-    InstanceService.analyzeServerExport(instanceId)
-      .then((response) => {
-        if (!isActive) return;
+      try {
+        const response = await InstanceService.analyzeServerExport(instanceId);
         if (response.status === "success") {
           setPlan(response.data);
           if (!response.data.supportsServerInstall) {
@@ -146,24 +143,23 @@ const ExportServerModal: React.FC<ExportServerModalProps> = ({
             status: "error",
           });
         }
-      })
-      .catch((error) => {
-        if (!isActive) return;
+      } catch (error) {
         toast({
           title: t("Services.instance.analyzeServerExport.error.title"),
           description: String(error),
           status: "error",
         });
-      })
-      .finally(() => {
-        if (!isActive) return;
+      } finally {
         setIsAnalyzing(false);
-      });
+      }
+    },
+    [instanceName, t, toast]
+  );
 
-    return () => {
-      isActive = false;
-    };
-  }, [instanceId, instanceName, modalProps.isOpen, t, toast]);
+  useEffect(() => {
+    if (!modalProps.isOpen) return;
+    handleAnalyzeServerExport(instanceId);
+  }, [handleAnalyzeServerExport, instanceId, modalProps.isOpen]);
 
   const toggleMod = useCallback(
     (mod: ServerExportModInfo, checked: boolean) => {
