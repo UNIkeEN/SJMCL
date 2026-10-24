@@ -78,7 +78,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   const [selectedId, setSelectedId] = useState("");
 
   const selectableCardListRef = useRef<HTMLDivElement>(null);
-  const fetchTokenRef = useRef<Symbol | null>(null);
+  const fetchTokenRef = useRef<symbol | null>(null);
 
   useEffect(() => {
     if (mode === "optifine") {
