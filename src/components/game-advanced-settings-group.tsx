@@ -350,7 +350,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                     onSelect={(val) => {
                       updateGameAdvancedConfig("graphics.renderer", val);
                     }}
-                    menuListProps={{ maxH: 72, overflowY: "auto" }}
+                    menuListProps={{ maxH: "40vh", overflowY: "auto" }}
                   />
                 ),
               },
