@@ -13,9 +13,9 @@ interface SharedModalContextType {
     params?: any,
     options?: { stack?: boolean }
   ) => void;
-  closeSharedModal: (key: string, instanceId?: number) => void;
+  closeSharedModal: (key: string, modalId?: number) => void;
   openGenericConfirmDialog: (params?: any) => void;
-  modalStates: { key: string; instanceId: number; params: any }[];
+  modalStates: { key: string; modalId: number; params: any }[];
 }
 
 export const SharedModalContext = createContext<
@@ -28,12 +28,12 @@ export const SharedModalContextProvider: React.FC<{
   const [modalStates, setModalStates] = useState<
     SharedModalContextType["modalStates"]
   >([]);
-  const nextInstanceId = useRef(0);
+  const nextModalId = useRef(0);
   const { config } = useLauncherConfig();
 
   const openSharedModal = useCallback(
     (key: string, params: any = {}, options?: { stack?: boolean }) => {
-      const instanceId = nextInstanceId.current++;
+      const modalId = nextModalId.current++;
       setModalStates((prev) => {
         // Nested resources need separate portals, focus locks and callbacks.
         if (!options?.stack && prev.some((modal) => modal.key === key)) {
@@ -41,19 +41,19 @@ export const SharedModalContextProvider: React.FC<{
             modal.key === key ? { ...modal, params } : modal
           );
         }
-        return [...prev, { key, instanceId, params }];
+        return [...prev, { key, modalId, params }];
       });
       logger.info("Opened shared modal:", key, params);
     },
     []
   );
 
-  const closeSharedModal = useCallback((key: string, instanceId?: number) => {
+  const closeSharedModal = useCallback((key: string, modalId?: number) => {
     setModalStates((prev) =>
       prev.filter(
         (modal) =>
           modal.key !== key ||
-          (instanceId !== undefined && modal.instanceId !== instanceId)
+          (modalId !== undefined && modal.modalId !== modalId)
       )
     );
   }, []);
