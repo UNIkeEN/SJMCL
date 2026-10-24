@@ -14,7 +14,7 @@ import { LuChevronRight, LuX } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import cardStyles from "@/styles/card.module.css";
 
-export interface SelectableCardProps extends CardProps {
+export interface SelectableCardProps extends Omit<CardProps, "onClick"> {
   title: string;
   iconSrc?: string;
   description?: string;
