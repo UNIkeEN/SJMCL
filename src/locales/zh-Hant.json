@@ -1581,11 +1581,6 @@
       "title": "原理圖"
     }
   },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "details": "詳情"
-    }
-  },
   "InstanceSettingsPage": {
     "name": "實例名稱",
     "description": "實例描述",
