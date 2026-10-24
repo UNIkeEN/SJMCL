@@ -20,6 +20,8 @@ pub async fn fetch_image(app: &AppHandle, url: String) -> SJMCLResult<ImageWrapp
     .get(url)
     .send()
     .await
+    .map_err(|_| AccountError::NetworkError)?
+    .error_for_status()
     .map_err(|_| AccountError::NetworkError)?;
 
   let img_bytes = response
