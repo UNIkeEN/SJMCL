@@ -135,6 +135,13 @@ To run the project in development mode:
 pnpm tauri dev
 ```
 
+On Linux, Nix users can use the provided flake instead. It provides a development shell with the required toolchain and system libraries, as well as a package for building the application:
+
+```bash
+nix develop # run `pnpm install` once inside the shell
+nix build .#sjmcl
+```
+
 We warmly invite contributions from everyone. 
 
 * Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow). 
