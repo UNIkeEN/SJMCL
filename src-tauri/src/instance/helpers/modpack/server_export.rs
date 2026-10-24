@@ -14,10 +14,10 @@ use zip::write::{ExtendedFileOptions, FileOptions};
 use zip::{CompressionMethod, ZipWriter};
 
 use crate::instance::helpers::client_json::McClientInfo;
-use crate::instance::helpers::misc::get_instance_subdir_path_by_id;
+use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_path_by_id};
 use crate::instance::helpers::mods::common::{discover_local_mod_paths, get_mod_info_from_jar};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderType};
-use crate::launcher_config::helpers::java::get_java_paths;
+use crate::launch::helpers::jre_selector::select_java_runtime;
 use crate::resource::helpers::modrinth::{
   fetch_modrinth_projects_environments, fetch_modrinth_version_files,
 };
@@ -541,11 +541,22 @@ fn write_server_zip(
   Ok(())
 }
 
-fn resolve_java_executable(app: &AppHandle) -> String {
-  get_java_paths(app)
-    .into_iter()
-    .find(|path| Path::new(path).exists())
-    .unwrap_or_else(|| "java".to_string())
+async fn resolve_server_java(app: &AppHandle, instance: &Instance) -> SJMCLResult<String> {
+  let game_config = get_instance_game_config(app, instance);
+  let client_json_req = load_json_async::<McClientInfo>(
+    &instance
+      .version_path
+      .join(format!("{}.json", instance.name)),
+  )
+  .await
+  .ok()
+  .and_then(|info| info.java_version)
+  .map_or(0, |version| version.major_version);
+
+  let selected_java =
+    select_java_runtime(app, Some(&game_config.game_java), instance, client_json_req).await?;
+
+  Ok(selected_java.exec_path)
 }
 
 fn write_jar_start_scripts(dir: &Path, jar: &str) {
@@ -621,6 +632,7 @@ fn build_forge_installer_url(instance: &Instance) -> SJMCLResult<String> {
 
 async fn run_installer(
   app: &AppHandle,
+  instance: &Instance,
   installer_url: &str,
   temp_dir: &Path,
   extra_args: &[String],
@@ -632,7 +644,7 @@ async fn run_installer(
   let bytes = response.bytes().await?;
   tokio::fs::write(&installer_path, &bytes).await?;
 
-  let java = resolve_java_executable(app);
+  let java = resolve_server_java(app, instance).await?;
   let installer_path_for_cmd = installer_path.clone();
   let temp_dir_for_cmd = temp_dir.to_path_buf();
   let extra_args_for_cmd = extra_args.to_vec();
@@ -664,7 +676,7 @@ async fn install_forge_like_server(
     "--installServer".to_string(),
     temp_dir.to_string_lossy().to_string(),
   ];
-  run_installer(app, &installer_url, temp_dir, &args).await
+  run_installer(app, instance, &installer_url, temp_dir, &args).await
 }
 
 #[derive(Deserialize)]
@@ -712,7 +724,7 @@ async fn install_fabric_server(
     instance.mod_loader.version.clone(),
     "-downloadMinecraft".to_string(),
   ];
-  run_installer(app, &installer_url, temp_dir, &args).await?;
+  run_installer(app, instance, &installer_url, temp_dir, &args).await?;
   write_jar_start_scripts(temp_dir, "fabric-server-launch.jar");
   Ok(())
 }
@@ -755,7 +767,7 @@ async fn install_quilt_server(
     "--download-server".to_string(),
     format!("--install-dir={}", temp_dir.to_string_lossy()),
   ];
-  run_installer(app, &installer_url, temp_dir, &args).await?;
+  run_installer(app, instance, &installer_url, temp_dir, &args).await?;
   write_jar_start_scripts(temp_dir, "quilt-server-launch.jar");
   Ok(())
 }
