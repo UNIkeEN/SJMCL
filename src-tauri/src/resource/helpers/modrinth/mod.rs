@@ -5,6 +5,7 @@ use misc::{
   ModrinthProject, ModrinthSearchRes, ModrinthVersionPack, get_modrinth_api, make_modrinth_request,
   map_modrinth_file_to_version_pack,
 };
+use serde::Deserialize;
 use sha1::{Digest, Sha1};
 use sjmcl_types::error::SJMCLResult;
 use std::collections::HashMap;
@@ -253,4 +254,57 @@ pub async fn fetch_latest_mod_download_param_modrinth(
     size: None,
     sha1: Some(latest_file.sha1.clone()),
   }))
+}
+
+// Modrinth migrated side metadata to the project-level `environment` field.
+// ref: https://modrinth.com/news/article/new-environments/
+#[derive(Deserialize, Debug)]
+pub struct ModrinthVersionFileInfo {
+  pub project_id: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ModrinthProjectEnvironment {
+  pub id: String,
+  #[serde(default)]
+  pub environment: Vec<String>,
+}
+
+pub async fn fetch_modrinth_version_files(
+  app: &AppHandle,
+  hashes: &[String],
+) -> Option<HashMap<String, ModrinthVersionFileInfo>> {
+  let url = get_modrinth_api(OtherResourceApiEndpoint::VersionFiles, None).ok()?;
+  let client = app.state::<reqwest::Client>();
+  let payload = serde_json::json!({
+    "hashes": hashes,
+    "algorithm": "sha1",
+  });
+
+  make_modrinth_request::<HashMap<String, ModrinthVersionFileInfo>, _>(
+    &client,
+    &url,
+    OtherResourceRequestType::Post(&payload),
+  )
+  .await
+  .ok()
+}
+
+pub async fn fetch_modrinth_projects_environments(
+  app: &AppHandle,
+  ids: &[String],
+) -> Option<Vec<ModrinthProjectEnvironment>> {
+  let url = get_modrinth_api(OtherResourceApiEndpoint::Projects, None).ok()?;
+  let client = app.state::<reqwest::Client>();
+  let ids_json = format!("[\"{}\"]", ids.join("\",\""));
+  let mut params = HashMap::new();
+  params.insert("ids".to_string(), ids_json);
+
+  make_modrinth_request::<Vec<ModrinthProjectEnvironment>, ()>(
+    &client,
+    &url,
+    OtherResourceRequestType::GetWithParams(&params),
+  )
+  .await
+  .ok()
 }

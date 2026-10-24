@@ -37,6 +37,7 @@ use crate::instance::helpers::modpack::export::{
 use crate::instance::helpers::modpack::import::{
   ModpackMetaInfo, extract_overrides, get_download_params,
 };
+use crate::instance::helpers::modpack::server_export;
 use crate::instance::helpers::mods::common::{
   check_potential_incompatibility, compress_icon, discover_local_mod_paths, get_mod_info_from_dir,
   get_mod_info_from_jar,
@@ -1647,4 +1648,42 @@ pub async fn export_modpack(
     .map_err(|_| InstanceError::ZipFileProcessFailed)?;
 
   Ok(())
+}
+
+#[tauri::command]
+pub async fn analyze_server_export(
+  app: AppHandle,
+  instance_id: String,
+) -> SJMCLResult<server_export::ServerExportPlan> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+
+  server_export::analyze_server_export(&app, &instance).await
+}
+
+#[tauri::command]
+pub async fn export_server_pack(
+  app: AppHandle,
+  instance_id: String,
+  save_path: String,
+  options: server_export::ServerExportOptions,
+  mods: Vec<String>,
+  folders: Vec<String>,
+) -> SJMCLResult<()> {
+  let instance = {
+    let binding = app.state::<Mutex<HashMap<String, Instance>>>();
+    let state = binding.lock()?;
+    state
+      .get(&instance_id)
+      .ok_or(InstanceError::InstanceNotFoundByID)?
+      .clone()
+  };
+
+  server_export::export_server_pack(&app, &instance, &save_path, &options, &mods, &folders).await
 }

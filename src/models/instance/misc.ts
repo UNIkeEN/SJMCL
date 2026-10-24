@@ -68,6 +68,34 @@ export interface ExportModpackOptions {
   skipCurseForgeRemoteFiles?: boolean;
 }
 
+export type ServerModSide = "required" | "optional" | "unknown" | "unsupported";
+
+export interface ServerExportModInfo {
+  path: string;
+  name: string;
+  modId: string;
+  side: ServerModSide;
+  enabled: boolean;
+  uncertain: boolean;
+}
+
+export interface ServerExportPlan {
+  hasModLoader: boolean;
+  supportsServerInstall: boolean;
+  mods: ServerExportModInfo[];
+  saves: string[];
+  serverResourcePacks: string[];
+  folders: string[];
+  checkedFolders: string[];
+}
+
+export interface ServerExportOptions {
+  name: string;
+  keepSave?: string;
+  acceptEula: boolean;
+  downloadAndInstall: boolean;
+}
+
 export interface GameServerInfo {
   iconSrc: string;
   ip: string;
