@@ -151,6 +151,67 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     [primaryColor, t, onSelectModLoader, onSelectOptiFine]
   );
 
+  useEffect(() => {
+    if (selectedType === ModLoaderType.Unknown) {
+      setVersionList([]);
+      setIsLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const handleFetchVersionList = () => {
+      setIsLoading(true);
+
+      const response =
+        selectedType === "OptiFine"
+          ? ResourceService.fetchOptiFineVersionList(selectedGameVersion.id)
+          : ResourceService.fetchModLoaderVersionList(
+              selectedGameVersion.id,
+              selectedType
+            );
+      response.then((r) => {
+        if (cancelled) return;
+        switch (r.status) {
+          case "success": {
+            setVersionList(
+              r.data.map((info) =>
+                buildOptionItems(
+                  isModLoaderResourceInfo(info)
+                    ? {
+                        ...info,
+                        description:
+                          info.description &&
+                          t("LoaderSelector.releaseDate", {
+                            date: ISOToDatetime(info.description),
+                          }),
+                      }
+                    : info
+                )
+              )
+            );
+            break;
+          }
+          case "error": {
+            setVersionList([]);
+            toast({
+              status: "error",
+              title: r.message,
+              description: r.details,
+            });
+            break;
+          }
+        }
+        setIsLoading(false);
+      });
+    };
+
+    handleFetchVersionList();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType, selectedGameVersion.id]);
+
   let selectableCardItems = modLoaderTypes
     .filter(
       (it) =>
@@ -260,64 +321,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       },
     });
   }
-
-  useEffect(() => {
-    if (selectedType === ModLoaderType.Unknown) {
-      setVersionList([]);
-      setIsLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setIsLoading(true);
-
-    const response =
-      selectedType === "OptiFine"
-        ? ResourceService.fetchOptiFineVersionList(selectedGameVersion.id)
-        : ResourceService.fetchModLoaderVersionList(
-            selectedGameVersion.id,
-            selectedType
-          );
-    response.then((r) => {
-      if (cancelled) return;
-      switch (r.status) {
-        case "success": {
-          setVersionList(
-            r.data.map((info) =>
-              buildOptionItems(
-                isModLoaderResourceInfo(info)
-                  ? {
-                      ...info,
-                      description:
-                        info.description &&
-                        t("LoaderSelector.releaseDate", {
-                          date: ISOToDatetime(info.description),
-                        }),
-                    }
-                  : info
-              )
-            )
-          );
-          break;
-        }
-        case "error": {
-          setVersionList([]);
-          toast({
-            status: "error",
-            title: r.message,
-            description: r.details,
-          });
-          break;
-        }
-      }
-      setIsLoading(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedType, selectedGameVersion.id]);
 
   // Scroll selected item into view when version list changes or selected item changes
   useEffect(() => {
