@@ -13,7 +13,6 @@ import {
   Tag,
   Text,
   VStack,
-  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
@@ -78,10 +77,6 @@ const InstanceModsPage = () => {
   const { config, update } = useLauncherConfig();
   const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const primaryColor = config.appearance.theme.primaryColor;
-  const hoverBorderColor = useColorModeValue(
-    `${primaryColor}.300`,
-    `${primaryColor}.700`
-  );
   const accordionStates = config.states.instanceModsPage.accordionStates;
   const showZhTrans =
     config.general.general.language === "zh-Hans" &&
@@ -489,31 +484,12 @@ const InstanceModsPage = () => {
                     icon={<Icon as={LuChevronRight} boxSize={3.5} />}
                     variant="ghost"
                     size="xs"
-                    _hover={{ bg: "transparent" }}
-                    _active={{ bg: "transparent" }}
-                    color={
-                      currentModLoaderType === type
-                        ? `${primaryColor}.500`
-                        : undefined
-                    }
-                    _groupHover={{
-                      color:
-                        currentModLoaderType === type
-                          ? `${primaryColor}.500`
-                          : hoverBorderColor,
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleTypeSelect(type);
-                    }}
+                    onClick={() => handleTypeSelect(type)}
                   />
                 </HStack>
               </Flex>
             ),
             isSelected: currentModLoaderType === type,
-            "data-group": "",
-            isFullClickZone: true,
-            onSelect: () => handleTypeSelect(type),
           }))}
         />
       </Section>

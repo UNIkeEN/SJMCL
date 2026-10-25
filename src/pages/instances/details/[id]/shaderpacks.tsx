@@ -7,7 +7,6 @@ import {
   Image,
   Text,
   VStack,
-  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
@@ -36,11 +35,6 @@ import { ResourceService } from "@/services/resource";
 
 const InstanceShaderPacksPage = () => {
   const { config, update } = useLauncherConfig();
-  const primaryColor = config.appearance.theme.primaryColor;
-  const hoverBorderColor = useColorModeValue(
-    `${primaryColor}.300`,
-    `${primaryColor}.700`
-  );
   const { t } = useTranslation();
   const {
     instanceId,
@@ -204,31 +198,12 @@ const InstanceShaderPacksPage = () => {
               icon={<Icon as={LuChevronRight} boxSize={3.5} />}
               variant="ghost"
               size="xs"
-              _hover={{ bg: "transparent" }}
-              _active={{ bg: "transparent" }}
-              color={
-                summary?.optifine?.status === "Installed"
-                  ? `${primaryColor}.500`
-                  : undefined
-              }
-              _groupHover={{
-                color:
-                  summary?.optifine?.status === "Installed"
-                    ? `${primaryColor}.500`
-                    : hoverBorderColor,
-              }}
-              onClick={(event) => {
-                event.stopPropagation();
-                onChangeLoaderModalOpen();
-              }}
+              onClick={onChangeLoaderModalOpen}
             />
           </HStack>
         </Flex>
       ),
       isSelected: summary?.optifine?.status === "Installed",
-      "data-group": "",
-      isFullClickZone: true,
-      onSelect: onChangeLoaderModalOpen,
     },
   ];
 

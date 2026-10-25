@@ -119,10 +119,9 @@ const ExtraOperationMenu = ({
         size="xs"
         h={21}
         ml="auto"
-        onClick={(event) => event.stopPropagation()}
       />
       <Portal>
-        <MenuList onClick={(event) => event.stopPropagation()}>
+        <MenuList>
           {extraOpMenu.map((item) => (
             <MenuItem key={item.key} fontSize="xs" onClick={item.onClick}>
               <HStack>
@@ -197,17 +196,7 @@ const HomeWidget = ({
       maxW="100%"
       alignSelf="start"
     >
-      <AdvancedCard
-        level="back"
-        p={3}
-        w="100%"
-        {...(isCollapsed && {
-          cursor: "pointer",
-          _hover: { boxShadow: "md" },
-          _active: { boxShadow: "sm" },
-          onClick: () => onCollapsedChange(false),
-        })}
-      >
+      <AdvancedCard level="back" p={3} w="100%">
         <HStack align="center" mb={isCollapsed ? 0 : 2}>
           <IconButton
             aria-label={
@@ -229,12 +218,7 @@ const HomeWidget = ({
             size="xs"
             h={21}
             variant="ghost"
-            _hover={isCollapsed ? { bg: "transparent" } : undefined}
-            _active={isCollapsed ? { bg: "transparent" } : undefined}
-            onClick={(event) => {
-              event.stopPropagation();
-              onCollapsedChange(!isCollapsed);
-            }}
+            onClick={() => onCollapsedChange(!isCollapsed)}
           />
           <Avatar
             src={iconSrc}
