@@ -2,6 +2,36 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.4.0
+
+`2026-10-25`
+
+- **🔥 下载系统重构：**
+   - **修复下载超时机制的缺陷与异常占用 CPU 的问题。#1952 #2065** @NTS-Official @UNIkeEN
+   - **支持任务持久化，现在启动器重启后可以继续下载未完成的任务。#1952** @ToolmanP
+   - **优化断点续传、自动重试、备用源切换与任务依赖机制。#1952 #2023 #2072** @ToolmanP @xunying123 @UNIkeEN
+- **🔥 焕新的液态玻璃效果，带来更清透的视觉体验。#2022 @UNIkeEN @baiyuansjtu @Stya-hr**
+- 🌟 支持读取 Minecraft 26.x 格式的世界基础数据。#1893 @icgnos @UNIkeEN
+- 🌟 新增用于提交下载与管理任务的 MCP 接口。#1952 @ToolmanP @UNIkeEN
+- 🌟 支持游戏崩溃窗口在指定延迟后自动关闭。#1976 @Dainsleif233 @UNIkeEN
+- 🌟 社区新闻新增 MUA 联合源与小站高校社区源（由 JSUMC 提供 API 服务）。#2025 #2031 @Dainsleif233 @zaixiZaixiSJTU
+- 🌟 优化各处卡片列表的用户体验。#2070 #2095 @NoirHare @muqi132
+- 🐛 修复安装失败后的加载器状态同步问题，修正 Cleanroom 依赖库路径不一致的问题。#2023 @xunying123
+- 🐛 修复社区新闻源列表页面的显示对齐与加载问题。#2037 #2074 @zaixiZaixiSJTU
+- 🐛 修复 Linux 平台下中文更新页面的跳转链接错误。#2057 @xunying123
+- 🐛 修复部分场景下，前置依赖资源无法下载的问题。#2081 @66CF @UNIkeEN
+- 🐛 修复第三方皮肤或披风下载失败导致角色信息无法加载的问题，必要时使用默认皮肤。#2092 @xunying123
+- 🐛 修复加载版本列表时无法切换模组加载器类型的问题。#2094 @NoirHare
+- 🛠 禁用 Linux 平台的窗口透明效果。#1952 @ToolmanP
+- 🛠 更新鸣谢页面中的 SCL 官网链接。#2063 @suhang12332
+- 📦 更新多项依赖至补丁版本。#2017 #2020 #2021 #2024 #2064 #2066 #2084 @dependabot[bot] @UNIkeEN
+- 📦 将 AUR 软件包的 `libsoup` 依赖修正为 `libsoup3`。#2035 @KodateMitsuru
+- 工作流：
+   - 修复缺少商店图标导致 Snap 发布失败的问题。#2027 @pangbo13
+   - 新增组件前端预览 Skill，更新 `AGENTS.md` 中的项目结构说明。@UNIkeEN
+- 文档：
+   - 新增简体中文贡献指南与安全指南。#1964 @VhahahaV
+
 ## 1.3.2
 
 `2026-10-08`
