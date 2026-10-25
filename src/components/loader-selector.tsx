@@ -78,7 +78,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   const [selectedId, setSelectedId] = useState("");
 
   const selectableCardListRef = useRef<HTMLDivElement>(null);
-  const fetchTokenRef = useRef<symbol | null>(null);
 
   useEffect(() => {
     if (mode === "optifine") {
@@ -151,72 +150,6 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
     },
     [primaryColor, t, onSelectModLoader, onSelectOptiFine]
   );
-
-  const handleFetchModLoaderVersionList = useCallback(
-    (type: ModLoaderType) => {
-      const token = Symbol();
-      fetchTokenRef.current = token;
-
-      setIsLoading(true);
-
-      ResourceService.fetchModLoaderVersionList(selectedGameVersion.id, type)
-        .then((res) => {
-          if (fetchTokenRef.current !== token) return;
-
-          if (res.status === "success") {
-            setVersionList(
-              res.data
-                .map((loader) => ({
-                  ...loader,
-                  description:
-                    loader.description &&
-                    t("LoaderSelector.releaseDate", {
-                      date: ISOToDatetime(loader.description),
-                    }),
-                }))
-                .map(buildOptionItems)
-            );
-          } else {
-            setVersionList([]);
-            toast({
-              status: "error",
-              title: res.message,
-              description: res.details,
-            });
-          }
-        })
-        .finally(() => {
-          if (fetchTokenRef.current === token) setIsLoading(false);
-        });
-    },
-    [selectedGameVersion.id, buildOptionItems, t, toast]
-  );
-
-  const handleFetchOptiFineVersionList = useCallback(() => {
-    const token = Symbol();
-    fetchTokenRef.current = token;
-
-    setIsLoading(true);
-
-    ResourceService.fetchOptiFineVersionList(selectedGameVersion.id)
-      .then((res) => {
-        if (fetchTokenRef.current !== token) return;
-
-        if (res.status === "success") {
-          setVersionList(res.data.map(buildOptionItems));
-        } else {
-          setVersionList([]);
-          toast({
-            status: "error",
-            title: res.message,
-            description: res.details,
-          });
-        }
-      })
-      .finally(() => {
-        if (fetchTokenRef.current === token) setIsLoading(false);
-      });
-  }, [selectedGameVersion.id, buildOptionItems, toast]);
 
   let selectableCardItems = modLoaderTypes
     .filter(
@@ -329,17 +262,62 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
   }
 
   useEffect(() => {
-    if (selectedType === "OptiFine") {
-      handleFetchOptiFineVersionList();
-    } else if (selectedType !== ModLoaderType.Unknown) {
-      handleFetchModLoaderVersionList(selectedType);
-    } else {
-      fetchTokenRef.current = null;
+    if (selectedType === ModLoaderType.Unknown) {
       setVersionList([]);
       setIsLoading(false);
+      return;
     }
+
+    let cancelled = false;
+    setIsLoading(true);
+
+    const response =
+      selectedType === "OptiFine"
+        ? ResourceService.fetchOptiFineVersionList(selectedGameVersion.id)
+        : ResourceService.fetchModLoaderVersionList(
+            selectedGameVersion.id,
+            selectedType
+          );
+    response.then((r) => {
+      if (cancelled) return;
+      switch (r.status) {
+        case "success": {
+          setVersionList(
+            r.data.map((info) =>
+              buildOptionItems(
+                isModLoaderResourceInfo(info)
+                  ? {
+                      ...info,
+                      description:
+                        info.description &&
+                        t("LoaderSelector.releaseDate", {
+                          date: ISOToDatetime(info.description),
+                        }),
+                    }
+                  : info
+              )
+            )
+          );
+          break;
+        }
+        case "error": {
+          setVersionList([]);
+          toast({
+            status: "error",
+            title: r.message,
+            description: r.details,
+          });
+          break;
+        }
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedType]);
+  }, [selectedType, selectedGameVersion.id]);
 
   // Scroll selected item into view when version list changes or selected item changes
   useEffect(() => {
