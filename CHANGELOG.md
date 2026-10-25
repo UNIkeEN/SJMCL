@@ -2,6 +2,36 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.4.0
+
+`2026-10-25`
+
+- **🔥 Download System Refactor:**
+   - **Fix issues with the download timeout mechanism and abnormal CPU usage. #1952 #2065** @NTS-Official @UNIkeEN
+   - **Support task persistence, allowing unfinished downloads to resume after restarting the launcher. #1952** @ToolmanP
+   - **Improve resumable downloads, automatic retries, fallback source switching, and task dependency handling. #1952 #2023 #2072** @ToolmanP @xunying123 @UNIkeEN
+- **🔥 Revamped liquid glass effects for a clearer and more refined visual experience. #2022 @UNIkeEN @baiyuansjtu @Stya-hr**
+- 🌟 Support reading basic world data in the Minecraft 26.x format. #1893 @icgnos @UNIkeEN
+- 🌟 Add MCP interfaces for submitting downloads and managing tasks. #1952 @ToolmanP @UNIkeEN
+- 🌟 Support automatically closing the game crash window after a specified delay. #1976 @Dainsleif233 @UNIkeEN
+- 🌟 Add the MUA Alliance feed and university community feeds to Community News, with API services provided by JSUMC. #2025 #2031 @Dainsleif233 @zaixiZaixiSJTU
+- 🌟 Improve the user experience of card lists across the launcher. #2070 #2095 @NoirHare @muqi132
+- 🐛 Fix loader state synchronization issues after installation failures and correct inconsistent Cleanroom dependency library paths. #2023 @xunying123
+- 🐛 Fix alignment and loading issues on the Community News source list page. #2037 #2074 @zaixiZaixiSJTU
+- 🐛 Fix an incorrect redirect link on the Chinese update page on Linux. #2057 @xunying123
+- 🐛 Fix an issue where prerequisite resources could not be downloaded in certain scenarios. #2081 @66CF @UNIkeEN
+- 🐛 Fix an issue where failures to download third-party skins or capes prevented profile information from loading, falling back to the default skin when necessary. #2092 @xunying123
+- 🐛 Fix an issue where the mod loader type could not be switched while loading the version list. #2094 @NoirHare
+- 🛠 Disable window transparency effects on Linux. #1952 @ToolmanP
+- 🛠 Update the SCL official website link on the acknowledgements page. #2063 @suhang12332
+- 📦 Update multiple dependencies to patch versions. #2017 #2020 #2021 #2024 #2064 #2066 #2084 @dependabot[bot] @UNIkeEN
+- 📦 Correct the `libsoup` dependency in the AUR package to `libsoup3`. #2035 @KodateMitsuru
+- Workflow:
+   - Fix a Snap release error caused by a missing store icon. #2027 @pangbo13
+   - Add a frontend component preview Skill and update the project structure description in `AGENTS.md`. @UNIkeEN
+- Docs:
+   - Add Simplified Chinese contribution and security guides. #1964 @VhahahaV
+
 ## 1.3.2
 
 `2026-10-08`
