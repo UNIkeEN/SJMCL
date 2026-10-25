@@ -453,12 +453,12 @@
   "DeleteGameFriendDialog": {
     "dialog": {
       "title": "Supprimer l'ami",
-      "content": "Confirmer la suppression de l'ami \"{{name}}\" ?"
+      "content": "Confirmer la suppression de l'ami « {{name}} » ?"
     }
   },
   "DeleteGameServerAlertDialog": {
     "title": "Supprimer le serveur de jeu",
-    "content": "Confirmer la suppression du serveur de jeu \"{{name}}\" ({{addr}}) ? Cette action est irréversible."
+    "content": "Confirmer la suppression du serveur de jeu « {{name}} » ({{addr}}) ? Cette action est irréversible."
   },
   "DeleteInstanceAlertDialog": {
     "dialog": {
