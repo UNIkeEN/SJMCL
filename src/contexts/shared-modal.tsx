@@ -35,13 +35,14 @@ export const SharedModalContextProvider: React.FC<{
     (key: string, params: any = {}, options?: { stack?: boolean }) => {
       const modalId = nextModalId.current++;
       setModalStates((prev) => {
-        // Nested resources need separate portals, focus locks and callbacks.
-        if (!options?.stack && prev.some((modal) => modal.key === key)) {
-          return prev.map((modal) =>
-            modal.key === key ? { ...modal, params } : modal
-          );
-        }
-        return [...prev, { key, modalId, params }];
+        const index = prev.map((modal) => modal.key).lastIndexOf(key);
+        // Append when stacking or no matching modal exists.
+        // Otherwise, update only the topmost matching modal.
+        return options?.stack || index === -1
+          ? [...prev, { key, modalId, params }]
+          : prev.map((modal, i) =>
+              i === index ? { ...modal, params } : modal
+            );
       });
       logger.info("Opened shared modal:", key, params);
     },
