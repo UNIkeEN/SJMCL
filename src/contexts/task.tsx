@@ -442,8 +442,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (completion.current && !completion.current.acknowledgement) {
-      const visible = Object.values(modalStates).some(
-        (modal) => modal.onCloseCallback === completion.current?.onHandled
+      const visible = modalStates.some(
+        (modal) =>
+          modal.params.onCloseCallback === completion.current?.onHandled
       );
       if (!visible) {
         // Another dialog replaced this prompt. Keep its action pending for later.
@@ -453,8 +454,9 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     if (
       getCurrentWebview().label !== "main" ||
       completion.current ||
-      modalStates["generic-confirm"]?.isOpen ||
-      modalStates["import-modpack"]?.isOpen
+      modalStates.some(
+        ({ key }) => key === "generic-confirm" || key === "import-modpack"
+      )
     )
       return;
     const group = tasks.find(

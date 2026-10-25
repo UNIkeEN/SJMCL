@@ -124,7 +124,11 @@ const DownloadSpecificResourceModal: React.FC<
 
   const { getGameVersionList, isGameVersionListLoading, getInstanceList } =
     useGlobalData();
-  const { openSharedModal, closeSharedModal } = useSharedModals();
+  const { openSharedModal, closeSharedModal, modalStates } = useSharedModals();
+  const hasParentResource =
+    modalStates.filter(({ key }) => key === "download-specific-resource")
+      .length > 1;
+
   const {
     isOpen: isInstanceSelectorPopoverOpen,
     onOpen: onInstanceSelectorPopoverOpen,
@@ -233,14 +237,18 @@ const DownloadSpecificResourceModal: React.FC<
     (action: () => void) => {
       if (!selectedItem) return;
       if (selectedItem.dependencies.length > 0 && !isModpack) {
-        openSharedModal("alert-resource-dependency", {
-          dependencies: selectedItem.dependencies,
-          downloadSource: resource.source as OtherResourceSource,
-          curInstanceMajorVersion,
-          curInstanceVersion,
-          curInstanceModLoader,
-          downloadOriginalResource: action,
-        });
+        openSharedModal(
+          "alert-resource-dependency",
+          {
+            dependencies: selectedItem.dependencies,
+            downloadSource: resource.source as OtherResourceSource,
+            curInstanceMajorVersion,
+            curInstanceVersion,
+            curInstanceModLoader,
+            downloadOriginalResource: action,
+          },
+          { stack: true }
+        );
       } else {
         action();
       }
@@ -293,9 +301,11 @@ const DownloadSpecificResourceModal: React.FC<
           sha1: selectedItem.sha1,
         },
       ]);
-      closeSharedModal("download-specific-resource");
-      if (isModpack) closeSharedModal("download-modpack");
-      router.push("/downloads");
+      modalProps.onClose();
+      if (!hasParentResource) {
+        closeSharedModal(isModpack ? "download-modpack" : "download-resource");
+        router.push("/downloads");
+      }
     });
   }, [
     selectedItem,
@@ -303,9 +313,11 @@ const DownloadSpecificResourceModal: React.FC<
     getDefaultDownloadPath,
     getSelectedFileName,
     isModpack,
+    hasParentResource,
     resource.type,
     handleSubmitDownloadGroup,
     closeSharedModal,
+    modalProps,
     router,
   ]);
 
@@ -371,14 +383,18 @@ const DownloadSpecificResourceModal: React.FC<
         sha1: selectedItem.sha1,
       },
     ]);
-    closeSharedModal("download-specific-resource");
-    closeSharedModal("download-modpack");
-    router.push("/downloads");
+    modalProps.onClose();
+    if (!hasParentResource) {
+      closeSharedModal("download-modpack");
+      router.push("/downloads");
+    }
   }, [
     selectedItem,
     config.download.cache.directory,
+    hasParentResource,
     handleSubmitDownloadGroup,
     closeSharedModal,
+    modalProps,
     router,
   ]);
 
