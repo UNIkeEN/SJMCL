@@ -159,9 +159,9 @@ fn detect_local_mod_side_from_bytes(bytes: &[u8]) -> Option<(String, bool)> {
 
 fn side_priority(side: &str) -> u8 {
   match side {
-    SIDE_REQUIRED => 0,
-    SIDE_OPTIONAL => 1,
-    SIDE_UNKNOWN => 2,
+    SIDE_UNKNOWN => 0,
+    SIDE_REQUIRED => 1,
+    SIDE_OPTIONAL => 2,
     _ => 3,
   }
 }

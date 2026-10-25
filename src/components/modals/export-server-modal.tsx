@@ -130,7 +130,9 @@ const ExportServerModal: React.FC<ExportServerModalProps> = ({
                 .filter(
                   (mod) =>
                     mod.enabled &&
-                    (mod.side === "required" || mod.side === "optional")
+                    (mod.side === "required" ||
+                      mod.side === "optional" ||
+                      mod.side === "unknown")
                 )
                 .map((mod) => mod.path)
             )
