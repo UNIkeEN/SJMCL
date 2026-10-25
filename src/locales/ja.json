@@ -1581,11 +1581,6 @@
       "title": "スキーマティック"
     }
   },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "details": "詳細を見る"
-    }
-  },
   "InstanceSettingsPage": {
     "name": "インスタンス名称",
     "description": "インスタンス情報",

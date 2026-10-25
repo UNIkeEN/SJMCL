@@ -1581,11 +1581,6 @@
       "title": "蜃圖"
     }
   },
-  "InstanceScreenshotsPage": {
-    "button": {
-      "details": "詳"
-    }
-  },
   "InstanceSettingsPage": {
     "name": "例名",
     "description": "例述",
