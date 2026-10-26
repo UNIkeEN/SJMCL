@@ -350,6 +350,19 @@ pub async fn generate_launch_command(
     cmd.push("-Dfml.ignorePatchDiscrepancies=true".to_string());
   }
 
+  // Pre-installer FML ignores --gameDir when rebuilding its class loader.
+  if client_info.patches.iter().any(|patch| {
+    matches!(patch.id.as_str(), "forge" | "legacyforge")
+      && patch.libraries.iter().any(|library| {
+        library.name.starts_with("net.minecraftforge:forge:") && library.name.ends_with("@zip")
+      })
+  }) {
+    cmd.push(format!(
+      "-Dminecraft.applet.TargetDirectory={}",
+      root_dir.to_string_lossy()
+    ));
+  }
+
   // TODO: lwjgl non-ASCII path fix (HMCL DefaultLauncher.java#L236)
 
   // login via authlib-injector

@@ -18,6 +18,7 @@ pub enum ResourceType {
   ForgeMeta,
   ForgeMavenNew,
   ForgeInstall,
+  ForgeFmlLibraries,
   Liteloader,
   OptiFine,
   AuthlibInjector,
