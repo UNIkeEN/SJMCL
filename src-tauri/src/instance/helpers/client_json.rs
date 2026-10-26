@@ -9,11 +9,10 @@ use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::str::FromStr;
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
 use crate::instance::models::misc::{Instance, ModLoaderType};
-use crate::launcher_config::models::LauncherConfig;
+use crate::launcher_config::helpers::java::normalize_java_arch;
 use crate::resource::models::OptiFineResourceInfo;
 use crate::utils::fs::get_app_resource_filepath;
 
@@ -128,7 +127,7 @@ pub struct InstructionRule {
 }
 
 impl InstructionRule {
-  pub fn is_allowed(&self, target_feature: &FeaturesInfo) -> SJMCLResult<(bool, bool)> {
+  pub fn is_allowed(&self, target_feature: &FeaturesInfo, arch: &str) -> SJMCLResult<(bool, bool)> {
     let mut positive = match self.action.to_lowercase().as_str() {
       "allow" => true,
       "disallow" => false,
@@ -146,13 +145,16 @@ impl InstructionRule {
       if os_string == "osx" {
         os_string = "macos".to_string();
       }
-      if os_string != "unknown" && tauri_plugin_os::type_().to_string() != os_string {
+      if !os_string.is_empty()
+        && os_string != "unknown"
+        && tauri_plugin_os::type_().to_string() != os_string
+      {
         positive = !positive;
         return Ok((positive, strong));
       }
       if let Some(ref arch_string) = os_rule.arch
         && arch_string != "unknown"
-        && arch_string != tauri_plugin_os::arch()
+        && normalize_java_arch(arch_string) != arch
       {
         positive = !positive;
         return Ok((positive, strong));
@@ -373,6 +375,21 @@ pub fn remove_optifine_from_client_info(client_info: &mut McClientInfo) {
   reset_fields_from_patches(client_info);
 }
 
+fn reset_libraries_from_patches(client_info: &mut McClientInfo) {
+  if client_info.patches.is_empty() {
+    return;
+  }
+  client_info.libraries.clear();
+  let mut library_names = HashSet::new();
+  for patch in &client_info.patches {
+    for library in &patch.libraries {
+      if library_names.insert(library.name.clone()) {
+        client_info.libraries.push(library.clone());
+      }
+    }
+  }
+}
+
 pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
   let patches = client_info.patches.clone();
   let Some(base) = patches.first() else {
@@ -382,15 +399,7 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
     .iter()
     .any(|patch| matches!(patch.id.as_str(), "cleanroom" | "forge" | "legacyforge"));
 
-  client_info.libraries.clear();
-  let mut library_names = HashSet::new();
-  for patch in &patches {
-    for library in &patch.libraries {
-      if library_names.insert(library.name.clone()) {
-        client_info.libraries.push(library.clone());
-      }
-    }
-  }
+  reset_libraries_from_patches(client_info);
 
   client_info.main_class = base.main_class.clone();
   client_info.arguments = base.arguments.clone();
@@ -564,10 +573,14 @@ pub async fn libraries_to_info(
   (game_version, loader_version, loader_type, None)
 }
 
-fn rules_is_allowed(rules: &Vec<InstructionRule>, feature: &FeaturesInfo) -> SJMCLResult<bool> {
+fn rules_is_allowed(
+  rules: &Vec<InstructionRule>,
+  feature: &FeaturesInfo,
+  arch: &str,
+) -> SJMCLResult<bool> {
   let mut weak_allowed = true;
   for rule in rules {
-    let (allow, strong) = rule.is_allowed(feature)?;
+    let (allow, strong) = rule.is_allowed(feature, arch)?;
     if strong {
       return Ok(allow);
     }
@@ -577,35 +590,35 @@ fn rules_is_allowed(rules: &Vec<InstructionRule>, feature: &FeaturesInfo) -> SJM
 }
 
 pub trait IsAllowed {
-  fn is_allowed(&self, feature: &FeaturesInfo) -> SJMCLResult<bool>;
+  fn is_allowed(&self, feature: &FeaturesInfo, arch: &str) -> SJMCLResult<bool>;
 }
 
 impl IsAllowed for ArgumentsItem {
-  fn is_allowed(&self, feature: &FeaturesInfo) -> SJMCLResult<bool> {
-    rules_is_allowed(&self.rules, feature)
+  fn is_allowed(&self, feature: &FeaturesInfo, arch: &str) -> SJMCLResult<bool> {
+    rules_is_allowed(&self.rules, feature, arch)
   }
 }
 
 impl IsAllowed for LibrariesValue {
-  fn is_allowed(&self, feature: &FeaturesInfo) -> SJMCLResult<bool> {
-    rules_is_allowed(&self.rules, feature)
+  fn is_allowed(&self, feature: &FeaturesInfo, arch: &str) -> SJMCLResult<bool> {
+    rules_is_allowed(&self.rules, feature, arch)
   }
 }
 
 impl LaunchArgumentTemplate {
-  pub fn to_jvm_arguments(&self, feature: &FeaturesInfo) -> SJMCLResult<Vec<String>> {
+  pub fn to_jvm_arguments(&self, feature: &FeaturesInfo, arch: &str) -> SJMCLResult<Vec<String>> {
     let mut arguments = Vec::new();
     for argument in &self.jvm {
-      if argument.is_allowed(feature).unwrap_or_default() {
+      if argument.is_allowed(feature, arch).unwrap_or_default() {
         arguments.extend(argument.value.clone());
       }
     }
     Ok(arguments)
   }
-  pub fn to_game_arguments(&self, feature: &FeaturesInfo) -> SJMCLResult<Vec<String>> {
+  pub fn to_game_arguments(&self, feature: &FeaturesInfo, arch: &str) -> SJMCLResult<Vec<String>> {
     let mut arguments = Vec::new();
     for argument in &self.game {
-      if argument.is_allowed(feature).unwrap_or_default() {
+      if argument.is_allowed(feature, arch).unwrap_or_default() {
         arguments.extend(argument.value.clone());
       }
     }
@@ -631,20 +644,19 @@ pub async fn replace_native_libraries(
   app: &AppHandle,
   client_info: &mut McClientInfo,
   instance: &Instance,
+  arch: &str,
 ) -> SJMCLResult<()> {
-  #[cfg(any(
-    all(
-      any(target_arch = "x86", target_arch = "x86_64"),
-      any(target_os = "linux", target_os = "macos")
-    ),
-    target_os = "windows"
-  ))]
+  // Rebuild from the original patches when switching between JVM architectures.
+  reset_libraries_from_patches(client_info);
+
+  let os = tauri_plugin_os::type_().to_string();
+  if os == "windows"
+    || (matches!(os.as_str(), "linux" | "macos") && matches!(arch, "x86" | "x86_64"))
   {
     return Ok(());
   }
 
-  #[cfg(all(target_arch = "aarch64", target_os = "macos"))]
-  {
+  if os == "macos" && arch == "aarch64" {
     use crate::instance::helpers::game_version::compare_game_versions;
     if compare_game_versions(app, instance.version.as_str(), "1.20.1", true).await
       == Ordering::Greater
@@ -655,11 +667,6 @@ pub async fn replace_native_libraries(
 
   let all_replace_map = load_native_libraries_replace_map(app)?;
 
-  let (os, arch) = {
-    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
-    let cfg = launcher_config_state.lock().unwrap();
-    (cfg.basic_info.os_type.clone(), cfg.basic_info.arch.clone())
-  };
   let platform_key = format!("{}-{}", os.to_lowercase(), arch.to_lowercase());
   let platform_map = match all_replace_map.get(platform_key.as_str()) {
     Some(m) if !m.is_empty() => m,

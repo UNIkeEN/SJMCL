@@ -10,6 +10,7 @@ export interface JavaInfo {
   name: string;
   execPath: string;
   vendor: string;
+  arch: string;
   majorVersion: number;
   isLts: boolean;
   isUserAdded: boolean;
