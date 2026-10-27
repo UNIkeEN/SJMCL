@@ -1,8 +1,9 @@
 pub mod misc;
 
+use futures::StreamExt;
 use hex;
 use misc::{
-  CurseForgeFileInfo, CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
+  CurseForgeFingerprintRes, CurseForgeGetProjectRes, CurseForgeSearchRes,
   CurseForgeVersionPackSearchRes, cvt_category_to_id, cvt_mod_loader_to_id, cvt_sort_by_to_id,
   cvt_type_to_class_id, get_curseforge_api, make_curseforge_request,
   map_curseforge_file_to_version_pack,
@@ -154,10 +155,6 @@ pub async fn fetch_resource_version_packs_curseforge(
   app: &AppHandle,
   query: &OtherResourceVersionPackQuery,
 ) -> SJMCLResult<Vec<OtherResourceVersionPack>> {
-  let mut aggregated_files: Vec<CurseForgeFileInfo> = Vec::new();
-  let mut page = 0;
-  let page_size = 50;
-
   let OtherResourceVersionPackQuery {
     resource_id,
     mod_loader,
@@ -165,41 +162,62 @@ pub async fn fetch_resource_version_packs_curseforge(
     ..
   } = query;
 
-  loop {
-    let url = get_curseforge_api(OtherResourceApiEndpoint::VersionPack, Some(resource_id))?;
+  let url = get_curseforge_api(OtherResourceApiEndpoint::VersionPack, Some(resource_id))?;
+  let client = app.state::<reqwest::Client>();
 
-    let mut params = HashMap::new();
-    if mod_loader != ALL_FILTER {
-      params.insert(
-        "modLoaderType".to_string(),
-        cvt_mod_loader_to_id(mod_loader).to_string(),
-      );
+  let mut params = HashMap::new();
+  if mod_loader != ALL_FILTER {
+    params.insert(
+      "modLoaderType".to_string(),
+      cvt_mod_loader_to_id(mod_loader).to_string(),
+    );
+  }
+  if let Some(version) = game_versions.first()
+    && version != ALL_FILTER
+  {
+    params.insert("gameVersion".to_string(), version.to_string());
+  }
+  params.insert("index".to_string(), "0".to_string());
+  params.insert("pageSize".to_string(), "10000".to_string());
+
+  let results = make_curseforge_request::<CurseForgeVersionPackSearchRes, ()>(
+    &client,
+    &url,
+    OtherResourceRequestType::GetWithParams(&params),
+  )
+  .await?;
+
+  let total_count = results.pagination.total_count;
+  let mut aggregated_files = results.data;
+  let page_size = aggregated_files.len() as u64;
+
+  if page_size < total_count {
+    if page_size == 0 {
+      return Err(ResourceError::ParseError.into());
     }
-    if let Some(version) = game_versions.first()
-      && version != ALL_FILTER
-    {
-      params.insert("gameVersion".to_string(), version.to_string());
-    }
-    params.insert("index".to_string(), (page * page_size).to_string());
+
+    // The API may cap the page size; paginate using the actual first-page count.
     params.insert("pageSize".to_string(), page_size.to_string());
+    let mut pages = futures::stream::iter((page_size..total_count).step_by(page_size as usize))
+      .map(|index| {
+        let mut params = params.clone();
+        params.insert("index".to_string(), index.to_string());
+        let client = &client;
+        let url = &url;
+        async move {
+          make_curseforge_request::<CurseForgeVersionPackSearchRes, ()>(
+            client,
+            url,
+            OtherResourceRequestType::GetWithParams(&params),
+          )
+          .await
+        }
+      })
+      .buffered(4);
 
-    let client = app.state::<reqwest::Client>();
-
-    let results = make_curseforge_request::<CurseForgeVersionPackSearchRes, ()>(
-      &client,
-      &url,
-      OtherResourceRequestType::GetWithParams(&params),
-    )
-    .await?;
-
-    let has_more = results.pagination.total_count > (page + 1) * page_size;
-
-    aggregated_files.extend(results.data);
-
-    if !has_more {
-      break;
+    while let Some(result) = pages.next().await {
+      aggregated_files.extend(result?.data);
     }
-    page += 1;
   }
 
   Ok(map_curseforge_file_to_version_pack(aggregated_files))
