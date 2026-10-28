@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Divider,
@@ -6,19 +7,15 @@ import {
   Icon,
   IconButton,
   Image,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Portal,
   StackProps,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCirclePlus, LuPenLine } from "react-icons/lu";
+import { DropdownSurface } from "@/components/common/dropdown-menu";
 import SelectableButton from "@/components/common/selectable-button";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -192,23 +189,44 @@ export const InstanceIconSelector: React.FC<InstanceIconSelectorProps> = ({
 export const InstanceIconSelectorPopover: React.FC<
   InstanceIconSelectorProps
 > = ({ ...props }) => {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    <Popover placement="bottom-end">
-      <PopoverTrigger>
-        <IconButton
-          icon={<LuPenLine />}
-          size="xs"
-          variant="ghost"
-          aria-label="edit"
-        />
-      </PopoverTrigger>
-      <Portal>
-        <PopoverContent width="auto">
-          <PopoverBody>
-            <InstanceIconSelector {...props} />
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
-    </Popover>
+    <Box ref={rootRef} position="relative" display="inline-block">
+      <IconButton
+        icon={<LuPenLine />}
+        size="xs"
+        variant="ghost"
+        aria-label="edit"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      />
+      <DropdownSurface
+        rootRef={rootRef}
+        open={open}
+        align="end"
+        p={2}
+        width="auto"
+      >
+        <InstanceIconSelector {...props} />
+      </DropdownSurface>
+    </Box>
   );
 };

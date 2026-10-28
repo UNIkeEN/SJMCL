@@ -1,202 +1,44 @@
-<img src="docs/figs/banner.png" alt="SJMCL" />
+# easy-launcher
 
-[![Test Build](https://img.shields.io/github/actions/workflow/status/UNIkeEN/SJMCL/test.yml?label=test%20build&logo=github&style=for-the-badge)](https://github.com/UNIkeEN/SJMCL/blob/main/.github/workflows/test.yml)
-![Downloads](https://img.shields.io/github/downloads/UNIkeEN/SJMCL/total?logo=github&style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/UNIkeEN/SJMCL?style=for-the-badge)
-![Runs](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&label=runs&query=$.total_count_str&url=https%3A%2F%2Fmc.sjtu.cn%2Fapi-sjmcl%2Fcount)
-[![Deepwiki](https://img.shields.io/badge/Ask-DeepWiki-20B2AA?logo=&style=for-the-badge)](https://deepwiki.com/UNIkeEN/SJMCL)
+A fast, no-friction Minecraft launcher for desktop — open, pick a profile, play.
 
-**English** · [简体中文](docs/README.zh-Hans.md) · [繁體中文](docs/README.zh-Hant.md)
+![Tauri](https://img.shields.io/badge/Tauri-v2-FFC131?style=for-the-badge&logo=tauri&logoColor=white&labelColor=24C8DB)
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Chakra UI](https://img.shields.io/badge/chakra_ui-v2-38B2AC?style=for-the-badge&logo=chakraui&logoColor=white&labelColor=319795)
 
 ## Features
 
-* **Cross Platform**: Supports Windows 10/11, macOS and Linux.
-* **Efficient Instance Management**: Supports multiple game directories and instances, allowing the management of all instance resources (such as saves, mods, resource packs, shaders, screenshots, etc.) and settings in one place.
-* **Convenient Resource Download**: Supports downloading game clients, mod loaders, various game resources and modpacks from CurseForge and Modrinth.
-* **Multi-Account System Support**: Built-in Microsoft login and third-party authentication server support, compatible with the OAuth login process proposed by the Yggdrasil Connect proposal.
-* **External Service Collaboration**: Works with external webpages, applications, and Agent services through deeplinks and MCP services, delivering a range of convenient features and automation capabilities.
-* **Open Extension System**: Supports extension development to extend the launcher with more interesting and practical features. [>> View Community Extensions](https://github.com/SJMC-Dev/awesome-SJMCL-extensions/blob/main/README.en.md)
-
-> Note: some features may be limited by region, platform, or bundle type.
-
-### Built with
-
-[![Tauri](https://img.shields.io/badge/Tauri-v2-FFC131?style=for-the-badge&logo=tauri&logoColor=white&labelColor=24C8DB)](https://tauri.app/)
-[![Next JS](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
-[![Chakra UI](https://img.shields.io/badge/chakra_ui-v2-38B2AC?style=for-the-badge&logo=chakraui&logoColor=white&labelColor=319795)](https://v2.chakra-ui.com/)
+- **Cross-platform**: Windows 10/10, macOS, and Linux
+- **Instance management**: multiple game directories and instances; manage saves, mods, resource packs, shaders, and screenshots in one place
+- **Image/GIF backgrounds**: user-supplied background images and GIFs
+- **Play without an account**: offline login — just a player name, no Microsoft account needed
+- **Multi-account**: third-party authentication server support compatible with the Yggdrasil protocol
+- **Extensions**: an open extension system to add features without touching the core
 
 ## Getting Started
 
-Getting started with SJMCL is simple, just download the latest release from the [Official Website](https://mc.sjtu.cn/sjmcl/en/downloads).
-
-You can also find all the releases, including the nightly versions, on [GitHub Releases](https://github.com/UNIkeEN/SJMCL/releases).
-
-SJMCL currently supports the following platforms:
-
-| Platform  | Versions            | Architectures              | Provided Bundles                        |
-|-----------|---------------------|----------------------------|-----------------------------------------|
-| Windows   | 10 and above       | `aarch64`, `i686`, `x86_64`| installer `.exe`, portable `.exe`                 |
-| macOS     | 10.15 and above     | `aarch64`, `x86_64`        | `.app`, `.dmg`                          |
-| Linux     | webkit2gtk 4.1 (e.g., Ubuntu 22.04) | `aarch64`, `x86_64`   | `.deb`, `.rpm`, portable binary |
-
-To learn about how to use SJMCL’s features and browse frequently asked questions, please refer to the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs).
-
-<details>
-<summary><h3>Install from Command Line</h3></summary>
-
-<details>
-<summary><h4>Linux</h4></summary>
-
-Install the latest stable release with the Linux installer:
-
 ```bash
-curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --source sjmc
-```
-
-Install the latest stable release via [Homebrew](https://brew.sh) Cask if [Homebrew](https://brew.sh) is installed:
-
-```bash
-brew install --cask sjmcl
-```
-
-
-Install the portable Linux build without root access:
-
-```bash
-curl -LsSf https://mc.sjtu.cn/sjmcl/releases/install.sh | sh -s -- --portable --source sjmc
-```
-
-Install from the Arch User Repository (AUR) with a common [AUR helper](https://wiki.archlinux.org/title/AUR_helpers):
-
-```bash
-yay -S sjmcl-bin
-```
-
-If you do not use an AUR helper, you can also install manually:
-
-```bash
-git clone https://aur.archlinux.org/sjmcl-bin.git
-cd sjmcl-bin
-makepkg -si
-```
-
-Install from Snap Store:
-
-```bash
-sudo snap install sjmcl
-```
-
-> [!WARNING]
-> When installing via Snap, game data may be stored in a sandboxed directory by default. Before uninstalling the launcher, please back up important data such as saves, resource packs, and mods in a timely manner.
-
-</details>
-
-<details>
-<summary><h4>macOS</h4></summary>
-
-Install with Homebrew:
-
-```bash
-brew install --cask sjmcl
-```
-
-</details>
-
-<details>
-<summary><h4>Windows</h4></summary>
-
-Install with Winget:
-
-```powershell
-winget install SJMC.SJMCL
-```
-
-> [!WARNING]
-> The Winget index is publicly maintained. Before installing, consider running `winget show SJMC.SJMCL` to inspect the installer URL, and make sure the download source is from `github.com/UNIkeEN/SJMCL` or `sjmcl.club`.
-
-</details>
-
-For more installation options and platform notes, see the [User Documentation](https://mc.sjtu.cn/sjmcl/en/docs/install).
-
-</details>
-
-## Development and Contributing
-
-To get started, clone the repository and install the required dependencies:
-
-```bash
-git clone git@github.com:UNIkeEN/SJMCL.git
 pnpm install
-```
-
-To run the project in development mode:
-
-```bash
 pnpm tauri dev
 ```
 
-We warmly invite contributions from everyone. 
+Production build:
 
-* Before you get started, please take a moment to review our [Contributing Guide](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md) (includes more details on the development workflow). 
-* API references and some developers’ insights can be found in the [Developer Documentation](https://mc.sjtu.cn/sjmcl/en/dev).
-* Feel free to share your ideas through [Pull Requests](https://github.com/UNIkeEN/SJMCL/pulls) or [GitHub Issues](https://github.com/UNIkeEN/SJMCL/issues).
+```bash
+# default: all bundle targets configured in tauri.conf.json
+pnpm tauri build
 
-### Developing Extensions
+# Linux only (appimage/deb/rpm depending on config)
+pnpm build:linux
+```
 
-If you want to develop extensions for SJMCL, check out the [Extension Documentation](https://mc.sjtu.cn/sjmcl/en/dev/extension/). It includes an introduction to the extension system and API references. We also provide a scaffold to help you quickly create a template project and get started.
+## Structure
 
-### Contributors
+- Frontend: React + Next.js + Chakra UI v2
+- Backend: Rust + Tauri v2 (`src-tauri/`)
 
-![Contributors](https://contrib.rocks/image?repo=UNIkeEN/SJMCL "Contributors")
+## License
 
-## Copyright
+This project is licensed under the [GNU GPL v3.0](LICENSE).
 
-Copyright © 2024-2026 SJMCL Team.
-
-> NOT AN OFFICIAL MINECRAFT SERVICE. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
-
-The software is distributed under [GNU General Public License v3.0](/LICENSE).
-
-By GPLv3 License term 7, we require that when you distribute a modified version of the software, you must obey GPLv3 License as well as the following [additional terms](/LICENSE.EXTRA): 
-
-1. Use a different software name than SJMCL or SJMC Launcher;
-2. Mark clearly in your repository README file, your distribution website or thread, Support documents, About Page in the software that your program is based on SJMCL and give out the url of the origin repository.
-3. When your modifications to this software are limited solely to **adding** (without modifying or deleting) preset authentication servers (`src-tauri/src/account/helpers/authlib_injector/constants.rs`), the restrictions set forth in Clauses 1 above shall not apply. In this case, you may continue to compile and distribute the software under its original name.
-
-Besides, per term of use of our website, when distributing a modified version of the software, please send version numbers with prefix (more than two letters, e.g. `XX-0.0.1`) to our statistics server (`src-tauri/src/utils/sys_info.rs`) unless your modifications meets Clauses 3 above.
-
-## Contact Us
-
-QQ Group for SJMCL Users: 860851380
-
-You can also send email to [launcher@sjmc.club](mailto:launcher@sjmc.club) if you want to contact us.
-
-## Community Partners
-
-We sincerely thank the following organizations for their development and community support throughout the SJMCL project.
-
-[
-  <picture>
-    <source srcset="docs/figs/partners/sjmc-dark.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figs/partners/sjmc.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figs/partners/sjmc.png" alt="SJMC" style="height: 65px;">
-  </picture>
-](https://mc.sjtu.cn/en/)
-&nbsp;&nbsp;
-[<img src="docs/figs/partners/sues-mc.png" alt="SUES-MC" style="height: 65px;"/>](https://www.suesmc.ltd/)
-
-[
-  <picture>
-    <source srcset="docs/figs/partners/mua-dark.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figs/partners/mua.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figs/partners/mua.png" alt="MUA" style="height: 45px;">
-  </picture>
-](https://www.mualliance.cn/en)
-&nbsp;&nbsp;&nbsp;&nbsp;
-[
-  <picture>
-    <source srcset="docs/figs/partners/gnwork-dark.png" media="(prefers-color-scheme: dark)">
-    <source srcset="docs/figs/partners/gnwork.png" media="(prefers-color-scheme: light)">
-    <img src="docs/figs/partners/gnwork.png" alt="GNWORK" style="height: 45px;">
-  </picture>
-](https://space.bilibili.com/403097853)
+Based on [SJMCL](https://github.com/UNIkeEN/SJMCL) — this is a fork with a reworked UI/UX and feature set.

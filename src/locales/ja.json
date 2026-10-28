@@ -3,6 +3,22 @@
     "about": {
       "title": "SJMCLについて",
       "settings": {
+        "aboutSJMC": {
+          "title": "上海交通大学 Minecraft クラブ (SJMC) について"
+        },
+        "basedOn": {
+          "title": "SJMCL ベース",
+          "description": "このランチャーは SJMCL (GNU GPL v3.0) を基盤としています。"
+        },
+        "contributors": {
+          "title": "開発チーム"
+        },
+        "developer": {
+          "title": "開発者"
+        },
+        "sourceCode": {
+          "title": "GitHub でソースコードを見る"
+        },
         "version": {
           "title": "バージョン",
           "foundNew": "アップデートがあります",
@@ -12,15 +28,6 @@
             "up2date": "最新バージョンです",
             "error": "アップデートの確認に失敗"
           }
-        },
-        "contributors": {
-          "title": "開発チーム"
-        },
-        "sourceCode": {
-          "title": "GitHub でソースコードを見る"
-        },
-        "aboutSJMC": {
-          "title": "上海交通大学 Minecraft クラブ (SJMC) について"
         }
       }
     },
@@ -62,7 +69,7 @@
       "settings": {
         "copyright": {
           "title": "コピーライト",
-          "description": "© 2024-2026 SJMCL 開発チーム"
+          "description": "© 2024-2026 easy-launcher 開発チーム"
         },
         "userAgreement": {
           "title": "利用規約",
@@ -81,7 +88,21 @@
       "add3rdPartyServer": "認証サーバー追加",
       "sourceHomepage": "ホームページへ",
       "deleteServer": "サーバー削除",
-      "importFromOtherLaunchers": "他のランチャーからインポート"
+      "importFromOtherLaunchers": "他のランチャーからインポート",
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "makeActive": "使用中にする",
+      "activeAccount": "使用中のアカウント",
+      "logout": "ログアウト",
+      "confirmLogout": "本当に？",
+      "add": "追加",
+      "login": "ログイン",
+      "manageSkin": "スキン管理",
+      "viewSkin": "スキン表示"
+    },
+    "playerType": {
+      "offline": "オフライン",
+      "3rdparty": "認証サーバー"
     },
     "playerTypeList": {
       "all": "すべてのソース"
@@ -89,7 +110,24 @@
     "viewTypeList": {
       "grid": "グリッドビュー",
       "list": "リストビュー"
-    }
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "アクセストークン",
+      "skin": "スキン"
+    },
+    "token": {
+      "valid": "有効",
+      "noToken": "トークンなし"
+    },
+    "tag": {
+      "active": "使用中"
+    },
+    "addForm": {
+      "title": "アカウント追加",
+      "offlineHint": "プレイヤー名だけでアカウント不要",
+      "serverHint": "認証サーバーを追加してログイン",
+      "empty": "アカウントがありません"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
@@ -205,7 +243,7 @@
       "description": {
         "start": {
           "3rdparty": "この認証ソースは Yggdrasil Connect 仕様提案をサポート",
-          "microsoft": " SJMCL は Microsoft OAuth 2.0 デバイス認証フローをサポート"
+          "microsoft": " easy-launcher は Microsoft OAuth 2.0 デバイス認証フローをサポート"
         },
         "next": "次へ進むボタンをクリックし、ログインウィンドウに上記のコードを入力してください。（自動コピー済）"
       },
@@ -268,21 +306,6 @@
     "theme": {
       "title": "テーマ",
       "settings": {
-        "primaryColor": {
-          "title": "ランチャーのアクセントカラー"
-        },
-        "colorMode": {
-          "title": "カラーモード",
-          "type": {
-            "system": "システムに従う",
-            "light": "ライト",
-            "dark": "ダーク"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "リキッドグラス効果",
-          "description": "一部のUIで「リキッドグラス」効果が適用されます。パフォーマンスに影響する可能性があります"
-        },
         "headNavStyle": {
           "title": "上部ナビゲーションバーのスタイル",
           "type": {
@@ -529,7 +552,7 @@
       "type": "タイプ"
     },
     "warning": {
-      "mojang": "Mojang によって配布される Java ランタイムは SJMCL によって特定のディレクトリにインストールされます",
+      "mojang": "Mojang によって配布される Java ランタイムは easy-launcher によって特定のディレクトリにインストールされます",
       "oracle": "Oracle ソースからのダウンロードにはログインの必要な場合があります"
     }
   },
@@ -842,10 +865,10 @@
     "title": "{{name}} の設定"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL はサードパーティー拡張機能の挙動や個人データの扱いを制御できません。信頼できる提供元の拡張機能のみをインストールして有効化してください。",
+    "alert": "easy-launcher はサードパーティー拡張機能の挙動や個人データの扱いを制御できません。信頼できる提供元の拡張機能のみをインストールして有効化してください。",
     "fileDnD": {
-      "title": "SJMCL 拡張機能をインストール",
-      "desc": "拡張機能ファイル {{fileName}} を SJMCL にインストール"
+      "title": "easy-launcher 拡張機能をインストール",
+      "desc": "拡張機能ファイル {{fileName}} を easy-launcher にインストール"
     },
     "installed": "インストール済みの拡張機能",
     "menu": {
@@ -1197,7 +1220,7 @@
       "settings": {
         "language": {
           "title": "言語（Language）",
-          "communityAck": "SJMCL のローカリゼーションはコミュニティによる提供されました。@LAR73 さんのご協力を感謝いたします"
+          "communityAck": "easy-launcher のローカリゼーションはコミュニティによる提供されました。@LAR73 さんのご協力を感謝いたします"
         },
         "resourceTranslation": {
           "title": "リソース翻訳",
@@ -1280,7 +1303,7 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "現在フォルダー",
-            "APP_DATA_SUBDIR": "SJMCL データフォルダー",
+            "APP_DATA_SUBDIR": "easy-launcher データフォルダー",
             "OFFICIAL_DIR": "公式ランチャーフォルダー"
           }
         }
@@ -1397,10 +1420,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "起動",
-      "instances": "ゲーム",
       "accounts": "アカウント",
       "discover": "ディスカバー",
+      "downloads": "ダウンロード",
+      "instances": "ゲーム",
+      "launch": "起動",
       "search": "メタサーチ",
       "settings": "設定"
     }
@@ -1670,29 +1694,6 @@
       "launch": "このサーバーをプレイ"
     }
   },
-  "IntelligenceSettingsPage": {
-    "title": "SJMCL AI",
-    "description": "AI モデルをランチャーと Minecraft の体験に統合します。",
-    "mcpServer": {
-      "title": "MCP サービス",
-      "headExtra": "再起動が必要",
-      "settings": {
-        "enabled": {
-          "title": "ランチャー MCP サービス",
-          "description": "外部エージェントアプリと接続してランチャー操作を自動化するため、ローカル MCP サービスを有効化します。"
-        },
-        "docs": {
-          "title": "ユーザーガイド",
-          "description": "ランチャーを外部エージェントアプリ（Claude、Cherry Studio など）に接続する方法を確認します。",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "ポート",
-          "description": "ランチャー MCP サービスで使用する固定ローカルポートです。"
-        }
-      }
-    }
-  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Java 管理",
@@ -1730,7 +1731,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "前回の実行は異常終了しました",
-      "content": "SJMCL は前回の実行時に異常終了しました。ログを<community>コミュニティ</community>に送るか、<github>GitHub</github> で Issue を作成してサポートを求めてください。",
+      "content": "easy-launcher は前回の実行時に異常終了しました。ログを<community>コミュニティ</community>に送るか、<github>GitHub</github> で Issue を作成してサポートを求めてください。",
       "viewLog": "ログを表示"
     }
   },
@@ -1750,6 +1751,9 @@
     "Text": {
       "noSelectedPlayer": "キャラクターを選択していない",
       "noSelectedGame": "インスタンスを選択していない"
+    },
+    "stats": {
+      "loader": "ローダー"
     }
   },
   "LaunchProcessModal": {
@@ -1777,7 +1781,7 @@
   "MainLayout": {
     "fileDnD": {
       "title": "モッドパックをインポート",
-      "desc": "モッドパックファイル {{fileName}} を SJMCL にインポート"
+      "desc": "モッドパックファイル {{fileName}} を easy-launcher にインポート"
     }
   },
   "ManageSkinModal": {
@@ -2233,8 +2237,8 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "ランチャー更新",
-    "body": "新しいバージョンのダウンロードが完了しました。SJMCL を再起動して更新を完了してください",
-    "bodyWinInstaller": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると SJMCL が閉じ、インストーラーが実行されます",
+    "body": "新しいバージョンのダウンロードが完了しました。easy-launcher を再起動して更新を完了してください",
+    "bodyWinInstaller": "新しいバージョンのダウンロードが完了しました。インストールをクリックすると easy-launcher が閉じ、インストーラーが実行されます",
     "button": {
       "restart": "再起動",
       "install": "インストール",
@@ -3109,12 +3113,20 @@
       "global-game": "グローバルゲーム設定",
       "java": "Java",
       "general": "一般設定",
+      "account": "アカウント",
       "appearance": "表示",
       "download": "ダウンロード",
-      "intelligence": "AI",
       "extension": "拡張機能",
       "help": "マニュアルとヘルプ",
       "about": "バージョン情報"
+    },
+    "back": "戻る",
+    "search": {
+      "placeholder": "設定を検索",
+      "empty": "一致する設定はありません。"
+    },
+    "button": {
+      "manageAccount": "アカウント管理"
     }
   },
   "SkinPreview": {
@@ -3167,9 +3179,9 @@
   },
   "StarUsModal": {
     "header": {
-      "title": "GitHub で SJMCL をスター"
+      "title": "GitHub で easy-launcher をスター"
     },
-    "body": "SJMCL にご支援をお考えの場合は、GitHub リポジトリへのスターの付与をご検討ください。コミュニティーからの評価は開発チームの重要な指標となりまして、品質向上の原動力となっております。",
+    "body": "easy-launcher にご支援をお考えの場合は、GitHub リポジトリへのスターの付与をご検討ください。コミュニティーからの評価は開発チームの重要な指標となりまして、品質向上の原動力となっております。",
     "button": {
       "later": "あとで",
       "starUs": "スターを付与"
@@ -3203,7 +3215,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "安全でない実行パス",
-      "content": "SJMCL は一時ディレクトリまたは無効なディレクトリから実行されています。設定やゲームデータが失われる可能性があります。SJMCL を別の場所へ移動して再実行してください。",
+      "content": "easy-launcher は一時ディレクトリまたは無効なディレクトリから実行されています。設定やゲームデータが失われる可能性があります。easy-launcher を別の場所へ移動して再実行してください。",
       "btnContinue": "このまま実行"
     }
   },
@@ -3246,11 +3258,11 @@
       "title": "ようこそ！"
     },
     "body": {
-      "text": "SJMCL をご利用いただき、ありがとうございます。開始前に、必ず下記の<terms>利用規約</terms>をお読みいただき、同意をお願いいたします。"
+      "text": "easy-launcher をご利用いただき、ありがとうございます。開始前に、必ず下記の<terms>利用規約</terms>をお読みいただき、同意をお願いいたします。"
     },
     "warning": {
-      "unstableVersion": "{{versionLabel}}の SJMCL を使用しています。一部の機能が不安定または開発未完了の可能性があります。使用上の問題や機能の提案を報告いただければ幸いです。",
-      "winArm64Notice": "SJMCL は Windows on Arm プラットフォームに対応しました。<br/> <b>Qualcomm</b> プラットフォームをご利用の場合、ゲームを起動する前に <glpack>OpenGL 互換パック</glpack> のインストールが必要な場合があります。"
+      "unstableVersion": "{{versionLabel}}の easy-launcher を使用しています。一部の機能が不安定または開発未完了の可能性があります。使用上の問題や機能の提案を報告いただければ幸いです。",
+      "winArm64Notice": "easy-launcher は Windows on Arm プラットフォームに対応しました。<br/> <b>Qualcomm</b> プラットフォームをご利用の場合、ゲームを起動する前に <glpack>OpenGL 互換パック</glpack> のインストールが必要な場合があります。"
     },
     "button": {
       "agree": "同意して続ける"

@@ -1,40 +1,24 @@
-import { Flex, HStack } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import HomeWidgetContainer from "@/components/extension/home-widget-container";
-import HomeButtonGroup from "@/components/home-button-group";
+import { Flex, Text } from "@chakra-ui/react";
+import { useRef } from "react";
+import { TitleShort } from "@/components/logo-title";
+import { useLauncherConfig } from "@/contexts/config";
 
+// easy-launcher home (docs/design/DESIGN-homebar.md): the page is just the live
+// stage — the background shows through, the brand sits top-left and the
+// homebar carries all navigation.
 const LaunchPage = () => {
   const layoutRef = useRef<HTMLDivElement>(null);
-  const [maxWidgetWidth, setMaxWidgetWidth] = useState<number>(550);
-
-  useEffect(() => {
-    const layoutEl = layoutRef.current;
-    if (!layoutEl) return;
-
-    const updateMaxWidgetWidth = () => {
-      const spacing = 88; // main layout padding + spacing
-      const minButtonGroupWidth =
-        document.getElementById("main-launch-button")?.getBoundingClientRect()
-          .width ?? 14.5 * 16;
-      const available = layoutEl.clientWidth - minButtonGroupWidth - spacing;
-      const safeMax = Math.max(0, available);
-      setMaxWidgetWidth(safeMax);
-    };
-
-    updateMaxWidgetWidth();
-    const observer = new ResizeObserver(updateMaxWidgetWidth);
-    observer.observe(layoutEl);
-    return () => observer.disconnect();
-  }, []);
+  const { config } = useLauncherConfig();
 
   return (
-    <HStack ref={layoutRef} p={7} pt={1} align="stretch" h="100%" spacing={6}>
-      <HomeWidgetContainer maxWidth={maxWidgetWidth} />
-
-      <Flex justify="flex-end" align="flex-end" minW="14.5rem" w="100%">
-        <HomeButtonGroup />
+    <Flex ref={layoutRef} h="100%" w="100%">
+      <Flex position="absolute" top={6} left={8} direction="column">
+        <TitleShort aria-label="easy-launcher" />
+        <Text fontSize="xs" color="muted" mt={1}>
+          {config.basicInfo.launcherVersion}
+        </Text>
       </Flex>
-    </HStack>
+    </Flex>
   );
 };
 

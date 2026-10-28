@@ -6,11 +6,6 @@ import {
   Grid,
   HStack,
   Input,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   Tag,
   Text,
   VStack,
@@ -23,15 +18,10 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LuChevronDown,
-  LuDownload,
-  LuGlobe,
-  LuUpload,
-  LuUserRoundPen,
-} from "react-icons/lu";
+import { LuDownload, LuGlobe, LuUpload, LuUserRoundPen } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import { MenuSelector } from "@/components/common/menu-selector";
 import { OptionItemProps } from "@/components/common/option-item";
 import { VirtualOptionItemGroup } from "@/components/common/option-item-virtual";
 import { useLauncherConfig } from "@/contexts/config";
@@ -68,10 +58,8 @@ interface ResourceDownloaderProps {
 
 interface ResourceDownloaderMenuProps {
   label: string;
-  displayText: string;
   onChange: (value: string) => void;
-  defaultValue: string;
-  options: React.ReactNode;
+  options: { value: string; label: string }[];
   value: string;
   width?: ResponsiveValue<number | string>;
 }
@@ -103,9 +91,7 @@ const downloadSourceLists: Record<string, OtherResourceSource[]> = {
 
 const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
   label,
-  displayText,
   onChange,
-  defaultValue,
   options,
   value,
   width = { base: 28 },
@@ -113,33 +99,15 @@ const ResourceDownloaderMenu: React.FC<ResourceDownloaderMenuProps> = ({
   return (
     <HStack>
       <Text>{label}</Text>
-      <Menu>
-        <MenuButton
-          as={Button}
-          size="xs"
-          w={width}
-          variant="outline"
-          fontSize="xs"
-          textAlign="left"
-          rightIcon={<LuChevronDown />}
-        >
-          <Text className="ellipsis-text" maxW={width}>
-            {displayText}
-          </Text>
-        </MenuButton>
-        <MenuList maxH="40vh" minW={width} overflow="auto">
-          <MenuOptionGroup
-            defaultValue={defaultValue}
-            value={value}
-            type="radio"
-            onChange={(value) => {
-              onChange(value as string);
-            }}
-          >
-            {options}
-          </MenuOptionGroup>
-        </MenuList>
-      </Menu>
+      <MenuSelector
+        options={options}
+        value={value}
+        onSelect={(v) => typeof v === "string" && onChange(v)}
+        size="xs"
+        fontSize="xs"
+        buttonProps={{ w: width, fontSize: "xs" }}
+        menuListProps={{ minW: width }}
+      />
     </HStack>
   );
 };
@@ -470,45 +438,33 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
     setSelectedTag("All");
   }, [resourceType, downloadSource]);
 
-  const renderTagMenuOptions = () => {
+  const renderTagMenuOptions = (): {
+    value: string;
+    label: string;
+    disabled?: boolean;
+  }[] => {
     if (typeof tagList === "object" && tagList !== null) {
       return Object.entries(tagList).flatMap(([group, tags]) => [
-        group === "All" || resourceType === OtherResourceType.Mod ? (
-          <MenuItemOption key={`group-${group}`} value={group} fontSize="xs">
-            {t(
+        {
+          value: group,
+          label:
+            t(
               `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
-            ) || group}
-          </MenuItemOption>
-        ) : (
-          <MenuItemOption
-            key={`group-${group}`}
-            isDisabled
-            fontWeight="bold"
-            color="gray.500"
-            fontSize="xs"
-            cursor="default"
-            _disabled={{ bg: "transparent", cursor: "default" }}
-          >
-            {t(
-              `ResourceDownloader.${resourceType}TagList.${downloadSource}.${group}`
-            ) || group}
-          </MenuItemOption>
-        ),
+            ) || group,
+          disabled: !(
+            group === "All" || resourceType === OtherResourceType.Mod
+          ),
+        },
         ...(Array.isArray(tags)
           ? tags
               .filter((item) => item !== "All")
-              .map((item) => (
-                <MenuItemOption
-                  key={`tag-${group}-${item}`}
-                  value={item}
-                  fontSize="xs"
-                  pl={6}
-                >
-                  {t(
+              .map((item) => ({
+                value: item,
+                label:
+                  t(
                     `ResourceDownloader.${resourceType}TagList.${downloadSource}.${item}`
-                  ) || item}
-                </MenuItemOption>
-              ))
+                  ) || item,
+              }))
           : []),
       ]);
     }
@@ -520,75 +476,43 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
       <HStack gap={3}>
         <ResourceDownloaderMenu
           label={t("ResourceDownloader.label.tag")}
-          displayText={t(
-            `ResourceDownloader.${resourceType}TagList.${downloadSource}.${selectedTag}`
-          )}
           onChange={setSelectedTag}
           value={selectedTag}
-          defaultValue={"All"}
           options={renderTagMenuOptions()}
           width={menuWidths.tag}
         />
 
         <ResourceDownloaderMenu
           label={t("ResourceDownloader.label.gameVer")}
-          displayText={
-            gameVersion === "All"
-              ? t("ResourceDownloader.versionList.All")
-              : gameVersion
-          }
           onChange={setGameVersion}
           value={gameVersion}
-          defaultValue={"All"}
-          options={
-            gameVersionList ? (
-              gameVersionList.map((item, index) => (
-                <MenuItemOption key={index} value={item} fontSize="xs">
-                  {item === "All"
-                    ? t("ResourceDownloader.versionList.All")
-                    : item}
-                </MenuItemOption>
-              ))
-            ) : (
-              <MenuItemOption isDisabled px={0}>
-                <BeatLoader size={8} />
-              </MenuItemOption>
-            )
-          }
+          options={(gameVersionList ?? []).map((item) => ({
+            value: item,
+            label:
+              item === "All" ? t("ResourceDownloader.versionList.All") : item,
+          }))}
           width={menuWidths.version}
         />
 
         <ResourceDownloaderMenu
           label={t("ResourceDownloader.label.source")}
-          displayText={downloadSource}
           onChange={onDownloadSourceChange}
           value={downloadSource}
-          defaultValue={OtherResourceSource.CurseForge}
-          options={downloadSourceLists[resourceType].map((item, index) => (
-            <MenuItemOption key={index} value={item} fontSize="xs">
-              {item}
-            </MenuItemOption>
-          ))}
+          options={downloadSourceLists[resourceType].map((item) => ({
+            value: item,
+            label: item,
+          }))}
           width={menuWidths.source}
         />
 
         <ResourceDownloaderMenu
           label={t("ResourceDownloader.label.sortBy")}
-          displayText={t(
-            `ResourceDownloader.sortByList.${downloadSource}.${sortBy}`
-          )}
           onChange={setSortBy}
           value={sortBy}
-          defaultValue={
-            downloadSource === OtherResourceSource.CurseForge
-              ? "Popularity"
-              : "relevance"
-          }
-          options={sortByList.map((item, index) => (
-            <MenuItemOption key={index} value={item} fontSize="xs">
-              {t(`ResourceDownloader.sortByList.${downloadSource}.${item}`)}
-            </MenuItemOption>
-          ))}
+          options={sortByList.map((item) => ({
+            value: item,
+            label: t(`ResourceDownloader.sortByList.${downloadSource}.${item}`),
+          }))}
           width={menuWidths.sortBy}
         />
       </HStack>

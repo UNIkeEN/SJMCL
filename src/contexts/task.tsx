@@ -27,10 +27,6 @@ import {
 } from "@/models/download";
 import { ConfigService } from "@/services/config";
 import { DownloadService } from "@/services/download";
-import {
-  EXTENSION_REFRESH_EVENT,
-  ExtensionService,
-} from "@/services/extension";
 import { RESOURCE_REFRESH_EVENT } from "@/services/resource";
 import {
   type DownloadSnapshotUpdates,
@@ -386,42 +382,6 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
             return;
           }
           break;
-        case "extension-update": {
-          const task = group.tasks[0];
-          const expectedIdentifier = params.param1;
-          const newVersion = params.param2 || "";
-          if (task?.dest && "url" in task.spec && expectedIdentifier) {
-            openGenericConfirmDialog({
-              onCloseCallback: onHandled,
-              title: t("ExtensionUpdateConfirmDialog.title"),
-              body: t("ExtensionUpdateConfirmDialog.body", {
-                identifier: expectedIdentifier,
-                version: newVersion,
-                src: task.spec.url,
-              }),
-              onOKCallback: () =>
-                onHandled(() => {
-                  ExtensionService.addExtension(
-                    task.dest!,
-                    expectedIdentifier
-                  ).then((response) => {
-                    if (response.status === "success") {
-                      toast({ title: response.message, status: "success" });
-                      emit(EXTENSION_REFRESH_EVENT);
-                    } else {
-                      toast({
-                        title: response.message,
-                        description: response.details,
-                        status: "error",
-                      });
-                    }
-                  });
-                }),
-            });
-            return;
-          }
-          break;
-        }
         case "mojang-java":
           getJavaInfos(true);
           break;

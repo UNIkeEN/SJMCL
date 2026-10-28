@@ -1,24 +1,24 @@
-import { BoxProps, HStack, Heading, Highlight, Image } from "@chakra-ui/react";
-import styles from "@/styles/logo-title.module.css";
+import { BoxProps, HStack, Heading, Image } from "@chakra-ui/react";
 
 interface LogoTitleProps extends BoxProps {}
 
+const pixelFont = {
+  fontFamily: "'Silkscreen', monospace",
+  letterSpacing: "0.02em",
+};
+
 export const TitleShort: React.FC<LogoTitleProps> = (props) => {
   return (
-    <Heading size="md" className={styles.title} {...props}>
-      <Highlight query="L" styles={{ color: "blue.600", userSelect: "none" }}>
-        SJMCL
-      </Highlight>
+    <Heading size="md" style={pixelFont} {...props}>
+      Easy-Launcher
     </Heading>
   );
 };
 
 export const TitleFull: React.FC<LogoTitleProps> = (props) => {
   return (
-    <Heading size="md" className={styles.title} {...props}>
-      <Highlight query="L" styles={{ color: "blue.600", userSelect: "none" }}>
-        SJMC Launcher
-      </Highlight>
+    <Heading size="md" style={pixelFont} {...props}>
+      easy-launcher
     </Heading>
   );
 };

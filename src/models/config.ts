@@ -1,5 +1,4 @@
 import { BuildType } from "@/enums/misc";
-import type { HomeWidgetStateTuple } from "@/models/extension";
 
 export interface GameConfig {
   gameJava: {
@@ -96,9 +95,8 @@ export interface LauncherConfig {
   lastRunExitedNormally: boolean;
   appearance: {
     theme: {
-      primaryColor: string;
-      colorMode: "light" | "dark" | "system";
-      useLiquidGlassDesign: boolean;
+      primaryColor: string; // retained for backend compat; unused — lime accent is fixed
+      colorMode: "light" | "dark" | "system"; // retained for backend compat; light-only
       headNavStyle: "standard" | "simplified" | "adaptive";
     };
     font: {
@@ -114,6 +112,7 @@ export interface LauncherConfig {
     accessibility: {
       invertColors: boolean;
       enhanceContrast: boolean;
+      potatoMode: boolean;
     };
   };
   download: {
@@ -163,7 +162,8 @@ export interface LauncherConfig {
   };
   extension: {
     enabled: string[];
-    homeWidgetState: HomeWidgetStateTuple[];
+    // [identifier, slotIndex, enabled] — kept for backend config parity
+    homeWidgetState: [string, number, boolean][];
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;
@@ -291,7 +291,6 @@ export const defaultConfig: LauncherConfig = {
     theme: {
       primaryColor: "blue",
       colorMode: "light",
-      useLiquidGlassDesign: false,
       headNavStyle: "adaptive",
     },
     font: {
@@ -307,6 +306,7 @@ export const defaultConfig: LauncherConfig = {
     accessibility: {
       invertColors: false,
       enhanceContrast: false,
+      potatoMode: false,
     },
   },
   download: {

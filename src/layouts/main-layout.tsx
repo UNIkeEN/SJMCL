@@ -4,6 +4,7 @@ import {
   Center,
   Flex,
   HStack,
+  IconButton,
   Link,
   Text,
   useColorModeValue,
@@ -16,12 +17,7 @@ import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
-import {
-  LuGrid2X2Plus,
-  LuLanguages,
-  LuPackagePlus,
-  LuScrollText,
-} from "react-icons/lu";
+import { LuLanguages, LuPackagePlus, LuScrollText, LuX } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
 import DevToolbar from "@/components/dev/dev-toolbar";
@@ -35,7 +31,6 @@ import {
 } from "@/components/special/file-dnd-overlay";
 import WindowTitlebar from "@/components/window-titlebar";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension/host";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { isDev } from "@/utils/env";
 
@@ -114,7 +109,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <Link
                     color={`${primaryColor}.500`}
                     onClick={() =>
-                      openUrl("https://github.com/UNIkeEN/SJMCL/issues")
+                      openUrl("https://github.com/Rzfan03/easy-launcher/issues")
                     }
                   />
                 ),
@@ -192,44 +187,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onStarUsModalOpen,
     update,
   ]);
-
-  // update font family to body CSS by config.
-  useEffect(() => {
-    const body = document.body;
-    const fontFamily = config.appearance.font.fontFamily;
-
-    if (fontFamily !== "%built-in") {
-      body.setAttribute("use-custom-font", "true");
-      body.style.setProperty("--custom-global-font-family", fontFamily);
-    } else {
-      body.removeAttribute("use-custom-font");
-      body.style.removeProperty("--custom-global-font-family");
-    }
-  }, [config.appearance.font.fontFamily]);
-
-  // update font size to body CSS by config.
-  useEffect(() => {
-    const root = document.documentElement;
-    const body = document.body;
-    const prevMd =
-      parseFloat(
-        getComputedStyle(root).getPropertyValue("--chakra-fontSizes-md")
-      ) || 1;
-    const ratio =
-      Math.min(115, Math.max(85, config.appearance.font.fontSize)) /
-      100 /
-      prevMd;
-
-    const computedStyle = getComputedStyle(root);
-    for (let i = 0; i < computedStyle.length; i++) {
-      const key = computedStyle[i];
-      if (key.startsWith("--chakra-fontSizes-")) {
-        const originalValue =
-          parseFloat(computedStyle.getPropertyValue(key)) || 1;
-        body.style.setProperty(key, `${originalValue * ratio}rem`, "important");
-      }
-    }
-  }, [config.appearance.font.fontSize]);
 
   const getGlobalExtraStyle = (config: any) => {
     const isInvertColors = config.appearance.accessibility.invertColors;
@@ -311,16 +268,48 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {router.pathname === "/launch" ? (
             <>{children}</>
           ) : (
-            <AdvancedCard
-              level="back"
+            // easy-launcher content panel (docs/design/DESIGN-settings.md):
+            // glass panel filling the window, faint line, no accent.
+            // The X button closes the page back to the clean home stage.
+            <Box
+              position="relative"
               flex="1"
-              overflow="auto"
-              mt={1}
-              mb={4}
-              mx={4}
+              minH={0}
+              mt="36px"
+              mb="24px"
+              mx="24px"
             >
-              {children}
-            </AdvancedCard>
+              <AdvancedCard
+                level="back"
+                h="100%"
+                overflow="auto"
+                border="1px solid"
+                borderColor="line"
+                borderRadius="el-md"
+                // no backdrop-filter: WebKitGTK (Tauri Linux) cannot render it
+                // and its compositing path breaks portal paint order — dropdown
+                // menus open invisible. Near-opaque bg keeps the panel look.
+                backgroundColor="rgba(10,10,10,0.92)"
+              >
+                {children}
+              </AdvancedCard>
+              <IconButton
+                aria-label={t("General.close")}
+                icon={<LuX />}
+                position="absolute"
+                top="-34px"
+                right="0"
+                size="sm"
+                zIndex={10}
+                bg="rgba(255,255,255,0.14)"
+                border="1px solid"
+                borderColor="line"
+                color="#FAFAFA"
+                borderRadius="el-sm"
+                _hover={{ bg: "rgba(255,255,255,0.25)", color: "#FAFAFA" }}
+                onClick={() => router.push("/launch")}
+              />
+            </Box>
           )}
 
           <WelcomeAndTermsModal
@@ -339,10 +328,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   );
 };
 
-// support modpack and extension import by DnD on the whole main-layout level
+// support modpack import by DnD on the whole main-layout level
 const MainLayoutFileDnD = () => {
   const { openSharedModal } = useSharedModals();
-  const { handleAddExtension } = useExtensionHost();
 
   useFileDnD({
     extensions: ["zip", "mrpack"],
@@ -352,17 +340,6 @@ const MainLayoutFileDnD = () => {
     onDrop: async ([path]) => {
       if (!path) return;
       openSharedModal("import-modpack", { path });
-    },
-  });
-
-  useFileDnD({
-    extensions: ["sjmclx"],
-    titleKey: "ExtensionSettingsPage.fileDnD.title",
-    descKey: "ExtensionSettingsPage.fileDnD.desc",
-    icon: LuGrid2X2Plus,
-    onDrop: async ([path]) => {
-      if (!path) return;
-      await handleAddExtension(path);
     },
   });
 

@@ -1,18 +1,13 @@
-import GameAdvancedSettingsGroups from "@/components/game-advanced-settings-group";
-import { useLauncherConfig } from "@/contexts/config";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-const GlobalGameAdvancedSettingsPage = () => {
-  const { config, update } = useLauncherConfig();
-  const globalGameConfigs = config.globalGameConfig;
-
-  return (
-    <GameAdvancedSettingsGroups
-      gameConfig={globalGameConfigs}
-      updateGameConfig={(key: string, value: any) => {
-        update(`globalGameConfig.${key}`, value);
-      }}
-    />
-  );
+// easy-launcher: settings became a single page — keep old links working.
+const GlobalGameAdvancedSettingsRedirect = () => {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace({ pathname: "/settings", query: { cat: "global-game" } });
+  }, [router]);
+  return null;
 };
 
-export default GlobalGameAdvancedSettingsPage;
+export default GlobalGameAdvancedSettingsRedirect;

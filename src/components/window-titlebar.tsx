@@ -1,4 +1,4 @@
-import { Flex, HStack, Image, Text, useColorModeValue } from "@chakra-ui/react";
+import { Flex, HStack, Text } from "@chakra-ui/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -6,51 +6,6 @@ import { useTranslation } from "react-i18next";
 import { LuMaximize2, LuMinimize2, LuMinus, LuX } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension/host";
-
-const MainWindowExtensionTitle = () => {
-  const { t } = useTranslation();
-  const router = useRouter();
-  const { extensionList } = useExtensionHost();
-
-  const textColor = useColorModeValue("blackAlpha.600", "whiteAlpha.700");
-
-  const extensionIdentifier = (() => {
-    if (!router.isReady) return undefined;
-    const path = router.asPath.split("?")[0];
-    if (path.startsWith("/extension/")) {
-      return decodeURIComponent(path.slice("/extension/".length).split("/")[0]);
-    }
-    if (path.startsWith("/extensions/")) {
-      return decodeURIComponent(
-        path.slice("/extensions/".length).split("/")[0]
-      );
-    }
-    return undefined;
-  })();
-
-  const extensionName = extensionList?.find(
-    (extension) => extension.identifier === extensionIdentifier
-  )?.name;
-
-  if (!extensionName) return null;
-
-  return (
-    <Flex
-      position="absolute"
-      inset={0}
-      align="center"
-      justify="center"
-      pointerEvents="none"
-    >
-      <Text fontSize="xs-sm" color={textColor}>
-        {t("WindowTitlebar.extensionProvidedPage", {
-          name: extensionName,
-        })}
-      </Text>
-    </Flex>
-  );
-};
 
 const WindowTitlebar = () => {
   const { t } = useTranslation();
@@ -68,12 +23,6 @@ const WindowTitlebar = () => {
   const [isLinuxMaximized, setIsLinuxMaximized] = useState(false);
   const [isMainWindow, setIsMainWindow] = useState(true);
   const [windowTitle, setWindowTitle] = useState("");
-
-  const titlebarBg = useColorModeValue("whiteAlpha.600", "blackAlpha.500");
-  const titlebarBorderColor = useColorModeValue(
-    "blackAlpha.200",
-    "whiteAlpha.300"
-  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -120,7 +69,6 @@ const WindowTitlebar = () => {
       onClick: async () => {
         await getCurrentWindow().close();
       },
-      colorScheme: "red",
     },
   ];
 
@@ -214,20 +162,20 @@ const WindowTitlebar = () => {
 
   if (isMac && isMacFullscreen) return null;
 
+  // Ghost titlebar: transparent strip for dragging; controls appear on hover.
   return (
     <Flex
       h={`${titlebarHeight}px`}
       minH={`${titlebarHeight}px`}
-      bg={titlebarBg}
-      backdropFilter="blur(3px) saturate(140%)"
-      borderBottom="1px solid"
-      borderColor={titlebarBorderColor}
       zIndex={9999}
-      pl={2}
+      position="relative"
+      role="application"
+      aria-label="Window controls"
+      sx={{
+        "& .window-controls": { opacity: 0, transition: "opacity .15s" },
+        "&:hover .window-controls": { opacity: 1 },
+      }}
     >
-      {isMainWindow && !router.pathname.startsWith("/standalone") && (
-        <MainWindowExtensionTitle />
-      )}
       <Flex
         id="sjmcl-window-drag-region"
         data-tauri-drag-region
@@ -235,13 +183,6 @@ const WindowTitlebar = () => {
         h="100%"
         align="center"
       >
-        {(isWindows || isLinux) && (
-          <Image
-            src="/images/icons/Logo_32x32.png"
-            alt="SJMCL"
-            boxSize="16px"
-          />
-        )}
         {!isMainWindow && windowTitle && (
           <Text
             ml={isMac ? 16 : 2}
@@ -262,7 +203,13 @@ const WindowTitlebar = () => {
         />
       )}
       {isLinux && (
-        <HStack spacing={0} h="100%" align="center" pr={2}>
+        <HStack
+          spacing={0}
+          h="100%"
+          align="center"
+          pr={2}
+          className="window-controls"
+        >
           {linuxWindowButtons.map((button) => (
             <CommonIconButton
               key={button.label}
@@ -272,7 +219,6 @@ const WindowTitlebar = () => {
               withTooltip={false}
               borderRadius="full"
               h={18}
-              colorScheme={button.colorScheme}
               onClick={button.onClick}
             />
           ))}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>easy-launcher</title>
+<style>
+:root{
+  --bg:#0a0a0a; --glass:rgba(10,10,10,.55); --hi:rgba(255,255,255,.1);
+  --line:rgba(255,255,255,.12); --text:#fafafa; --muted:#a3a3a3; --ink:#0a0a0a;
+  --font:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;font:inherit}
+html,body{height:100%}
+body{font-family:var(--font);font-size:14px;line-height:1.4;color:var(--text);background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* latar live: gambar, GIF, atau video lewat setStageBackground(url) */
+.stage{position:fixed;inset:0;overflow:hidden;background:radial-gradient(900px 500px at 50% 120%,rgba(255,255,255,.08),transparent 60%),var(--bg);background-size:cover;background-position:center}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage.gray,.stage.gray video{filter:grayscale(1)}
+.shade{position:fixed;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.5),transparent 30%)}
+
+button{border:0;background:none;color:inherit;cursor:pointer;font-family:var(--font)}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+.bar{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:6px;
+  background:var(--glass);border:1px solid var(--line);border-radius:6px;
+  backdrop-filter:blur(20px) saturate(0);-webkit-backdrop-filter:blur(20px) saturate(0)}
+
+.icon{position:relative;width:40px;height:40px;display:grid;place-items:center;border-radius:4px;color:var(--muted);transition:background .15s,color .15s}
+.icon:hover{background:var(--hi);color:var(--text)}
+.icon::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 14px);left:50%;transform:translateX(-50%);
+  padding:4px 8px;border-radius:4px;background:var(--glass);border:1px solid var(--line);color:var(--text);font-size:13px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .15s;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.icon:hover::after,.icon:focus-visible::after{opacity:1}
+
+.play{height:40px;margin:0 6px;padding:0 22px;display:flex;align-items:center;gap:10px;border-radius:4px;background:var(--text);color:var(--ink);font-weight:600;transition:transform .12s}
+.play:active{transform:translateY(1px)}
+.play small{font-size:13px;font-weight:500;color:#737373}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage"></div>
+<div class="shade"></div>
+
+<footer class="bar" role="toolbar" aria-label="Navigasi">
+  <button class="icon" data-page="profiles" id="b-profiles" data-tip="Profil" aria-label="Profil"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12L4 7.5M12 12v9"/></svg></button>
+  <button class="icon" data-page="mods" data-tip="Mod" aria-label="Mod"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg></button>
+
+  <button class="play" id="launch">Mainkan <small id="pver">1.21.3</small></button>
+
+  <button class="icon" data-page="downloads" data-tip="Unduhan" aria-label="Unduhan"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg></button>
+  <button class="icon" data-page="settings" data-tip="Setelan" aria-label="Setelan"><svg viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+</footer>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)}, emit=function(n,d){document.dispatchEvent(new CustomEvent(n,{detail:d||{}}))};
+  $('#launch').addEventListener('click',function(){emit('launch')});
+  [].forEach.call(document.querySelectorAll('[data-page]'),function(b){b.addEventListener('click',function(){emit('navigate',{page:b.dataset.page})})});
+
+  // Latar live: .mp4/.webm/.ogv jadi video (diam, loop), selain itu gambar atau GIF.
+  window.setStageBackground=function(url){
+    var s=$('#stage');s.innerHTML='';s.style.backgroundImage='';
+    if(!url)return;
+    if(/\.(mp4|webm|ogv)(\?|#|$)/i.test(url)){
+      var v=document.createElement('video');
+      v.src=url;v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.setAttribute('aria-hidden','true');
+      if(matchMedia('(prefers-reduced-motion:reduce)').matches)v.autoplay=false;
+      s.appendChild(v);v.play&&v.play().catch(function(){});
+    }else{s.style.backgroundImage='url("'+url+'")'}
+  };
+  // Opsional: latar hitam putih agar serasi dengan tema.
+  window.setStageGrayscale=function(on){$('#stage').classList.toggle('gray',!!on)};
+  document.addEventListener('visibilitychange',function(){
+    var v=$('#stage video');if(!v)return;document.hidden?v.pause():v.play().catch(function(){});
+  });
+
+  window.setProfile=function(p){ // {name, version, loader}
+    $('#pver').textContent=p.version;
+    var b=$('#b-profiles');b.dataset.tip='Profil: '+p.name;b.setAttribute('aria-label','Profil, aktif: '+p.name+' '+p.version+' '+p.loader);
+  };
+})();
+</script>
+</body>
+</html>

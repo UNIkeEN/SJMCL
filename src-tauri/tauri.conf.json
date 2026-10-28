@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "SJMCL",
+  "productName": "easy-launcher",
   "version": "1.4.0",
-  "identifier": "SJMCL",
+  "identifier": "dev.rzfan03.easy-launcher",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
@@ -31,7 +31,7 @@
       "app"
     ],
     "category": "Game",
-    "copyright": "Copyright © 2024-2026 SJMCL Team",
+    "copyright": "Copyright © 2026 Rzfan03",
     "icon": [
       "assets/icons/32x32.png",
       "assets/icons/64x64.png",

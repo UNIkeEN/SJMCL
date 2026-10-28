@@ -2,7 +2,6 @@ import {
   Box,
   BoxProps,
   Button,
-  Card,
   Divider,
   Flex,
   HStack,
@@ -11,13 +10,11 @@ import {
   TextProps,
   VStack,
   Wrap,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import cardStyles from "@/styles/card.module.css";
 
 export interface OptionItemProps extends Omit<BoxProps, "title"> {
   prefixElement?: React.ReactNode;
@@ -59,8 +56,6 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
 
   const titleLineClampProps: TextProps = {
     noOfLines: maxTitleLines,
@@ -112,7 +107,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
     ));
 
   return (
-    <Flex justify="space-between" alignItems="center">
+    <Flex justify="space-between" alignItems="center" className="settings-row">
       <Flex
         flex={1}
         justify="space-between"
@@ -122,11 +117,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         onMouseLeave={() => setIsHovered(false)}
         borderRadius="md"
         _hover={{
-          bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
+          bg: isFullClickZone ? "surface" : "inherit",
           transition: "background-color 0.2s ease-in-out",
         }}
         _active={{
-          bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
+          bg: isFullClickZone ? "surface" : "inherit",
           transition: "background-color 0.1s ease-in-out",
         }}
         cursor={isFullClickZone ? "pointer" : "default"}
@@ -183,7 +178,6 @@ export const OptionItem: React.FC<OptionItemProps> = ({
 
 export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   items,
-  withInCard = true,
   withDivider = true,
   maxFirstVisibleItems,
   enableShowAll = true,
@@ -253,15 +247,11 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   );
 
   return (
-    <Section {...props}>
+    <Section {...props} data-settings-group>
       {items.length > 0 &&
-        (withInCard ? (
-          <Card className={cardStyles["card-front"]} py={2.5}>
-            {renderItems()}
-          </Card>
-        ) : (
-          renderItems()
-        ))}
+        // easy-launcher (docs/design/DESIGN-settings.md): rows separated by 1px
+        // lines — no nested cards, monochrome.
+        renderItems()}
     </Section>
   );
 };

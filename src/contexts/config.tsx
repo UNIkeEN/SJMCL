@@ -40,6 +40,23 @@ const LauncherConfigContext = createContext<
   LauncherConfigContextType | undefined
 >(undefined);
 
+// easy-launcher (docs/design/DESIGN.md): light-only theme. Backend still stores
+// other values; frontend locks them until the second theme is designed.
+// easy-launcher (docs/design/DESIGN-homebar.md): dark-only monochrome theme.
+// Backend still stores other values; frontend locks them.
+const themeOverrides = {
+  colorMode: "dark",
+  // accent is fixed (monochrome); the stored primaryColor is ignored on the frontend
+  primaryColor: "blue",
+} as const;
+const withThemeOverrides = (config: LauncherConfig): LauncherConfig => ({
+  ...config,
+  appearance: {
+    ...config.appearance,
+    theme: { ...config.appearance.theme, ...themeOverrides },
+  },
+});
+
 export const LauncherConfigContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -63,7 +80,7 @@ export const LauncherConfigContextProvider: React.FC<{
   const handleRetrieveLauncherConfig = useCallback(() => {
     ConfigService.retrieveLauncherConfig().then((response) => {
       if (response.status === "success") {
-        setConfig(response.data);
+        setConfig(withThemeOverrides(response.data));
       } else {
         toast({
           title: response.message,
@@ -95,7 +112,7 @@ export const LauncherConfigContextProvider: React.FC<{
     setConfig((prevConfig) => {
       const newConfig = { ...prevConfig };
       updateByKeyPath(newConfig, path, JSON.parse(value));
-      return newConfig;
+      return withThemeOverrides(newConfig);
     });
   }, []);
 

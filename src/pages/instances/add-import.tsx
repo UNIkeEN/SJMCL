@@ -1,19 +1,9 @@
-import {
-  HStack,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Portal,
-  Text,
-  VStack,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Icon, VStack, useDisclosure } from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight, LuCloudDownload, LuFolderPlus } from "react-icons/lu";
+import { DropdownMenu } from "@/components/common/dropdown-menu";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
@@ -95,23 +85,25 @@ const AddAndImportInstancePage = () => {
 
   const ModpackMenu = () => {
     return (
-      <Menu isOpen={isModpackMenuOpen} onClose={onCloseModpackMenu}>
-        <MenuButton>
-          <Icon as={LuArrowRight} boxSize={3.5} mr="5px" />
-        </MenuButton>
-        <Portal>
-          <MenuList>
-            {modpackOperations.map((item) => (
-              <MenuItem key={item.label} fontSize="xs" onClick={item.onClick}>
-                <HStack>
-                  <item.icon />
-                  <Text>{item.label}</Text>
-                </HStack>
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Portal>
-      </Menu>
+      <DropdownMenu
+        isOpen={isModpackMenuOpen}
+        onOpen={onOpenModpackMenu}
+        onClose={onCloseModpackMenu}
+        trigger={(p) => (
+          <Icon
+            as={LuArrowRight}
+            boxSize={3.5}
+            mr="5px"
+            cursor="pointer"
+            {...p}
+          />
+        )}
+        items={modpackOperations.map((item) => ({
+          icon: item.icon,
+          label: item.label,
+          onClick: item.onClick,
+        }))}
+      />
     );
   };
 

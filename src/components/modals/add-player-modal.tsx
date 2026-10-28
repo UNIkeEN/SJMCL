@@ -1,8 +1,4 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   Flex,
   FormControl,
@@ -11,7 +7,6 @@ import {
   HStack,
   Icon,
   Input,
-  Link,
   Menu,
   MenuButton,
   MenuItem,
@@ -33,8 +28,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuChevronDown,
-  LuExternalLink,
-  LuGrid2X2,
   LuKeyRound,
   LuLink2Off,
   LuPlus,
@@ -294,11 +287,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
       label: t("Enums.playerTypes.offline"),
     },
     {
-      key: "microsoft",
-      icon: LuGrid2X2,
-      label: t("Enums.playerTypes.microsoft"),
-    },
-    {
       key: "3rdparty",
       icon: LuServer,
       label: t("Enums.playerTypes.3rdpartyShort"),
@@ -338,26 +326,10 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               />
             </FormControl>
 
-            {playerType !== PlayerType.Microsoft &&
-              !config.basicInfo.allowFullLoginFeature && (
-                <Alert status="error" borderRadius="md">
-                  <AlertIcon />
-                  <VStack spacing={0} align="start">
-                    <AlertTitle>
-                      {t("General.alert.noFullLogin.title")}
-                    </AlertTitle>
-                    <AlertDescription>
-                      {t("General.alert.noFullLogin.description")}
-                    </AlertDescription>
-                  </VStack>
-                </Alert>
-              )}
-
             {playerType === PlayerType.Offline && (
               <VStack w="100%" spacing={1}>
                 <FormControl
                   isRequired
-                  isDisabled={!config.basicInfo.allowFullLoginFeature}
                   isInvalid={
                     !!playername.length && !isOfflinePlayernameValid(playername)
                   }
@@ -379,19 +351,15 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                     {t("AddPlayerModal.offline.playerName.errorMessage")}
                   </FormErrorMessage>
                 </FormControl>
-                {config.basicInfo.allowFullLoginFeature && (
-                  <Section
-                    isAccordion
-                    initialIsOpen={false}
-                    title={t("AddPlayerModal.offline.advancedOptions.title")}
-                    onAccordionToggle={(isOpen) =>
-                      setShowAdvancedOptions(isOpen)
-                    }
-                    w="100%"
-                    mt={2}
-                    mb={-2}
-                  />
-                )}
+                <Section
+                  isAccordion
+                  initialIsOpen={false}
+                  title={t("AddPlayerModal.offline.advancedOptions.title")}
+                  onAccordionToggle={(isOpen) => setShowAdvancedOptions(isOpen)}
+                  w="100%"
+                  mt={2}
+                  mb={-2}
+                />
                 {showAdvancedOptions && (
                   <FormControl isInvalid={!!uuid.length && !isUuidValid(uuid)}>
                     <FormLabel>
@@ -413,17 +381,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                   </FormControl>
                 )}
               </VStack>
-            )}
-
-            {playerType === PlayerType.Microsoft && (
-              <OAuthLoginPanel
-                authType={PlayerType.Microsoft}
-                authCode={oauthCodeResponse?.userCode}
-                callback={() =>
-                  oauthCodeResponse ? handleLogin(true) : handleFetchOAuthCode()
-                }
-                isLoading={isLoading}
-              />
             )}
 
             {playerType === PlayerType.ThirdParty && (
@@ -539,23 +496,6 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
         </ModalBody>
 
         <ModalFooter w="100%">
-          {(playerType === PlayerType.Offline ||
-            playerType === PlayerType.Microsoft) && (
-            <HStack spacing={2}>
-              <LuExternalLink />
-              <Link
-                color={`${primaryColor}.500`}
-                onClick={() => {
-                  openUrl(
-                    "https://www.xbox.com/games/store/productId/9NXP44L49SHJ"
-                  );
-                }}
-              >
-                {t("AddPlayerModal.button.buyMinecraft")}
-              </Link>
-            </HStack>
-          )}
-
           {playerType === PlayerType.ThirdParty &&
             config.basicInfo.allowFullLoginFeature &&
             authServer?.features.openidConfigurationUrl &&
@@ -591,7 +531,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             <Button variant="ghost" onClick={modalProps.onClose}>
               {t("General.cancel")}
             </Button>
-            {!showOAuth && playerType !== PlayerType.Microsoft && (
+            {!showOAuth && (
               <Button
                 colorScheme={primaryColor}
                 onClick={() => handleLogin()}

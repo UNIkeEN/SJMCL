@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   HStack,
-  Kbd,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -30,7 +29,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { clamp } from "@/utils/math";
 
@@ -116,24 +115,6 @@ export const GuidedTourProvider: React.FC<TourProviderProps> = ({
       id: "head-navbar-tab-accounts",
       title: t("GuidedTourProvider.step2.title"),
       content: t("GuidedTourProvider.step2.content"),
-      placement: "bottom",
-    },
-    {
-      id: "head-navbar-tab-discover",
-      title: t("GuidedTourProvider.step3.title"),
-      content: (
-        <Trans
-          i18nKey="GuidedTourProvider.step3.content"
-          components={{ key: <Kbd /> }}
-          values={{
-            keyname: t(
-              `Enums.${config.basicInfo.osType === "macos" ? "metaKey" : "ctrlKey"}.${
-                config.basicInfo.osType
-              }`
-            ),
-          }}
-        />
-      ),
       placement: "bottom",
     },
     {

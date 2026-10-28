@@ -22,11 +22,9 @@ import AddGameServerModal from "@/components/modals/add-game-server-modal";
 import WorldLevelDataModal from "@/components/modals/world-level-data-modal";
 import { useFileDnD } from "@/components/special/file-dnd-overlay";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension/host";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
-import { ExtensionUISlotKey } from "@/enums/extension";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
@@ -49,7 +47,6 @@ const InstanceWorldsPage = () => {
   } = useInstanceSharedData();
   const accordionStates = config.states.instanceWorldsPage.accordionStates;
   const toast = useToast();
-  const { getExtensionSlotItems } = useExtensionHost();
   const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
@@ -216,14 +213,6 @@ const InstanceWorldsPage = () => {
   ];
 
   const worldItemMenuOperations = (save: WorldInfo) => [
-    ...getExtensionSlotItems(
-      ExtensionUISlotKey.InstanceWorldItemMenuOperations,
-      {
-        save,
-        instanceId,
-        summary,
-      }
-    ),
     {
       label: "",
       icon: "copyOrMove",
@@ -264,14 +253,6 @@ const InstanceWorldsPage = () => {
   ];
 
   const serverItemMenuOperations = (server: GameServerInfo) => [
-    ...getExtensionSlotItems(
-      ExtensionUISlotKey.InstanceServerItemMenuOperations,
-      {
-        server,
-        instanceId,
-        summary,
-      }
-    ),
     {
       icon: "delete",
       danger: true,

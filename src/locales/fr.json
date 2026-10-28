@@ -3,6 +3,22 @@
     "about": {
       "title": "À propos",
       "settings": {
+        "aboutSJMC": {
+          "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
+        },
+        "basedOn": {
+          "title": "Basé sur SJMCL",
+          "description": "Ce launcher est construit sur SJMCL (GNU GPL v3.0)."
+        },
+        "contributors": {
+          "title": "Liste des développeurs"
+        },
+        "developer": {
+          "title": "Développeur"
+        },
+        "sourceCode": {
+          "title": "Voir le code source sur GitHub"
+        },
         "version": {
           "title": "Version",
           "foundNew": "Il y a une nouvelle version.",
@@ -12,15 +28,6 @@
             "up2date": "Vous utilisez déjà la dernière version.",
             "error": "Échec de la vérification des mises à jour."
           }
-        },
-        "contributors": {
-          "title": "Liste des développeurs"
-        },
-        "sourceCode": {
-          "title": "Voir le code source sur GitHub"
-        },
-        "aboutSJMC": {
-          "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
         }
       }
     },
@@ -62,7 +69,7 @@
       "settings": {
         "copyright": {
           "title": "Droits d'auteur",
-          "description": "Copyright © 2024-2026 Équipe de développement SJMCL."
+          "description": "Copyright © 2024-2026 Équipe de développement easy-launcher."
         },
         "userAgreement": {
           "title": "Accord d'utilisateur",
@@ -81,7 +88,21 @@
       "add3rdPartyServer": "Ajouter un serveur d'authentification",
       "sourceHomepage": "Visiter la page d'accueil",
       "deleteServer": "Supprimer ce serveur",
-      "importFromOtherLaunchers": "Importer depuis d'autres launchers"
+      "importFromOtherLaunchers": "Importer depuis d'autres launchers",
+      "copy": "Copier",
+      "copied": "Copié",
+      "makeActive": "Définir comme actif",
+      "activeAccount": "Compte actif",
+      "logout": "Se déconnecter",
+      "confirmLogout": "Vraiment ?",
+      "add": "Ajouter",
+      "login": "Se connecter",
+      "manageSkin": "Gérer le skin",
+      "viewSkin": "Voir le skin"
+    },
+    "playerType": {
+      "offline": "Hors ligne",
+      "3rdparty": "Serveur d'authentification"
     },
     "playerTypeList": {
       "all": "Les sources"
@@ -89,7 +110,24 @@
     "viewTypeList": {
       "grid": "Vue en grille",
       "list": "Vue en liste"
-    }
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "Jeton d'accès",
+      "skin": "Skin"
+    },
+    "token": {
+      "valid": "Valide",
+      "noToken": "Aucun jeton"
+    },
+    "tag": {
+      "active": "Actif"
+    },
+    "addForm": {
+      "title": "Ajouter un compte",
+      "offlineHint": "Un simple nom de joueur, aucun compte requis",
+      "serverHint": "Ajoutez un serveur d'authentification pour vous connecter",
+      "empty": "Aucun compte pour l'instant"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
@@ -176,7 +214,7 @@
         "title": "Options avancées",
         "uuid": {
           "label": "UUID",
-          "placeholder": "(Généré automatiquement par SJMCL)",
+          "placeholder": "(Généré automatiquement par easy-launcher)",
           "errorMessage": "Format UUID incorrect"
         }
       }
@@ -205,7 +243,7 @@
       "description": {
         "start": {
           "3rdparty": "Cette source d'authentification prend en charge la proposition Yggdrasil Connect",
-          "microsoft": "SJMCL prend en charge le flux d'autorisation d'appareil OAuth 2.0 de Microsoft"
+          "microsoft": "easy-launcher prend en charge le flux d'autorisation d'appareil OAuth 2.0 de Microsoft"
         },
         "next": "Veuillez cliquer sur le bouton Continuer la connexion pour ouvrir la fenêtre de connexion et saisir le code ci-dessus (déjà copié)"
       },
@@ -268,21 +306,6 @@
     "theme": {
       "title": "Thème",
       "settings": {
-        "primaryColor": {
-          "title": "Couleur principale du lanceur"
-        },
-        "colorMode": {
-          "title": "Mode de couleur",
-          "type": {
-            "system": "Suivre le paramètre du système",
-            "light": "Clairs",
-            "dark": "Sombre"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "Effet verre liquide",
-          "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide', ce qui peut affecter les performances"
-        },
         "headNavStyle": {
           "title": "Style de la barre de navigation supérieure",
           "type": {
@@ -529,7 +552,7 @@
       "type": "Type"
     },
     "warning": {
-      "mojang": "Le runtime Java distribué par Mojang sera installé par SJMCL dans un répertoire spécifique.",
+      "mojang": "Le runtime Java distribué par Mojang sera installé par easy-launcher dans un répertoire spécifique.",
       "oracle": "Le téléchargement à partir de la source Oracle peut nécessiter une connexion."
     }
   },
@@ -842,10 +865,10 @@
     "title": "Paramètres de {{name}}"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL ne peut pas contrôler le comportement des extensions tierces, y compris la manière dont elles traitent vos données personnelles. N'installez et n'activez que des extensions provenant de sources fiables.",
+    "alert": "easy-launcher ne peut pas contrôler le comportement des extensions tierces, y compris la manière dont elles traitent vos données personnelles. N'installez et n'activez que des extensions provenant de sources fiables.",
     "fileDnD": {
-      "title": "Installer une extension SJMCL",
-      "desc": "Installer le fichier d'extension {{fileName}} dans SJMCL"
+      "title": "Installer une extension easy-launcher",
+      "desc": "Installer le fichier d'extension {{fileName}} dans easy-launcher"
     },
     "installed": "Extensions installées",
     "menu": {
@@ -1280,14 +1303,14 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "Dossier actuel",
-            "APP_DATA_SUBDIR": "Dossier de données SJMCL",
+            "APP_DATA_SUBDIR": "Dossier de données easy-launcher",
             "OFFICIAL_DIR": "Dossier du lanceur officiel"
           }
         }
       },
       "deleteDialog": {
         "title": "Supprimer le répertoire du jeu",
-        "content": "Êtes-vous sûr de vouloir supprimer le répertoire du jeu {{dirName}} ? (SJMCL ne le scannera plus, mais les fichiers ne seront pas supprimés du disque)"
+        "content": "Êtes-vous sûr de vouloir supprimer le répertoire du jeu {{dirName}} ? (easy-launcher ne le scannera plus, mais les fichiers ne seront pas supprimés du disque)"
       },
       "directoryNotExist": "Ce répertoire n'existe pas, veuillez le supprimer et l'ajouter à nouveau"
     },
@@ -1397,10 +1420,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "Lancer",
-      "instances": "Instances",
       "accounts": "Comptes",
       "discover": "Découvrir",
+      "downloads": "Téléchargements",
+      "instances": "Instances",
+      "launch": "Lancer",
       "search": "Recherche",
       "settings": "Paramètres"
     }
@@ -1670,29 +1694,6 @@
       "launch": "Jouer sur ce serveur"
     }
   },
-  "IntelligenceSettingsPage": {
-    "title": "Intelligence SJMCL",
-    "description": "Intégrez des modèles d'IA à votre lanceur et à votre expérience de jeu Minecraft.",
-    "mcpServer": {
-      "title": "Service MCP",
-      "headExtra": "Redémarrage requis",
-      "settings": {
-        "enabled": {
-          "title": "Service MCP du lanceur",
-          "description": "Activez le service MCP local pour connecter des applications d'agent externes et automatiser le contrôle du lanceur."
-        },
-        "docs": {
-          "title": "Guide d'utilisation",
-          "description": "Découvrez comment connecter le lanceur à des applications d'agent externes (comme Claude, Cherry Studio, etc.).",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "Port",
-          "description": "Port local fixe utilisé par le service MCP du lanceur."
-        }
-      }
-    }
-  },
   "JavaSettingsPage": {
     "javaList": {
       "title": "Gestion Java",
@@ -1713,7 +1714,7 @@
     },
     "confirmDelete": {
       "title": "Supprimer Java",
-      "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (SJMCL ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
+      "description": "Êtes-vous sûr de vouloir supprimer cette version de Java ? (easy-launcher ne pourra plus l'utiliser pour lancer le jeu, mais les fichiers ne seront pas supprimés du disque)"
     }
   },
   "LanguageMenu": {
@@ -1730,7 +1731,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La dernière exécution s'est terminée anormalement",
-      "content": "SJMCL s'est terminé anormalement lors de la dernière exécution. Vous pouvez envoyer les journaux à la <community>communauté</community> ou ouvrir une issue sur <github>GitHub</github> pour obtenir de l'aide.",
+      "content": "easy-launcher s'est terminé anormalement lors de la dernière exécution. Vous pouvez envoyer les journaux à la <community>communauté</community> ou ouvrir une issue sur <github>GitHub</github> pour obtenir de l'aide.",
       "viewLog": "Voir les journaux"
     }
   },
@@ -1750,6 +1751,9 @@
     "Text": {
       "noSelectedPlayer": "Aucun joueur sélectionné",
       "noSelectedGame": "Aucune instance de jeu sélectionnée"
+    },
+    "stats": {
+      "loader": "Loader"
     }
   },
   "LaunchProcessModal": {
@@ -1777,7 +1781,7 @@
   "MainLayout": {
     "fileDnD": {
       "title": "Importer un modpack",
-      "desc": "Importer le fichier de modpack {{fileName}} dans SJMCL"
+      "desc": "Importer le fichier de modpack {{fileName}} dans easy-launcher"
     }
   },
   "ManageSkinModal": {
@@ -2233,8 +2237,8 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "Mise à jour du lanceur",
-    "body": "La nouvelle version a été téléchargée. Redémarrez SJMCL pour finaliser la mise à jour.",
-    "bodyWinInstaller": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera SJMCL et exécutera le programme d'installation.",
+    "body": "La nouvelle version a été téléchargée. Redémarrez easy-launcher pour finaliser la mise à jour.",
+    "bodyWinInstaller": "La nouvelle version a été téléchargée. Cliquer sur « Installer » fermera easy-launcher et exécutera le programme d'installation.",
     "button": {
       "restart": "Redémarrer",
       "install": "Installer",
@@ -3109,12 +3113,20 @@
       "global-game": "Paramètres globaux du jeu",
       "java": "Java",
       "general": "Général",
+      "account": "Compte",
       "appearance": "Apparence",
       "download": "Téléchargement",
-      "intelligence": "IA",
       "extension": "Extensions",
       "help": "Aide & Doc",
       "about": "À propos"
+    },
+    "back": "Retour",
+    "search": {
+      "placeholder": "Rechercher un paramètre",
+      "empty": "Aucun paramètre correspondant."
+    },
+    "button": {
+      "manageAccount": "Gérer les comptes"
     }
   },
   "SkinPreview": {
@@ -3169,7 +3181,7 @@
     "header": {
       "title": "Étoilez-nous sur GitHub !"
     },
-    "body": "Si vous aimez SJMCL et souhaitez nous soutenir, pouvez-vous nous donner une étoile sur GitHub ? Ce petit geste compte beaucoup pour nous et nous motive à continuer à améliorer l'expérience.",
+    "body": "Si vous aimez easy-launcher et souhaitez nous soutenir, pouvez-vous nous donner une étoile sur GitHub ? Ce petit geste compte beaucoup pour nous et nous motive à continuer à améliorer l'expérience.",
     "button": {
       "later": "Plus tard",
       "starUs": "Étoiler"
@@ -3203,7 +3215,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "Chemin d'exécution non sûr",
-      "content": "SJMCL est actuellement exécuté depuis un répertoire temporaire ou invalide. Vos paramètres et données de jeu peuvent être perdus. Veuillez déplacer SJMCL vers un autre emplacement et le relancer.",
+      "content": "easy-launcher est actuellement exécuté depuis un répertoire temporaire ou invalide. Vos paramètres et données de jeu peuvent être perdus. Veuillez déplacer easy-launcher vers un autre emplacement et le relancer.",
       "btnContinue": "Continuer quand même"
     }
   },
@@ -3246,11 +3258,11 @@
       "title": "Bienvenue !"
     },
     "body": {
-      "text": "Bienvenue sur SJMCL ! Avant de commencer, veuillez lire et accepter notre <terms>Accord d'utilisateur</terms>."
+      "text": "Bienvenue sur easy-launcher ! Avant de commencer, veuillez lire et accepter notre <terms>Accord d'utilisateur</terms>."
     },
     "warning": {
-      "unstableVersion": "Vous utilisez actuellement SJMCL (version {{versionLabel}}). Certaines fonctionnalités peuvent être instables ou encore en développement. Nous vous invitons à signaler tout problème d'utilisation ou à soumettre vos suggestions d'amélioration.",
-      "winArm64Notice": "SJMCL prend désormais en charge la plateforme Windows on Arm. Si vous utilisez un appareil basé sur une plateforme <b>Qualcomm</b>, vous devrez peut-être installer le <glpack>Pack de compatibilité OpenGL</glpack> pour pouvoir jouer."
+      "unstableVersion": "Vous utilisez actuellement easy-launcher (version {{versionLabel}}). Certaines fonctionnalités peuvent être instables ou encore en développement. Nous vous invitons à signaler tout problème d'utilisation ou à soumettre vos suggestions d'amélioration.",
+      "winArm64Notice": "easy-launcher prend désormais en charge la plateforme Windows on Arm. Si vous utilisez un appareil basé sur une plateforme <b>Qualcomm</b>, vous devrez peut-être installer le <glpack>Pack de compatibilité OpenGL</glpack> pour pouvoir jouer."
     },
     "button": {
       "agree": "Accepter"

@@ -9,12 +9,10 @@ import GlobalEventHandler from "@/components/special/global-event-handler";
 import { GuidedTourProvider } from "@/components/special/guided-tour-provider";
 import SharedModalsProvider from "@/components/special/shared-modals-provider";
 import { LauncherConfigContextProvider } from "@/contexts/config";
-import { ExtensionHostContextProvider } from "@/contexts/extension/host";
 import { GlobalDataContextProvider } from "@/contexts/global-data";
 import { RoutingHistoryContextProvider } from "@/contexts/routing-history";
 import { TaskContextProvider } from "@/contexts/task";
 import { ToastContextProvider } from "@/contexts/toast";
-import DiscoverLayout from "@/layouts/discover-layout";
 import InstanceDetailsLayout from "@/layouts/instance-details-layout";
 import InstancesLayout from "@/layouts/instances-layout";
 import MainLayout from "@/layouts/main-layout";
@@ -66,7 +64,6 @@ export default function App({ Component, pageProps }: AppProps) {
     key: string;
   }[] = useMemo(
     () => [
-      { prefix: "/discover", key: "discover" },
       { prefix: "/settings", key: "settings" },
       {
         prefix: "/instances/details",
@@ -82,7 +79,6 @@ export default function App({ Component, pageProps }: AppProps) {
     React.ComponentType<{ children: React.ReactNode }>[]
   > = useMemo(
     () => ({
-      discover: [DiscoverLayout],
       settings: [SettingsLayout],
       "instances-details": [InstancesLayout, InstanceDetailsLayout],
       instances: [InstancesLayout],
@@ -125,17 +121,15 @@ export default function App({ Component, pageProps }: AppProps) {
               <GuidedTourProvider>
                 <SharedModalsProvider>
                   <TaskContextProvider>
-                    <ExtensionHostContextProvider>
-                      <GlobalEventHandler>
-                        <MainLayout>
-                          <Fade key={router.pathname.split("/")[1] || ""} in>
-                            <SpecLayout>
-                              <Component {...pageProps} />
-                            </SpecLayout>
-                          </Fade>
-                        </MainLayout>
-                      </GlobalEventHandler>
-                    </ExtensionHostContextProvider>
+                    <GlobalEventHandler>
+                      <MainLayout>
+                        <Fade key={router.pathname.split("/")[1] || ""} in>
+                          <SpecLayout>
+                            <Component {...pageProps} />
+                          </SpecLayout>
+                        </Fade>
+                      </MainLayout>
+                    </GlobalEventHandler>
                   </TaskContextProvider>
                 </SharedModalsProvider>
               </GuidedTourProvider>

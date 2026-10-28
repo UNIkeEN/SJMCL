@@ -41,7 +41,7 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const borderWidth = "1px";
+  const borderWidth = "2px"; // matches card-front border in card.module.css
   const basePadding = boxProps.padding || "12px";
   const selectedPadding = `calc(${basePadding} - ${borderWidth})`;
 
@@ -49,9 +49,13 @@ const SelectableCard: React.FC<SelectableCardProps> = ({
     <Card
       className={cardStyles["card-front"]}
       pr={1.5}
-      variant={isSelected ? "outline" : "elevated"}
-      borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
-      borderWidth={isSelected ? borderWidth : 0}
+      style={
+        isSelected
+          ? ({
+              "--card-border-color": `${primaryColor}.500`,
+            } as React.CSSProperties)
+          : undefined
+      }
       p={isSelected ? selectedPadding : basePadding}
       {...boxProps}
     >

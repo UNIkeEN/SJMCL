@@ -1,17 +1,13 @@
+/* easy-launcher card skin (docs/design/DESIGN-homebar.md) — monochrome dark,
+   faint 1px lines, no blur on individual cards (perf) */
 .card-back {
-  background-color: rgba(255, 255, 255, 0.75) !important;
-  backdrop-filter: blur(20px);
+  background-color: var(--el-panel, rgba(10, 10, 10, 0.6)) !important;
 }
 
 .card-front {
-  background-color: #FAFAFA !important;
+  background-color: rgba(10, 10, 10, 0.85) !important;
+  /* a card can personalize its border via --card-border-color (e.g. selection state) */
+  border: 1px solid var(--card-border-color, var(--el-line, rgba(255, 255, 255, 0.12))) !important;
+  border-radius: var(--el-radius-md, 6px) !important;
   padding: var(--chakra-space-3);
-}
-
-:global([data-theme="dark"]) .card-back {
-  background-color: rgba(0, 0, 0, 0.83) !important;
-}
-
-:global([data-theme="dark"]) .card-front {
-  background-color: #2E2E2E !important;
 }

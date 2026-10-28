@@ -7,7 +7,6 @@ use tauri_plugin_http::reqwest::{self, RequestBuilder};
 use crate::account::constants::DEFAULT_POLLING_INTERVAL;
 use crate::account::models::{
   AccountError, AccountInfo, DeviceAuthResponseInfo, OAuthErrorResponse, OAuthTokens, PlayerInfo,
-  PlayerType,
 };
 use crate::launcher_config::models::LauncherConfig;
 use crate::utils::image::{ImageWrapper, decode_image};
@@ -66,12 +65,6 @@ pub fn add_player(app: &AppHandle, new_player: PlayerInfo) -> SJMCLResult<()> {
 
     let config_binding = app.state::<Mutex<LauncherConfig>>();
     let mut config_state = config_binding.lock()?;
-
-    if new_player.player_type != PlayerType::Microsoft
-      && !config_state.basic_info.allow_full_login_feature
-    {
-      return Err(AccountError::FullLoginUnavailable.into());
-    }
 
     if account_state
       .players

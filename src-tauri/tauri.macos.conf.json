@@ -1,5 +1,5 @@
 {
-  "identifier": "SJMCL",
+  "identifier": "dev.rzfan03.easy-launcher",
   "bundle": {
     "resources": {
       "infoplist": ""
@@ -19,7 +19,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "SJMC Launcher",
+        "title": "easy-launcher",
         "url": "/",
         "width": 800,
         "height": 550,

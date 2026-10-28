@@ -22,8 +22,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleAlert, LuFolderOpen } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension/host";
-import { ExtensionUISlotKey } from "@/enums/extension";
 import { InstanceSummary } from "@/models/instance/misc";
 import { JavaInfo } from "@/models/misc";
 import { LaunchService } from "@/services/launch";
@@ -38,8 +36,6 @@ const GameErrorPage: React.FC = () => {
   const { t } = useTranslation();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-
-  const { getExtensionSlotItems } = useExtensionHost();
 
   const [basicInfoParams, setBasicInfoParams] = useState(
     new Map<string, string>()
@@ -295,20 +291,6 @@ const GameErrorPage: React.FC = () => {
         >
           {t("GameErrorPage.button.help")}
         </Button>
-        {getExtensionSlotItems(ExtensionUISlotKey.GameErrorWindowOperations, {
-          instanceId: instanceInfo?.id,
-          summary: instanceInfo,
-          launchingId,
-          javaInfo,
-        }).map((props, index) => (
-          <Button
-            key={props.id || `ext-btn-${index}`}
-            colorScheme={primaryColor}
-            variant="solid"
-            {...props}
-            size="sm" // keep default size
-          />
-        ))}
         <Icon ml={2} as={LuCircleAlert} color="red.500" />
         <Text fontSize="xs-sm" color="red.500">
           {t("GameErrorPage.bottomAlert")}

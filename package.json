@@ -1,5 +1,5 @@
 {
-  "name": "sjmcl",
+  "name": "easy-launcher",
   "version": "1.4.0",
   "private": true,
   "browserslist": [
@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "build:linux": "tauri build",
     "start": "next start",
     "lint": "eslint",
     "tauri": "tauri",

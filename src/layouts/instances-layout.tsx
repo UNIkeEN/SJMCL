@@ -143,9 +143,19 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
   }, [router.asPath]);
 
   return (
-    <Grid templateColumns={showNavBar ? "1fr 3fr" : "3fr"} gap={4} h="100%">
+    <Grid
+      templateColumns={showNavBar ? "240px minmax(0,1fr)" : "1fr"}
+      gap={0}
+      h="100%"
+    >
       {showNavBar && (
-        <GridItem className="content-full-y">
+        <GridItem
+          className="content-full-y"
+          borderRight="1px solid"
+          borderColor="line"
+          p={3}
+          pt={4}
+        >
           <VStack align="stretch" h="100%" spacing={4}>
             <Box flex="1" overflowY="auto">
               <NavMenu
@@ -214,7 +224,9 @@ const InstancesLayout: React.FC<InstancesLayoutProps> = ({ children }) => {
           </VStack>
         </GridItem>
       )}
-      <GridItem className="content-full-y">{children}</GridItem>
+      <GridItem className="content-full-y" pl={6}>
+        {children}
+      </GridItem>
     </Grid>
   );
 };

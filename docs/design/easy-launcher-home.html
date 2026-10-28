@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>easy-launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Design tokens: ubah di sini untuk mengganti tema seluruh halaman */
+:root{
+  --ground:#E7F0E4;
+  --ink:#0B1A12;
+  --muted:#45594C;
+  --accent:#C6FF3D;
+  --card-back-1:#CFE3D3;
+  --card-back-2:#B5D3BC;
+  --on-ink-muted:#A9BBAF;
+  --font:'Bricolage Grotesque',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--font)}
+button{font-family:inherit;cursor:pointer;color:inherit}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+.app{height:100vh;min-height:680px;padding:28px 40px;display:flex;flex-direction:column;gap:20px;overflow:hidden}
+
+/* Header */
+.top{display:flex;align-items:center;justify-content:space-between;height:48px;flex:none}
+.brand{font-size:28px;font-weight:800;letter-spacing:-0.04em;display:flex;align-items:baseline}
+.brand i{width:10px;height:10px;background:var(--accent);border:2px solid var(--ink);margin-left:3px;display:inline-block}
+.nav{display:flex;gap:4px;padding:4px;border:2px solid var(--ink);border-radius:999px}
+.nav a{padding:8px 18px;border-radius:999px;font-size:14px;font-weight:600}
+.nav a[aria-current="page"]{background:var(--ink);color:var(--accent);font-weight:700}
+.account{display:flex;align-items:center;gap:10px;padding:4px 16px 4px 4px;border:2px solid var(--ink);border-radius:999px;background:transparent;font-size:14px;font-weight:700}
+.account .avatar{width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+
+/* Layout */
+.main{flex:1;display:flex;gap:32px;min-height:0}
+.stage{flex:1;position:relative;min-width:0;display:flex;flex-direction:column}
+.stage-bg{flex:1;position:relative;overflow:hidden;border:2px solid var(--ink);border-radius:26px;background-color:var(--card-back-1);background-image:var(--stage-bg-image,none);background-size:cover;background-position:center;background-repeat:no-repeat}
+.stats{position:absolute;left:20px;bottom:20px;display:flex;gap:28px;padding:14px 22px;background:var(--ground);border:2px solid var(--ink);border-radius:20px}
+.stats b{display:block;font-size:30px;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.stats span{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:4px}
+
+/* Profiles */
+.side{width:400px;flex:none;display:flex;flex-direction:column;gap:14px}
+.picker{position:relative}
+.trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border:2px solid var(--ink);border-radius:20px;background:var(--card-back-1);font-size:18px;font-weight:700;text-align:left}
+.trigger .meta{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
+.trigger svg{flex:none;transition:transform .15s}
+.trigger[aria-expanded="true"] svg{transform:rotate(180deg)}
+.list{position:absolute;left:0;right:0;top:calc(100% + 8px);margin:0;padding:6px;list-style:none;background:var(--ground);border:2px solid var(--ink);border-radius:20px;box-shadow:6px 6px 0 var(--ink);z-index:5}
+.list[hidden]{display:none}
+.opt{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:0;border-radius:14px;background:transparent;font-size:15px;font-weight:700;text-align:left}
+.opt span{font-size:13px;font-weight:600;color:var(--muted)}
+.opt:hover,.opt:focus-visible{background:var(--card-back-1)}
+.opt[aria-selected="true"]{background:var(--ink);color:var(--accent)}
+.opt[aria-selected="true"] span{color:var(--on-ink-muted)}
+.card{flex:1;min-height:250px;border:2px solid var(--ink);border-radius:26px;background:var(--ink);color:#EAF3EC;padding:22px 26px;display:flex;flex-direction:column;gap:12px}
+.card h3{margin:0;font-size:34px;font-weight:800;letter-spacing:-0.03em;line-height:1.05}
+.specs{margin:4px 0 0;display:flex;flex-direction:column}
+.specs div{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed rgba(234,243,236,.25);font-size:14px}
+.specs div:last-child{border-bottom:0}
+.specs dt{color:var(--on-ink-muted);font-weight:500}
+.specs dd{margin:0;font-weight:700}
+
+/* Play */
+.play{height:92px;border:3px solid var(--ink);border-radius:28px;background:var(--accent);box-shadow:6px 6px 0 var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 32px;font-size:36px;font-weight:800;letter-spacing:-0.03em;transition:transform .12s,box-shadow .12s}
+.play:hover{transform:translate(2px,2px);box-shadow:4px 4px 0 var(--ink)}
+.play:active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+.play .go{width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+@media (prefers-reduced-motion:reduce){.play{transition:none}}
+@media (max-width:1000px){
+  .app{height:auto;overflow:visible;padding:20px}
+  .top{flex-wrap:wrap;height:auto;gap:12px}
+  .main{flex-direction:column}
+  .stage{height:520px;flex:none}
+  .side{width:100%}
+}
+</style>
+</head>
+<body>
+<!--
+  Hook: #stage-bg (setStageBackground(url)), #profile-select (event "profilechange"),
+  #profile-card, #play-btn, #status-text. Semua teks dan angka hanya contoh.
+  Token dan aturan tema: lihat DESIGN.md.
+-->
+<div class="app">
+  <header class="top">
+    <div class="brand">easy-launcher<i></i></div>
+    <nav class="nav" aria-label="Navigasi utama">
+      <a href="#" aria-current="page">Beranda</a>
+      <a href="#">Profil</a>
+      <a href="#">Mod</a>
+      <a href="#">Unduhan</a>
+      <a href="#">Setelan</a>
+    </nav>
+    <button class="account" id="account-btn" type="button"><span class="avatar">I</span>israa299elyby</button>
+  </header>
+
+  <div class="main">
+    <section class="stage" aria-label="Latar dunia">
+      <div class="stage-bg" id="stage-bg">
+        <div class="stats">
+          <div><b>14j 32m</b><span>waktu bermain</span></div>
+          <div><b>12</b><span>mod aktif</span></div>
+          <div><b>2 jam</b><span>terakhir main</span></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side" aria-label="Profil dan peluncuran">
+      <div class="picker">
+        <button class="trigger" id="profile-select" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="profile-list">
+          <div><span id="trigger-name">Survival Santai</span><span class="meta" id="trigger-meta">Fabric 1.21.11</span></div>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <ul class="list" id="profile-list" role="listbox" aria-label="Pilih profil" hidden>
+          <li role="presentation"><button class="opt" role="option" type="button" data-id="survival" aria-selected="true">Survival Santai<span>Fabric 1.21.11</span></button></li>
+          <li role="presentation"><button class="opt" role="option" type="button" data-id="skyblock" aria-selected="false">Skyblock Kawan<span>Forge 1.20.1</span></button></li>
+          <li role="presentation"><button class="opt" role="option" type="button" data-id="vanilla" aria-selected="false">Vanilla Polos<span>1.21.11</span></button></li>
+        </ul>
+      </div>
+      <article class="card" id="profile-card">
+        <h3 id="card-name">Survival Santai</h3>
+        <dl class="specs">
+          <div><dt>Loader</dt><dd id="spec-loader">Fabric</dd></div>
+          <div><dt>Minecraft</dt><dd id="spec-mc">1.21.11</dd></div>
+          <div><dt>Java</dt><dd id="spec-java">21</dd></div>
+          <div><dt>Memori</dt><dd id="spec-ram">4 GB</dd></div>
+        </dl>
+      </article>
+      <button class="play" id="play-btn" type="button">Mainkan
+        <span class="go"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </button>
+      <p class="sr-only" id="status-text" role="status"></p>
+    </aside>
+  </div>
+</div>
+<script>
+function setStageBackground(url){
+  var el=document.getElementById('stage-bg');
+  if(!url){el.style.removeProperty('--stage-bg-image');return;}
+  el.style.setProperty('--stage-bg-image','url("'+String(url).replace(/"/g,'%22')+'")');
+}
+</script>
+<script>
+(function(){
+  var profiles={
+    survival:{name:'Survival Santai',loader:'Fabric',mc:'1.21.11',java:'21',ram:'4 GB',meta:'Fabric 1.21.11'},
+    skyblock:{name:'Skyblock Kawan',loader:'Forge',mc:'1.20.1',java:'17',ram:'3 GB',meta:'Forge 1.20.1'},
+    vanilla:{name:'Vanilla Polos',loader:'Vanilla',mc:'1.21.11',java:'21',ram:'2 GB',meta:'1.21.11'}
+  };
+  var trigger=document.getElementById('profile-select');
+  var list=document.getElementById('profile-list');
+  var opts=Array.prototype.slice.call(list.querySelectorAll('.opt'));
+  function $(id){return document.getElementById(id)}
+  function open(){list.hidden=false;trigger.setAttribute('aria-expanded','true');
+    var sel=opts.filter(function(o){return o.getAttribute('aria-selected')==='true'})[0]||opts[0];sel.focus();}
+  function close(back){list.hidden=true;trigger.setAttribute('aria-expanded','false');if(back)trigger.focus();}
+  function choose(id){
+    var p=profiles[id];if(!p)return;
+    opts.forEach(function(o){o.setAttribute('aria-selected',o.dataset.id===id?'true':'false')});
+    $('trigger-name').textContent=p.name;$('trigger-meta').textContent=p.meta;
+    $('card-name').textContent=p.name;$('spec-loader').textContent=p.loader;
+    $('spec-mc').textContent=p.mc;$('spec-java').textContent=p.java;$('spec-ram').textContent=p.ram;
+    document.dispatchEvent(new CustomEvent('profilechange',{detail:{id:id,profile:p}}));
+    close(true);
+  }
+  trigger.addEventListener('click',function(){list.hidden?open():close(false)});
+  trigger.addEventListener('keydown',function(e){if(e.key==='ArrowDown'&&list.hidden){e.preventDefault();open()}});
+  opts.forEach(function(o,i){
+    o.addEventListener('click',function(){choose(o.dataset.id)});
+    o.addEventListener('keydown',function(e){
+      if(e.key==='ArrowDown'){e.preventDefault();opts[(i+1)%opts.length].focus()}
+      else if(e.key==='ArrowUp'){e.preventDefault();opts[(i-1+opts.length)%opts.length].focus()}
+      else if(e.key==='Escape'){e.preventDefault();close(true)}
+    });
+  });
+  document.addEventListener('click',function(e){if(!list.hidden&&!e.target.closest('.picker'))close(false)});
+})();
+</script>
+</body>
+</html>

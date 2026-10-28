@@ -272,8 +272,7 @@ export const FileDnDProvider: React.FC<{ children: React.ReactNode }> = ({
             inset={0}
             zIndex={1700} // higher than 1400 (Modal), same as toast
             pointerEvents="none"
-            bg="blackAlpha.600"
-            backdropFilter="blur(10px)"
+            bg="rgba(0,0,0,0.75)" // no blur: WebKitGTK breaks portal paint order
           />
           <Box
             position="absolute"

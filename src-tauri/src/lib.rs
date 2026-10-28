@@ -47,6 +47,15 @@ fn open_modpack_deeplink(handle: &tauri::AppHandle, path: &str) {
 }
 
 pub async fn run() {
+  // WebKitGTK 2.54 DMABUF renderer drops compositor layers for fade-in
+  // elements: menus/popovers open transparent (visible only with devtools
+  // open, which forces a re-composite). Must be set before any webview exists.
+  #[cfg(target_os = "linux")]
+  unsafe {
+    std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+  }
+
   let exit_code = {
     let builder = tauri::Builder::default()
       .plugin(tauri_plugin_clipboard_manager::init())
@@ -197,6 +206,36 @@ pub async fn run() {
         APP_DATA_DIR
           .set(app.path().resolve("", BaseDirectory::AppData).unwrap())
           .expect("APP_DATA_DIR initialization failed");
+
+        // Migrate data from the pre-rebrand SJMCL data directory once
+        // (identifier changed SJMCL -> dev.rzfan03.easy-launcher, which moves app_data_dir).
+        {
+          let new_dir = APP_DATA_DIR.get().unwrap().clone();
+          let old_dir = new_dir
+            .parent()
+            .map(|parent| parent.join("SJMCL"))
+            .unwrap_or_default();
+          if old_dir.is_dir() && !new_dir.exists() {
+            use std::fs;
+            for entry in walkdir::WalkDir::new(&old_dir) {
+              let Ok(entry) = entry else { continue };
+              let Ok(relative) = entry.path().strip_prefix(&old_dir) else {
+                continue;
+              };
+              let dest = new_dir.join(relative);
+              if entry.file_type().is_dir() {
+                let _ = fs::create_dir_all(&dest);
+              } else if let Some(parent) = dest.parent() {
+                let _ = fs::create_dir_all(parent);
+                let _ = fs::copy(entry.path(), &dest);
+              }
+            }
+            log::info!(
+              "Migrated legacy SJMCL data directory to {}",
+              new_dir.display()
+            );
+          }
+        }
 
         // Set up logging
         utils::logging::setup_with_app(app.handle().clone()).unwrap();
@@ -353,7 +392,9 @@ pub async fn run() {
         eprintln!("Failed to build Tauri application: {:?}", e); // fallback when logging is not available
         native_dialog::DialogBuilder::message()
           .set_title("Initialization error")
-          .set_text(format!("Cannot initialize SJMCL due to an error:\n{e}"))
+          .set_text(format!(
+            "Cannot initialize easy-launcher due to an error:\n{e}"
+          ))
           .set_level(native_dialog::MessageLevel::Error)
           .alert()
           .show()

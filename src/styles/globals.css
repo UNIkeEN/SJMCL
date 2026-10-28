@@ -6,10 +6,29 @@ html {
   overscroll-behavior: none;
 }
 
+/* easy-launcher design tokens (docs/design/DESIGN-homebar.md) — monochrome dark */
+:root {
+  --el-ground: #0a0a0a;
+  --el-ink: #fafafa;
+  --el-accent: #fafafa;
+  --el-muted: #a3a3a3;
+  --el-surface: rgba(255, 255, 255, 0.09);
+  --el-on-ink: #0a0a0a;
+  --el-on-ink-muted: #737373;
+  --el-line: rgba(255, 255, 255, 0.12);
+  --el-panel: rgba(10, 10, 10, 0.6);
+  --el-border-width: 1px;
+  --el-radius-sm: 4px;
+  --el-radius-md: 6px;
+  --el-radius-lg: 6px;
+  --el-radius-pill: 999px;
+  --el-shadow-hard: none;
+}
+
 /* root */
 body {
   margin: 0;
-  font-family: -apple-system, Sinter, ui-sans-serif, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol" !important;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, Sinter, ui-sans-serif, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol" !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden !important;
