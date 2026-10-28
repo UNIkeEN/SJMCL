@@ -3,7 +3,7 @@ import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCompass, LuLanguages } from "react-icons/lu";
+import { LuLanguages } from "react-icons/lu";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
@@ -41,7 +41,6 @@ const GeneralSettingsPage = () => {
   } = useDisclosure();
 
   const instancesNavTypes = ["instance", "directory", "tag", "hidden"];
-  const discoverPageModes = ["on", "search-only", "off"];
 
   const handleResetLauncherConfig = useCallback(async () => {
     ConfigService.resetLauncherConfig().then((response) => {
@@ -146,35 +145,6 @@ const GeneralSettingsPage = () => {
               },
             ]
           : []),
-      ],
-    },
-    {
-      title: t("GeneralSettingsPage.functions.title"),
-      items: [
-        {
-          title: t("GeneralSettingsPage.functions.settings.discoverPage.title"),
-          description: t(
-            "GeneralSettingsPage.functions.settings.discoverPage.description"
-          ),
-          prefixElement: <LuCompass />,
-          children: (
-            <MenuSelector
-              options={discoverPageModes.map((mode) => ({
-                value: mode,
-                label: t(
-                  `GeneralSettingsPage.functions.settings.discoverPage.${mode}`
-                ),
-              }))}
-              value={generalConfigs.functionality.discoverPage}
-              onSelect={(value) => {
-                update("general.functionality.discoverPage", value as string);
-              }}
-              placeholder={t(
-                `GeneralSettingsPage.functions.settings.discoverPage.${generalConfigs.functionality.discoverPage}`
-              )}
-            />
-          ),
-        },
       ],
     },
     {

@@ -88,7 +88,21 @@
       "add3rdPartyServer": "Agregar servidor de autenticación",
       "sourceHomepage": "Ver Página Principal",
       "deleteServer": "Eliminar Servidor de Autenticación",
-      "importFromOtherLaunchers": "Importar"
+      "importFromOtherLaunchers": "Importar",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "makeActive": "Hacer activa",
+      "activeAccount": "Cuenta activa",
+      "logout": "Cerrar sesión",
+      "confirmLogout": "¿Seguro?",
+      "add": "Añadir",
+      "login": "Iniciar sesión",
+      "manageSkin": "Gestionar skin",
+      "viewSkin": "Ver skin"
+    },
+    "playerType": {
+      "offline": "Sin conexión",
+      "3rdparty": "Servidor de autenticación"
     },
     "playerTypeList": {
       "all": "Todas las Fuentes"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "Vista de Cuadrícula",
       "list": "Vista de Lista"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "Token de acceso",
+      "skin": "Skin"
+    },
+    "token": {
+      "valid": "Válido",
+      "noToken": "Sin token"
+    },
+    "tag": {
+      "active": "Activa"
+    },
     "addForm": {
-      "empty": "Aún no hay cuentas"
-    }
+      "title": "Añadir cuenta",
+      "offlineHint": "Solo el nombre de jugador, sin cuenta",
+      "serverHint": "Añade un servidor de autenticación para iniciar sesión",
+      "empty": "Aún no hay cuentas"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

@@ -88,7 +88,21 @@
       "add3rdPartyServer": "增鑒權伺服器",
       "sourceHomepage": "詣主葉",
       "deleteServer": "刪此伺服器",
-      "importFromOtherLaunchers": "自他啟者導入"
+      "importFromOtherLaunchers": "自他啟者導入",
+      "copy": "摹",
+      "copied": "已摹",
+      "makeActive": "定為正用",
+      "activeAccount": "正用戶簿",
+      "logout": "出",
+      "confirmLogout": "定乎？",
+      "add": "增",
+      "login": "入",
+      "manageSkin": "理膚",
+      "viewSkin": "視膚"
+    },
+    "playerType": {
+      "offline": "離綫",
+      "3rdparty": "外證之服"
     },
     "playerTypeList": {
       "all": "諸源悉覽"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "格覽",
       "list": "列覽"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "戶識",
+      "token": "憑引",
+      "skin": "膚"
+    },
+    "token": {
+      "valid": "有效",
+      "noToken": "無憑"
+    },
+    "tag": {
+      "active": "正用"
+    },
     "addForm": {
-      "empty": "尚無戶簿"
-    }
+      "title": "增戶簿",
+      "offlineHint": "玩家之名足矣，無須戶簿",
+      "serverHint": "增外證之服以入",
+      "empty": "尚無戶簿"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

@@ -1,39 +1,23 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import HomeWidgetContainer from "@/components/extension/home-widget-container";
+import { Flex, Text } from "@chakra-ui/react";
+import { useRef } from "react";
+import { TitleShort } from "@/components/logo-title";
+import { useLauncherConfig } from "@/contexts/config";
 
 // easy-launcher home (docs/design/DESIGN-homebar.md): the page is just the live
-// stage — the background shows through and the homebar carries all navigation.
+// stage — the background shows through, the brand sits top-left and the
+// homebar carries all navigation.
 const LaunchPage = () => {
   const layoutRef = useRef<HTMLDivElement>(null);
-  const [maxWidgetWidth, setMaxWidgetWidth] = useState<number>(320);
-
-  useEffect(() => {
-    const layoutEl = layoutRef.current;
-    if (!layoutEl) return;
-
-    const updateMaxWidgetWidth = () => {
-      const available = Math.min(320, layoutEl.clientWidth * 0.35);
-      setMaxWidgetWidth(Math.max(240, Math.floor(available)));
-    };
-
-    updateMaxWidgetWidth();
-    const observer = new ResizeObserver(updateMaxWidgetWidth);
-    observer.observe(layoutEl);
-    return () => observer.disconnect();
-  }, []);
+  const { config } = useLauncherConfig();
 
   return (
     <Flex ref={layoutRef} h="100%" w="100%">
-      <Box
-        position="absolute"
-        top={4}
-        right={4}
-        maxH={{ base: "55%", lg: "calc(100% - 96px)" }}
-        overflow="hidden"
-      >
-        <HomeWidgetContainer maxWidth={maxWidgetWidth} />
-      </Box>
+      <Flex position="absolute" top={6} left={8} direction="column">
+        <TitleShort aria-label="easy-launcher" />
+        <Text fontSize="xs" color="muted" mt={1}>
+          {config.basicInfo.launcherVersion}
+        </Text>
+      </Flex>
     </Flex>
   );
 };

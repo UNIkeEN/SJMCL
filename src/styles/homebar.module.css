@@ -5,11 +5,11 @@
   align-items: center;
   gap: 4px;
   padding: 6px;
-  background: rgba(10, 10, 10, 0.55);
+  background: rgba(10, 10, 10, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 6px;
-  backdrop-filter: blur(20px) saturate(0);
-  -webkit-backdrop-filter: blur(20px) saturate(0);
+  /* no backdrop-filter: WebKitGTK cannot render it and its compositing
+     path breaks portal paint order (dropdowns open invisible) */
 }
 
 .icon {

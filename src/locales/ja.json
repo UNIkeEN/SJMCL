@@ -88,7 +88,21 @@
       "add3rdPartyServer": "認証サーバー追加",
       "sourceHomepage": "ホームページへ",
       "deleteServer": "サーバー削除",
-      "importFromOtherLaunchers": "他のランチャーからインポート"
+      "importFromOtherLaunchers": "他のランチャーからインポート",
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "makeActive": "使用中にする",
+      "activeAccount": "使用中のアカウント",
+      "logout": "ログアウト",
+      "confirmLogout": "本当に？",
+      "add": "追加",
+      "login": "ログイン",
+      "manageSkin": "スキン管理",
+      "viewSkin": "スキン表示"
+    },
+    "playerType": {
+      "offline": "オフライン",
+      "3rdparty": "認証サーバー"
     },
     "playerTypeList": {
       "all": "すべてのソース"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "グリッドビュー",
       "list": "リストビュー"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "アクセストークン",
+      "skin": "スキン"
+    },
+    "token": {
+      "valid": "有効",
+      "noToken": "トークンなし"
+    },
+    "tag": {
+      "active": "使用中"
+    },
     "addForm": {
-      "empty": "アカウントがありません"
-    }
+      "title": "アカウント追加",
+      "offlineHint": "プレイヤー名だけでアカウント不要",
+      "serverHint": "認証サーバーを追加してログイン",
+      "empty": "アカウントがありません"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

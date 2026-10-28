@@ -13,8 +13,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
   const router = useRouter();
 
   // The single settings page (/settings) brings its own sidebar.
-  // This layout only wraps the leftover special routes:
-  // /settings/extension/* and /settings/download/ping-test.
+  // This layout only wraps the leftover special route: /settings/download/ping-test.
   if (router.pathname === "/settings") {
     return <>{children}</>;
   }
@@ -37,15 +36,9 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
         pt={4}
       >
         <SettingsSidebar
-          activeCat={
-            router.pathname.startsWith("/settings/extension")
-              ? "extension"
-              : selectedKey || ""
-          }
+          activeCat={selectedKey || ""}
           onNavigate={(cat) =>
-            cat === "extension"
-              ? router.push("/settings/extension")
-              : router.push({ pathname: "/settings", query: { cat } })
+            router.push({ pathname: "/settings", query: { cat } })
           }
         />
       </Flex>

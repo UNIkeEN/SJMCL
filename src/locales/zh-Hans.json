@@ -88,7 +88,21 @@
       "add3rdPartyServer": "添加认证服务器",
       "sourceHomepage": "访问主页",
       "deleteServer": "删除此服务器",
-      "importFromOtherLaunchers": "从其他启动器导入"
+      "importFromOtherLaunchers": "从其他启动器导入",
+      "copy": "复制",
+      "copied": "已复制",
+      "makeActive": "设为当前",
+      "activeAccount": "当前账户",
+      "logout": "退出登录",
+      "confirmLogout": "确定退出？",
+      "add": "添加",
+      "login": "登录",
+      "manageSkin": "管理皮肤",
+      "viewSkin": "查看皮肤"
+    },
+    "playerType": {
+      "offline": "离线模式",
+      "3rdparty": "验证服务器"
     },
     "playerTypeList": {
       "all": "全部来源"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "网格视图",
       "list": "列表视图"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "访问令牌",
+      "skin": "皮肤"
+    },
+    "token": {
+      "valid": "有效",
+      "noToken": "无令牌"
+    },
+    "tag": {
+      "active": "当前使用"
+    },
     "addForm": {
-      "empty": "暂无账户"
-    }
+      "title": "添加账户",
+      "offlineHint": "仅需玩家名，无需账户",
+      "serverHint": "添加验证服务器以登录",
+      "empty": "暂无账户"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

@@ -110,12 +110,8 @@ const SettingsPage = () => {
         <SettingsSidebar
           activeCat={activeTab}
           onNavigate={(cat) => {
-            if (cat === "extension") {
-              router.push("/settings/extension");
-            } else {
-              setActiveTab(cat);
-              setQuery("");
-            }
+            setActiveTab(cat);
+            setQuery("");
           }}
           query={query}
           onQueryChange={setQuery}

@@ -88,7 +88,21 @@
       "add3rdPartyServer": "新增認證伺服器",
       "sourceHomepage": "訪問首頁",
       "deleteServer": "刪除此伺服器",
-      "importFromOtherLaunchers": "從其他啟動器匯入"
+      "importFromOtherLaunchers": "從其他啟動器匯入",
+      "copy": "複製",
+      "copied": "已複製",
+      "makeActive": "設為當前",
+      "activeAccount": "當前帳戶",
+      "logout": "登出",
+      "confirmLogout": "確定登出？",
+      "add": "新增",
+      "login": "登入",
+      "manageSkin": "管理皮膚",
+      "viewSkin": "檢視皮膚"
+    },
+    "playerType": {
+      "offline": "離綫模式",
+      "3rdparty": "驗證伺服器"
     },
     "playerTypeList": {
       "all": "全部來源"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "網格檢視",
       "list": "清單檢視"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "存取權杖",
+      "skin": "皮膚"
+    },
+    "token": {
+      "valid": "有效",
+      "noToken": "無權杖"
+    },
+    "tag": {
+      "active": "當前使用"
+    },
     "addForm": {
-      "empty": "暫無帳戶"
-    }
+      "title": "新增帳戶",
+      "offlineHint": "僅需玩家名，無需帳戶",
+      "serverHint": "新增驗證伺服器以登入",
+      "empty": "暫無帳戶"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

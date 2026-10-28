@@ -23,10 +23,8 @@ import { WrapCardGroup } from "@/components/common/wrap-card";
 import { ChangeLoaderModal } from "@/components/modals/change-loader-modal";
 import { useFileDnD } from "@/components/special/file-dnd-overlay";
 import { useLauncherConfig } from "@/contexts/config";
-import { useExtensionHost } from "@/contexts/extension/host";
 import { useInstanceSharedData } from "@/contexts/instance";
 import { useSharedModals } from "@/contexts/shared-modal";
-import { ExtensionUISlotKey } from "@/enums/extension";
 import { InstanceSubdirType } from "@/enums/instance";
 import { OtherResourceType } from "@/enums/resource";
 import { GetStateFlag } from "@/hooks/get-state";
@@ -44,7 +42,6 @@ const InstanceShaderPacksPage = () => {
     getShaderPackList,
     isShaderPackListLoading: isLoading,
   } = useInstanceSharedData();
-  const { getExtensionSlotItems } = useExtensionHost();
   const { openSharedModal } = useSharedModals();
   const accordionStates = config.states.instanceShaderPacksPage.accordionStates;
 
@@ -135,14 +132,6 @@ const InstanceShaderPacksPage = () => {
   ];
 
   const shaderItemMenuOperations = (pack: ShaderPackInfo) => [
-    ...getExtensionSlotItems(
-      ExtensionUISlotKey.InstanceShaderPackItemMenuOperations,
-      {
-        pack,
-        instanceId,
-        summary,
-      }
-    ),
     {
       label: "",
       icon: "copyOrMove",

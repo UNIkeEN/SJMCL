@@ -13,13 +13,7 @@ import {
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  LuBox,
-  LuCircleUserRound,
-  LuCompass,
-  LuSettings,
-  LuZap,
-} from "react-icons/lu";
+import { LuBox, LuCircleUserRound, LuSettings, LuZap } from "react-icons/lu";
 import AdvancedCard from "@/components/common/advanced-card";
 import { DownloadIndicator } from "@/components/download-indicator";
 import { TitleShort } from "@/components/logo-title";
@@ -48,7 +42,6 @@ const HeadNavBar = () => {
     { icon: LuZap, label: "launch", path: "/launch" },
     { icon: LuBox, label: "instances", path: "/instances" },
     { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
-    { icon: LuCompass, label: "discover", path: "/discover" },
     { icon: LuSettings, label: "settings", path: "/settings" },
   ];
 

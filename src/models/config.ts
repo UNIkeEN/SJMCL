@@ -1,5 +1,4 @@
 import { BuildType } from "@/enums/misc";
-import type { HomeWidgetStateTuple } from "@/models/extension";
 
 export interface GameConfig {
   gameJava: {
@@ -162,7 +161,8 @@ export interface LauncherConfig {
   };
   extension: {
     enabled: string[];
-    homeWidgetState: HomeWidgetStateTuple[];
+    // [identifier, slotIndex, enabled] — kept for backend config parity
+    homeWidgetState: [string, number, boolean][];
   };
   localGameDirectories: GameDirectory[];
   globalGameConfig: GameConfig;

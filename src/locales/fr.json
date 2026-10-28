@@ -88,7 +88,21 @@
       "add3rdPartyServer": "Ajouter un serveur d'authentification",
       "sourceHomepage": "Visiter la page d'accueil",
       "deleteServer": "Supprimer ce serveur",
-      "importFromOtherLaunchers": "Importer depuis d'autres launchers"
+      "importFromOtherLaunchers": "Importer depuis d'autres launchers",
+      "copy": "Copier",
+      "copied": "Copié",
+      "makeActive": "Définir comme actif",
+      "activeAccount": "Compte actif",
+      "logout": "Se déconnecter",
+      "confirmLogout": "Vraiment ?",
+      "add": "Ajouter",
+      "login": "Se connecter",
+      "manageSkin": "Gérer le skin",
+      "viewSkin": "Voir le skin"
+    },
+    "playerType": {
+      "offline": "Hors ligne",
+      "3rdparty": "Serveur d'authentification"
     },
     "playerTypeList": {
       "all": "Les sources"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "Vue en grille",
       "list": "Vue en liste"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "Jeton d'accès",
+      "skin": "Skin"
+    },
+    "token": {
+      "valid": "Valide",
+      "noToken": "Aucun jeton"
+    },
+    "tag": {
+      "active": "Actif"
+    },
     "addForm": {
-      "empty": "Aucun compte pour l'instant"
-    }
+      "title": "Ajouter un compte",
+      "offlineHint": "Un simple nom de joueur, aucun compte requis",
+      "serverHint": "Ajoutez un serveur d'authentification pour vous connecter",
+      "empty": "Aucun compte pour l'instant"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

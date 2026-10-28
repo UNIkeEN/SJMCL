@@ -88,7 +88,21 @@
       "add3rdPartyServer": "Add auth server",
       "sourceHomepage": "View Homepage",
       "deleteServer": "Delete Auth Server",
-      "importFromOtherLaunchers": "Import"
+      "importFromOtherLaunchers": "Import",
+      "copy": "Salin",
+      "copied": "Tersalin",
+      "makeActive": "Jadikan aktif",
+      "activeAccount": "Akun aktif",
+      "logout": "Keluar",
+      "confirmLogout": "Yakin?",
+      "add": "Tambah",
+      "login": "Masuk",
+      "manageSkin": "Ubah Skin",
+      "viewSkin": "Lihat Skin"
+    },
+    "playerType": {
+      "offline": "Mode Offline",
+      "3rdparty": "Server autentikasi"
     },
     "playerTypeList": {
       "all": "All Source"
@@ -96,12 +110,24 @@
     "viewTypeList": {
       "grid": "Grid View",
       "list": "List View"
-    }
-  },
-  "AccountsPage": {
+    },
+    "detail": {
+      "uuid": "UUID",
+      "token": "Token akses",
+      "skin": "Skin"
+    },
+    "token": {
+      "valid": "Valid",
+      "noToken": "Tanpa token"
+    },
+    "tag": {
+      "active": "Aktif"
+    },
     "addForm": {
-      "empty": "Belum ada akun"
-    }
+      "title": "Tambah akun",
+      "offlineHint": "Cukup nama pemain, tanpa akun",
+      "serverHint": "Tambah server autentikasi untuk masuk",
+      "empty": "Belum ada akun"    }
   },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {

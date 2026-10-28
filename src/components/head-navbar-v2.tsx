@@ -6,7 +6,7 @@ import { IconType } from "react-icons";
 import {
   LuArrowDownToLine,
   LuBox,
-  LuCompass,
+  LuCircleUserRound,
   LuSettings,
 } from "react-icons/lu";
 import { useGlobalData } from "@/contexts/global-data";
@@ -24,7 +24,7 @@ interface RouteItem {
 
 const leftRoutes: RouteItem[] = [
   { icon: LuBox, label: "instances", path: "/instances" },
-  { icon: LuCompass, label: "discover", path: "/discover" },
+  { icon: LuCircleUserRound, label: "accounts", path: "/accounts" },
 ];
 
 const rightRoutes: RouteItem[] = [

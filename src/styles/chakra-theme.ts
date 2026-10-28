@@ -240,7 +240,14 @@ const chakraExtendTheme = extendTheme({
     },
   },
   fontSizes: {
+    // easy-launcher: bump the base scale ~1px — the stock Chakra sizes run
+    // small on high-DPI desktops.
     "xs-sm": "0.8rem",
+    xs: "0.8rem",
+    sm: "0.925rem",
+    md: "1.05rem",
+    lg: "1.2rem",
+    xl: "1.3rem",
   },
 });
 

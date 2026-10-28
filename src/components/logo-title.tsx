@@ -1,5 +1,4 @@
 import { BoxProps, HStack, Heading, Image } from "@chakra-ui/react";
-import styles from "@/styles/logo-title.module.css";
 
 interface LogoTitleProps extends BoxProps {}
 
@@ -10,7 +9,7 @@ const pixelFont = {
 
 export const TitleShort: React.FC<LogoTitleProps> = (props) => {
   return (
-    <Heading size="md" className={styles.title} style={pixelFont} {...props}>
+    <Heading size="md" style={pixelFont} {...props}>
       easy-launcher
     </Heading>
   );
@@ -18,7 +17,7 @@ export const TitleShort: React.FC<LogoTitleProps> = (props) => {
 
 export const TitleFull: React.FC<LogoTitleProps> = (props) => {
   return (
-    <Heading size="md" className={styles.title} style={pixelFont} {...props}>
+    <Heading size="md" style={pixelFont} {...props}>
       easy-launcher
     </Heading>
   );

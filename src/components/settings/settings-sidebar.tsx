@@ -19,7 +19,7 @@ export const SETTINGS_TABS = [
   "about",
 ] as const;
 
-export type SettingsTab = (typeof SETTINGS_TABS)[number] | "extension";
+export type SettingsTab = (typeof SETTINGS_TABS)[number];
 
 interface SettingsSidebarProps {
   activeCat: string;
@@ -100,21 +100,6 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
           );
         })}
         <Box h={2} flexShrink={0} />
-        <Button
-          variant="ghost"
-          h="36px"
-          px={3}
-          justifyContent="flex-start"
-          borderRadius="el-sm"
-          fontSize="sm"
-          fontWeight="500"
-          color={activeCat === "extension" ? "ink" : "muted"}
-          bg={activeCat === "extension" ? "surface" : "transparent"}
-          _hover={{ color: "ink" }}
-          onClick={() => onNavigate("extension")}
-        >
-          {t("SettingsLayout.settingsDomainList.extension")}
-        </Button>
       </Flex>
     </Flex>
   );

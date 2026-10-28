@@ -1,14 +1,9 @@
 import {
   Card,
   Center,
-  HStack,
   Icon,
   IconButton,
   Image,
-  Slider,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
   Switch,
   Text,
   Tooltip,
@@ -30,7 +25,6 @@ import {
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
-import { UtilsService } from "@/services/utils";
 import { removeFileExt } from "@/utils/string";
 
 const AppearanceSettingsPage = () => {
@@ -45,22 +39,10 @@ const AppearanceSettingsPage = () => {
     ""
   );
 
-  const [fonts, setFonts] = useState<string[]>([]);
-
   const [customBgList, setCustomBgList] = useState<Record<string, string>[]>(
     []
   );
   const [bgCacheKey, setBgCacheKey] = useState(0);
-
-  useEffect(() => {
-    const handleRetrieveFontList = async () => {
-      const res = await UtilsService.retrieveFontList();
-      if (res.status === "success") {
-        setFonts(["%built-in", ...res.data]);
-      }
-    };
-    handleRetrieveFontList();
-  }, []);
 
   const handleRetrieveCustomBackgroundList = useCallback(() => {
     appDataDir()
@@ -188,74 +170,6 @@ const AppearanceSettingsPage = () => {
           `AppearanceSettingsPage.theme.settings.headNavStyle.type.${appearanceConfigs.theme.headNavStyle}`
         )}
       />
-    );
-  };
-
-  const buildFontName = (font: string) => {
-    return font === "%built-in"
-      ? t("AppearanceSettingsPage.font.settings.fontFamily.default")
-      : font;
-  };
-
-  const FontFamilyMenu = ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (v: string) => void;
-  }) => {
-    return (
-      <MenuSelector
-        options={fonts.map((font) => ({
-          value: font,
-          label: (
-            <Text
-              fontFamily={font === "%built-in" ? "-apple-system, Sinter" : font}
-              fontSize="xs"
-            >
-              {buildFontName(font)}
-            </Text>
-          ),
-        }))}
-        value={value}
-        onSelect={(v) => onChange(v as string)}
-        placeholder={buildFontName(value)}
-        isLazy
-        menuListProps={{ maxH: "40vh", overflowY: "auto" }}
-      />
-    );
-  };
-
-  const FontSizeSlider = () => {
-    return (
-      <HStack spacing={2}>
-        <Text fontSize="10.88px">
-          {" "}
-          {/* 85% */}
-          {t("AppearanceSettingsPage.font.settings.fontSize.small")}
-        </Text>
-        <Slider
-          value={appearanceConfigs.font.fontSize}
-          min={85}
-          max={115}
-          step={5}
-          w={32}
-          colorScheme={primaryColor}
-          onChange={(value) => {
-            update("appearance.font.fontSize", value);
-          }}
-        >
-          <SliderTrack>
-            <SliderFilledTrack />
-          </SliderTrack>
-          <SliderThumb />
-        </Slider>
-        <Text fontSize="14.72px">
-          {" "}
-          {/* 115% */}
-          {t("AppearanceSettingsPage.font.settings.fontSize.large")}
-        </Text>
-      </HStack>
     );
   };
 
@@ -416,51 +330,6 @@ const AppearanceSettingsPage = () => {
       ],
     },
 
-    {
-      title: t("AppearanceSettingsPage.font.title"),
-      items: [
-        {
-          title: t("AppearanceSettingsPage.font.settings.fontFamily.title"),
-          children: (
-            <FontFamilyMenu
-              value={appearanceConfigs.font.fontFamily}
-              onChange={(v) => update("appearance.font.fontFamily", v)}
-            />
-          ),
-        },
-        {
-          title: t("AppearanceSettingsPage.font.settings.logFontFamily.title"),
-          description: (
-            <Text
-              fontFamily={
-                appearanceConfigs.font.logFontFamily !== "%built-in"
-                  ? appearanceConfigs.font.logFontFamily
-                  : "'Courier New', monospace"
-              }
-              fontSize="xs"
-              className="secondary-text"
-            >
-              [11:45:14] [Render thread/INFO]: Preparing spawn area: 23%
-            </Text>
-          ),
-          children: (
-            <FontFamilyMenu
-              value={appearanceConfigs.font.logFontFamily}
-              onChange={(v) => update("appearance.font.logFontFamily", v)}
-            />
-          ),
-        },
-        // font size settings cannot work in Windows now: https://github.com/UNIkeEN/SJMCL/issues/376
-        ...(config.basicInfo.osType !== "windows"
-          ? [
-              {
-                title: t("AppearanceSettingsPage.font.settings.fontSize.title"),
-                children: <FontSizeSlider />,
-              },
-            ]
-          : []),
-      ],
-    },
     {
       title: t("AppearanceSettingsPage.background.title"),
       items: [
