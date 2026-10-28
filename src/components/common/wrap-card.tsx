@@ -8,7 +8,6 @@ import {
   VStack,
   Wrap,
   WrapItem,
-  useColorModeValue,
   useTheme,
 } from "@chakra-ui/react";
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
@@ -54,14 +53,10 @@ export const WrapCard: React.FC<WrapCardProps> = ({
 }) => {
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const borderWidth = "1px";
+  const borderWidth = "2px"; // matches card-front border in card.module.css
   const hasBorder = isSelected || isFullClickZone;
   const basePadding = cardProps.padding || "12px";
   const borderedPadding = `calc(${basePadding} - ${borderWidth})`;
-  const hoverBorderColor = useColorModeValue(
-    `${primaryColor}.300`,
-    `${primaryColor}.700`
-  );
 
   const renderContent = () => {
     if (!cardContent) return null;
@@ -112,16 +107,20 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   return (
     <Card
       className={cardStyles["card-front"]}
-      borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
+      style={
+        isSelected
+          ? ({
+              "--card-border-color": `${primaryColor}.500`,
+            } as React.CSSProperties)
+          : undefined
+      }
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
-      borderWidth={hasBorder ? borderWidth : 0}
       p={hasBorder ? borderedPadding : basePadding}
       transition="border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out"
       {...(isFullClickZone && {
         cursor: "pointer",
         _hover: {
-          borderColor: isSelected ? `${primaryColor}.500` : hoverBorderColor,
           boxShadow: "md",
         },
         _active: { boxShadow: "sm" },

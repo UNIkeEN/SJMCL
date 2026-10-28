@@ -133,12 +133,23 @@ const chakraExtendTheme = extendTheme({
         list: {
           minWidth: "auto",
           py: 1,
+          // easy-launcher (docs/design/DESIGN.md): ground surface, ink border, hard shadow
+          backgroundColor: "ground",
+          border: "2px solid",
+          borderColor: "ink",
+          borderRadius: "el-md",
+          boxShadow: "shadow-hard",
         },
       },
     },
     Modal: {
       baseStyle: {
         dialog: {
+          // easy-launcher (docs/design/DESIGN.md): ground surface, ink border
+          backgroundColor: "ground",
+          border: "2px solid",
+          borderColor: "ink",
+          borderRadius: "el-lg",
           header: {
             fontSize: "md",
             paddingLeft: 4,
@@ -178,7 +189,12 @@ const chakraExtendTheme = extendTheme({
     Popover: {
       baseStyle: {
         content: {
-          boxShadow: "md",
+          // easy-launcher (docs/design/DESIGN.md): ground surface, ink border, hard shadow
+          backgroundColor: "ground",
+          border: "2px solid",
+          borderColor: "ink",
+          borderRadius: "el-md",
+          boxShadow: "shadow-hard",
         },
       },
     },
