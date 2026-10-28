@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "起動",
-      "instances": "ゲーム",
       "accounts": "アカウント",
       "discover": "ディスカバー",
+      "downloads": "ダウンロード",
+      "instances": "ゲーム",
+      "launch": "起動",
       "search": "メタサーチ",
       "settings": "設定"
     }

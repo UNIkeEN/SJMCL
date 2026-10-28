@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "Main",
-      "instances": "Game",
       "accounts": "Akun",
       "discover": "Jelajah",
+      "downloads": "Unduhan",
+      "instances": "Game",
+      "launch": "Main",
       "search": "Cari",
       "settings": "Setelan"
     }

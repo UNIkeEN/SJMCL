@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "啟",
-      "instances": "例",
       "accounts": "戶簿",
       "discover": "發見",
+      "downloads": "下載",
+      "instances": "例",
+      "launch": "啟",
       "search": "尋",
       "settings": "置設"
     }

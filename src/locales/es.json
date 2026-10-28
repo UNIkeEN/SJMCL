@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "Iniciar",
-      "instances": "Juegos",
       "accounts": "Cuentas",
       "discover": "Descubrir",
+      "downloads": "Descargas",
+      "instances": "Juegos",
+      "launch": "Iniciar",
       "search": "Buscar",
       "settings": "Configuración"
     }

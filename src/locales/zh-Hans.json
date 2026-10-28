@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "启动",
-      "instances": "实例",
       "accounts": "账户",
       "discover": "发现",
+      "downloads": "下载",
+      "instances": "实例",
+      "launch": "启动",
       "search": "搜索",
       "settings": "设置"
     }

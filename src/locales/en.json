@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "Launch",
-      "instances": "Games",
       "accounts": "Accounts",
       "discover": "Discover",
+      "downloads": "Downloads",
+      "instances": "Games",
+      "launch": "Launch",
       "search": "Search",
       "settings": "Settings"
     }

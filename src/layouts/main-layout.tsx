@@ -311,13 +311,20 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           {router.pathname === "/launch" ? (
             <>{children}</>
           ) : (
+            // easy-launcher content panel (docs/design/DESIGN-settings.md):
+            // glass panel filling the window, faint line, no accent
             <AdvancedCard
               level="back"
               flex="1"
               overflow="auto"
               mt={1}
-              mb={4}
-              mx={4}
+              mb="24px"
+              mx="24px"
+              border="1px solid"
+              borderColor="line"
+              borderRadius="el-md"
+              backdropFilter="blur(24px) saturate(0)"
+              style={{ WebkitBackdropFilter: "blur(24px) saturate(0)" }}
             >
               {children}
             </AdvancedCard>

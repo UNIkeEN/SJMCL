@@ -1382,10 +1382,11 @@
   },
   "HeadNavBar": {
     "navList": {
-      "launch": "啟動",
-      "instances": "實例",
       "accounts": "帳戶",
       "discover": "發現",
+      "downloads": "下載",
+      "instances": "實例",
+      "launch": "啟動",
       "search": "搜尋",
       "settings": "設定"
     }

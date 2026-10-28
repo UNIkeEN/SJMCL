@@ -1,0 +1,68 @@
+/* easy-launcher homebar (docs/design/DESIGN-homebar.md) */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(10, 10, 10, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  backdrop-filter: blur(20px) saturate(0);
+  -webkit-backdrop-filter: blur(20px) saturate(0);
+}
+
+.icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: var(--el-muted, #a3a3a3);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fafafa;
+}
+
+.iconActive {
+  color: #fafafa;
+}
+
+.play {
+  height: 40px;
+  margin: 0 6px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: #fafafa;
+  color: #0a0a0a;
+  font-weight: 600;
+  transition: transform 0.12s;
+}
+
+.play:hover {
+  background: #ffffff;
+}
+
+.play:active {
+  transform: translateY(1px);
+}
+
+.playVersion {
+  font-size: 13px;
+  font-weight: 500;
+  color: #737373;
+}
