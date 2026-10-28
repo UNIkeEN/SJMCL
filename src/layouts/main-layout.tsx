@@ -370,12 +370,13 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 top={3}
                 right={3}
                 size="sm"
-                bg="rgba(10,10,10,0.6)"
+                zIndex={10}
+                bg="rgba(255,255,255,0.14)"
                 border="1px solid"
                 borderColor="line"
-                color="muted"
+                color="#FAFAFA"
                 borderRadius="el-sm"
-                _hover={{ bg: "rgba(255,255,255,0.1)", color: "#FAFAFA" }}
+                _hover={{ bg: "rgba(255,255,255,0.25)", color: "#FAFAFA" }}
                 onClick={() => router.push("/launch")}
               />
             </Box>
