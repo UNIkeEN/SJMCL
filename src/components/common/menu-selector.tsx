@@ -113,7 +113,17 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       >
         {renderButtonLabel()}
       </MenuButton>
-      <MenuList {...menuListProps}>
+      <MenuList
+        {...menuListProps}
+        // WebKitGTK on Linux fails to composite the framer-motion scale/opacity
+        // layer of this menu (renders transparent). Render without animation.
+        motionProps={{
+          variants: {
+            enter: { opacity: 1, scale: 1 },
+            exit: { opacity: 0, transitionEnd: { visibility: "hidden" } },
+          },
+        }}
+      >
         <MenuOptionGroup
           type={multiple ? "checkbox" : "radio"}
           value={value ?? (multiple ? [] : "")}
