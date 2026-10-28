@@ -67,8 +67,11 @@ const AppearanceSettingsPage = () => {
       .then((_appDataDir) => {
         ConfigService.retrieveCustomBackgroundList().then((response) => {
           if (response.status === "success") {
-            const list = response.data;
-            const updatedList = list.map((bg) => ({
+            // only show image files; leftover videos (if any) would render blank
+            const images = response.data.filter((bg) =>
+              /\.(jpe?g|png|gif|webp)$/i.test(bg)
+            );
+            const updatedList = images.map((bg) => ({
               fileName: bg,
               fullPath: `${_appDataDir}/UserContent/Backgrounds/${bg}`,
             }));
@@ -100,10 +103,6 @@ const AppearanceSettingsPage = () => {
         {
           name: t("General.dialog.filterName.image"),
           extensions: ["jpg", "jpeg", "png", "gif", "webp"],
-        },
-        {
-          name: "Video",
-          extensions: ["mp4", "webm", "ogv"],
         },
       ],
     })

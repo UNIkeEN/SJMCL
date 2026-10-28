@@ -52,10 +52,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const primaryColor = config.appearance.theme.primaryColor;
   const { openGenericConfirmDialog } = useSharedModals();
 
-  // live background (docs/design/DESIGN-homebar.md): video files render as a
-  // fullscreen muted looping <video>; anything else stays a static bg image.
-  const isBgVideo = /\.(mp4|webm|ogv)(\?|#|$)/i.test(bgImageSrc);
-
   const isStartupFlowStarted = useRef(false);
 
   const {
@@ -293,7 +289,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     <Flex
       direction="column"
       h="100vh"
-      bgImg={isBgVideo ? undefined : `url('${bgImageSrc}')`}
+      bgImg={`url('${bgImageSrc}')`}
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
@@ -303,30 +299,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
-      {isBgVideo && (
-        <>
-          {/* normal stacking (no negative z-index): WebKit paints negative-z
-              children *below* the root element's own bg, hiding the video */}
-          <video
-            src={bgImageSrc}
-            autoPlay
-            loop
-            muted
-            playsInline
-            aria-hidden="true"
-            style={{
-              position: "fixed",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          />
-          {isBgDarken && (
-            <Box position="fixed" inset={0} bg="rgba(0,0,0,0.45)" />
-          )}
-        </>
-      )}
       <WindowTitlebar />
       <Box
         position="relative"
