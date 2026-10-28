@@ -75,7 +75,8 @@ const customGraySolidButtonTheme = {
 
 const chakraExtendTheme = extendTheme({
   ...elTokens,
-  initialColorMode: "dark",
+  // easy-launcher: light-only until the second theme is designed (docs/design/DESIGN.md).
+  initialColorMode: "light",
   useSystemColorMode: false,
   components: {
     Alert: {
