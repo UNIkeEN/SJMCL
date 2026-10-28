@@ -180,8 +180,14 @@ const AccountsPage = () => {
 
   return (
     <>
-      <Grid templateColumns="1fr 3fr" gap={4} h="100%">
-        <GridItem className="content-full-y">
+      <Grid templateColumns="240px minmax(0,1fr)" gap={0} h="100%">
+        <GridItem
+          className="content-full-y"
+          borderRight="1px solid"
+          borderColor="line"
+          p={3}
+          pt={4}
+        >
           <VStack align="stretch" h="100%">
             <Box flex="1" overflowY="auto">
               <NavMenu
@@ -224,7 +230,7 @@ const AccountsPage = () => {
             />
           </VStack>
         </GridItem>
-        <GridItem className="content-full-y">
+        <GridItem className="content-full-y" pl={6}>
           <Section
             display="flex"
             flexDirection="column"
