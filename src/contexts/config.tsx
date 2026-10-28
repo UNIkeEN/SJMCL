@@ -44,6 +44,8 @@ const LauncherConfigContext = createContext<
 // other values; frontend locks them until the second theme is designed.
 const themeOverrides = {
   colorMode: "light",
+  // accent is fixed to lime; the stored primaryColor is ignored on the frontend
+  primaryColor: "blue",
 } as const;
 const withThemeOverrides = (config: LauncherConfig): LauncherConfig => ({
   ...config,
