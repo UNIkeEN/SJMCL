@@ -17,7 +17,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LuCirclePlus,
-  LuGrid2X2,
   LuHouse,
   LuImport,
   LuLayoutGrid,
@@ -92,11 +91,6 @@ const AccountsPage = () => {
       label: t("AccountsPage.playerTypeList.all"),
     },
     { key: "offline", icon: LuLink2Off, label: t("Enums.playerTypes.offline") },
-    {
-      key: "microsoft",
-      icon: LuGrid2X2,
-      label: t("Enums.playerTypes.microsoft"),
-    },
     ...authServerList.map((server) => ({
       key: server.authUrl,
       icon: LuServer,
@@ -136,10 +130,6 @@ const AccountsPage = () => {
     } else if (type === "offline") {
       return playerList.filter(
         (player) => player.playerType === PlayerType.Offline
-      );
-    } else if (type === "microsoft") {
-      return playerList.filter(
-        (player) => player.playerType === PlayerType.Microsoft
       );
     } else {
       return playerList.filter(
@@ -240,15 +230,13 @@ const AccountsPage = () => {
                 ?.label
             }
             description={
-              !["all", "offline", "microsoft"].includes(selectedPlayerType)
+              !["all", "offline"].includes(selectedPlayerType)
                 ? selectedPlayerType
                 : undefined
             }
             headExtra={
               <HStack spacing={2} alignItems="flex-start">
-                {!["all", "offline", "microsoft"].includes(
-                  selectedPlayerType
-                ) && (
+                {!["all", "offline"].includes(selectedPlayerType) && (
                   <Tooltip label={t("AccountsPage.button.sourceHomepage")}>
                     <IconButton
                       aria-label="home"
@@ -267,9 +255,7 @@ const AccountsPage = () => {
                     />
                   </Tooltip>
                 )}
-                {!["all", "offline", "microsoft"].includes(
-                  selectedPlayerType
-                ) && (
+                {!["all", "offline"].includes(selectedPlayerType) && (
                   <Tooltip label={t("AccountsPage.button.deleteServer")}>
                     <IconButton
                       aria-label="deleteServer"
@@ -341,12 +327,10 @@ const AccountsPage = () => {
         initialPlayerType={
           selectedPlayerType === "all" || selectedPlayerType === "offline"
             ? PlayerType.Offline
-            : selectedPlayerType === "microsoft"
-              ? PlayerType.Microsoft
-              : PlayerType.ThirdParty
+            : PlayerType.ThirdParty
         }
         initialAuthServerUrl={
-          ["all", "offline", "microsoft"].includes(selectedPlayerType)
+          ["all", "offline"].includes(selectedPlayerType)
             ? ""
             : selectedPlayerType
         }

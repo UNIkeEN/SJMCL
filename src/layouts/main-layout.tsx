@@ -320,7 +320,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               position="relative"
               flex="1"
               minH={0}
-              mt={1}
+              mt="36px"
               mb="24px"
               mx="24px"
             >
@@ -340,8 +340,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 aria-label={t("General.close")}
                 icon={<LuX />}
                 position="absolute"
-                top={3}
-                right={3}
+                top="-34px"
+                right="0"
                 size="sm"
                 zIndex={10}
                 bg="rgba(255,255,255,0.14)"
