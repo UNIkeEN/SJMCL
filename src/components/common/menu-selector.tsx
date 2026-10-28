@@ -7,7 +7,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCheck, LuChevronDown, LuChevronUp } from "react-icons/lu";
 
@@ -51,7 +51,12 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [dropUp, setDropUp] = useState(placement === "top");
+  const [pos, setPos] = useState<{
+    left: number;
+    top?: number;
+    bottom?: number;
+    w: number;
+  } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -129,14 +134,37 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
     };
   }, [open]);
 
-  // flip up when there is not enough room below (content cards clip at edges)
-  useEffect(() => {
-    if (!open || !rootRef.current || !listRef.current) return;
-    const rect = rootRef.current.getBoundingClientRect();
-    const need = listRef.current.scrollHeight;
-    if (placement === "top") return;
-    setDropUp(window.innerHeight - rect.bottom < need + 12 && rect.top > need);
-  }, [open, placement]);
+  // viewport-fixed placement: cards/navbars use overflow clipping, so the list
+  // must not live inside them. Measure the real list height, then drop below
+  // the button or flip up when it would leave the viewport.
+  const place = (target: "start" | "flip") => {
+    const rect = rootRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const h = listRef.current?.offsetHeight ?? 0;
+    const roomBelow = window.innerHeight - rect.bottom;
+    const w = Math.max(160, rect.width);
+    if (
+      target === "start" &&
+      placement === "bottom" &&
+      roomBelow < h + 8 &&
+      rect.top > h + 8
+    ) {
+      setPos({ left: rect.left, bottom: window.innerHeight - rect.top + 4, w });
+    } else if (target === "start" && placement === "top") {
+      setPos({
+        left: rect.left,
+        bottom: window.innerHeight - rect.top + 4,
+        w,
+      });
+    } else {
+      setPos({ left: rect.left, top: rect.bottom + 4, w });
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (open) place("start");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, placement, options]);
 
   return (
     <Box
@@ -147,7 +175,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       className="menu-selector"
     >
       <Button
-        rightIcon={dropUp ? <LuChevronUp /> : <LuChevronDown />}
+        rightIcon={pos?.bottom != null ? <LuChevronUp /> : <LuChevronDown />}
         isDisabled={disabled}
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -165,12 +193,12 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
         <Box
           ref={listRef}
           role="listbox"
-          position="absolute"
-          top={dropUp ? "auto" : "calc(100% + 4px)"}
-          bottom={dropUp ? "calc(100% + 4px)" : "auto"}
-          left={0}
+          position="fixed"
+          left={pos?.left ?? 0}
+          top={pos?.top}
+          bottom={pos?.bottom}
+          width={pos?.w}
           zIndex={20}
-          minW="160px"
           maxH="40vh"
           overflowY="auto"
           py={1}
