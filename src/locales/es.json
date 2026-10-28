@@ -268,21 +268,6 @@
     "theme": {
       "title": "Tema",
       "settings": {
-        "primaryColor": {
-          "title": "Color Principal del Lanzador"
-        },
-        "colorMode": {
-          "title": "Modo de Color",
-          "type": {
-            "system": "Sistema",
-            "light": "Claro",
-            "dark": "Oscuro"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "Efecto de Vidrio Líquido",
-          "description": "Cuando está habilitado, partes de la interfaz usarán el efecto 'Vidrio Líquido', lo que puede afectar el rendimiento."
-        },
         "headNavStyle": {
           "title": "Estilo de Barra de Navegación",
           "type": {
@@ -1668,29 +1653,6 @@
         "offline": "Desconectado"
       },
       "launch": "Jugar en este servidor"
-    }
-  },
-  "IntelligenceSettingsPage": {
-    "title": "SJMCL Intelligence",
-    "description": "Integra modelos de IA en tu lanzador y experiencia de juego de Minecraft.",
-    "mcpServer": {
-      "title": "Servicio MCP",
-      "headExtra": "Reinicio necesario",
-      "settings": {
-        "enabled": {
-          "title": "Servicio MCP del lanzador",
-          "description": "Habilita el servicio MCP local para conectar aplicaciones de agentes externos para el control automatizado del lanzador."
-        },
-        "docs": {
-          "title": "Guía del usuario",
-          "description": "Aprende cómo conectar el lanzador a aplicaciones de agentes externos (como Claude, Cherry Studio, y más).",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "Puerto",
-          "description": "El puerto local fijo utilizado por el servicio MCP del lanzador."
-        }
-      }
     }
   },
   "JavaSettingsPage": {
@@ -3114,7 +3076,6 @@
       "general": "General",
       "appearance": "Apariencia",
       "download": "Descarga",
-      "intelligence": "Inteligencia",
       "extension": "Extensión",
       "help": "Documentos y Ayuda",
       "about": "Acerca de"

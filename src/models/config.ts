@@ -96,9 +96,8 @@ export interface LauncherConfig {
   lastRunExitedNormally: boolean;
   appearance: {
     theme: {
-      primaryColor: string;
-      colorMode: "light" | "dark" | "system";
-      useLiquidGlassDesign: boolean;
+      primaryColor: string; // retained for backend compat; unused — lime accent is fixed
+      colorMode: "light" | "dark" | "system"; // retained for backend compat; light-only
       headNavStyle: "standard" | "simplified" | "adaptive";
     };
     font: {
@@ -291,7 +290,6 @@ export const defaultConfig: LauncherConfig = {
     theme: {
       primaryColor: "blue",
       colorMode: "light",
-      useLiquidGlassDesign: false,
       headNavStyle: "adaptive",
     },
     font: {

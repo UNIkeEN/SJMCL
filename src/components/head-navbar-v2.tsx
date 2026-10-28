@@ -64,9 +64,9 @@ const HeadNavBar = () => {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // easy-launcher tokens (docs/design/DESIGN.md): light-only design, no dark variants.
+  // Active tab: accent background only — keep the text color untouched.
   const unselectTabColor = "muted";
-  const selectedTextColor = "accent";
-  const indicatorBg = "ink";
+  const indicatorBg = "accent";
   const indicatorBorder = "ink";
   const hoverBg = "var(--chakra-colors-surface, #CFE3D3)";
 
@@ -104,11 +104,7 @@ const HeadNavBar = () => {
     setIsAnimating(true);
     const timer = setTimeout(() => setIsAnimating(false), 700);
     return () => clearTimeout(timer);
-  }, [
-    config.appearance.theme.useLiquidGlassDesign,
-    isDownloadIndicatorShown,
-    isSimplified,
-  ]);
+  }, [isDownloadIndicatorShown, isSimplified]);
 
   const selectedIndex = navList.findIndex(
     (item) => item.path && router.pathname.startsWith(item.path)
@@ -242,7 +238,7 @@ const HeadNavBar = () => {
                     aria-selected={isSelected}
                     onClick={() => handleTabChange(index)}
                     fontWeight={isSelected ? "600" : "normal"}
-                    color={isSelected ? selectedTextColor : unselectTabColor}
+                    color={unselectTabColor}
                     className={styles.tabButton}
                   >
                     <HStack

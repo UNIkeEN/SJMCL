@@ -1,12 +1,4 @@
-import {
-  Badge,
-  Grid,
-  GridItem,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Badge, Box, Flex, Icon, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -20,7 +12,6 @@ import {
   LuInfo,
   LuPalette,
   LuSettings,
-  LuSparkles,
 } from "react-icons/lu";
 import NavMenu from "@/components/common/nav-menu";
 import { useLauncherConfig } from "@/contexts/config";
@@ -32,8 +23,7 @@ interface SettingsLayoutProps {
 const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { config, newerVersion } = useLauncherConfig();
-  const primaryColor = config.appearance.theme.primaryColor;
+  const { newerVersion } = useLauncherConfig();
 
   const settingsDomainList: { key: string; icon: IconType }[][] = [
     [
@@ -44,7 +34,6 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
       { key: "general", icon: LuSettings },
       { key: "appearance", icon: LuPalette },
       { key: "download", icon: LuCloudDownload },
-      { key: "intelligence", icon: LuSparkles },
       { key: "extension", icon: LuGrid2X2Plus },
       { key: "help", icon: LuCircleHelp },
       { key: "about", icon: LuInfo },
@@ -58,43 +47,65 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
     settingsPaths.find((path) => router.pathname.startsWith(path)) || "";
 
   return (
-    <Grid templateColumns="1fr 3fr" gap={4} h="100%">
-      <GridItem className="content-full-y">
-        <VStack align="stretch" spacing={4}>
-          {settingsDomainList.map((group, index) => (
+    <Flex gap={5} h="100%" align="flex-start">
+      {/* easy-launcher sidebar (docs/design/DESIGN.md): ground card, ink border, hard shadow */}
+      <Flex
+        direction="column"
+        as="nav"
+        w="220px"
+        flexShrink={0}
+        className="content-full-y"
+        backgroundColor="ground"
+        border="2px solid"
+        borderColor="ink"
+        borderRadius="el-lg"
+        boxShadow="shadow-hard"
+        p={3}
+        overflowY="auto"
+      >
+        {settingsDomainList.map((group, index) => (
+          <Box key={index} mb={index < settingsDomainList.length - 1 ? 5 : 0}>
             <NavMenu
-              key={index}
               selectedKeys={[selectedKey]}
-              onClick={(value) => {
-                router.push(value);
-              }}
+              onClick={(value) => router.push(value)}
               items={group.map((item) => ({
                 label: (
-                  <HStack spacing={2} overflow="hidden" w="100%">
-                    <Icon as={item.icon} />
+                  <Box
+                    as="span"
+                    display="flex"
+                    alignItems="center"
+                    gap={2}
+                    w="100%"
+                    overflow="hidden"
+                  >
+                    <Icon as={item.icon} flexShrink={0} />
                     <Text fontSize="sm" className="ellipsis-text">
                       {t(`SettingsLayout.settingsDomainList.${item.key}`)}
                     </Text>
                     {item.key === "about" && newerVersion.version && (
-                      <Badge colorScheme={primaryColor} ml="auto">
+                      <Badge
+                        bg="accent"
+                        color="ink"
+                        borderRadius="el-pill"
+                        ml="auto"
+                        flexShrink={0}
+                      >
                         {t("General.new")}
                       </Badge>
                     )}
-                  </HStack>
+                  </Box>
                 ),
                 value: `/settings/${item.key}`,
                 tooltip: t(`SettingsLayout.settingsDomainList.${item.key}`),
               }))}
             />
-          ))}
-        </VStack>
-      </GridItem>
-      <GridItem className="content-full-y" key={router.asPath}>
-        <VStack align="stretch" spacing={4}>
-          {children}
-        </VStack>
-      </GridItem>
-    </Grid>
+          </Box>
+        ))}
+      </Flex>
+      <Box flex={1} minW={0} className="content-full-y" key={router.asPath}>
+        {children}
+      </Box>
+    </Flex>
   );
 };
 

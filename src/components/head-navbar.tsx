@@ -42,11 +42,7 @@ const HeadNavBar = () => {
   useEffect(() => {
     setIsAnimating(true);
     setTimeout(() => setIsAnimating(false), 700);
-  }, [
-    config.appearance.theme.useLiquidGlassDesign,
-    isDownloadIndicatorShown,
-    isSimplified,
-  ]);
+  }, [isDownloadIndicatorShown, isSimplified]);
 
   const navList = [
     { icon: LuZap, label: "launch", path: "/launch" },

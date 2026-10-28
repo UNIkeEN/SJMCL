@@ -62,6 +62,7 @@
 
 .tabButton[aria-selected="true"] {
   background: transparent;
+  font-weight: 700;
 }
 
 [data-theme="dark"] .tabList {

@@ -22,13 +22,11 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPlus, LuTrash } from "react-icons/lu";
-import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
   OptionItemGroup,
   OptionItemGroupProps,
 } from "@/components/common/option-item";
-import SegmentedControl from "@/components/common/segmented";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
@@ -407,55 +405,8 @@ const AppearanceSettingsPage = () => {
       title: t("AppearanceSettingsPage.theme.title"),
       items: [
         {
-          title: t("AppearanceSettingsPage.theme.settings.primaryColor.title"),
-          children: (
-            <ChakraColorSelectPopover
-              current={primaryColor}
-              onColorSelect={(color) => {
-                update("appearance.theme.primaryColor", color);
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AppearanceSettingsPage.theme.settings.colorMode.title"),
-          children: (
-            <SegmentedControl
-              selected={appearanceConfigs.theme.colorMode}
-              onSelectItem={(s) => {
-                update("appearance.theme.colorMode", s as string);
-              }}
-              size="xs"
-              items={["system", "light", "dark"].map((item) => ({
-                label: t(
-                  `AppearanceSettingsPage.theme.settings.colorMode.type.${item}`
-                ),
-                value: item,
-              }))}
-            />
-          ),
-        },
-        {
-          title: t(
-            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.title"
-          ),
-          description: t(
-            "AppearanceSettingsPage.theme.settings.useLiquidGlassDesign.description"
-          ),
-          children: (
-            <Switch
-              colorScheme={primaryColor}
-              isChecked={appearanceConfigs.theme.useLiquidGlassDesign}
-              onChange={(e) => {
-                update(
-                  "appearance.theme.useLiquidGlassDesign",
-                  e.target.checked
-                );
-              }}
-            />
-          ),
-        },
-        {
+          // easy-launcher: primary color / color mode / liquid glass removed —
+          // light theme and lime accent are fixed (docs/design/DESIGN.md).
           title: t("AppearanceSettingsPage.theme.settings.headNavStyle.title"),
           children: <HeadNavStyleMenu />,
         },

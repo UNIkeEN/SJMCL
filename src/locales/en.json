@@ -268,21 +268,6 @@
     "theme": {
       "title": "Theme",
       "settings": {
-        "primaryColor": {
-          "title": "Launcher Primary Color"
-        },
-        "colorMode": {
-          "title": "Color Mode",
-          "type": {
-            "system": "System",
-            "light": "Light",
-            "dark": "Dark"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "Liquid Glass Effect",
-          "description": "When enabled, parts of the interface will use the 'Liquid Glass' effect, which may impact performance."
-        },
         "headNavStyle": {
           "title": "Navigation Bar Style",
           "type": {
@@ -1668,29 +1653,6 @@
         "offline": "Offline"
       },
       "launch": "Play this Server"
-    }
-  },
-  "IntelligenceSettingsPage": {
-    "title": "SJMCL Intelligence",
-    "description": "Integrate AI models into your launcher and Minecraft gameplay experience.",
-    "mcpServer": {
-      "title": "MCP Service",
-      "headExtra": "Restart Required",
-      "settings": {
-        "enabled": {
-          "title": "Launcher MCP Service",
-          "description": "Enable the local MCP service to connect external agent applications for automated launcher control."
-        },
-        "docs": {
-          "title": "User Guide",
-          "description": "Learn how to connect the launcher to external agent applications (such as Claude, Cherry Studio, and more).",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "Port",
-          "description": "The fixed local port used by the launcher MCP service."
-        }
-      }
     }
   },
   "JavaSettingsPage": {
@@ -3114,7 +3076,6 @@
       "general": "General",
       "appearance": "Appearance",
       "download": "Download",
-      "intelligence": "Intelligence",
       "extension": "Extension",
       "help": "Docs & Help",
       "about": "About"

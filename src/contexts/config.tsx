@@ -40,12 +40,10 @@ const LauncherConfigContext = createContext<
   LauncherConfigContextType | undefined
 >(undefined);
 
-// easy-launcher (docs/design/DESIGN.md): global theme overrides while the new
-// design rolls out — light-only theme, liquid glass disabled (perf).
-// Rebuild pages one by one, then drop this override when every page is converted.
+// easy-launcher (docs/design/DESIGN.md): light-only theme. Backend still stores
+// other values; frontend locks them until the second theme is designed.
 const themeOverrides = {
   colorMode: "light",
-  useLiquidGlassDesign: false,
 } as const;
 const withThemeOverrides = (config: LauncherConfig): LauncherConfig => ({
   ...config,

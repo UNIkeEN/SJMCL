@@ -1,9 +1,6 @@
-import { Box, BoxProps, Card } from "@chakra-ui/react";
+import { BoxProps, Card } from "@chakra-ui/react";
 import React, { forwardRef } from "react";
-import LiquidGlassEffect from "@/components/special/liquid-glass-effect";
-import { useLauncherConfig } from "@/contexts/config";
 import cardStyles from "@/styles/card.module.css";
-import liquidGlassStyles from "@/styles/liquid-glass.module.css";
 
 interface AdvancedCardProps extends Omit<BoxProps, "children"> {
   variant?: string;
@@ -11,14 +8,10 @@ interface AdvancedCardProps extends Omit<BoxProps, "children"> {
   children?: React.ReactNode;
 }
 
+// easy-launcher (docs/design/DESIGN.md): liquid glass removed — plain cards only.
 const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
   ({ variant = "", level = "back", children, ...props }, ref) => {
-    const { config } = useLauncherConfig();
-    const _variant =
-      variant ||
-      (config.appearance.theme.useLiquidGlassDesign
-        ? "liquid-glass"
-        : "elevated");
+    const _variant = variant || "elevated";
 
     if (["elevated", "outline", "filled", "unstyled"].includes(_variant)) {
       return (
@@ -30,21 +23,6 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
         >
           {children}
         </Card>
-      );
-    }
-
-    if (_variant == "liquid-glass") {
-      return (
-        <Box
-          ref={ref}
-          {...props}
-          className={`${liquidGlassStyles["wrapper"]} ${props.className || ""}`}
-        >
-          <LiquidGlassEffect />
-          <Box position="relative" zIndex={3} height="100%" width="100%">
-            {children}
-          </Box>
-        </Box>
       );
     }
 

@@ -268,21 +268,6 @@
     "theme": {
       "title": "主題",
       "settings": {
-        "primaryColor": {
-          "title": "啟動器強調色"
-        },
-        "colorMode": {
-          "title": "顏色模式",
-          "type": {
-            "system": "跟隨系統",
-            "light": "淺色",
-            "dark": "深色"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "液態玻璃效果",
-          "description": "啟用後，部分介面將使用「液態玻璃」效果，這可能會影響效能"
-        },
         "headNavStyle": {
           "title": "頂部導航欄樣式",
           "type": {
@@ -1668,29 +1653,6 @@
         "offline": "離線"
       },
       "launch": "遊玩此伺服器"
-    }
-  },
-  "IntelligenceSettingsPage": {
-    "title": "SJMCL 智慧",
-    "description": "將 AI 模型整合到你的啟動器與 Minecraft 遊玩體驗中。",
-    "mcpServer": {
-      "title": "MCP 服務",
-      "headExtra": "需要重新啟動",
-      "settings": {
-        "enabled": {
-          "title": "啟動器 MCP 服務",
-          "description": "啟用本機 MCP 服務，以連線外部 Agent 應用並自動化控制啟動器。"
-        },
-        "docs": {
-          "title": "使用指南",
-          "description": "了解如何將啟動器連線到外部 Agent 應用（例如 Claude、Cherry Studio 等）。",
-          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "連接埠",
-          "description": "啟動器 MCP 服務使用的固定本機連接埠。"
-        }
-      }
     }
   },
   "JavaSettingsPage": {
@@ -3114,7 +3076,6 @@
       "general": "一般",
       "appearance": "外觀",
       "download": "下載資源",
-      "intelligence": "智慧",
       "extension": "擴充套件",
       "help": "文件與幫助",
       "about": "關於"

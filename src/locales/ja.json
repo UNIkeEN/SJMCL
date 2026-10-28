@@ -268,21 +268,6 @@
     "theme": {
       "title": "テーマ",
       "settings": {
-        "primaryColor": {
-          "title": "ランチャーのアクセントカラー"
-        },
-        "colorMode": {
-          "title": "カラーモード",
-          "type": {
-            "system": "システムに従う",
-            "light": "ライト",
-            "dark": "ダーク"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "リキッドグラス効果",
-          "description": "一部のUIで「リキッドグラス」効果が適用されます。パフォーマンスに影響する可能性があります"
-        },
         "headNavStyle": {
           "title": "上部ナビゲーションバーのスタイル",
           "type": {
@@ -1668,29 +1653,6 @@
         "offline": "オフライン"
       },
       "launch": "このサーバーをプレイ"
-    }
-  },
-  "IntelligenceSettingsPage": {
-    "title": "SJMCL AI",
-    "description": "AI モデルをランチャーと Minecraft の体験に統合します。",
-    "mcpServer": {
-      "title": "MCP サービス",
-      "headExtra": "再起動が必要",
-      "settings": {
-        "enabled": {
-          "title": "ランチャー MCP サービス",
-          "description": "外部エージェントアプリと接続してランチャー操作を自動化するため、ローカル MCP サービスを有効化します。"
-        },
-        "docs": {
-          "title": "ユーザーガイド",
-          "description": "ランチャーを外部エージェントアプリ（Claude、Cherry Studio など）に接続する方法を確認します。",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "ポート",
-          "description": "ランチャー MCP サービスで使用する固定ローカルポートです。"
-        }
-      }
     }
   },
   "JavaSettingsPage": {
@@ -3114,7 +3076,6 @@
       "general": "一般設定",
       "appearance": "表示",
       "download": "ダウンロード",
-      "intelligence": "AI",
       "extension": "拡張機能",
       "help": "マニュアルとヘルプ",
       "about": "バージョン情報"

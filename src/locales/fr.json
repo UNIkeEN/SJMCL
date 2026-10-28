@@ -268,21 +268,6 @@
     "theme": {
       "title": "Thème",
       "settings": {
-        "primaryColor": {
-          "title": "Couleur principale du lanceur"
-        },
-        "colorMode": {
-          "title": "Mode de couleur",
-          "type": {
-            "system": "Suivre le paramètre du système",
-            "light": "Clairs",
-            "dark": "Sombre"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "Effet verre liquide",
-          "description": "Une fois activé, certaines interfaces utiliseront l'effet 'Verre liquide', ce qui peut affecter les performances"
-        },
         "headNavStyle": {
           "title": "Style de la barre de navigation supérieure",
           "type": {
@@ -1668,29 +1653,6 @@
         "offline": "Hors ligne"
       },
       "launch": "Jouer sur ce serveur"
-    }
-  },
-  "IntelligenceSettingsPage": {
-    "title": "Intelligence SJMCL",
-    "description": "Intégrez des modèles d'IA à votre lanceur et à votre expérience de jeu Minecraft.",
-    "mcpServer": {
-      "title": "Service MCP",
-      "headExtra": "Redémarrage requis",
-      "settings": {
-        "enabled": {
-          "title": "Service MCP du lanceur",
-          "description": "Activez le service MCP local pour connecter des applications d'agent externes et automatiser le contrôle du lanceur."
-        },
-        "docs": {
-          "title": "Guide d'utilisation",
-          "description": "Découvrez comment connecter le lanceur à des applications d'agent externes (comme Claude, Cherry Studio, etc.).",
-          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "Port",
-          "description": "Port local fixe utilisé par le service MCP du lanceur."
-        }
-      }
     }
   },
   "JavaSettingsPage": {
@@ -3114,7 +3076,6 @@
       "general": "Général",
       "appearance": "Apparence",
       "download": "Téléchargement",
-      "intelligence": "IA",
       "extension": "Extensions",
       "help": "Aide & Doc",
       "about": "À propos"

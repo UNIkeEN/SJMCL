@@ -12,6 +12,20 @@ export const elTokens = {
     surface: "#CFE3D3",
     onInk: "#EAF3EC",
     onInkMuted: "#A9BBAF",
+    // remap the legacy `primaryColor: "blue"` scheme onto the lime accent scale
+    // so every colorScheme={primaryColor} left in the codebase renders lime.
+    blue: {
+      50: "#F7FFE6",
+      100: "#ECFFBD",
+      200: "#DEFF94",
+      300: "#C6FF3D",
+      400: "#B8EE2F",
+      500: "#A5DB21",
+      600: "#8CC512",
+      700: "#6F9B0E",
+      800: "#54700B",
+      900: "#394C07",
+    },
   },
   radii: {
     "el-sm": "14px",

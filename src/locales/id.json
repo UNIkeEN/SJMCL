@@ -1,0 +1,3231 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "About",
+      "settings": {
+        "version": {
+          "title": "Version",
+          "foundNew": "New Version Available",
+          "checkUpdate": "Check for Updates",
+          "checkToast": {
+            "loading": "Checking for updates",
+            "up2date": "Already up to date",
+            "error": "Failed to check for updates"
+          }
+        },
+        "contributors": {
+          "title": "Contributors"
+        },
+        "sourceCode": {
+          "title": "View Source Code on GitHub"
+        },
+        "aboutSJMC": {
+          "title": "About SJTU Minecraft Club (SJMC)"
+        }
+      }
+    },
+    "ack": {
+      "title": "Acknowledgement",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
+        },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Some design and code implementation are referenced from this project"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
+        },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Provides Simplified Chinese translations for mod information"
+        },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"
+        },
+        "sinter": {
+          "title": "Sinter",
+          "description": "Used as the interface font on Windows and Linux platforms, under the SIL License"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "Our skin preview component is built based on this open-source project, under the MIT License"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "Legal Notices",
+      "settings": {
+        "copyright": {
+          "title": "Copyright",
+          "description": "Copyright © 2024-2026 SJMCL Team."
+        },
+        "userAgreement": {
+          "title": "User Agreement",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "Open Source License",
+          "description": "Licensed under the GNU General Public License v3.0, with additional terms."
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "Add Player",
+      "add3rdPartyServer": "Add auth server",
+      "sourceHomepage": "View Homepage",
+      "deleteServer": "Delete Auth Server",
+      "importFromOtherLaunchers": "Import"
+    },
+    "playerTypeList": {
+      "all": "All Source"
+    },
+    "viewTypeList": {
+      "grid": "Grid View",
+      "list": "List View"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "Install New Instance",
+        "description": "Choose and install game versions, loaders and mods"
+      },
+      "modpack": {
+        "title": "Import Modpack",
+        "description": "Import a modpack (CurseForge, Modrinth or MultiMC formats) from local files or the internet"
+      },
+      "manageDirs": {
+        "title": "Manage Game Directories",
+        "description": "Manage local game storage directories to add installed instances"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "Import from Disk",
+      "download": "Download Modpack"
+    },
+    "moreOptions": {
+      "title": "More",
+      "server": {
+        "title": "Download Game Server",
+        "description": "Download game server files for different versions"
+      }
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "Add Authentication Server"
+    },
+    "placeholder": {
+      "inputServerUrl": "Server URL"
+    },
+    "page1": {
+      "serverUrl": "Server URL",
+      "serverUrlRequired": "Server URL is required"
+    },
+    "page2": {
+      "name": "Name",
+      "serverUrl": "Server URL"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "Add Data Source"
+    },
+    "label": {
+      "endpointUrl": "Endpoint URL"
+    },
+    "placeholder": {
+      "endpointUrl": "Endpoint URL"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Add Game Server"
+    },
+    "serverAddrRequired": "Server address is required",
+    "label": {
+      "serverAddr": "Server Address",
+      "serverName": "Server Name"
+    },
+    "placeholder": {
+      "serverAddr": "Enter server address",
+      "serverName": "Minecraft Server"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "Add Player"
+    },
+    "label": {
+      "playerType": "Player Type"
+    },
+    "offline": {
+      "playerName": {
+        "label": "Player Name",
+        "placeholder": "Player name",
+        "errorMessage": "Can only contain letters, numbers and underscores, within 16 characters."
+      },
+      "advancedOptions": {
+        "title": "Advanced Options",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "(Generated by SJMCL)",
+          "errorMessage": "Invalid form of UUID"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "Auth Source",
+        "selectSource": "Select Auth Source",
+        "noSource": "No auth source added.",
+        "addSource": "Add one"
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "Email"
+      },
+      "emailOrPlayerName": {
+        "label": "Email or Player Name",
+        "placeholder": "Email or Player Name"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Password"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "This auth source supports the Yggdrasil Connect Proposal",
+          "microsoft": "Supports Microsoft OAuth 2.0 device authorization grant flow"
+        },
+        "next": "Please click the Continue button and input the code above (already copied)"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "Start OAuth Login",
+          "microsoft": "Start Microsoft OAuth"
+        },
+        "next": "Continue"
+      }
+    },
+    "button": {
+      "buyMinecraft": "Buy Minecraft",
+      "useOAuthLogin": "OAuth Login",
+      "usePasswordLogin": "Account & Password Login"
+    }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "Dependency Resources Exist"
+    },
+    "description": "Please confirm that all required resources are installed, or continue downloading the original resource.",
+    "button": {
+      "continue": "Download original resource",
+      "cancel": "Cancel"
+    },
+    "fallback": {
+      "title": "Resource ID: {{resourceId}}",
+      "description": "Failed to fetch this resource from remote, please check your network connection or try again later."
+    },
+    "dependencyType": {
+      "required": "Required",
+      "optional": "Optional",
+      "incompatible": "Incompatible",
+      "embedded": "Embedded",
+      "tool": "Tool",
+      "include": "Include"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "Add & Import",
+      "globalSettings": "Global Game Settings",
+      "launch": "Launch Game",
+      "sortAndFilter": "Sort and Filter"
+    },
+    "viewTypeList": {
+      "grid": "Grid View",
+      "list": "List View"
+    },
+    "sortByTypeList": {
+      "versionAsc": "Game Version Ascending",
+      "versionDesc": "Game Version Descending",
+      "name": "Instance Name"
+    },
+    "sortBy": "Sort by",
+    "title": "All Instances"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "Theme",
+      "settings": {
+        "headNavStyle": {
+          "title": "Navigation Bar Style",
+          "type": {
+            "standard": "Standard",
+            "simplified": "Simplified",
+            "adaptive": "Adaptive"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "Font",
+      "settings": {
+        "fontFamily": {
+          "title": "Font Family",
+          "default": "Default"
+        },
+        "logFontFamily": {
+          "title": "Log Font"
+        },
+        "fontSize": {
+          "title": "Font Size",
+          "small": "T",
+          "large": "T"
+        }
+      }
+    },
+    "background": {
+      "title": "Background",
+      "settings": {
+        "preset": {
+          "title": "Preset Images"
+        },
+        "custom": {
+          "title": "Custom Images",
+          "add": "Add"
+        },
+        "randomCustom": {
+          "title": "Random Custom Image"
+        },
+        "autoDarken": {
+          "title": "Dim Background in Dark Mode"
+        }
+      },
+      "presetBgList": {
+        "Florwyn": {
+          "name": "Florwyn"
+        },
+        "SJTU-eastgate": {
+          "name": "SJTU Eastgate"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Display Accessibility",
+      "settings": {
+        "invertColors": {
+          "title": "Invert Colors"
+        },
+        "enhanceContrast": {
+          "title": "Enhance Contrast"
+        }
+      }
+    }
+  },
+  "ChangeLoaderModal": {
+    "header": {
+      "modloader": {
+        "title": {
+          "change": "Change Mod Loader",
+          "install": "Install Mod Loader"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "Change OptiFine",
+          "install": "Install OptiFine"
+        }
+      }
+    },
+    "notSelectedLoader": "No new loader selected",
+    "notSelectedOptifine": "No new Optifine selected",
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)",
+      "reinstall": "Reinstall",
+      "removeCurrentInstallation": "Remove Installation"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "Check Mod Updates"
+    },
+    "button": {
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "label": {
+      "noUpdate": "No mods need updating",
+      "loading": "Checking for updates... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "Mod",
+      "currentVersion": "Current Version",
+      "latestVersion": "Latest Version",
+      "source": "Source"
+    },
+    "error": {
+      "renameOldMod": "Failed to rename old mod file"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "Clear Download Cache",
+      "content": "Are you sure you want to clear the download cache? This action cannot be undone."
+    }
+  },
+  "ComingSoonSign": {
+    "text": "This page is not available yet, coming soon!"
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "Copy or Move Resource"
+    },
+    "operation": {
+      "copy": "Copy",
+      "move": "Move"
+    },
+    "tag": {
+      "source": "Source"
+    },
+    "content": "{{type}} <b>{{name}}</b> to",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "Resource Packs",
+      "Saves": "World",
+      "Schematics": "Schematic",
+      "ShaderPacks": "Shader Packs"
+    },
+    "error": {
+      "lackOfArguments": "Missing necessary parameters. Please have the developer check the code"
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "Create New Instance"
+    },
+    "stepper": {
+      "game": "Game Client",
+      "loader": "Game Loader",
+      "skipped": "Skipped",
+      "info": "Basic Settings"
+    },
+    "footer": {
+      "installFabricApi": "Install Fabric API Mod",
+      "installQFAPI": "Install QFAPI / QSL Mod (if available)"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "The name of this instance has recently been changed. Please refresh the instance list or restart the launcher before trying to add a launch shortcut again."
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Delete Authentication Server",
+      "content": "Confirm delete the authentication server \"{{name}}\" ? This will remove it from your server list."
+    }
+  },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "Remove Friend",
+      "content": "Confirm remove friend \"{{name}}\"?"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Delete Game Server",
+    "content": "Confirm delete the game server \"{{name}}\" ({{addr}}) ? It will be lost forever! (A long time!)"
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "Delete Game Instance",
+      "content": "Confirm delete the game instance \"{{instanceName}}\" ? It will be lost forever! (A long time!)",
+      "warning": {
+        "withVerIso": "Please note that since instance isolation is enabled for this instance, deleting it will also remove saves and other associated files. If you wish to retain this data, please migrate it first.",
+        "woVerIso": "Please note that if instance isolation was previously enabled for this instance, any un-migrated saves and other files will also be deleted."
+      }
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Delete Mod",
+      "content": "Confirm delete the mod \"{{modName}}\" in the game instance \"{{instanceName}}\" ?"
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "Delete Player",
+      "content": "Confirm delete the player \"{{name}}\" ? This cannot be undone!"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "Dev Toolbar"
+  },
+  "DiscoverCommunityNewsPage": {
+    "title": "Discover",
+    "noMore": "No more",
+    "sources": "Manage Sources",
+    "NoSources": "No source added"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Minecraft News",
+    "community-news": "Community News",
+    "hotModpacks": "Hot Modpacks from {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Search",
+      "home": "Home",
+      "community-news": "Community",
+      "minecraft-news": "Minecraft News",
+      "modpack": "Modpacks",
+      "mod": "Mods",
+      "world": "Worlds",
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "Add Source",
+      "deleteSource": "Delete"
+    },
+    "tag": {
+      "online": "Online"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "Download Java"
+    },
+    "selector": {
+      "vendor": "Vendor",
+      "version": "Version",
+      "type": "Type"
+    },
+    "warning": {
+      "mojang": "Java runtime from Mojang will be installed by SJMCL into a specific directory.",
+      "oracle": "Downloading from Oracle may require login."
+    }
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "Download Modpack"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "Download Resource"
+    },
+    "resourceTypeList": {
+      "world": "Worlds",
+      "mod": "Mods",
+      "resourcepack": "Resource Packs",
+      "shader": "Shader Packs",
+      "datapack": "Data Packs"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "Source",
+      "settings": {
+        "strategy": {
+          "title": "Download Source Selection Strategy",
+          "auto": "Auto Select",
+          "official": "Prioritize Official Source",
+          "mirror": "Prioritize Mirror Source"
+        }
+      }
+    },
+    "download": {
+      "title": "Download",
+      "settings": {
+        "autoConcurrent": {
+          "title": "Auto Select the Number of Concurrent Threads"
+        },
+        "concurrentCount": {
+          "title": "Concurrent Thread Count"
+        },
+        "enableSpeedLimit": {
+          "title": "Limit Download Speed"
+        },
+        "speedLimitValue": {
+          "title": "Speed Limit Settings"
+        }
+      }
+    },
+    "cache": {
+      "title": "Cache",
+      "settings": {
+        "directory": {
+          "title": "Download Cache Directory",
+          "select": "Change"
+        },
+        "clear": {
+          "title": "Clear Download Cache",
+          "description": "Clear all files in the cache directory, which will not affect downloaded resource files.",
+          "button": "Clear"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "headExtra": "Restart Required",
+      "settings": {
+        "enabled": {
+          "title": "Enable Proxy for Downloads",
+          "description": "When disabled, the launcher will use the system proxy to download resources automatically"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "Download Resource - {{name}} - {{source}}",
+    "label": {
+      "all": "All",
+      "recommendedVersion": "Recommended Ver.",
+      "currentModLoader": "Current Loader"
+    },
+    "releaseType": {
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Release"
+    },
+    "button": {
+      "cancel": "Cancel",
+      "download": "Download",
+      "installToInstance": "Install to Instance",
+      "installToCurrentInstance": "Install to Current Instance",
+      "install": "Install"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "Download Tasks",
+    "button": {
+      "settings": "Download Settings",
+      "pause": "Pause",
+      "begin": "Start",
+      "retry": "Retry",
+      "clearHistory": "Clear History Records"
+    },
+    "label": {
+      "paused": "Paused",
+      "finalizing": "Finishing installation",
+      "completed": "Completed",
+      "error": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "task": {
+      "game-client": "Game Client {{param}}",
+      "game-client-w-java": "Game Client {{param1}} (with Java {{param2}})",
+      "game-server": "Game Server {{param}}",
+      "change-mod-loader": "Change Mod Loader {{param}}",
+      "change-optifine": "Change Shaderpack Loader {{param}}",
+      "mod": "Mod",
+      "world": "World",
+      "resourcepack": "Resourcepack",
+      "shader": "Shaderpack",
+      "modpack": "Modpack",
+      "modpack-wo-install": "Modpack",
+      "datapack": "Datapack",
+      "patch-files": "Patch Game Files {{param}}",
+      "mod-update": "Update Mod",
+      "retry": "Retry",
+      "neoforge-libraries": "NeoForge Libraries",
+      "cleanroom-libraries": "Cleanroom Libraries",
+      "forge-libraries": "Forge Libraries",
+      "optifine-libraries": "OptiFine Libraries",
+      "launcher-update": "Update Launcher",
+      "extension-update": "Update Extension {{param1}} {{param2}}",
+      "mojang-java": "Java {{param}} Runtime"
+    }
+  },
+  "Editable": {
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "Add Game Directory",
+        "edit": "Edit Game Directory"
+      }
+    },
+    "label": {
+      "dirName": "Name",
+      "dirPath": "Game Directory"
+    },
+    "placeholder": {
+      "dirName": "Directory Name",
+      "dirPath": "Select a game directory"
+    },
+    "dialog": {
+      "browse": {
+        "title": "Select Directory"
+      },
+      "addSubDir": {
+        "title": "Add Subdirectory",
+        "body": "An instance-containing Minecraft subdirectory has been found. Do you want to add the subdirectory?",
+        "addOriginDir": "Add Origin Directory",
+        "addSubDir": "Add Subdirectory"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "Failed to add game directory"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "Directory name cannot be empty",
+        "tooLong": "Directory name cannot be longer than 20 characters",
+        "exist": "Directory name already exists",
+        "hasInvalidChar": "Directory name has invalid characters"
+      },
+      "dirPath": {
+        "exist": "Directory already exists",
+        "invalid": "Directory path is invalid"
+      }
+    }
+  },
+  "Empty": {
+    "noData": "No Data"
+  },
+  "EnableExtensionConfirmDialog": {
+    "title": "Enable Extension",
+    "body": "Are you sure you want to enable the extension <hl>{{name}}</hl> (<hl>{{identifier}}</hl>) from <hl>{{author}}</hl>? ",
+    "button": {
+      "enable": "Enable"
+    },
+    "unknownDeveloper": "Unknown developer"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "Gray",
+      "red": "Red",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "green": "Green",
+      "teal": "Teal",
+      "blue": "Blue",
+      "cyan": "Cyan",
+      "purple": "Purple",
+      "pink": "Pink"
+    },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
+      "windows": "Win"
+    },
+    "playerTypes": {
+      "microsoft": "Microsoft",
+      "offline": "Mode Offline",
+      "3rdparty": "Autentikasi Pihak ketiga",
+      "3rdpartyShort": "Auth Pihak ketiga"
+    },
+    "systemFileManager": {
+      "linux": "File Manager",
+      "macos": "Finder",
+      "windows": "File Explorer"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Export {{param}} as Modpack"
+    },
+    "label": {
+      "exportFormat": "Export Format",
+      "basicInfo": "Basic Information",
+      "modpackName": "Modpack Name",
+      "modpackVersion": "Modpack Version",
+      "author": "Author",
+      "description": "Description",
+      "includedFiles": "Included Files",
+      "exportOptions": "Export Options",
+      "packWithLauncher": "Pack With Launcher",
+      "minMemory": "Minimum Memory (MiB)",
+      "noCreateRemoteFiles": "Disable Remote Files",
+      "skipCurseForgeRemoteFiles": "Skip CurseForge Remote Files"
+    },
+    "button": {
+      "export": "Export"
+    },
+    "error": {
+      "invalidName": "Please enter a valid modpack name",
+      "invalidVersion": "Please enter a valid version number",
+      "noFileSelected": "Please select at least one file or folder to include"
+    },
+    "errorMessage": {
+      "error-1": "Name cannot be empty",
+      "error-2": "Name contains invalid characters",
+      "error-3": "Name is too long (max 255 characters)"
+    },
+    "fileTreeTranslation": {
+      "mods": "Mods",
+      "config": "Mod Config Files",
+      "shaderpacks": "Shaders",
+      "resourcepacks": "Resource Packs",
+      "optionsTxt": "Game Settings",
+      "saves": "Saves"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "Smaller package size; required mods are downloaded from a manifest during import.",
+        "MultiMC": "Widely supported by major launchers; packaged as a complete instance."
+      }
+    }
+  },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "Failed to render this extension content."
+  },
+  "ExtensionHostContextProvider": {
+    "extensionProvidedDialog": "This dialog is provided by extension {{name}}",
+    "toast": {
+      "activateError": "Failed to activate extension {{name}}"
+    }
+  },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "Author",
+      "description": "Description"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "Open External Link",
+    "body": "Extension {{extension}} wants to open {{link}} in your external browser.",
+    "button": {
+      "open": "Open"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "Settings of {{name}}"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL cannot control the behavior of third-party extensions, including how they handle your personal data. Only install and enable extensions from trusted sources.",
+    "fileDnD": {
+      "title": "Install SJMCL Extension",
+      "desc": "Install extension file {{fileName}} to SJMCL"
+    },
+    "installed": "Installed Extensions",
+    "menu": {
+      "info": "Extension Info"
+    },
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "Extension Development Documentation",
+          "description": "Read the introduction to the extension system and API docs, and get started quickly with the scaffold.",
+          "url": "https://mc.sjtu.cn/sjmcl/en/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "Discover Community Extensions",
+          "description": "Visit GitHub to browse a list of extensions developed by the community.",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
+  },
+  "ExtensionUpdateConfirmDialog": {
+    "title": "Update Extension",
+    "body": "Extension {{identifier}} downloaded the new version {{version}} from {{src}}. Do you want to confirm installation?"
+  },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} and others ({{count}} total)"
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "Advanced Settings",
+    "topWarning": "Advanced settings are for expert users. Changing them may break the game. Do not modify unless you know what you're doing.",
+    "customCommands": {
+      "title": "Custom Commands",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Launcher Argument",
+          "placeholder": "Default"
+        },
+        "precallCommand": {
+          "title": "Pre-launch Command",
+          "placeholder": "Commands to execute before the game launches"
+        },
+        "wrapperLauncher": {
+          "title": "Wrapper Command",
+          "placeholder": "Allows launching using an extra wrapper program like \"optirun\" on Linux"
+        },
+        "postExitCommand": {
+          "title": "Post-exit Command",
+          "placeholder": "Commands to execute after game exits"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Java VM Options",
+      "settings": {
+        "garbageCollector": {
+          "title": "Garbage Collector",
+          "desc": "Older Java versions may not include specific garbage collectors.",
+          "options": {
+            "auto": "Auto (Default)",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "PermGen Space",
+          "placeholder": "in MiB"
+        },
+        "environmentVariable": {
+          "title": "Environment Variables"
+        },
+        "args": {
+          "title": "Other JVM Arguments"
+        }
+      }
+    },
+    "graphics": {
+      "title": "Graphics",
+      "settings": {
+        "api": {
+          "title": "Graphics API",
+          "default": {
+            "label": "Default",
+            "desc": "Use Minecraft and the driver default."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Use OpenGL rendering."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Use Vulkan rendering."
+          }
+        },
+        "renderer": {
+          "title": "Renderer / Driver",
+          "default": "Default",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Proxy",
+      "settings": {
+        "enabled": {
+          "title": "Enable Proxy for Game Process",
+          "description": "When disabled, the game will use the system proxy automatically"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Workaround",
+      "settings": {
+        "noJvmArgs": "Do not add default Java VM arguments",
+        "gameFileValidatePolicy": {
+          "title": "Game File Validation Policy",
+          "disable": "Disable Check",
+          "normal": "Normal Check",
+          "full": "Full Check",
+          "disableDesc": "",
+          "normalDesc": "Check if files exist, auto-download missing ones",
+          "fullDesc": "Check file SHA1 integrity, auto-download missing ones (takes longer)"
+        },
+        "dontCheckJvmValidity": {
+          "title": "Do not check Java VM compatibility"
+        },
+        "dontPatchNatives": {
+          "title": "Do not attempt to automatically replace native libraries"
+        },
+        "useLwjglUnsafeAgent": {
+          "title": "Use LWJGL Unsafe Agent",
+          "description": "Automatically use HMCL's <hmcl>LWJGL Unsafe Agent</hmcl> on affected Minecraft versions to fix performance issues."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Use Custom Authlib Injector",
+          "description": {
+            "notSet": "No custom path set, will use the built-in version"
+          },
+          "select": "Modify"
+        },
+        "useNativeGlfw": {
+          "title": "Use System GLFW(Linux Only)"
+        },
+        "useNativeOpenal": {
+          "title": "Use System OpenAL(Linux Only)"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "Automatically close the crash notification window",
+          "disabled": "Do not auto-close",
+          "tenSeconds": "Close after 10 seconds",
+          "thirtySeconds": "Close after 30 seconds"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "Game exited unexpectedly. Check the logs or seek assistance.",
+    "basicInfo": {
+      "arch": "Arch",
+      "launcherVersion": "Launcher Version",
+      "os": "OS"
+    },
+    "gameInfo": {
+      "gameVersion": "Minecraft Version"
+    },
+    "javaInfo": {
+      "javaVersion": "Java Version"
+    },
+    "button": {
+      "exportGameInfo": "Export Crash Report",
+      "gameLogs": "Game Logs",
+      "help": "Help"
+    },
+    "autoCloseCountdown": "This window will close automatically in {{seconds}} seconds (click anywhere in the window to cancel)",
+    "bottomAlert": "Export and send the crash report instead of a screenshot of this page for help.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
+    "crashDetails": {
+      "title": "Crash Details",
+      "OPENJ9": "OpenJ9 JVM is not supported. Please use HotSpot JVM.",
+      "NEED_JDK11": "JDK 11 features are required. Please select JDK 11 to launch.",
+      "TOO_OLD_JAVA": "Java version is too old. Please use the latest Java version.",
+      "JVM_32BIT": "Memory allocation exceeds the limit of a 32-bit JVM. If your system is 64-bit, please use a 64-bit Java.",
+      "GL_OPERATION_FAILURE": "A mod, shader pack, resource pack, or texture pack caused a problem. Try disabling them and launching again.",
+      "OPENGL_NOT_SUPPORTED": "Your graphics driver does not support OpenGL. Please check your graphics driver or try another renderer.",
+      "GRAPHICS_DRIVER": "A graphics driver issue caused the crash. Please update your graphics driver.",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "Failed to initialize the OpenGL window on Apple Silicon platform.",
+      "OUT_OF_MEMORY": "Insufficient memory. Try lowering the game's memory allocation or closing other programs.",
+      "MEMORY_EXCEEDED": "Memory allocation exceeded the limit. Try lowering the game's memory allocation or closing other programs.",
+      "RESOLUTION_TOO_HIGH": "Resolution is too high. Try using a lower resolution resource/texture pack.",
+      "JDK_9": "JDK 9 features are required. Please select JDK 9 to launch.",
+      "MAC_JDK_8U261": "A conflict between Forge/OptiFine and Java caused the crash. Try updating Forge/OptiFine or use Java 8u251 or earlier.",
+      "FILE_CHANGED": "File verification failed. Please check file integrity.",
+      "NO_SUCH_METHOD_ERROR": "Incomplete code detected. A mod may be missing, incomplete, or incompatible. Try reinstalling the game and mods or seek help.",
+      "NO_CLASS_DEF_FOUND_ERROR": "Incomplete code detected. A mod may be missing, incomplete, or incompatible. Try reinstalling the game and mods or seek help.",
+      "ILLEGAL_ACCESS_ERROR": "A mod caused an access issue. If you know {{param1}}, try updating or removing the corresponding mod.",
+      "DUPLICATED_MOD": "The mod {{param1}} is installed multiple times. Please remove duplicates and try again.",
+      "MOD_RESOLUTION": "Mod dependency issues detected. Fabric provided the following information: {{param1}}",
+      "FORGEMOD_RESOLUTION": "Mod dependency issues detected. Forge/NeoForge provided the following information: {{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "Duplicate mods detected. Forge/NeoForge provided the following information: {{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "A conflict exists between mod {{param1}} and {{param2}}.",
+      "MOD_RESOLUTION_MISSING": "Mod {{param1}} is missing the required dependency {{param2}}.",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "Mod {{param1}} requires Minecraft {{param2}} to run.",
+      "MOD_RESOLUTION_COLLECTION": "Mod {{param1}} is missing the required dependency {{param2}}.",
+      "FILE_ALREADY_EXISTS": "{{param1}} already exists. If you think this file can be deleted, try backing it up and deleting it, then restart.",
+      "LOADING_CRASHED_FORGE": "Mod {{param1}} ({{param2}}) caused an error. Try deleting or updating this mod.",
+      "BOOTSTRAP_FAILED": "Mod {{param1}} caused a startup issue. Try deleting or updating this mod.",
+      "LOADING_CRASHED_FABRIC": "Mod {{param1}} caused an error. Try deleting or updating this mod.",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 and above may not be compatible with the installed mods. Downgrade Fabric Loader to 0.11.7.",
+      "MODLAUNCHER_8": "A conflict exists between your Forge version and Java version. Update Forge to 36.2.26 or above, or use Java below 1.8.0.320.",
+      "DEBUG_CRASH": "A manual crash was triggered.",
+      "CONFIG": "Failed to parse the configuration file {{param2}} for mod {{param1}}.",
+      "FABRIC_WARNINGS": "Fabric provided some warning messages: {{param1}}",
+      "ENTITY": "An entity (type {{param1}}, at {{param2}}) is not working properly. Try deleting the entity using MCEdit or remove the corresponding mod.",
+      "BLOCK": "A block (type {{param1}}, at {{param2}}) is not working properly. Try deleting the block using MCEdit or remove the corresponding mod.",
+      "UNSATISFIED_LINK_ERROR": "Missing native libraries: {{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "OptiFine is not compatible with Forge. Use the latest OptiFine or do not use OptiFine.",
+      "MOD_FILES_ARE_DECOMPRESSED": "Mod files have been decompressed. Place the entire mod file directly into the mods folder.",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "OptiFine may cause world loading issues in specific versions.",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "Too many mods installed, exceeding the game's ID limit. Try installing JEID or similar mods, or remove some large mods.",
+      "MODMIXIN_FAILURE": "Mod injection failure detected. Check mod compatibility or try replacing mods.",
+      "MIXIN_APPLY_MOD_FAILED": "Mixin failed to apply to mod {{param1}}. Try deleting or updating this mod.",
+      "FORGE_ERROR": "Forge/NeoForge provided the following error message: {{param1}}",
+      "MOD_RESOLUTION0": "Issues detected with some mods. Check the logs to find the problematic mod.",
+      "FORGE_REPEAT_INSTALLATION": "Repeated installation of Forge / NeoForge detected. Please delete the instance and reinstall it manually.",
+      "OPTIFINE_REPEAT_INSTALLATION": "Repeated installation of OptiFine detected. Please delete the instance and reinstall it manually.",
+      "JAVA_VERSION_IS_TOO_HIGH": "Java version is too high. Please use Java 8 or lower.",
+      "INSTALL_MIXINBOOTSTRAP": "MixinBootstrap is not installed. Please install MixinBootstrap and try again.",
+      "MOD_NAME": "Mod file names should only use half-width letters (A-Z, a-z), numbers (0-9), hyphens (-), underscores (_), and dots (.). Please rename all non-compliant mod files in the mods folder.",
+      "INCOMPLETE_FORGE_INSTALLATION": "Forge installation is incomplete. Please try reinstalling Forge.",
+      "NIGHT_CONFIG_FIXES": "Issues detected with the Night Config library. Installing the Night Config Fixes mod may help.",
+      "SHADERS_MOD": "Both OptiFine and the Shaders mod are installed. Please remove the Shaders mod.",
+      "RTSS_FOREST_SODIUM": "RTSS is not compatible with Sodium.",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "Some native libraries used by the game are incompatible with your system architecture.",
+      "MAC_DS_STORE": "The instance cannot continue due to a .DS_Store file on Mac. Please delete the .DS_Store file in your game path and try again.",
+      "LEVEL_DAT_CORRUPTED": "The instance cannot continue due to a corrupted level.dat save file. Please try to repair the save or restore from backup.",
+      "GL_OUT_OF_MEMORY": "The instance cannot continue due to OpenGL out of memory. Try lowering game resolution, disabling shaders, or closing other programs.",
+      "MOD_JAVA_VERSION_MISMATCH": "The instance cannot continue due to mod and Java version mismatch. Please check the required Java version for your mods.",
+      "DUPLICATE_MOD_INSTALLED": "The instance cannot continue due to duplicate mod installation. Please check your mod list and remove duplicates.",
+      "MOD_ZIP_CORRUPTED": "The instance cannot continue due to a corrupted mod zip file. Please try re-downloading the mod.",
+      "MOD_INTERNET_ERROR": "The instance cannot continue due to mod download failure. Please check your network connection or use a proxy.",
+      "VICS_MODERN_WARFARE_ERROR": "The instance cannot continue due to Vic's Modern Warfare mod error. Please try updating or removing the mod.",
+      "FORGE_LITELOADER_CONFLICT": "The instance cannot continue due to Forge and LiteLoader conflict. Please try removing LiteLoader or changing Forge version.",
+      "UNKNOWN": "Cannot determine the cause of the crash. Please check the logs for more details or export the crash report."
+    }
+  },
+  "GameLogPage": {
+    "placeholder": "Filter by Text",
+    "revealRawLog": "Reveal Raw Log File",
+    "clearLogs": "Clear All Logs",
+    "scrollToBottom": "Scroll to Bottom"
+  },
+  "GameVersionSelector": {
+    "old_beta": "Beta",
+    "release": "Release",
+    "snapshot": "Snapshot",
+    "april_fools": "April Fools",
+    "searchPlaceholder": "Search"
+  },
+  "General": {
+    "add": "Tambah",
+    "alert": {
+      "noFullLogin": {
+        "title": "Fitur Ini Saat Ini Tidak Tersedia",
+        "description": "Login dengan akun Microsoft-mu dulu untuk mengakses fitur ini."
+      }
+    },
+    "browse": "Telusuri",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "confirm": "Oke",
+    "copy": {
+      "text": "Salin",
+      "toast": {
+        "success": "Tersalin ke clipboard",
+        "error": "Gagal menyalin ke clipboard"
+      }
+    },
+    "copyOrMove": {
+      "linux": "Salin / Pindah",
+      "macos": "Salin / Pindah",
+      "windows": "Salin / Pindah"
+    },
+    "delete": "Hapus",
+    "dialog": {
+      "filterName": {
+        "image": "Gambar",
+        "modpack": "Modpack"
+      }
+    },
+    "disable": "Matikan",
+    "dontShowAgain": "Jangan tampilkan lagi",
+    "download": "Unduh",
+    "edit": "Edit",
+    "enable": "Aktifkan",
+    "exit": "Keluar",
+    "finish": "Selesai",
+    "import": "Impor",
+    "launch": "Jalankan",
+    "more": "Lainnya",
+    "new": "Baru",
+    "next": "Lanjut",
+    "notice": "Catatan",
+    "open": "Buka",
+    "openFolder": "Buka Folder",
+    "optional": "Opsional",
+    "previous": "Sebelumnya",
+    "refresh": "Muat Ulang",
+    "revealFile": "Tampilkan di Folder",
+    "search": "Cari",
+    "settings": "Setelan",
+    "share": {
+      "text": "Bagikan",
+      "toast": {
+        "error": "Gagal menyalin tautan"
+      }
+    },
+    "skip": "Lewati",
+    "version": {
+      "dev": "Dev",
+      "nightly": "nightly build",
+      "beta": "Beta",
+      "test-build": "test build"
+    },
+    "viewOnWiki": "Lihat di Wiki"
+  },
+  "GeneralSettingsPage": {
+    "language": {
+      "title": "Language",
+      "settings": {
+        "language": {
+          "title": "Language",
+          "communityAck": ""
+        },
+        "resourceTranslation": {
+          "title": "Resource Translation",
+          "description": "%only available in zh-Hans"
+        },
+        "translatedFilenamePrefix": {
+          "title": "Add Translation Prefix to Downloaded Resource Filenames",
+          "description": "%only available in zh-Hans"
+        },
+        "skipFirstScreenOptions": {
+          "title": "Automatically Set Instance Language",
+          "description": "When enabled, new instances will follow the launcher language and skip the in-game accessibility setup screen."
+        }
+      }
+    },
+    "functions": {
+      "title": "Functionality",
+      "settings": {
+        "discoverPage": {
+          "title": "Discover Page",
+          "description": "Conveniently browse Minecraft and community news, search and download game resource from the Discover page.",
+          "on": "On",
+          "search-only": "Search Only",
+          "off": "Hidden"
+        },
+        "instancesNavType": {
+          "title": "Instance Page Navigation Mode",
+          "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
+          "instance": "By Instance",
+          "directory": "By Directory",
+          "tag": "By Tag",
+          "hidden": "Hidden"
+        },
+        "launchPageQuickSwitch": {
+          "title": "Quick Switch for Accounts & Instances",
+          "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+        },
+        "autoDownloadJava": {
+          "title": "Auto-download Suitable Java Runtime",
+          "description": "When enabled, if no suitable Java runtime is available when creating a new instance, it will be installed automatically to a dedicated directory"
+        }
+      }
+    },
+    "sync": {
+      "title": "Sync",
+      "settings": {
+        "internetSync": {
+          "title": "Sync Launcher Settings via Internet",
+          "import": "Import",
+          "export": "Export"
+        }
+      }
+    },
+    "advanced": {
+      "title": "Advanced",
+      "settings": {
+        "openConfigJson": {
+          "title": "Launcher Settings File",
+          "description": "Reveal the raw launcher settings file in {{opener}}."
+        },
+        "launcherLogDir": {
+          "title": "Launcher Logs Directory"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Auto Purge Launcher Logs",
+          "description": "Automatically purge launcher log files older than 30 days"
+        },
+        "resetAll": {
+          "title": "Reset All Settings",
+          "description": "Reset all launcher settings to their default values",
+          "reset": "Reset"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "Game Directories",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "Current",
+            "APP_DATA_SUBDIR": "SJMCL Data",
+            "OFFICIAL_DIR": "Official Launcher"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete Game Directory",
+        "content": "Confirm the removal of game directory {{dirName}} ? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
+      },
+      "directoryNotExist": "Directory does not exist, please add path again."
+    },
+    "gameJava": {
+      "title": "Game Java",
+      "settings": {
+        "autoSelect": {
+          "title": "Automatically Choose Game Java"
+        },
+        "execPath": {
+          "title": "Specify Java Version"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "Game Window",
+      "settings": {
+        "resolution": {
+          "title": "Game Resolution",
+          "preset": "Preset",
+          "switch": "Fullscreen",
+          "warning": "Resolution may exceed monitor limit"
+        },
+        "customTitle": {
+          "title": "Custom Window Title"
+        },
+        "customInfo": {
+          "title": "Custom Information",
+          "description": "It is displayed in the bottom left corner of the game's main screen and the top left corner of the F3 debugging page (only effective for Minecraft versions before 26.1)."
+        }
+      }
+    },
+    "performance": {
+      "title": "Performance",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "Allocate Memory Automatically"
+        },
+        "maxMemAllocation": {
+          "title": "Maximum Memory Allocation"
+        },
+        "memoryUsage": {
+          "title": "Memory Usage",
+          "description": "Used memory {{usedMemory}}GiB; Game allocated {{allocatedMemory}}GiB; Total memory {{totalMemory}}GiB"
+        },
+        "processPriority": {
+          "title": "Process Priority",
+          "low": "Low",
+          "belowNormal": "Below Normal",
+          "normal": "Normal",
+          "aboveNormal": "Above Normal",
+          "high": "High"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "Enable Instance Isolation"
+      }
+    },
+    "moreOptions": {
+      "title": "More Options",
+      "settings": {
+        "launcherVisibility": {
+          "title": "Launcher Visibility",
+          "startHidden": "Hide Launcher after Game Starts",
+          "runningHidden": "Hide Launcher while Game is Running",
+          "always": "Launcher Always Visible"
+        },
+        "autoJoinGameServer": {
+          "title": "Auto Join Game Server"
+        },
+        "serverUrl": {
+          "title": "Server URL"
+        },
+        "displayGameLog": {
+          "title": "Display Game Logs"
+        },
+        "advancedOptions": {
+          "title": "Advanced Launch Options",
+          "button": "Edit Advanced Options"
+        }
+      }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "The current instance \"{{instance}}\" has specific game Settings enabled, so the options on this page will not affect this instance. ",
+      "editInstanceSettings": "Edit instance specific game settings"
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Instance Page",
+      "content": "Here you can add and select your Minecraft game instances, as well as download and manage various game resources."
+    },
+    "step2": {
+      "title": "Accounts Page",
+      "content": "Here you can add accounts and choose the player you want to play."
+    },
+    "step3": {
+      "title": "Discover Page",
+      "content": "Here you can browse Minecraft and community news, discover and download various related resources such as mods, maps, and modpacks.<br/>You can also quickly open \"Global Search\" with the keyboard shortcut <key>{{keyname}}</key> + <key>F</key>."
+    },
+    "step4": {
+      "title": "Launch Minecraft!",
+      "content": "After selecting your instance and player and adjusting the relevant settings, click the launch button and enjoy the game! 🥳"
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "Main",
+      "instances": "Game",
+      "accounts": "Akun",
+      "discover": "Jelajah",
+      "search": "Cari",
+      "settings": "Setelan"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "University Player Community",
+      "settings": {
+        "MUA": {
+          "title": "Minecraft University Alliance (MUA)",
+          "description": "Play with university players across China",
+          "url": "https://www.mualliance.cn/en"
+        },
+        "SJMC": {
+          "title": "SJTU Minecraft Club (SJMC)",
+          "url": "https://mc.sjtu.cn/en/"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "Minecraft",
+      "settings": {
+        "mcWiki": {
+          "title": "Minecraft Wiki",
+          "description": "The most detailed Minecraft encyclopedia",
+          "url": "https://minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "MCMod",
+          "description": "A Chinese mod encyclopedia for Minecraft"
+        },
+        "curseforge": {
+          "title": "CurseForge",
+          "description": "Discover the world's largest Minecraft mod repository"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "An open-source, modern Minecraft resource platform"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "SJMC Launcher Documentation",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "User Community",
+          "description": "Join the QQ group or GitHub Discussions to report issues, request features, or get help",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
+        }
+      }
+    }
+  },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "Move This Widget Up",
+      "moveDown": "Move This Widget Down",
+      "extensionInfo": "View Extension Info",
+      "settings": "Open Extension Settings"
+    }
+  },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "Import Players and Auth Servers"
+    },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
+    },
+    "body": {
+      "authServers": "Auth Servers",
+      "players": "Players"
+    },
+    "footer": {
+      "parentDirHint": "Account files will be searched in parent path of added game directories."
+    },
+    "tooltips": {
+      "existingServer": "Existing auth server data with the same address will be overwritten.",
+      "existingPlayer": "Existing player data with the same UUID will be overwritten.",
+      "expired": "This player token has expired and cannot be imported."
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "Import Modpack"
+    },
+    "label": {
+      "instanceSettings": "Instance Settings",
+      "modpackInfo": "Modpack Information",
+      "modpackName": "Modpack Name",
+      "modpackVersion": "Modpack Version",
+      "author": "Author",
+      "modLoader": "Mod Loader",
+      "gameVersion": "Game Version"
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "Select Game Directory"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "Create Launch Shortcut",
+      "exportModPack": "Export as Modpack",
+      "star": "Star this instance",
+      "unstar": "Unstar"
+    },
+    "instanceTabList": {
+      "overview": "Overview",
+      "worlds": "Worlds",
+      "mods": "Mods",
+      "resourcepacks": "Resource Packs",
+      "schematics": "Schematics",
+      "shaderpacks": "Shader Packs",
+      "screenshots": "Screenshots",
+      "settings": "Settings"
+    },
+    "button": {
+      "launch": "Launch Instance"
+    }
+  },
+  "InstanceIconSelector": {
+    "customize": "Customize Icon"
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "Instance Details",
+      "delete": "Delete"
+    }
+  },
+  "InstanceModsPage": {
+    "fileDnD": {
+      "title": "Install Mods",
+      "desc": "Install mod file {{fileName}} to this instance"
+    },
+    "modLoaderList": {
+      "title": "Mod Loader",
+      "notInstalled": "Not Installed",
+      "installed": "Installed"
+    },
+    "modList": {
+      "title": "Mods",
+      "warning": "Mod loader not found, these mods may not work properly",
+      "menu": {
+        "alert": "Potentially incompatible",
+        "info": "Mod Info",
+        "update": "Update",
+        "search": "Search",
+        "placeholder": " Search mods..."
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "fileDnD": {
+      "title": "Add Resource Packs",
+      "desc": "Add resource pack file {{fileName}} to this instance"
+    },
+    "resourcePackList": {
+      "title": "Global Resource Packs"
+    },
+    "serverResPackList": {
+      "title": "Server Resource Packs"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "fileDnD": {
+      "title": "Add Schematics",
+      "desc": "Add schematic file {{fileName}} to this instance"
+    },
+    "schematicList": {
+      "title": "Schematics"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "Instance Name",
+    "description": "Instance Description",
+    "colorTag": "Color Tag",
+    "icon": "Instance Icon",
+    "applySettings": "Apply the following specific settings",
+    "resetSettings": "Reset specific settings",
+    "resetSettingsDesc": "Reset the following specific settings to the global game settings.",
+    "reset": "Reset",
+    "errorMessage": {
+      "error-1": "Instance name cannot be empty",
+      "error-2": "Instance name is invalid",
+      "error-3": "Instance name is too long"
+    },
+    "tipsToGlobal": {
+      "content": "This instance is not using specific settings. <toGlobal>Go to Global Game Settings</toGlobal>"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "fileDnD": {
+      "title": "Add Shader Packs",
+      "desc": "Add shader pack file {{fileName}} to this instance"
+    },
+    "shaderLoaderList": {
+      "title": "Loaders",
+      "notInstalled": "Not Installed"
+    },
+    "shaderPackList": {
+      "title": "Shader Packs"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "Basic Info",
+      "gameVersion": "Version",
+      "playTime": "Playtime"
+    },
+    "screenshots": {
+      "title": "Screenshots"
+    },
+    "mods": {
+      "title": "Mods",
+      "summary": "{{totalMods}} mods, {{enabledMods}} enabled",
+      "manage": "Manage"
+    },
+    "lastPlayed": {
+      "title": "Last Played",
+      "continuePlaying": "Continue"
+    },
+    "more": {
+      "title": "More"
+    }
+  },
+  "InstanceWorldsPage": {
+    "fileDnD": {
+      "title": "Add Worlds",
+      "desc": "Add save file {{fileName}} to this instance"
+    },
+    "worldList": {
+      "title": "Worlds",
+      "lastPlayedAt": "Last played",
+      "difficulty": {
+        "peaceful": "Peaceful",
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "hardcore": "Hardcore"
+      },
+      "gamemode": {
+        "survival": "Survival Mode",
+        "creative": "Creative Mode",
+        "adventure": "Adventure Mode",
+        "spectator": "Spectator Mode"
+      },
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (Difficulty: {{difficulty}})",
+      "viewLevelData": "View Level Data",
+      "launch": "Play this World"
+    },
+    "serverList": {
+      "title": "Servers",
+      "players": "Players",
+      "tag": {
+        "online": "Online",
+        "offline": "Offline"
+      },
+      "launch": "Play this Server"
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Java Management",
+      "download": "Download Java",
+      "add": "Add Java",
+      "remove": "Remove this Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "Add Java Successfully",
+        "description": "Java has been added successfully"
+      },
+      "addFailed": {
+        "title": "Failed to Add Java",
+        "invalid": "Not a valid Java executable or incompatible with the current platform",
+        "duplicated": "The target path has already been added"
+      }
+    },
+    "confirmDelete": {
+      "title": "Delete Java",
+      "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
+    }
+  },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "",
+      "es": "Spanish",
+      "fr": "French",
+      "ja": "Japanese",
+      "lzh": "Literary Chinese",
+      "zh-Hans": "Simplified Chinese",
+      "zh-Hant": "Traditional Chinese"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "Previous Run Exited Abnormally",
+      "content": "SJMCL exited abnormally during the last run. You can send the logs to the <community>community</community>, or open an issue on <github>GitHub</github> for help.",
+      "viewLog": "View Logs"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "Mainkan",
+      "instanceSettings": "Setelan Instance"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "Ganti Pemain",
+        "addPlayer": "Tambah Pemain",
+        "switchInstance": "Ganti Instance Game",
+        "addInstance": "Tambah Instance Game"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "Belum ada pemain terpilih",
+      "noSelectedGame": "Belum ada instance game terpilih"
+    },
+    "stats": {
+      "loader": "Loader"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "Launch Game - {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "Select Suitable Java Runtime",
+      "validateGameFiles": "Validate Game and Dependency Files",
+      "validateSelectedPlayer": "Validate Player's Credentials",
+      "launchGame": "Waiting for Game to Launch"
+    },
+    "toast": {
+      "noSelectedPlayer": "Please add and select a player first",
+      "noSelectedInstance": "Please add and select a game instance first"
+    }
+  },
+  "LoaderSelector": {
+    "stable": "Stable",
+    "beta": "Beta",
+    "releaseDate": "Released at {{date}}",
+    "notCompatibleWith": "Not compatible with {{item}}",
+    "noVersionSelected": "No version selected"
+  },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Import Modpack",
+      "desc": "Import modpack file {{fileName}} to SJMCL"
+    }
+  },
+  "ManageSkinModal": {
+    "skinManage": "Manage Skin",
+    "default": "Default",
+    "steve": "Steve",
+    "alex": "Alex",
+    "upload": "Choose Local Skin",
+    "skin": "Skin",
+    "cape": "Cape",
+    "model": {
+      "label": "Model",
+      "default": "Wide",
+      "slim": "Slim"
+    }
+  },
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Add Java"
+    },
+    "label": {
+      "javaPath": "Java Path"
+    },
+    "placeholder": {
+      "javaPath": "Please enter or select the Java executable file path"
+    }
+  },
+  "MCVersionNumberHelper": {
+    "content": "Starting in 2026, Minecraft adopts a new version numbering system. The version numbers will begin with the release year (e.g., 26.1), replacing the previous 1.x versioning scheme.",
+    "linkText": "Read the official article",
+    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
+  },
+  "MemoryStatusProgress": {
+    "title": "Memory Status",
+    "info": "{{used}} / {{total}} GiB used",
+    "label": {
+      "now": "In use",
+      "maxAllocation": "Maximum allocated for Minecraft"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "{{count}} selected"
+  },
+  "MicrosoftFriendsModal": {
+    "title": "Minecraft Friends of Microsoft Account {{name}}",
+    "placeholder": {
+      "playerName": "Enter a player name to add as a friend"
+    },
+    "group": {
+      "requests": "Requests",
+      "friends": "Friends"
+    },
+    "request": {
+      "incoming": "Incoming friend request",
+      "outgoing": "Outgoing friend request"
+    },
+    "button": {
+      "add": "Add",
+      "accept": "Accept",
+      "decline": "Decline",
+      "revoke": "Revoke",
+      "remove": "Remove Friend",
+      "xboxSettings": "XBOX Settings"
+    },
+    "empty": {
+      "requests": "No requests",
+      "friends": "No friends"
+    },
+    "status": {
+      "INVITED": "Invited you to join their world",
+      "ONLINE": "Online",
+      "PLAYING_OFFLINE": "Playing Offline",
+      "PLAYING_REALMS": "Playing Realms",
+      "PLAYING_SERVER": "Playing on a Server",
+      "PLAYING_HOSTED_SERVER": "Hosted LAN World",
+      "OFFLINE": "Offline"
+    }
+  },
+  "NoSuitableJavaDialog": {
+    "title": "No suitable Java runtime found for this instance",
+    "body": "No suitable Java runtime is available for this instance. Click \"Confirm\" to open Java Management page and add or download Java manually."
+  },
+  "NotFoundPage": {
+    "text": "Page not found, redirecting to launch page in {{seconds}} seconds..."
+  },
+  "NotifyNewVersionModal": {
+    "title": "New Version Available"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "loadMore": "Load More (+{{left}})",
+      "showAll": "Show All (+{{left}})"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "Service Connectivity Test",
+      "offline": "Offline",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "friends": "Friends",
+      "manageSkin": "Manage Skin",
+      "viewSkin": "View Skin",
+      "delete": "Delete",
+      "copyUUID": "Copy UUID"
+    },
+    "toast": {
+      "refreshing": "Refreshing player info",
+      "deleting": "Deleting player"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Proxy Type"
+    },
+    "host": {
+      "title": "Host"
+    },
+    "port": {
+      "title": "Port"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "Re-login"
+    },
+    "label": {
+      "user": "Username",
+      "password": "Password"
+    },
+    "placeholder": {
+      "password": "Password"
+    },
+    "button": {
+      "login": "Login"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Remove Mod Loader",
+      "content": "Are you sure you want to remove {{type}} {{version}} installed for {{instanceName}}? Your mods may stop working."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Remove OptiFine",
+      "content": "Are you sure you want to remove OptiFine {{version}} installed for {{instanceName}}? Your shader packs may stop working."
+    }
+  },
+  "ResetConfigConfirmDialog": {
+    "title": "Reset Launcher Settings",
+    "body": "This action will reset all launcher settings to their default values. Are you sure you want to proceed?"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "Reset Instance Settings",
+    "body": "This action will reset this instance's specific game settings to the current global settings. Are you sure you want to proceed?"
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "Source",
+      "gameVer": "Game Ver.",
+      "tag": "Type",
+      "sortBy": "Sort by",
+      "name": "Name"
+    },
+    "button": {
+      "search": "Search"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Addons": "Addons",
+        "Adventure and RPG": "Adventure and RPG",
+        "API and Library": "API and Library",
+        "Applied Energistics 2": "Applied Energistics 2",
+        "Armor, Tools, and Weapons": "Armor, Tools, and Weapons",
+        "Automation": "Automation",
+        "Biomes": "Biomes",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
+        "Bug Fixes": "Bug Fixes",
+        "Cosmetic": "Cosmetic",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "Dimensions",
+        "Education": "Education",
+        "Energy": "Energy",
+        "Energy, Fluid, and Item Transport": "Energy, Fluid, and Item Transport",
+        "Farming": "Farming",
+        "Food": "Food",
+        "Forestry": "Forestry",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Genetics",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
+        "Magic": "Magic",
+        "Map and Information": "Map Information",
+        "MCreator": "MCreator",
+        "Miscellaneous": "Miscellaneous",
+        "Mobs": "Mobs",
+        "Ores and Resources": "Ores Resources",
+        "Performance": "Performance",
+        "Player Transport": "Player Transport",
+        "Processing": "Processing",
+        "Redstone": "Redstone",
+        "Server Utility": "Server",
+        "Skyblock": "Skyblock",
+        "Storage": "Storage",
+        "Structures": "Structures",
+        "Technology": "Technology",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
+        "Twitch Integration": "Twitch Integration",
+        "Utility & QoL": "Utility & QoL",
+        "World Gen": "World Gen",
+        "Auxiliary": "Auxiliary",
+        "World": "World"
+      },
+      "Modrinth": {
+        "All": "All",
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "Equipment",
+        "food": "Food",
+        "game-mechanics": "Game Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "Technology",
+        "transportation": "Transportation",
+        "utility": "Utility",
+        "worldgen": "World Gen"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Types": "Types",
+        "Adventure": "Adventure",
+        "Creation": "Creation",
+        "Game Map": "Game Map",
+        "Modded World": "Modded World",
+        "Parkour": "Parkour",
+        "Puzzle": "Puzzle",
+        "Survival": "Survival"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Resolution": "Resolution",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x and Higher",
+        "Styles": "Styles",
+        "Animated": "Animated",
+        "Special": "Special",
+        "Data Packs": "Data Packs",
+        "Font Packs": "Font Packs",
+        "Medieval": "Medieval",
+        "Miscellaneous": "Miscellaneous",
+        "Mod Support": "Mod Support",
+        "Modern": "Modern",
+        "Photo Realistic": "Photo Realistic",
+        "Steampunk": "Steampunk",
+        "Traditional": "Traditional"
+      },
+      "Modrinth": {
+        "All": "All",
+        "Resolution": "Resolution",
+        "8x-": "8x or lower",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x+": "512x or higher",
+        "Styles": "Styles",
+        "audio": "Audio",
+        "blocks": "Blocks",
+        "core-shaders": "Core Shaders",
+        "entities": "Entities",
+        "environment": "Environment",
+        "equipment": "Equipment",
+        "fonts": "Fonts",
+        "gui": "GUI",
+        "items": "Items",
+        "locale": "Locale",
+        "models": "Models",
+        "combat": "Combat",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "modded": "Modded",
+        "realistic": "Realistic",
+        "simplistic": "Simplistic",
+        "themed": "Themed",
+        "tweaks": "Tweaks",
+        "utility": "Utility",
+        "vanilla-like": "Vanilla Like"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Styles": "Styles",
+        "Fantasy": "Fantasy",
+        "Realistic": "Realistic",
+        "Vanilla": "Vanilla"
+      },
+      "Modrinth": {
+        "All": "All",
+        "Styles": "Styles",
+        "cartoon": "Cartoon",
+        "cursed": "Cursed",
+        "fantasy": "Fantasy",
+        "realistic": "Realistic",
+        "semi-realistic": "Semi Realistic",
+        "vanilla-like": "Vanilla Like",
+        "atmosphere": "Atmosphere",
+        "bloom": "Bloom",
+        "colored-lighting": "Colored Lighting",
+        "foliage": "Foliage",
+        "path-tracing": "Path Tracing",
+        "pbr": "PBR",
+        "reflections": "Reflections",
+        "shadows": "Shadows",
+        "potato": "Potato",
+        "performance": "Performance impact",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "screenshot": "Screenshot"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Styles": "Styles",
+        "Adventure and RPG": "Adventure and RPG",
+        "Combat / PvP": "Combat / PvP",
+        "Exploration": "Exploration",
+        "Extra Large": "Extra Large",
+        "FTB Official Pack": "FTB Official Pack",
+        "Hardcore": "Hardcore",
+        "Horror": "Horror",
+        "Magic": "Magic",
+        "Map Based": "Map Based",
+        "Mini Game": "Mini Game",
+        "Multiplayer": "Multiplayer",
+        "Quests": "Quests",
+        "Sci-Fi": "Sci-Fi",
+        "Skyblock": "Skyblock",
+        "Small / Light": "Small / Light",
+        "Tech": "Tech",
+        "Vanilla+": "Vanilla+"
+      },
+      "Modrinth": {
+        "All": "All",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "challenging": "Challenging",
+        "combat": "Combat",
+        "kitchen-sink": "Kitchen Sink",
+        "lightweight": "Lightweight",
+        "magic": "Magic",
+        "multiplayer": "Multiplayer",
+        "optimization": "Optimization",
+        "quests": "Quests",
+        "technology": "Technology"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "All",
+        "Styles": "Styles",
+        "Magic": "Magic",
+        "Miscellaneous": "Miscellaneous",
+        "Fantasy": "Fantasy",
+        "Mod Support": "Mod Support",
+        "Tech": "Tech",
+        "Library": "Library",
+        "Utility": "Utility",
+        "Adventure": "Adventure"
+      },
+      "Modrinth": {
+        "All": "All",
+        "styles": "Styles",
+        "adventure": "Adventure",
+        "cursed": "Cursed",
+        "decoration": "Decoration",
+        "economy": "Economy",
+        "equipment": "Equipment",
+        "food": "Food",
+        "game-mechanics": "Game Mechanics",
+        "library": "Library",
+        "magic": "Magic",
+        "management": "Management",
+        "minigame": "Minigame",
+        "mobs": "Mobs",
+        "optimization": "Optimization",
+        "social": "Social",
+        "storage": "Storage",
+        "technology": "Technology",
+        "transportation": "Transportation",
+        "utility": "Utility",
+        "worldgen": "World Gen"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "Popularity",
+        "Latest update": "Latest update",
+        "Creation date": "Creation date",
+        "Total downloads": "Total downloads",
+        "A-Z": "A-Z"
+      },
+      "Modrinth": {
+        "relevance": "Relevance",
+        "downloads": "Downloads",
+        "follows": "Followers",
+        "newest": "Date published",
+        "updated": "Date updated"
+      }
+    },
+    "versionList": {
+      "All": "All"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Launcher Update",
+    "body": "The new version has been downloaded. Restart SJMCL to complete the update.",
+    "bodyWinInstaller": "The new version has been downloaded. Clicking Install will close SJMCL and run the installer.",
+    "button": {
+      "restart": "Restart",
+      "install": "Install",
+      "later": "Later"
+    }
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Please be cautious when editing the raw launcher settings file. Incorrect formatting may lead to the loss of original settings or prevent the launcher from working properly."
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "Set as Launcher Background"
+    }
+  },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Select Instance",
+      "titleForLaunch": "Select Instance to Launch"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "Select Player",
+      "titleForAdd": "Select New Player to Add",
+      "titleForLaunch": "Select Player to Play"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "Failed to get launcher settings"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "Failed to update launcher settings"
+        }
+      },
+      "resetLauncherConfig": {
+        "success": "Successfully reset launcher settings",
+        "error": {
+          "title": "Failed to reset launcher settings"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "Successfully exported launcher settings",
+        "error": {
+          "title": "Failed to export launcher settings",
+          "description": {
+            "FETCH_ERROR": "Failed to fetch the meta server"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "Successfully imported launcher settings",
+        "error": {
+          "title": "Failed to import launcher settings",
+          "description": {
+            "FETCH_ERROR": "Failed to fetch the meta server",
+            "INVALID_CODE": "Invalid code",
+            "CODE_EXPIRED": "Code expired",
+            "VERSION_MISMATCH": "Launcher version mismatch"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "Successfully retrieved custom background list",
+        "error": {
+          "title": "Failed to retrieve custom background list"
+        }
+      },
+      "addCustomBackground": {
+        "success": "Successfully added custom background",
+        "error": {
+          "title": "Failed to add custom background"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "Successfully deleted custom background",
+        "error": {
+          "title": "Failed to delete custom background"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "Failed to retrieve installed Java list"
+        }
+      },
+      "validateJava": {
+        "error": {
+          "title": "Failed to validate Java",
+          "description": {
+            "JAVA_EXEC_INVALID": "Java executable is invalid"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Failed to download Mojang Java runtime",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "Invalid game directory",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "The directory has already been added",
+            "GAME_DIR_NOT_EXIST": "The directory does not exist"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "Successfully cleared download cache",
+        "error": {
+          "title": "Failed to clear download cache",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "There are active download tasks in progress.",
+            "FILE_DELETION_FAILED": "Failed to delete files, they may be in use.",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "Failed to download launcher update",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "Failed to retrieve player list"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "Successfully added offline player",
+        "error": {
+          "title": "Failed to add offline player",
+          "description": {
+            "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
+            "INVALID": "UUID is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "Failed to get authentication code",
+          "description": {
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "INVALID": "The player type is invalid",
+            "NOT_FOUND": "The server does not exist"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "Successfully added player",
+        "error": {
+          "title": "Failed to add player",
+          "description": {
+            "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NOT_FOUND": "The authentication server does not exist",
+            "CANCELLED": "OAuth login cancelled",
+            "INVALID": "The server type is invalid",
+            "NO_MINECRAFT_PROFILE": "No Minecraft profile found",
+            "XSTS_BANNED": "Your account has been banned from XBOX services",
+            "XSTS_PARENTAL_RESTRICTION": "Your account is blocked by parental controls",
+            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an XBOX account, please visit minecraft.net to set one up",
+            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the XBOX Terms of Service before continuing",
+            "XSTS_REGION_BANNED": "Your account is from a country or region where XBOX Live is not available",
+            "XSTS_CHILD_ACCOUNT": "Your account is a minor account and requires parental consent, please visit family.microsoft.com to authorize",
+            "XSTS_UNKNOWN_ERROR": "An unknown XSTS authentication error occurred"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "The player type is invalid",
+            "CANCELLED": "OAuth re-login cancelled",
+            "NO_MINECRAFT_PROFILE": "No Minecraft profile found",
+            "XSTS_BANNED": "Your account has been banned from XBOX services",
+            "XSTS_PARENTAL_RESTRICTION": "Your account is blocked by parental controls",
+            "XSTS_NO_XBOX_ACCOUNT": "Your Microsoft account is not linked to an XBOX account, please visit minecraft.net to set one up",
+            "XSTS_TERMS_NOT_ACCEPTED": "You need to accept the XBOX Terms of Service before continuing",
+            "XSTS_REGION_BANNED": "Your account is from a country or region where XBOX Live is not available",
+            "XSTS_CHILD_ACCOUNT": "Your account is a minor account and requires parental consent, please visit family.microsoft.com to authorize",
+            "XSTS_UNKNOWN_ERROR": "An unknown XSTS authentication error occurred"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "Successfully added player",
+        "error": {
+          "title": "Failed to add player",
+          "description": {
+            "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
+            "NETWORK_ERROR": "Unable to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "INVALID": "Wrong account or password",
+            "NOT_FOUND": "The server does not exist",
+            "EXPIRED": "The access token has expired, please re-login"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Successfully re-logged in",
+        "error": {
+          "title": "Failed to re-login",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "Wrong account or password"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "Successfully added player",
+        "error": {
+          "title": "Failed to add player",
+          "description": {
+            "DUPLICATE": "Player already exists",
+            "FULL_LOGIN_UNAVAILABLE": "Please log in with your Microsoft account before accessing this feature.",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "EXPIRED": "The access token has expired, please re-login"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The player type is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "Successfully updated player skin",
+        "error": {
+          "title": "Failed to update player skin",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The player type is invalid",
+            "TEXTURE_ERROR": "Unable to get player texture"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "Successfully deleted player",
+        "error": {
+          "title": "Failed to delete player",
+          "description": {
+            "NOT_FOUND": "The player does not exist"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "Successfully refreshed player info",
+        "error": {
+          "title": "Failed to refresh player info",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "INVALID": "The player type is invalid"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "Successfully retrieved friend list",
+        "error": {
+          "title": "Failed to retrieve Microsoft friend list",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The current player is not a Microsoft account",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to Minecraft services",
+            "FORBIDDEN": "This account is not allowed to access friends",
+            "TOO_MANY_REQUESTS": "Too many requests, please try again later",
+            "SERVICE_UNAVAILABLE": "Minecraft services are temporarily unavailable"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "Successfully updated friend relationship",
+        "error": {
+          "title": "Failed to update Microsoft friend relationship",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "INVALID": "The friend action parameters are invalid",
+            "EXPIRED": "The access token has expired, please re-login",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to Minecraft services",
+            "FORBIDDEN": "Unable to add friend right now. Please check the relevant account settings for both you and the other player",
+            "TOO_MANY_REQUESTS": "Too many requests, please try again later",
+            "SERVICE_UNAVAILABLE": "Minecraft services are temporarily unavailable",
+            "UNKNOWN_PROFILE": "The target player does not exist",
+            "CANNOT_ADD_SELF": "You cannot add yourself as a friend",
+            "DUPLICATED_PROFILES": "Duplicated friend operation request"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "Failed to retrieve server list"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "Failed to get authentication server information",
+          "description": {
+            "DUPLICATE": "The server has already been added",
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "Successfully added authentication server",
+        "error": {
+          "title": "Failed to add authentication server",
+          "description": {
+            "DUPLICATE": "The server has already been added",
+            "INVALID": "Invalid server URL",
+            "NOT_FOUND": "The server does not exist"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "Successfully deleted authentication server",
+        "error": {
+          "title": "Failed to delete authentication server",
+          "description": {
+            "NOT_FOUND": "The authentication server does not exist"
+          }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "Failed to retrieve external account information",
+          "description": {
+            "NOT_FOUND": "Failed to read the external account information file."
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "External players and auth servers imported successfully",
+        "error": {
+          "title": "Failed to import external players and auth servers"
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "Failed to select suitable JRE",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "NO_SUITABLE_JAVA": "No suitable Java version found",
+            "SELECTED_JAVA_UNAVAILABLE": "The manually selected Java runtime has been removed or is unavailable"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "Failed to validate game files",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "Mod loader installation not completed",
+            "OPTIFINE_NOT_INSTALLED": "OptiFine installation not completed",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "GAME_FILES_INCOMPLETE": "Game files are incomplete",
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "Failed to validate player",
+          "description": {
+            "NOT_FOUND": "The player does not exist",
+            "EXPIRED": "The access token has expired, please re-login",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "AUTHLIB_INJECTOR_NOT_READY": "Failed to download Authlib-Injector, please check internet connection",
+            "SAVE_ERROR": "Failed to save Authlib-Injector",
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "Failed to launch game",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "Launching state not found",
+            "AUTH_SERVER_NOT_FOUND": "Auth server not found"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "Failed to fetch game version list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "Failed to fetch game version metadata",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "CLIENT_VERSION_NOT_FOUND": "The requested game version does not exist"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "Failed to fetch mod loader version list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchOptiFineVersionList": {
+        "error": {
+          "title": "Failed to fetch OptiFine version list",
+          "description": {
+            "NETWORK_ERROR": "Failed to connect to the server"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "Failed to fetch resource list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "Failed to fetch resource version list",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "Failed to download game server",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "Failed to get remote resource",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "NO_DOWNLOAD_API": "No download strategy available, please check internet connection"
+          }
+        }
+      },
+      "updateMods": {
+        "error": {
+          "title": "Failed to download latest mod",
+          "description": {
+            "PARSE_ERROR": "The server returned data in an incorrect format",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "FILE_OPERATION_ERROR": "Failed to rename old mod file",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "Failed to retrieve game instance list",
+          "description": {
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "CONFLICT_NAME_ERROR": "Instance name already exists",
+            "FILE_MOVE_FAILED": "Failed to move instance files"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "Failed to create instance download task",
+          "description": {
+            "CONFLICT_NAME_ERROR": "Instance name already exists",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder",
+            "FILE_CREATION_FAILED": "Failed to create target file",
+            "NETWORK_ERROR": "Failed to connect to the server",
+            "CLIENT_JSON_PARSE_ERROR": "Failed to parse instance version info",
+            "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "Failed to update instance settings",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "NOT_FOUND": "Instance not found"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "Failed to retrieve instance game settings",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "Successfully reset instance game settings",
+        "error": {
+          "title": "Failed to reset instance game settings",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "SAVE_ERROR": "Failed to save instance settings"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "Failed to retrieve instance directory path",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or has a type error"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "Successfully deleted instance",
+        "error": {
+          "title": "Failed to delete instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "Failed to rename instance",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "CONFLICT_NAME_ERROR": "A duplicate instance name exists",
+            "INVALID_NAME_ERROR": "Invalid instance name",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "Failed to move instance files"
+          }
+        }
+      },
+      "copyResourcesToInstances": {
+        "success": "Resource copied successfully",
+        "error": {
+          "title": "Failed to copy resource",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "ZIP_FILE_PROCESS_FAILED": "Failed to process zip file",
+            "FILE_COPY_FAILED": "Failed to execute the copy file command",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "Resource moved successfully",
+        "error": {
+          "title": "Move resource failed",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist or type error",
+            "INVALID_SOURCE_PATH": "Invalid source path",
+            "FILE_MOVE_FAILED": "Failed to execute the move file command",
+            "FOLDER_CREATION_FAILED": "Failed to create target folder"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "Failed to retrieve world list"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "Failed to retrieve game server list",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "servers.dat may have been corrupted"
+          }
+        }
+      },
+      "addGameServer": {
+        "success": "Game server added successfully",
+        "error": {
+          "title": "Failed to add game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "DUPLICATE_SERVER": "Server already exists"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Game server deleted successfully",
+        "error": {
+          "title": "Failed to delete game server",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_OPERATION_ERROR": "Failed to write server info",
+            "SERVER_NOT_FOUND": "Server not found"
+          }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Failed to retrieve local mod list",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "Failed to retrieve resource pack list"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "Failed to retrieve resource pack list from servers"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "Failed to retrieve schematic list"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "Failed to retrieve shader pack list"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "Failed to retrieve screenshot list"
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "Mod state toggle failed",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "The mod file does not exist, it may have been renamed, moved, or deleted"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "Failed to retrieve world details list",
+          "description": {
+            "WORLD_NOT_EXIST_ERROR": "World not exist",
+            "LEVEL_NOT_EXIST_ERROR": "Level data not exist",
+            "LEVEL_PARSE_ERROR": "Level data parse error"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "Launch shortcut has been added to the desktop",
+        "error": {
+          "title": "Failed to create launch shortcut",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "Command execution failed",
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "Unable to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Failed to Change Mod Loader",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Installed by external process, which cannot be configured",
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "Failed to Change OptiFine",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+          }
+        }
+      },
+      "removeModLoader": {
+        "success": "Mod loader removed successfully",
+        "error": {
+          "title": "Failed to remove mod loader",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine removed successfully",
+        "error": {
+          "title": "Failed to remove OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Instance ID does not exist",
+            "FILE_CREATION_FAILED": "Failed to save instance configuration"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "Failed to retrieve modpack resource info",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "Modpack file not found, it may have been renamed, moved or deleted",
+            "MODPACK_MANIFEST_PARSE_ERROR": "Modpack manifest file parse error",
+            "NETWORK_ERROR": "Failed to fetch the mod loader info required by the modpack",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Unable to recognize the mod loader version required by this modpack"
+          }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "Failed to retrieve exportable file list"
+        }
+      },
+      "exportModpack": {
+        "success": "Modpack exported successfully",
+        "error": {
+          "title": "Failed to export modpack"
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "Successfully added custom instance icon",
+        "error": {
+          "title": "Failed to add custom instance icon"
+        }
+      }
+    },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "Failed to retrieve extension list"
+        }
+      },
+      "addExtension": {
+        "success": "Successfully added extension",
+        "error": {
+          "title": "Failed to add extension",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "The extension package content format is invalid",
+            "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "IDENTIFIER_MISMATCH": "The extension identifier does not match the expectation",
+            "INVALID_NAME": "Extension name is invalid",
+            "LAUNCHER_VERSION_TOO_LOW": "Launcher version is too low",
+            "EXTENSION_NOT_FOUND": "Target package file not found"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "Successfully deleted extension",
+        "error": {
+          "title": "Failed to delete extension",
+          "description": {
+            "INVALID_IDENTIFIER": "Extension identifier is invalid",
+            "EXTENSION_NOT_FOUND": "Extension not found"
+          }
+        }
+      }
+    },
+    "task": {
+      "common": {
+        "title": "Download operation failed",
+        "description": {
+          "NETWORK_ERROR": "Network error: {{details}}",
+          "HTTP_ERROR": "HTTP error: {{status}}",
+          "IO_ERROR": "File operation failed: {{details}}",
+          "CHECKSUM_MISMATCH": "File checksum mismatch: expected {{expected}}, got {{actual}}",
+          "CORRUPT_FILES": "Corrupt files: {{paths, list}}",
+          "MISSING_FIELD": "Missing task field: {{field}}",
+          "UNKNOWN_EXECUTOR": "Unknown task executor: {{executor}}",
+          "INVALID_CONTENT_RANGE": "The server returned an invalid Content-Range",
+          "RESUME_OFFSET_MISMATCH": "Resume offset mismatch: expected {{expected}}, got {{actual}}",
+          "OTHER_ERROR": "Task failed: {{details}}",
+          "EMPTY_GROUP": "A task group must contain at least one task",
+          "CHANNEL_CLOSED": "The download engine connection was closed",
+          "UNKNOWN_GROUP": "Task group {{groupId}} was not found",
+          "INVALID_STATE": "Task group {{groupId}} cannot perform this operation in its current state",
+          "STORAGE_ERROR": "Failed to save download state: {{details}}",
+          "ENGINE_NOT_INITIALIZED": "The download engine is not initialized",
+          "INSTALLATION_INSTANCE_MISMATCH": "The installation instance does not match the task",
+          "MOD_LOADER_CHANGED": "The mod loader changed during installation",
+          "OPTIFINE_MISSING": "OptiFine is missing",
+          "OPTIFINE_CHANGED": "OptiFine changed during installation"
+        }
+      },
+      "onDownloadGroupUpdate": {
+        "status": {
+          "Started": "{{param}} download has started",
+          "Failed": "{{param}} download partially failed, please retry",
+          "Completed": "{{param}} has been downloaded successfully",
+          "Stopped": "{{param}} download has been stopped",
+          "Cancelled": "{{param}} download has been cancelled"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "File deleted successfully",
+        "error": {
+          "title": "Failed to delete file"
+        }
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "Setelan Game",
+      "java": "Java",
+      "general": "Umum",
+      "appearance": "Tampilan",
+      "download": "Unduhan",
+      "extension": "Ekstensi",
+      "help": "Dok & Bantuan",
+      "about": "Tentang"
+    }
+  },
+  "SkinPreview": {
+    "cape": "Cape",
+    "animation": {
+      "idle": "Idle",
+      "walk": "Walk",
+      "run": "Run",
+      "wave": "Wave"
+    },
+    "button": {
+      "saveToLocal": "Save Locally",
+      "enableRotation": "Enable Rotation",
+      "disableRotation": "Disable Rotation",
+      "play": "Play",
+      "pause": "Pause"
+    },
+    "error": {
+      "loadSkin": "Failed to load skin"
+    },
+    "toast": {
+      "error": "Failed to save skin locally",
+      "success": "Skin saved locally"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "Global Search"
+    },
+    "tip": "Search local and online game resources in one place",
+    "empty": "No results found",
+    "resource": {
+      "mod": "Search for {{query}} mods",
+      "world": "Search for {{query}} worlds",
+      "resourcepack": "Search for {{query}} resource packs",
+      "shader": "Search for {{query}} shader packs",
+      "datapack": "Search for {{query}} data packs",
+      "modpack": "Search for {{query}} modpacks",
+      "curseforge": "on CurseForge",
+      "modrinth": "on Modrinth"
+    },
+    "result": {
+      "page": "Page",
+      "recentViewed": "Recent Viewed",
+      "instance": "Instance",
+      "player": "Player",
+      "curseforge": "Search on CurseForge",
+      "modrinth": "Search on Modrinth"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "Star Us on GitHub"
+    },
+    "body": "If you love our product and would like to support us, could you give us a star on GitHub? This small action means a lot to us and will motivate us to continue delivering new features and experiences for you.",
+    "button": {
+      "later": "Later",
+      "starUs": "Star Us"
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "Sync Settings - Export"
+    },
+    "label": {
+      "token": "Token"
+    },
+    "helper": "Enter the token above into the device to export to",
+    "countdown": "{{seconds}} seconds until refresh"
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "Sync Settings - Import"
+    },
+    "label": {
+      "token": "Token"
+    },
+    "helper": "Enter the token generated by the device to import from"
+  },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "Game Logs",
+      "gameError": "Oops! The Game Crashed."
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "Unsafe Execution Path",
+      "content": "SJMCL is currently running from a temporary or invalid directory. Your settings and game data may be lost. Please move SJMCL to another location and run it again.",
+      "btnContinue": "Run Anyway"
+    }
+  },
+  "Utils": {
+    "byteSize": {
+      "b": "B",
+      "kib": "KiB",
+      "mib": "MiB",
+      "gib": "GiB"
+    },
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "now",
+        "minutes-ago": "{{count}} minutes ago",
+        "last-hour": "last hour",
+        "hours-ago": "{{count}} hours ago",
+        "yesterday": "yesterday",
+        "others": "on {{time}}"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "System's webview version is outdated. Some UI elements may not display correctly."
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
+    }
+  },
+  "ViewSkinModal": {
+    "skinView": "View Skin"
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "Welcome!"
+    },
+    "body": {
+      "text": "Welcome to SJMCL! Before you start, please be sure to read and agree to our <terms>User Agreement</terms>."
+    },
+    "warning": {
+      "unstableVersion": "You are using the {{versionLabel}} of SJMCL. Some features may be unstable or incomplete. Bug reports and feature requests are welcome.",
+      "winArm64Notice": "SJMCL now supports Windows on Arm. If you are using a <b>QUALCOMM</b> platform, you may need to install the <glpack>OpenGL Compatibility Pack</glpack> before launching the game."
+    },
+    "button": {
+      "agree": "Agree"
+    }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "This page is provided by extension {{name}}"
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "World Level Data - {{worldName}}"
+    }
+  }
+}

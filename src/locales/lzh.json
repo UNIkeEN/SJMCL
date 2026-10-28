@@ -268,21 +268,6 @@
     "theme": {
       "title": "主題",
       "settings": {
-        "primaryColor": {
-          "title": "啟者強調色"
-        },
-        "colorMode": {
-          "title": "色式",
-          "type": {
-            "system": "隨械網",
-            "light": "淡",
-            "dark": "暗"
-          }
-        },
-        "useLiquidGlassDesign": {
-          "title": "液璃之效",
-          "description": "啟後，部分介面將使用「液態玻璃」效果，這或會影響效能"
-        },
         "headNavStyle": {
           "title": "上方導欄之式",
           "type": {
@@ -1668,29 +1653,6 @@
         "offline": "離線"
       },
       "launch": "遊玩此伺服器"
-    }
-  },
-  "IntelligenceSettingsPage": {
-    "title": "SJMCL 智慧",
-    "description": "將人工智慧形整合進您的啟者使用與 礦藝 遊玩體驗",
-    "mcpServer": {
-      "title": "MCP 服務",
-      "headExtra": "以下置設復啟而效",
-      "settings": {
-        "enabled": {
-          "title": "啟者 MCP 服務",
-          "description": "啟本地 MCP 服務，以連線外部 Agent 應用實現啟者的自調化控制"
-        },
-        "docs": {
-          "title": "用法之指南",
-          "description": "瞭解如何將啟者連線到外部 Agent 應用（如 Claude, Cherry Studio 等）",
-          "url": "https://mc.sjtu.cn/sjmcl/docs/intelligence/launcher-mcp"
-        },
-        "port": {
-          "title": "埠",
-          "description": "啟者 MCP 服務使用的固定本地埠"
-        }
-      }
     }
   },
   "JavaSettingsPage": {
@@ -3114,7 +3076,6 @@
       "general": "貫用",
       "appearance": "外觀",
       "download": "引資項",
-      "intelligence": "智慧",
       "extension": "擴充套件",
       "help": "案文與助",
       "about": "有涉"
