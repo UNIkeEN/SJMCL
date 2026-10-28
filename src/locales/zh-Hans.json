@@ -62,7 +62,7 @@
       "settings": {
         "copyright": {
           "title": "版权",
-          "description": "版权所有 © 2024-2026 SJMCL 开发团队."
+          "description": "版权所有 © 2024-2026 easy-launcher 开发团队."
         },
         "userAgreement": {
           "title": "用户协议",
@@ -176,7 +176,7 @@
         "title": "高级选项",
         "uuid": {
           "label": "UUID",
-          "placeholder": "（由 SJMCL 自动生成）",
+          "placeholder": "（由 easy-launcher 自动生成）",
           "errorMessage": "UUID 格式不正确"
         }
       }
@@ -205,7 +205,7 @@
       "description": {
         "start": {
           "3rdparty": "此认证源支持 Yggdrasil Connect 规范提案",
-          "microsoft": "SJMCL 支持微软 OAuth 2.0 设备权限授予流"
+          "microsoft": "easy-launcher 支持微软 OAuth 2.0 设备权限授予流"
         },
         "next": "请点击继续登录按钮跳转登录页面，输入以上代码（已自动复制）"
       },
@@ -514,7 +514,7 @@
       "type": "类型"
     },
     "warning": {
-      "mojang": "由 Mojang 分发的 Java 运行时将由 SJMCL 安装到特定目录",
+      "mojang": "由 Mojang 分发的 Java 运行时将由 easy-launcher 安装到特定目录",
       "oracle": "从 Oracle 源下载可能需要登录"
     }
   },
@@ -827,10 +827,10 @@
     "title": "{{name}} 设置"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。",
+    "alert": "easy-launcher 无法控制第三方扩展的行为，包括它们如何管理你的个人数据。请仅安装并启用来自可信来源的扩展。",
     "fileDnD": {
-      "title": "安装 SJMCL 扩展",
-      "desc": "将扩展文件 {{fileName}} 安装到 SJMCL"
+      "title": "安装 easy-launcher 扩展",
+      "desc": "将扩展文件 {{fileName}} 安装到 easy-launcher"
     },
     "installed": "已安装扩展",
     "menu": {
@@ -1265,14 +1265,14 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "当前文件夹",
-            "APP_DATA_SUBDIR": "SJMCL 数据文件夹",
+            "APP_DATA_SUBDIR": "easy-launcher 数据文件夹",
             "OFFICIAL_DIR": "官方启动器文件夹"
           }
         }
       },
       "deleteDialog": {
         "title": "删除游戏目录",
-        "content": "确定要删除游戏目录 {{dirName}} 吗？（SJMCL 将不会扫描此目录，但不会删除硬盘上的文件）"
+        "content": "确定要删除游戏目录 {{dirName}} 吗？（easy-launcher 将不会扫描此目录，但不会删除硬盘上的文件）"
       },
       "directoryNotExist": "该目录不存在，请删除并重新添加"
     },
@@ -1675,7 +1675,7 @@
     },
     "confirmDelete": {
       "title": "移除 Java",
-      "description": "确认要移除此版本 Java 吗？（SJMCL 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
+      "description": "确认要移除此版本 Java 吗？（easy-launcher 将无法使用此 Java 启动游戏，但不会删除硬盘上的文件）"
     }
   },
   "LanguageMenu": {
@@ -1692,7 +1692,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "上次运行异常退出",
-      "content": "SJMCL 上次运行时异常退出。您可以将日志发送到<community>用户社群</community>，或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
+      "content": "easy-launcher 上次运行时异常退出。您可以将日志发送到<community>用户社群</community>，或在 <github>GitHub</github> 发起 Issue 以寻求帮助",
       "viewLog": "查看日志"
     }
   },
@@ -1742,7 +1742,7 @@
   "MainLayout": {
     "fileDnD": {
       "title": "导入整合包",
-      "desc": "将整合包文件 {{fileName}} 导入到 SJMCL"
+      "desc": "将整合包文件 {{fileName}} 导入到 easy-launcher"
     }
   },
   "ManageSkinModal": {
@@ -2198,8 +2198,8 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "启动器更新",
-    "body": "新版本已完成下载，重新启动 SJMCL 以完成更新",
-    "bodyWinInstaller": "新版本已完成下载，点击安装将关闭 SJMCL 并运行安装程序",
+    "body": "新版本已完成下载，重新启动 easy-launcher 以完成更新",
+    "bodyWinInstaller": "新版本已完成下载，点击安装将关闭 easy-launcher 并运行安装程序",
     "button": {
       "restart": "重新启动",
       "install": "安装",
@@ -3133,7 +3133,7 @@
     "header": {
       "title": "在 GitHub 为我们点亮星标"
     },
-    "body": "如果您喜爱 SJMCL，并希望支持我们，可以在 GitHub 为我们点一颗星吗？这个小小的动作对我们来说意义重大，能激励我们为您持续提供特性体验。",
+    "body": "如果您喜爱 easy-launcher，并希望支持我们，可以在 GitHub 为我们点一颗星吗？这个小小的动作对我们来说意义重大，能激励我们为您持续提供特性体验。",
     "button": {
       "later": "稍后",
       "starUs": "点亮星标"
@@ -3167,7 +3167,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "无效的运行路径",
-      "content": "您正在临时或非法目录下运行 SJMCL，您的设置和游戏数据可能丢失。请将 SJMCL 移动到其他位置后再次运行。",
+      "content": "您正在临时或非法目录下运行 easy-launcher，您的设置和游戏数据可能丢失。请将 easy-launcher 移动到其他位置后再次运行。",
       "btnContinue": "仍要运行"
     }
   },
@@ -3210,11 +3210,11 @@
       "title": "欢迎！"
     },
     "body": {
-      "text": "欢迎使用 SJMCL！在开始使用之前，请务必阅读并同意我们的<terms>用户协议</terms>。"
+      "text": "欢迎使用 easy-launcher！在开始使用之前，请务必阅读并同意我们的<terms>用户协议</terms>。"
     },
     "warning": {
-      "unstableVersion": "您正在使用{{versionLabel}}的 SJMCL，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。",
-      "winArm64Notice": "SJMCL 现已支持 Windows on Arm 平台。<br/>如您正在使用 <b>高通</b> 平台，您可能需要安装 <glpack>OpenGL 兼容包</glpack> 后才能进行游戏。"
+      "unstableVersion": "您正在使用{{versionLabel}}的 easy-launcher，部分功能可能不稳定或未开发完成，欢迎报告使用问题与功能建议。",
+      "winArm64Notice": "easy-launcher 现已支持 Windows on Arm 平台。<br/>如您正在使用 <b>高通</b> 平台，您可能需要安装 <glpack>OpenGL 兼容包</glpack> 后才能进行游戏。"
     },
     "button": {
       "agree": "同意并继续"

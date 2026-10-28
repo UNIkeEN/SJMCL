@@ -62,7 +62,7 @@
       "settings": {
         "copyright": {
           "title": "Derechos de Autor",
-          "description": "Derechos de Autor © 2024-2026 Equipo SJMCL."
+          "description": "Derechos de Autor © 2024-2026 Equipo easy-launcher."
         },
         "userAgreement": {
           "title": "Acuerdo de Usuario",
@@ -176,7 +176,7 @@
         "title": "Opciones Avanzadas",
         "uuid": {
           "label": "UUID",
-          "placeholder": "(Generado por SJMCL)",
+          "placeholder": "(Generado por easy-launcher)",
           "errorMessage": "Forma de UUID inválida"
         }
       }
@@ -514,7 +514,7 @@
       "type": "Tipo"
     },
     "warning": {
-      "mojang": "El tiempo de ejecución de Java de Mojang será instalado por SJMCL en un directorio específico.",
+      "mojang": "El tiempo de ejecución de Java de Mojang será instalado por easy-launcher en un directorio específico.",
       "oracle": "Descargar desde Oracle puede requerir inicio de sesión."
     }
   },
@@ -827,10 +827,10 @@
     "title": "Configuración de {{name}}"
   },
   "ExtensionSettingsPage": {
-    "alert": "SJMCL no puede controlar el comportamiento de las extensiones de terceros, incluyendo cómo manejan tus datos personales. Solo instala y habilita extensiones de fuentes confiables.",
+    "alert": "easy-launcher no puede controlar el comportamiento de las extensiones de terceros, incluyendo cómo manejan tus datos personales. Solo instala y habilita extensiones de fuentes confiables.",
     "fileDnD": {
-      "title": "Instalar Extensión de SJMCL",
-      "desc": "Instalar archivo de extensión {{fileName}} en SJMCL"
+      "title": "Instalar Extensión de easy-launcher",
+      "desc": "Instalar archivo de extensión {{fileName}} en easy-launcher"
     },
     "installed": "Extensiones Instaladas",
     "menu": {
@@ -1265,14 +1265,14 @@
         "directories": {
           "special": {
             "CURRENT_DIR": "Actual",
-            "APP_DATA_SUBDIR": "Datos de SJMCL",
+            "APP_DATA_SUBDIR": "Datos de easy-launcher",
             "OFFICIAL_DIR": "Lanzador Oficial"
           }
         }
       },
       "deleteDialog": {
         "title": "Eliminar Directorio del Juego",
-        "content": "¿Confirmar la eliminación del directorio del juego {{dirName}}? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
+        "content": "¿Confirmar la eliminación del directorio del juego {{dirName}}? (easy-launcher ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
       },
       "directoryNotExist": "El directorio no existe, por favor agrega la ruta de nuevo."
     },
@@ -1675,7 +1675,7 @@
     },
     "confirmDelete": {
       "title": "Eliminar Java",
-      "description": "¿Confirmar la eliminación de este Java? (SJMCL ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
+      "description": "¿Confirmar la eliminación de este Java? (easy-launcher ya no escaneará este directorio, pero tus archivos permanecerán en el disco.)"
     }
   },
   "LanguageMenu": {
@@ -1692,7 +1692,7 @@
   "LastExitedAbnormallyDialog": {
     "dialog": {
       "title": "La ejecución anterior terminó anormalmente",
-      "content": "SJMCL terminó anormalmente durante la última ejecución. Puedes enviar los registros a la <community>comunidad</community>, o abrir un issue en <github>GitHub</github> para obtener ayuda.",
+      "content": "easy-launcher terminó anormalmente durante la última ejecución. Puedes enviar los registros a la <community>comunidad</community>, o abrir un issue en <github>GitHub</github> para obtener ayuda.",
       "viewLog": "Ver registros"
     }
   },
@@ -1742,7 +1742,7 @@
   "MainLayout": {
     "fileDnD": {
       "title": "Importar Modpack",
-      "desc": "Importar archivo de modpack {{fileName}} a SJMCL"
+      "desc": "Importar archivo de modpack {{fileName}} a easy-launcher"
     }
   },
   "ManageSkinModal": {
@@ -2198,8 +2198,8 @@
   },
   "RestartForUpdateConfirmDialog": {
     "title": "Actualización del lanzador",
-    "body": "La nueva versión ha sido descargada. Reinicia SJMCL para completar la actualización.",
-    "bodyWinInstaller": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará SJMCL y se ejecutará el instalador.",
+    "body": "La nueva versión ha sido descargada. Reinicia easy-launcher para completar la actualización.",
+    "bodyWinInstaller": "La nueva versión ha sido descargada. Al hacer clic en Instalar se cerrará easy-launcher y se ejecutará el instalador.",
     "button": {
       "restart": "Reiniciar",
       "install": "Instalar",
@@ -3167,7 +3167,7 @@
   "UnavailableExePathAlertDialog": {
     "dialog": {
       "title": "Ruta de Ejecución No Segura",
-      "content": "SJMCL se está ejecutando actualmente desde un directorio temporal o no válido. Tu configuración y datos del juego podrían perderse. Por favor, mueve SJMCL a otra ubicación y ejecútalo nuevamente.",
+      "content": "easy-launcher se está ejecutando actualmente desde un directorio temporal o no válido. Tu configuración y datos del juego podrían perderse. Por favor, mueve easy-launcher a otra ubicación y ejecútalo nuevamente.",
       "btnContinue": "Ejecutar de Todas Formas"
     }
   },
@@ -3210,11 +3210,11 @@
       "title": "¡Bienvenido!"
     },
     "body": {
-      "text": "¡Bienvenido a SJMCL! Antes de comenzar, por favor asegúrate de leer y aceptar nuestro <terms>Acuerdo de Usuario</terms>."
+      "text": "¡Bienvenido a easy-launcher! Antes de comenzar, por favor asegúrate de leer y aceptar nuestro <terms>Acuerdo de Usuario</terms>."
     },
     "warning": {
-      "unstableVersion": "Estás usando la versión {{versionLabel}} de SJMCL. Algunas funciones pueden ser inestables o incompletas. Los reportes de errores y solicitudes de funciones son bienvenidos.",
-      "winArm64Notice": "SJMCL ahora es compatible con Windows en Arm. Si estás usando una plataforma <b>QUALCOMM</b>, es posible que necesites instalar el <glpack>OpenGL Compatibility Pack</glpack> antes de iniciar el juego."
+      "unstableVersion": "Estás usando la versión {{versionLabel}} de easy-launcher. Algunas funciones pueden ser inestables o incompletas. Los reportes de errores y solicitudes de funciones son bienvenidos.",
+      "winArm64Notice": "easy-launcher ahora es compatible con Windows en Arm. Si estás usando una plataforma <b>QUALCOMM</b>, es posible que necesites instalar el <glpack>OpenGL Compatibility Pack</glpack> antes de iniciar el juego."
     },
     "button": {
       "agree": "Aceptar"

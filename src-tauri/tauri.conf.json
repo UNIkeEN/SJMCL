@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "SJMCL",
+  "productName": "easy-launcher",
   "version": "1.4.0",
   "identifier": "SJMCL",
   "build": {

@@ -114,7 +114,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   <Link
                     color={`${primaryColor}.500`}
                     onClick={() =>
-                      openUrl("https://github.com/UNIkeEN/SJMCL/issues")
+                      openUrl("https://github.com/Rzfan03/easy-launcher/issues")
                     }
                   />
                 ),

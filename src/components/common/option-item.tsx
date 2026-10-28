@@ -11,7 +11,6 @@ import {
   TextProps,
   VStack,
   Wrap,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,8 +58,6 @@ export const OptionItem: React.FC<OptionItemProps> = ({
   ...boxProps
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-
-  const palettes = useColorModeValue([100, 200, 300], [900, 800, 700]);
 
   const titleLineClampProps: TextProps = {
     noOfLines: maxTitleLines,
@@ -122,11 +119,11 @@ export const OptionItem: React.FC<OptionItemProps> = ({
         onMouseLeave={() => setIsHovered(false)}
         borderRadius="md"
         _hover={{
-          bg: isFullClickZone ? `gray.${palettes[0]}` : "inherit",
+          bg: isFullClickZone ? "surface" : "inherit",
           transition: "background-color 0.2s ease-in-out",
         }}
         _active={{
-          bg: isFullClickZone ? `gray.${palettes[1]}` : "inherit",
+          bg: isFullClickZone ? "surface" : "inherit",
           transition: "background-color 0.1s ease-in-out",
         }}
         cursor={isFullClickZone ? "pointer" : "default"}
