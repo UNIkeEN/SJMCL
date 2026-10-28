@@ -1,40 +1,43 @@
 import { extendTheme } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
 
-// easy-launcher design tokens (docs/design/DESIGN.md)
-// accent dapat diganti user lewat setting primaryColor; ini hanya default lime.
+// easy-launcher design tokens (docs/design/DESIGN-homebar.md): full monochrome,
+// dark-only. Token names kept from the previous theme so existing components
+// retheme automatically.
 export const elTokens = {
   colors: {
-    ground: "#E7F0E4",
-    ink: "#0B1A12",
-    accent: "#C6FF3D",
-    muted: "#45594C",
-    surface: "#CFE3D3",
-    onInk: "#EAF3EC",
-    onInkMuted: "#A9BBAF",
-    // remap the legacy `primaryColor: "blue"` scheme onto the lime accent scale
-    // so every colorScheme={primaryColor} left in the codebase renders lime.
+    ground: "#0A0A0A",
+    ink: "#FAFAFA",
+    accent: "#FAFAFA",
+    muted: "#A3A3A3",
+    surface: "rgba(255,255,255,0.09)",
+    onInk: "#0A0A0A",
+    onInkMuted: "#737373",
+    line: "rgba(255,255,255,0.12)",
+    panel: "rgba(10,10,10,0.6)",
+    // remap the legacy `primaryColor` scheme onto neutral grays so every
+    // colorScheme={primaryColor} left in the codebase renders monochrome.
     blue: {
-      50: "#F7FFE6",
-      100: "#ECFFBD",
-      200: "#DEFF94",
-      300: "#C6FF3D",
-      400: "#B8EE2F",
-      500: "#A5DB21",
-      600: "#8CC512",
-      700: "#6F9B0E",
-      800: "#54700B",
-      900: "#394C07",
+      50: "#141414",
+      100: "#1F1F1F",
+      200: "#2A2A2A",
+      300: "#3A3A3A",
+      400: "#525252",
+      500: "#A3A3A3",
+      600: "#D4D4D4",
+      700: "#E5E5E5",
+      800: "#F5F5F5",
+      900: "#FAFAFA",
     },
   },
   radii: {
-    "el-sm": "14px",
-    "el-md": "20px",
-    "el-lg": "26px",
+    "el-sm": "4px",
+    "el-md": "6px",
+    "el-lg": "6px",
     "el-pill": "999px",
   },
   shadows: {
-    "shadow-hard": "6px 6px 0 #0B1A12",
+    "shadow-hard": "none",
   },
 };
 
@@ -89,8 +92,8 @@ const customGraySolidButtonTheme = {
 
 const chakraExtendTheme = extendTheme({
   ...elTokens,
-  // easy-launcher: light-only until the second theme is designed (docs/design/DESIGN.md).
-  initialColorMode: "light",
+  // easy-launcher: dark-only monochrome theme (docs/design/DESIGN-homebar.md).
+  initialColorMode: "dark",
   useSystemColorMode: false,
   components: {
     Alert: {
@@ -147,22 +150,21 @@ const chakraExtendTheme = extendTheme({
         list: {
           minWidth: "auto",
           py: 1,
-          // easy-launcher (docs/design/DESIGN.md): ground surface, ink border, hard shadow
-          backgroundColor: "ground",
-          border: "2px solid",
-          borderColor: "ink",
+          // easy-launcher (docs/design/DESIGN-homebar.md): dark panel, faint line
+          backgroundColor: "#141414",
+          border: "1px solid",
+          borderColor: "line",
           borderRadius: "el-md",
-          boxShadow: "shadow-hard",
         },
       },
     },
     Modal: {
       baseStyle: {
         dialog: {
-          // easy-launcher (docs/design/DESIGN.md): ground surface, ink border
-          backgroundColor: "ground",
-          border: "2px solid",
-          borderColor: "ink",
+          // easy-launcher (docs/design/DESIGN-homebar.md): dark panel, faint line
+          backgroundColor: "#141414",
+          border: "1px solid",
+          borderColor: "line",
           borderRadius: "el-md",
           header: {
             fontSize: "md",
@@ -203,12 +205,11 @@ const chakraExtendTheme = extendTheme({
     Popover: {
       baseStyle: {
         content: {
-          // easy-launcher (docs/design/DESIGN.md): ground surface, ink border, hard shadow
-          backgroundColor: "ground",
-          border: "2px solid",
-          borderColor: "ink",
+          // easy-launcher (docs/design/DESIGN-homebar.md): dark panel, faint line
+          backgroundColor: "#141414",
+          border: "1px solid",
+          borderColor: "line",
           borderRadius: "el-md",
-          boxShadow: "shadow-hard",
         },
       },
     },

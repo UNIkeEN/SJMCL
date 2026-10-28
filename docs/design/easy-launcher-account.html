@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Akun · easy-launcher</title>
+<style>
+:root{--bg:#0a0a0a;--glass:rgba(10,10,10,.6);--hi:rgba(255,255,255,.09);--line:rgba(255,255,255,.12);--text:#fafafa;--muted:#a3a3a3;--ink:#0a0a0a;--font:"Inter","Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;font:inherit}
+html,body{height:100%}
+body{font-family:var(--font);font-size:14px;line-height:1.4;color:var(--text);background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+.stage{position:fixed;inset:0;overflow:hidden;background:radial-gradient(900px 500px at 50% 120%,rgba(255,255,255,.08),transparent 60%),var(--bg);background-size:cover;background-position:center}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage.gray,.stage.gray video{filter:grayscale(1)}
+.shade{position:fixed;inset:0;pointer-events:none;background:rgba(0,0,0,.3)}
+button{border:0;background:none;color:inherit;cursor:pointer;font-family:var(--font);text-align:left}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.panel{position:fixed;inset:24px;display:grid;grid-template-columns:240px minmax(0,1fr);background:var(--glass);border:1px solid var(--line);border-radius:6px;overflow:hidden;backdrop-filter:blur(24px) saturate(0);-webkit-backdrop-filter:blur(24px) saturate(0)}
+.side{display:flex;flex-direction:column;gap:12px;padding:12px;border-right:1px solid var(--line);min-height:0}
+.back{display:flex;align-items:center;gap:8px;height:36px;padding:0 8px;border-radius:4px;color:var(--muted);font-weight:500;transition:background .15s,color .15s}
+.back:hover{background:var(--hi);color:var(--text)}
+.list{display:flex;flex-direction:column;gap:2px;overflow:auto;flex:1;min-height:0}
+.item{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border-radius:4px;color:var(--muted);transition:background .15s,color .15s}
+.item:hover{color:var(--text)}
+.item[aria-selected="true"]{background:var(--hi);color:var(--text)}
+.item .t{flex:1;min-width:0}.item b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item small{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text);flex:none}
+.content{overflow:auto;padding:8px 40px 40px;min-width:0}
+.inner{max-width:900px;margin:0 auto}
+h2{font-size:20px;font-weight:600;letter-spacing:-.01em;padding:20px 0 8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:64px;padding:10px 0}
+.row + .row{border-top:1px solid var(--line)}
+.row.off{opacity:.4;pointer-events:none}.row[hidden]{display:none}
+.label b{display:block;font-weight:600}.label span{display:block;color:var(--muted);font-size:13px}
+.ctl{display:flex;align-items:center;gap:8px;flex:none;min-width:0}
+.info{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px}
+.empty{color:var(--muted);padding:32px 0}
+select,input[type=text],input[type=search]{height:36px;border:1px solid var(--line);border-radius:4px;background:rgba(255,255,255,.05);color:var(--text);padding:0 12px;min-width:200px;transition:border-color .15s}
+select:hover,input:hover,select:focus,input:focus{border-color:rgba(255,255,255,.35);outline:0}
+select{appearance:none;padding-right:34px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+option{background:#141414;color:var(--text)}
+::placeholder{color:#737373}
+.toggle{width:40px;height:22px;border-radius:4px;background:var(--hi);position:relative;padding:0;flex:none;transition:background .15s}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:2px;background:var(--muted);transition:transform .15s,background .15s}
+.toggle[aria-checked="true"]{background:var(--text)}
+.toggle[aria-checked="true"]::after{transform:translateX(18px);background:var(--ink)}
+input[type=range]{width:200px;accent-color:#fff;cursor:pointer}
+.val{min-width:64px;text-align:right;font-weight:600}
+.btn{height:36px;padding:0 14px;border:1px solid var(--line);border-radius:4px;font-weight:500;white-space:nowrap;transition:background .15s}
+.btn:hover{background:var(--hi)}
+.btn.solid{background:var(--text);color:var(--ink);border-color:transparent;font-weight:600}
+.btn.solid:hover{background:#fff}.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.wide{width:100%;text-align:center}
+.avatar{width:40px;height:40px;border-radius:4px;background:var(--hi) center/cover;display:grid;place-items:center;font-weight:600;flex:none}
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:24px 0 0}
+@media (max-width:720px){.panel{inset:12px;grid-template-columns:1fr;grid-template-rows:minmax(0,auto) minmax(0,1fr)}.side{border-right:0;border-bottom:1px solid var(--line);max-height:40%}.content{padding:0 16px 24px}.row{flex-wrap:wrap}.ctl{width:100%}select,input[type=text],input[type=range]{flex:1;min-width:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.hero{display:flex;align-items:center;gap:16px;padding:20px 0 12px}
+.hero .avatar{width:64px;height:64px;font-size:24px}
+.hero b{display:block;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.hero span{color:var(--muted)}
+.tag{display:inline-block;margin-left:8px;padding:1px 8px;border:1px solid var(--line);border-radius:4px;font-size:13px;color:var(--text)}
+</style></head>
+<body>
+<div class="stage" id="stage"></div><div class="shade"></div>
+<main class="panel" aria-label="Akun">
+  <aside class="side">
+    <button class="back" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Kembali</button>
+    <div class="list" id="list" role="listbox" aria-label="Akun"></div>
+    <button class="btn wide" id="add">Tambah akun</button>
+  </aside>
+  <div class="content"><div class="inner" id="detail"></div></div>
+</main>
+<script>
+(function(){
+
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var emit=function(n,d){document.dispatchEvent(new CustomEvent(n,{detail:d||{}}))};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})}
+function syncVideo(){var v=$("#stage video");if(!v)return;document.hidden?v.pause():v.play().catch(function(){})}
+window.setStageBackground=function(url){var s=$("#stage");s.innerHTML="";s.style.backgroundImage="";if(!url)return;
+  if(/\.(mp4|webm|ogv)(\?|#|$)/i.test(url)){var v=document.createElement("video");v.src=url;v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.setAttribute("aria-hidden","true");
+    if(matchMedia("(prefers-reduced-motion:reduce)").matches)v.autoplay=false;s.appendChild(v);syncVideo()}else{s.style.backgroundImage="url(\""+url+"\")"}};
+window.setStageGrayscale=function(on){$("#stage").classList.toggle("gray",!!on)};
+document.addEventListener("visibilitychange",syncVideo);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&document.activeElement.tagName!=="INPUT")emit("navigate",{page:"home"})});
+function twoStep(btn,label,fn){var t;btn.addEventListener("click",function(){if(btn.dataset.armed){clearTimeout(t);btn.textContent=label;delete btn.dataset.armed;fn();return}
+  btn.dataset.armed=1;btn.textContent="Yakin?";t=setTimeout(function(){btn.textContent=label;delete btn.dataset.armed},3000)})}
+
+var STATUS={valid:"Valid",expired:"Kedaluwarsa",offline:"Tanpa token (offline)"};
+var PROVIDERS=[{id:"microsoft",l:"Microsoft",d:"Akun Minecraft resmi"},{id:"elyby",l:"Ely.by",d:"Akun Ely.by"},{id:"thirdparty",l:"Server autentikasi lain",d:"Masukkan alamat server",input:"https://auth.contoh.net"},{id:"offline",l:"Offline",d:"Tanpa login, hanya nama pemain",input:"Nama pemain"}];
+var A=[{id:"a1",username:"israa299elyby",provider:"Ely.by",uuid:"7f3c1e92-5b0a-4c1d-9a63-2e8d4b7a10f5",status:"valid",avatar:""}],active="a1",sel="a1",uid=2;
+
+function cur(){return A.filter(function(a){return a.id===sel})[0]}
+function list(){
+  $("#list").innerHTML=A.map(function(a){return "<button class=\"item\" role=\"option\" data-id=\""+a.id+"\" aria-selected=\""+(a.id===sel)+"\"><span class=\"avatar\" style=\"width:32px;height:32px;"+(a.avatar?"background-image:url('"+esc(a.avatar)+"')":"")+"\">"+(a.avatar?"":esc((a.username[0]||"").toUpperCase()))+"</span><span class=\"t\"><b>"+esc(a.username)+"</b><small>"+esc(a.provider)+"</small></span>"+(a.id===active?"<span class=\"dot\" title=\"Aktif\"></span>":"")+"</button>"}).join("");
+}
+function detail(){
+  var D=$("#detail"),a=cur();
+  if(sel==="add"||!a){
+    D.innerHTML="<h2>Tambah akun</h2>"+PROVIDERS.map(function(p){return "<div class=\"row\"><div class=\"label\"><b>"+p.l+"</b><span>"+p.d+"</span></div><div class=\"ctl\">"+(p.input?"<input type=\"text\" data-in=\""+p.id+"\" placeholder=\""+p.input+"\" aria-label=\""+p.l+"\">":"")+"<button class=\"btn\" data-add=\""+p.id+"\">"+(p.id==="offline"?"Tambah":"Masuk")+"</button></div></div>"}).join("");
+    $$("[data-add]").forEach(function(b){b.addEventListener("click",function(){var id=b.dataset.add,i=$("[data-in="+id+"]"),v=i?i.value.trim():"";
+      if(i&&!v){i.focus();return}emit("accountadd",{provider:id,value:v})})});
+    return;
+  }
+  var isA=a.id===active;
+  D.innerHTML="<div class=\"hero\"><div class=\"avatar\" style=\""+(a.avatar?"background-image:url('"+esc(a.avatar)+"')":"")+"\">"+(a.avatar?"":esc((a.username[0]||"").toUpperCase()))+"</div><div><b>"+esc(a.username)+(isA?"<span class=\"tag\">Aktif</span>":"")+"</b><span>"+esc(a.provider)+"</span></div></div>"+
+  "<div class=\"row\"><div class=\"label\"><b>UUID</b></div><div class=\"ctl\"><span class=\"info\">"+esc(a.uuid||"-")+"</span><button class=\"btn\" id=\"b-copy\""+(a.uuid?"":" disabled")+">Salin</button></div></div>"+
+  "<div class=\"row\"><div class=\"label\"><b>Token</b></div><div class=\"ctl\"><span class=\"info\">"+esc(STATUS[a.status]||a.status)+"</span><button class=\"btn\" id=\"b-refresh\""+(a.status==="offline"?" disabled":"")+">Segarkan</button></div></div>"+
+  "<div class=\"row\"><div class=\"label\"><b>Skin</b></div><div class=\"ctl\"><button class=\"btn\" id=\"b-skin\">Ubah skin</button></div></div>"+
+  "<div class=\"actions\"><button class=\"btn solid\" id=\"b-active\""+(isA?" disabled":"")+">"+(isA?"Akun aktif":"Jadikan aktif")+"</button><button class=\"btn\" id=\"b-out\">Keluar</button></div>";
+  $("#b-copy").addEventListener("click",function(e){var b=e.target;try{navigator.clipboard.writeText(a.uuid)}catch(x){}b.textContent="Tersalin";setTimeout(function(){b.textContent="Salin"},1500)});
+  $("#b-refresh").addEventListener("click",function(){emit("accountaction",{id:a.id,action:"refresh"})});
+  $("#b-skin").addEventListener("click",function(){emit("accountaction",{id:a.id,action:"change-skin"})});
+  $("#b-active").addEventListener("click",function(){active=a.id;list();detail();emit("accountactivate",{id:a.id})});
+  twoStep($("#b-out"),"Keluar",function(){var id=a.id;A=A.filter(function(x){return x.id!==id});if(active===id)active=A[0]?A[0].id:null;sel=A[0]?A[0].id:"add";list();detail();emit("accountremove",{id:id});if(active)emit("accountactivate",{id:active})});
+}
+$("#list").addEventListener("click",function(e){var b=e.target.closest(".item");if(!b)return;sel=b.dataset.id;list();detail()});
+$("#add").addEventListener("click",function(){sel="add";list();detail()});
+$("#back").addEventListener("click",function(){emit("navigate",{page:"home"})});
+
+// API untuk backend: list item {id, username, provider, uuid, status: valid|expired|offline, avatar}
+window.setAccounts=function(l,activeId){A=l;active=activeId;sel=A.some(function(a){return a.id===sel})?sel:(A[0]?A[0].id:"add");list();detail()};
+list();detail();
+})();
+</script></body></html>

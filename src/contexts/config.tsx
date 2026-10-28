@@ -42,9 +42,11 @@ const LauncherConfigContext = createContext<
 
 // easy-launcher (docs/design/DESIGN.md): light-only theme. Backend still stores
 // other values; frontend locks them until the second theme is designed.
+// easy-launcher (docs/design/DESIGN-homebar.md): dark-only monochrome theme.
+// Backend still stores other values; frontend locks them.
 const themeOverrides = {
-  colorMode: "light",
-  // accent is fixed to lime; the stored primaryColor is ignored on the frontend
+  colorMode: "dark",
+  // accent is fixed (monochrome); the stored primaryColor is ignored on the frontend
   primaryColor: "blue",
 } as const;
 const withThemeOverrides = (config: LauncherConfig): LauncherConfig => ({

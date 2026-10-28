@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Game · easy-launcher</title>
+<style>
+:root{--bg:#0a0a0a;--glass:rgba(10,10,10,.6);--hi:rgba(255,255,255,.09);--line:rgba(255,255,255,.12);--text:#fafafa;--muted:#a3a3a3;--ink:#0a0a0a;--font:"Inter","Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;font:inherit}
+html,body{height:100%}
+body{font-family:var(--font);font-size:14px;line-height:1.4;color:var(--text);background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+.stage{position:fixed;inset:0;overflow:hidden;background:radial-gradient(900px 500px at 50% 120%,rgba(255,255,255,.08),transparent 60%),var(--bg);background-size:cover;background-position:center}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.stage.gray,.stage.gray video{filter:grayscale(1)}
+.shade{position:fixed;inset:0;pointer-events:none;background:rgba(0,0,0,.3)}
+button{border:0;background:none;color:inherit;cursor:pointer;font-family:var(--font);text-align:left}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.panel{position:fixed;inset:24px;display:grid;grid-template-columns:240px minmax(0,1fr);background:var(--glass);border:1px solid var(--line);border-radius:6px;overflow:hidden;backdrop-filter:blur(24px) saturate(0);-webkit-backdrop-filter:blur(24px) saturate(0)}
+.side{display:flex;flex-direction:column;gap:12px;padding:12px;border-right:1px solid var(--line);min-height:0}
+.back{display:flex;align-items:center;gap:8px;height:36px;padding:0 8px;border-radius:4px;color:var(--muted);font-weight:500;transition:background .15s,color .15s}
+.back:hover{background:var(--hi);color:var(--text)}
+.list{display:flex;flex-direction:column;gap:2px;overflow:auto;flex:1;min-height:0}
+.item{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border-radius:4px;color:var(--muted);transition:background .15s,color .15s}
+.item:hover{color:var(--text)}
+.item[aria-selected="true"]{background:var(--hi);color:var(--text)}
+.item .t{flex:1;min-width:0}.item b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item small{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text);flex:none}
+.content{overflow:auto;padding:8px 40px 40px;min-width:0}
+.inner{max-width:900px;margin:0 auto}
+h2{font-size:20px;font-weight:600;letter-spacing:-.01em;padding:20px 0 8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:64px;padding:10px 0}
+.row + .row{border-top:1px solid var(--line)}
+.row.off{opacity:.4;pointer-events:none}.row[hidden]{display:none}
+.label b{display:block;font-weight:600}.label span{display:block;color:var(--muted);font-size:13px}
+.ctl{display:flex;align-items:center;gap:8px;flex:none;min-width:0}
+.info{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px}
+.empty{color:var(--muted);padding:32px 0}
+select,input[type=text],input[type=search]{height:36px;border:1px solid var(--line);border-radius:4px;background:rgba(255,255,255,.05);color:var(--text);padding:0 12px;min-width:200px;transition:border-color .15s}
+select:hover,input:hover,select:focus,input:focus{border-color:rgba(255,255,255,.35);outline:0}
+select{appearance:none;padding-right:34px;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+option{background:#141414;color:var(--text)}
+::placeholder{color:#737373}
+.toggle{width:40px;height:22px;border-radius:4px;background:var(--hi);position:relative;padding:0;flex:none;transition:background .15s}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:2px;background:var(--muted);transition:transform .15s,background .15s}
+.toggle[aria-checked="true"]{background:var(--text)}
+.toggle[aria-checked="true"]::after{transform:translateX(18px);background:var(--ink)}
+input[type=range]{width:200px;accent-color:#fff;cursor:pointer}
+.val{min-width:64px;text-align:right;font-weight:600}
+.btn{height:36px;padding:0 14px;border:1px solid var(--line);border-radius:4px;font-weight:500;white-space:nowrap;transition:background .15s}
+.btn:hover{background:var(--hi)}
+.btn.solid{background:var(--text);color:var(--ink);border-color:transparent;font-weight:600}
+.btn.solid:hover{background:#fff}.btn[disabled]{opacity:.4;pointer-events:none}
+.btn.wide{width:100%;text-align:center}
+.avatar{width:40px;height:40px;border-radius:4px;background:var(--hi) center/cover;display:grid;place-items:center;font-weight:600;flex:none}
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:24px 0 0}
+@media (max-width:720px){.panel{inset:12px;grid-template-columns:1fr;grid-template-rows:minmax(0,auto) minmax(0,1fr)}.side{border-right:0;border-bottom:1px solid var(--line);max-height:40%}.content{padding:0 16px 24px}.row{flex-wrap:wrap}.ctl{width:100%}select,input[type=text],input[type=range]{flex:1;min-width:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;padding:2px;gap:2px}
+.seg button{height:30px;padding:0 12px;border-radius:2px;color:var(--muted);font-weight:500;transition:background .15s,color .15s}
+.seg button:hover{color:var(--text)}.seg button[aria-pressed="true"]{background:var(--text);color:var(--ink);font-weight:600}
+.sub{color:var(--muted);font-size:13px}
+.search{width:100%;min-width:0}
+</style></head>
+<body>
+<div class="stage" id="stage"></div><div class="shade"></div>
+<main class="panel" aria-label="Game">
+  <aside class="side">
+    <button class="back" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Kembali</button>
+    <input class="search" id="search" type="search" placeholder="Cari profil" aria-label="Cari profil">
+    <div class="list" id="list" role="listbox" aria-label="Profil"></div>
+    <button class="btn wide" id="new">Profil baru</button>
+  </aside>
+  <div class="content"><div class="inner" id="editor"></div></div>
+</main>
+<script>
+(function(){
+
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var emit=function(n,d){document.dispatchEvent(new CustomEvent(n,{detail:d||{}}))};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]})}
+function syncVideo(){var v=$("#stage video");if(!v)return;document.hidden?v.pause():v.play().catch(function(){})}
+window.setStageBackground=function(url){var s=$("#stage");s.innerHTML="";s.style.backgroundImage="";if(!url)return;
+  if(/\.(mp4|webm|ogv)(\?|#|$)/i.test(url)){var v=document.createElement("video");v.src=url;v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.setAttribute("aria-hidden","true");
+    if(matchMedia("(prefers-reduced-motion:reduce)").matches)v.autoplay=false;s.appendChild(v);syncVideo()}else{s.style.backgroundImage="url(\""+url+"\")"}};
+window.setStageGrayscale=function(on){$("#stage").classList.toggle("gray",!!on)};
+document.addEventListener("visibilitychange",syncVideo);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&document.activeElement.tagName!=="INPUT")emit("navigate",{page:"home"})});
+function twoStep(btn,label,fn){var t;btn.addEventListener("click",function(){if(btn.dataset.armed){clearTimeout(t);btn.textContent=label;delete btn.dataset.armed;fn();return}
+  btn.dataset.armed=1;btn.textContent="Yakin?";t=setTimeout(function(){btn.textContent=label;delete btn.dataset.armed},3000)})}
+
+
+var VERS={minecraft:[{id:"1.21.4",type:"release"},{id:"1.21.3",type:"release"},{id:"1.21.1",type:"release"},{id:"1.20.6",type:"release"},{id:"1.20.4",type:"release"},{id:"1.20.1",type:"release"},{id:"1.19.4",type:"release"},{id:"1.18.2",type:"release"},{id:"1.16.5",type:"release"},{id:"1.12.2",type:"release"},{id:"1.8.9",type:"release"},{id:"25w10a",type:"snapshot"},{id:"24w44a",type:"snapshot"}],
+  loaders:{fabric:["0.16.9","0.16.7","0.16.5"],forge:["52.0.0","51.0.33","50.1.0"],neoforge:["21.3.5","21.1.77"],quilt:["0.27.0","0.26.4"]}};
+var LOADERS=[["vanilla","Vanilla"],["fabric","Fabric"],["forge","Forge"],["neoforge","NeoForge"],["quilt","Quilt"]];
+var fmtRam=function(v){return v>=1024?(v/1024).toFixed(v%1024?1:0)+" GB":v+" MB"};
+var P=[{id:"p1",name:"Survival Santai",mc:"1.21.3",loader:"fabric",loaderVer:"0.16.9",java:"auto",ramAuto:true,ram:4096,args:"",installed:true}],active="p1",sel="p1",snap=false,uid=2;
+
+function cur(){return P.filter(function(p){return p.id===sel})[0]}
+function label(p){return p.mc+(p.loader!=="vanilla"?" · "+p.loader[0].toUpperCase()+p.loader.slice(1):"")}
+function list(){
+  var q=$("#search").value.trim().toLowerCase();
+  $("#list").innerHTML=P.filter(function(p){return !q||(p.name+" "+label(p)).toLowerCase().indexOf(q)>-1}).map(function(p){
+    return '<button class="item" role="option" data-id="'+p.id+'" aria-selected="'+(p.id===sel)+'"><span class="t"><b>'+esc(p.name)+'</b><small>'+esc(label(p))+'</small></span>'+(p.id===active?'<span class="dot" title="Aktif"></span>':'')+'</button>'}).join("");
+}
+function opts(a,v){return a.map(function(o){o=typeof o==="string"?{id:o}:o;return '<option value="'+esc(o.id)+'"'+(o.id===v?' selected':'')+'>'+esc(o.id)+'</option>'}).join("")}
+function mcOpts(p){var a=VERS.minecraft.filter(function(v){return snap||v.type==="release"||v.id===p.mc});return opts(a,p.mc)}
+function editor(){
+  var p=cur(),E=$("#editor");
+  if(!p){E.innerHTML='<p class="empty" style="padding:48px 0">Belum ada profil. Buat profil baru untuk mulai bermain.</p>';return}
+  var lv=VERS.loaders[p.loader]||[];
+  E.innerHTML='<h2>'+esc(p.name)+'</h2>'+
+  '<div class="row"><div class="label"><b>Nama</b></div><div class="ctl"><input type="text" id="f-name" value="'+esc(p.name)+'" aria-label="Nama"></div></div>'+
+  '<div class="row"><div class="label"><b>Versi Minecraft</b></div><div class="ctl"><span class="sub">Snapshot</span><button class="toggle" id="f-snap" role="switch" aria-checked="'+snap+'" aria-label="Tampilkan snapshot"></button><select id="f-mc" aria-label="Versi Minecraft">'+mcOpts(p)+'</select></div></div>'+
+  '<div class="row"><div class="label"><b>Loader</b></div><div class="ctl"><div class="seg" id="f-loader" role="group" aria-label="Loader">'+LOADERS.map(function(l){return '<button data-l="'+l[0]+'" aria-pressed="'+(l[0]===p.loader)+'">'+l[1]+'</button>'}).join("")+'</div></div></div>'+
+  (p.loader!=="vanilla"?'<div class="row"><div class="label"><b>Versi loader</b></div><div class="ctl"><select id="f-lv" aria-label="Versi loader">'+opts(lv,p.loaderVer)+'</select></div></div>':'')+
+  '<div class="row"><div class="label"><b>Java</b></div><div class="ctl"><select id="f-java" aria-label="Java">'+[["auto","Otomatis"],["21","Java 21"],["17","Java 17"],["8","Java 8"]].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===p.java?' selected':'')+'>'+o[1]+'</option>'}).join("")+'</select></div></div>'+
+  '<div class="row"><div class="label"><b>Ikuti memori global</b><span>Matikan untuk memakai memori khusus profil ini</span></div><div class="ctl"><button class="toggle" id="f-ramauto" role="switch" aria-checked="'+p.ramAuto+'" aria-label="Ikuti memori global"></button></div></div>'+
+  '<div class="row'+(p.ramAuto?' off':'')+'"><div class="label"><b>Memori</b></div><div class="ctl"><input type="range" id="f-ram" min="512" max="16384" step="512" value="'+p.ram+'" aria-label="Memori"><span class="val" id="o-ram">'+fmtRam(p.ram)+'</span></div></div>'+
+  '<div class="row"><div class="label"><b>Argumen JVM</b></div><div class="ctl"><input type="text" id="f-args" value="'+esc(p.args)+'" placeholder="-XX:+UseG1GC" aria-label="Argumen JVM"></div></div>'+
+  '<div class="row"><div class="label"><b>Status</b></div><div class="ctl"><span class="info">'+(p.installed?'Terpasang':'Belum terpasang')+'</span><button class="btn" id="b-install">'+(p.installed?'Pasang ulang':'Pasang')+'</button><button class="btn" id="b-folder">Buka folder</button></div></div>'+
+  '<div class="actions"><button class="btn solid" id="b-active"'+(p.id===active?' disabled':'')+'>'+(p.id===active?'Profil aktif':'Jadikan aktif')+'</button><button class="btn" id="b-dup">Duplikat</button><button class="btn" id="b-del">Hapus</button></div>';
+  bind(p);
+}
+function change(p,patch){Object.keys(patch).forEach(function(k){p[k]=patch[k]});
+  if("mc" in patch||"loader" in patch||"loaderVer" in patch)p.installed=false;
+  list();emit("profilechange",JSON.parse(JSON.stringify(p)))}
+function bind(p){
+  var n=$("#f-name");n.addEventListener("change",function(){if(!n.value.trim()){n.value=p.name;return}change(p,{name:n.value.trim()});editor()});
+  $("#f-snap").addEventListener("click",function(){snap=!snap;editor()});
+  $("#f-mc").addEventListener("change",function(e){change(p,{mc:e.target.value});editor()});
+  $$("#f-loader button").forEach(function(b){b.addEventListener("click",function(){var l=b.dataset.l,lv=VERS.loaders[l]||[];change(p,{loader:l,loaderVer:lv[0]||""});editor()})});
+  var lv=$("#f-lv");if(lv)lv.addEventListener("change",function(){change(p,{loaderVer:lv.value});editor()});
+  $("#f-java").addEventListener("change",function(e){change(p,{java:e.target.value})});
+  $("#f-ramauto").addEventListener("click",function(){change(p,{ramAuto:!p.ramAuto});editor()});
+  var r=$("#f-ram");r.addEventListener("input",function(){$("#o-ram").textContent=fmtRam(+r.value)});r.addEventListener("change",function(){change(p,{ram:+r.value})});
+  $("#f-args").addEventListener("change",function(e){change(p,{args:e.target.value})});
+  $("#b-install").addEventListener("click",function(){emit("profileaction",{id:p.id,action:"install"})});
+  $("#b-folder").addEventListener("click",function(){emit("profileaction",{id:p.id,action:"open-folder"})});
+  $("#b-active").addEventListener("click",function(){active=p.id;list();editor();emit("profileactivate",{id:p.id})});
+  $("#b-dup").addEventListener("click",function(){var c=JSON.parse(JSON.stringify(p));c.id="p"+(uid++);c.name=p.name+" (salinan)";c.installed=false;P.push(c);sel=c.id;list();editor();emit("profilecreate",c)});
+  twoStep($("#b-del"),"Hapus",function(){var id=p.id;P=P.filter(function(x){return x.id!==id});if(active===id)active=P[0]?P[0].id:null;sel=P[0]?P[0].id:null;list();editor();emit("profiledelete",{id:id});if(active)emit("profileactivate",{id:active})});
+}
+$("#list").addEventListener("click",function(e){var b=e.target.closest(".item");if(!b)return;sel=b.dataset.id;list();editor()});
+$("#search").addEventListener("input",list);
+$("#new").addEventListener("click",function(){var m=VERS.minecraft.filter(function(v){return v.type==="release"})[0].id;
+  var p={id:"p"+(uid++),name:"Profil baru",mc:m,loader:"vanilla",loaderVer:"",java:"auto",ramAuto:true,ram:4096,args:"",installed:false};
+  P.push(p);sel=p.id;if(!active)active=p.id;list();editor();emit("profilecreate",JSON.parse(JSON.stringify(p)));var f=$("#f-name");f.focus();f.select()});
+$("#back").addEventListener("click",function(){emit("navigate",{page:"home"})});
+
+// API untuk backend
+window.setVersions=function(v){VERS=v;editor()};
+window.setProfiles=function(l,activeId){P=l;active=activeId;sel=P.some(function(p){return p.id===sel})?sel:(P[0]&&P[0].id);list();editor()};
+window.getProfiles=function(){return JSON.parse(JSON.stringify(P))};
+list();editor();
+})();
+</script></body></html>
