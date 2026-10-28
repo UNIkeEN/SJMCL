@@ -1,5 +1,4 @@
 import { extendTheme } from "@chakra-ui/react";
-import { mode } from "@chakra-ui/theme-tools";
 
 // easy-launcher design tokens (docs/design/DESIGN-homebar.md): full monochrome,
 // dark-only. Token names kept from the previous theme so existing components
@@ -42,50 +41,58 @@ export const elTokens = {
 };
 
 const subtleButtonVariant = (props: any) => ({
-  bg: mode(`${props.colorScheme}.100`, `${props.colorScheme}.700`)(props),
-  color: mode(`${props.colorScheme}.700`, `${props.colorScheme}.100`)(props),
+  // easy-launcher (docs/design/DESIGN-homebar.md): monochrome controls —
+  // dark theme only, no per-color-mode variants.
+  bg: "rgba(255,255,255,0.09)",
+  color: "#FAFAFA",
   _hover: {
-    bg: mode(`${props.colorScheme}.200`, `${props.colorScheme}.600`)(props),
+    bg: "rgba(255,255,255,0.14)",
   },
   _active: {
-    bg: mode(`${props.colorScheme}.300`, `${props.colorScheme}.500`)(props),
+    bg: "rgba(255,255,255,0.18)",
   },
   _disabled: {
-    bg: mode(`${props.colorScheme}.100`, `${props.colorScheme}.700`)(props),
-    color: mode(`${props.colorScheme}.500`, `${props.colorScheme}.300`)(props),
+    bg: "rgba(255,255,255,0.09)",
+    color: "#525252",
     cursor: "not-allowed",
     opacity: 0.6,
     _hover: {
-      bg: mode(
-        `${props.colorScheme}.100 !important`,
-        `${props.colorScheme}.700 !important`
-      )(props),
+      bg: "rgba(255,255,255,0.09) !important",
     },
     _active: {
-      bg: mode(
-        `${props.colorScheme}.100 !important`,
-        `${props.colorScheme}.700 !important`
-      )(props),
+      bg: "rgba(255,255,255,0.09) !important",
     },
   },
 });
 
+// easy-launcher (docs/design/DESIGN-homebar.md): monochrome ghost button —
+// bright text on transparent, faint white wash on hover.
+const ghostButtonVariant = {
+  color: "#FAFAFA",
+  _hover: { bg: "rgba(255,255,255,0.09)", color: "#FAFAFA" },
+  _active: { bg: "rgba(255,255,255,0.14)", color: "#FAFAFA" },
+  _disabled: {
+    color: "#525252",
+    cursor: "not-allowed",
+  },
+};
+
 const customGraySolidButtonTheme = {
-  bg: "gray.600",
-  color: "white",
-  _hover: { bg: "gray.700" },
-  _active: { bg: "gray.800" },
+  bg: "#FAFAFA",
+  color: "#0A0A0A",
+  _hover: { bg: "#FFFFFF" },
+  _active: { bg: "#FFFFFF" },
   _focus: { boxShadow: "none" },
   _disabled: {
-    bg: "gray.500",
-    color: "gray.300",
+    bg: "#525252",
+    color: "#A3A3A3",
     cursor: "not-allowed",
     opacity: 0.6,
     _hover: {
-      bg: "gray.500 !important",
+      bg: "#525252 !important",
     },
     _active: {
-      bg: "gray.500 !important",
+      bg: "#525252 !important",
     },
   },
 };
@@ -122,6 +129,7 @@ const chakraExtendTheme = extendTheme({
       },
       variants: {
         subtle: subtleButtonVariant,
+        ghost: ghostButtonVariant,
         solid: (props: any) => {
           return props.colorScheme === "gray" ? customGraySolidButtonTheme : {};
         },

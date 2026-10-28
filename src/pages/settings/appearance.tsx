@@ -101,6 +101,10 @@ const AppearanceSettingsPage = () => {
           name: t("General.dialog.filterName.image"),
           extensions: ["jpg", "jpeg", "png", "gif", "webp"],
         },
+        {
+          name: "Video",
+          extensions: ["mp4", "webm", "ogv"],
+        },
       ],
     })
       .then((selectedPath) => {

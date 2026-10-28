@@ -4,6 +4,7 @@ import {
   Center,
   Flex,
   HStack,
+  IconButton,
   Link,
   Text,
   useColorModeValue,
@@ -21,6 +22,7 @@ import {
   LuLanguages,
   LuPackagePlus,
   LuScrollText,
+  LuX,
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
@@ -49,6 +51,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const { config, update, bgImageSrc, isBgDarken } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const { openGenericConfirmDialog } = useSharedModals();
+
+  // live background (docs/design/DESIGN-homebar.md): video files render as a
+  // fullscreen muted looping <video>; anything else stays a static bg image.
+  const isBgVideo = /\.(mp4|webm|ogv)(\?|#|$)/i.test(bgImageSrc);
 
   const isStartupFlowStarted = useRef(false);
 
@@ -287,7 +293,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     <Flex
       direction="column"
       h="100vh"
-      bgImg={`url('${bgImageSrc}')`}
+      bgImg={isBgVideo ? undefined : `url('${bgImageSrc}')`}
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
@@ -297,6 +303,29 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       overflow="hidden"
       style={getGlobalExtraStyle(config)}
     >
+      {isBgVideo && (
+        <>
+          <video
+            src={bgImageSrc}
+            autoPlay
+            loop
+            muted
+            playsInline
+            aria-hidden="true"
+            style={{
+              position: "fixed",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              zIndex: -1,
+            }}
+          />
+          {isBgDarken && (
+            <Box position="fixed" inset={0} bg="rgba(0,0,0,0.45)" zIndex={-1} />
+          )}
+        </>
+      )}
       <WindowTitlebar />
       <Box
         position="relative"
@@ -312,22 +341,44 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <>{children}</>
           ) : (
             // easy-launcher content panel (docs/design/DESIGN-settings.md):
-            // glass panel filling the window, faint line, no accent
-            <AdvancedCard
-              level="back"
+            // glass panel filling the window, faint line, no accent.
+            // The X button closes the page back to the clean home stage.
+            <Box
+              position="relative"
               flex="1"
-              overflow="auto"
+              minH={0}
               mt={1}
               mb="24px"
               mx="24px"
-              border="1px solid"
-              borderColor="line"
-              borderRadius="el-md"
-              backdropFilter="blur(24px) saturate(0)"
-              style={{ WebkitBackdropFilter: "blur(24px) saturate(0)" }}
             >
-              {children}
-            </AdvancedCard>
+              <AdvancedCard
+                level="back"
+                h="100%"
+                overflow="auto"
+                border="1px solid"
+                borderColor="line"
+                borderRadius="el-md"
+                backdropFilter="blur(24px) saturate(0)"
+                style={{ WebkitBackdropFilter: "blur(24px) saturate(0)" }}
+              >
+                {children}
+              </AdvancedCard>
+              <IconButton
+                aria-label={t("General.close")}
+                icon={<LuX />}
+                position="absolute"
+                top={3}
+                right={3}
+                size="sm"
+                bg="rgba(10,10,10,0.6)"
+                border="1px solid"
+                borderColor="line"
+                color="muted"
+                borderRadius="el-sm"
+                _hover={{ bg: "rgba(255,255,255,0.1)", color: "#FAFAFA" }}
+                onClick={() => router.push("/launch")}
+              />
+            </Box>
           )}
 
           <WelcomeAndTermsModal
