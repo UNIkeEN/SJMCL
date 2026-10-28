@@ -101,6 +101,12 @@ SJMCL 的扩展系统允许开发者在不修改核心代码的情况下添加�
 
 **权衡：** 本准则倾向于"谨慎优于速度"。对于简单任务，请自行判断。
 
+### 0. 运行时规则（Runtime Rules）
+
+- **NEVER** run the app, dev server, or builds: `pnpm tauri dev`, `pnpm next dev`, `pnpm build`, `next build`, `tauri build` are all forbidden. Compiling is heavy — the user runs the project manually.
+- Allowed static checks only: `eslint`, `tsc --noEmit`, `rustfmt --check`, `cargo check` (sparingly).
+- For visual verification, ask the user to run the app and share screenshots. Do not try to bootstrap your own preview of the running app.
+
 ### 1. 先思考再编码
 
 **"不要默认假设。不要隐藏困惑。呈现权衡。"**

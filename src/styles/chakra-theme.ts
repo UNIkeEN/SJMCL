@@ -1,6 +1,29 @@
 import { extendTheme } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
 
+// easy-launcher design tokens (docs/design/DESIGN.md)
+// accent dapat diganti user lewat setting primaryColor; ini hanya default lime.
+export const elTokens = {
+  colors: {
+    ground: "#E7F0E4",
+    ink: "#0B1A12",
+    accent: "#C6FF3D",
+    muted: "#45594C",
+    surface: "#CFE3D3",
+    onInk: "#EAF3EC",
+    onInkMuted: "#A9BBAF",
+  },
+  radii: {
+    "el-sm": "14px",
+    "el-md": "20px",
+    "el-lg": "26px",
+    "el-pill": "999px",
+  },
+  shadows: {
+    "shadow-hard": "6px 6px 0 #0B1A12",
+  },
+};
+
 const subtleButtonVariant = (props: any) => ({
   bg: mode(`${props.colorScheme}.100`, `${props.colorScheme}.700`)(props),
   color: mode(`${props.colorScheme}.700`, `${props.colorScheme}.100`)(props),
@@ -51,6 +74,7 @@ const customGraySolidButtonTheme = {
 };
 
 const chakraExtendTheme = extendTheme({
+  ...elTokens,
   initialColorMode: "dark",
   useSystemColorMode: false,
   components: {

@@ -40,6 +40,21 @@ const LauncherConfigContext = createContext<
   LauncherConfigContextType | undefined
 >(undefined);
 
+// easy-launcher (docs/design/DESIGN.md): global theme overrides while the new
+// design rolls out — light-only theme, liquid glass disabled (perf).
+// Rebuild pages one by one, then drop this override when every page is converted.
+const themeOverrides = {
+  colorMode: "light",
+  useLiquidGlassDesign: false,
+} as const;
+const withThemeOverrides = (config: LauncherConfig): LauncherConfig => ({
+  ...config,
+  appearance: {
+    ...config.appearance,
+    theme: { ...config.appearance.theme, ...themeOverrides },
+  },
+});
+
 export const LauncherConfigContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -63,7 +78,7 @@ export const LauncherConfigContextProvider: React.FC<{
   const handleRetrieveLauncherConfig = useCallback(() => {
     ConfigService.retrieveLauncherConfig().then((response) => {
       if (response.status === "success") {
-        setConfig(response.data);
+        setConfig(withThemeOverrides(response.data));
       } else {
         toast({
           title: response.message,
@@ -95,7 +110,7 @@ export const LauncherConfigContextProvider: React.FC<{
     setConfig((prevConfig) => {
       const newConfig = { ...prevConfig };
       updateByKeyPath(newConfig, path, JSON.parse(value));
-      return newConfig;
+      return withThemeOverrides(newConfig);
     });
   }, []);
 
