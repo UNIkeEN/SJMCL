@@ -305,6 +305,8 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     >
       {isBgVideo && (
         <>
+          {/* normal stacking (no negative z-index): WebKit paints negative-z
+              children *below* the root element's own bg, hiding the video */}
           <video
             src={bgImageSrc}
             autoPlay
@@ -318,11 +320,10 @@ const MainLayout = ({ children }: MainLayoutProps) => {
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              zIndex: -1,
             }}
           />
           {isBgDarken && (
-            <Box position="fixed" inset={0} bg="rgba(0,0,0,0.45)" zIndex={-1} />
+            <Box position="fixed" inset={0} bg="rgba(0,0,0,0.45)" />
           )}
         </>
       )}
