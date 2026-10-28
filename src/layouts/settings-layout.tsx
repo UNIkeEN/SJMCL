@@ -47,23 +47,23 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
     settingsPaths.find((path) => router.pathname.startsWith(path)) || "";
 
   return (
-    <Flex gap={5} h="100%" align="flex-start">
-      {/* easy-launcher sidebar (docs/design/DESIGN.md): minimal ground card, ink border */}
+    <Flex h="100%" align="stretch">
+      {/* easy-launcher settings sidebar (docs/design/DESIGN-settings.md):
+          240px column separated from content by a 1px line, monochrome tabs */}
       <Flex
         direction="column"
         as="nav"
-        w="220px"
+        w="240px"
         flexShrink={0}
         className="content-full-y"
-        backgroundColor="ground"
-        border="2px solid"
-        borderColor="ink"
-        borderRadius="el-md"
+        borderRight="1px solid"
+        borderColor="line"
         p={3}
+        pt={4}
         overflowY="auto"
       >
         {settingsDomainList.map((group, index) => (
-          <Box key={index} mb={index < settingsDomainList.length - 1 ? 5 : 0}>
+          <Box key={index} mb={index < settingsDomainList.length - 1 ? 3 : 0}>
             <NavMenu
               selectedKeys={[selectedKey]}
               onClick={(value) => router.push(value)}
@@ -83,8 +83,8 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
                     </Text>
                     {item.key === "about" && newerVersion.version && (
                       <Badge
-                        bg="accent"
-                        color="ink"
+                        bg="ink"
+                        color="onInk"
                         borderRadius="el-pill"
                         ml="auto"
                         flexShrink={0}

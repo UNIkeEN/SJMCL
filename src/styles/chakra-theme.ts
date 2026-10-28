@@ -129,7 +129,7 @@ const chakraExtendTheme = extendTheme({
     },
     Divider: {
       baseStyle: {
-        borderColor: "var(--chakra-colors-chakra-border-color)", // prevent overwrite
+        borderColor: "line",
       },
     },
     FormLabel: {

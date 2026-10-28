@@ -2,7 +2,6 @@ import {
   Box,
   BoxProps,
   Button,
-  Card,
   Divider,
   Flex,
   HStack,
@@ -16,7 +15,6 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Section, SectionProps } from "@/components/common/section";
 import { useLauncherConfig } from "@/contexts/config";
-import cardStyles from "@/styles/card.module.css";
 
 export interface OptionItemProps extends Omit<BoxProps, "title"> {
   prefixElement?: React.ReactNode;
@@ -180,7 +178,6 @@ export const OptionItem: React.FC<OptionItemProps> = ({
 
 export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   items,
-  withInCard = true,
   withDivider = true,
   maxFirstVisibleItems,
   enableShowAll = true,
@@ -252,13 +249,9 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   return (
     <Section {...props}>
       {items.length > 0 &&
-        (withInCard ? (
-          <Card className={cardStyles["card-front"]} py={2.5}>
-            {renderItems()}
-          </Card>
-        ) : (
-          renderItems()
-        ))}
+        // easy-launcher (docs/design/DESIGN-settings.md): rows separated by 1px
+        // lines — no nested cards, monochrome.
+        renderItems()}
     </Section>
   );
 };

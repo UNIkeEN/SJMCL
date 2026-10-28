@@ -5,8 +5,8 @@ interface SelectableButtonProps extends ButtonProps {
   isSelected?: boolean;
 }
 
-// easy-launcher (docs/design/DESIGN.md): selected = accent pill with ink border;
-// text color is left untouched, matching the head-navbar active-tab behavior.
+// easy-launcher (docs/design/DESIGN-settings.md): selected = 9% white bg,
+// text brightens; monochrome, no accent.
 const SelectableButton: React.FC<SelectableButtonProps> = ({
   isSelected = false,
   children,
@@ -15,17 +15,15 @@ const SelectableButton: React.FC<SelectableButtonProps> = ({
   return (
     <Button
       variant="ghost"
-      bg={isSelected ? "accent" : "transparent"}
-      color="ink"
-      border="2px solid"
-      borderColor={isSelected ? "ink" : "transparent"}
+      bg={isSelected ? "surface" : "transparent"}
+      color={isSelected ? "ink" : "muted"}
       borderRadius="el-sm"
-      fontWeight={isSelected ? "600" : "normal"}
+      fontWeight={isSelected ? "600" : "500"}
       textAlign="left"
       justifyContent="flex-start"
       overflow="hidden"
-      _hover={{ bg: isSelected ? "accent" : "surface" }}
-      _active={{ bg: "accent" }}
+      _hover={{ bg: isSelected ? "surface" : "transparent", color: "ink" }}
+      _active={{ bg: "surface" }}
       {...props}
     >
       {children}
