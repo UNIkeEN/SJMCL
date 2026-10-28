@@ -1750,6 +1750,9 @@
     "Text": {
       "noSelectedPlayer": "尚未選擇戲者",
       "noSelectedGame": "尚未選擇戲例"
+    },
+    "stats": {
+      "loader": "載入器"
     }
   },
   "LaunchProcessModal": {

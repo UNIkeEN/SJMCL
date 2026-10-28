@@ -1750,6 +1750,9 @@
     "Text": {
       "noSelectedPlayer": "Ningún jugador seleccionado",
       "noSelectedGame": "Ninguna instancia del juego seleccionada"
+    },
+    "stats": {
+      "loader": "Cargador"
     }
   },
   "LaunchProcessModal": {

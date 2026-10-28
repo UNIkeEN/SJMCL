@@ -7,7 +7,6 @@ import {
   Text,
   Tooltip,
   useBreakpointValue,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import {
@@ -32,7 +31,9 @@ import {
 import AdvancedCard from "@/components/common/advanced-card";
 import { DownloadIndicator } from "@/components/download-indicator";
 import { TitleShort } from "@/components/logo-title";
+import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
+import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { useTaskContext } from "@/contexts/task";
 import styles from "@/styles/head-navbar.module.css";
@@ -62,24 +63,12 @@ const HeadNavBar = () => {
   const navListRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // tab color settings (we do not use chakra's Tab here because lack of dark style support and indicator animation)
-  const unselectTabColor = useColorModeValue("gray.600", "gray.400");
-  const selectedTextColor = useColorModeValue(
-    `${primaryColor}.700`,
-    `${primaryColor}.100`
-  );
-  const indicatorBg = useColorModeValue(
-    `var(--chakra-colors-${primaryColor}-100)`,
-    `var(--chakra-colors-${primaryColor}-700)`
-  );
-  const indicatorBorder = useColorModeValue(
-    `var(--chakra-colors-${primaryColor}-200)`,
-    `var(--chakra-colors-${primaryColor}-500)`
-  );
-  const hoverBg = useColorModeValue(
-    `var(--chakra-colors-${primaryColor}-50)`,
-    "rgba(255, 255, 255, 0.08)"
-  );
+  // easy-launcher tokens (docs/design/DESIGN.md): light-only design, no dark variants.
+  const unselectTabColor = "muted";
+  const selectedTextColor = "accent";
+  const indicatorBg = "ink";
+  const indicatorBorder = "ink";
+  const hoverBg = "var(--chakra-colors-surface, #CFE3D3)";
 
   const navList = useMemo<
     Array<{
@@ -200,12 +189,19 @@ const HeadNavBar = () => {
   };
 
   return (
-    <Flex justify="center" p={4}>
+    <Flex
+      justify="center"
+      p={4} // easy-launcher pill nav (docs/design/DESIGN.md): ground pill, 2px ink border
+    >
       <AdvancedCard
         level="back"
         pl={8}
         pr={isDownloadIndicatorShown ? 4 : 8}
         py={2}
+        bg="ground"
+        border="2px solid"
+        borderColor="ink"
+        borderRadius="999px"
         className={`animated-card ${isAnimating ? "animate" : ""}`}
       >
         <HStack spacing={4} h="100%">
@@ -280,9 +276,62 @@ const HeadNavBar = () => {
               <DownloadIndicator />
             </>
           )}
+          <AccountPill />
         </HStack>
       </AdvancedCard>
     </Flex>
+  );
+};
+
+// easy-launcher account pill (docs/design/DESIGN.md): avatar disc + username.
+const AccountPill = () => {
+  const router = useRouter();
+  const { t } = useTranslation();
+  const { selectedPlayer } = useGlobalData();
+
+  return (
+    <HStack
+      as="button"
+      type="button"
+      spacing={2.5}
+      px={2}
+      py={1}
+      border="2px solid"
+      borderColor="ink"
+      borderRadius="999px"
+      backgroundColor="transparent"
+      _hover={{ backgroundColor: "surface" }}
+      aria-label={t("HeadNavBar.navList.accounts")}
+      onClick={() => router.push("/accounts")}
+    >
+      {selectedPlayer ? (
+        <>
+          <PlayerAvatar
+            boxSize="28px"
+            objectFit="cover"
+            avatar={selectedPlayer.avatar}
+          />
+          <Text fontSize="sm" fontWeight="700" maxW="150px" isTruncated>
+            {selectedPlayer.name}
+          </Text>
+        </>
+      ) : (
+        <>
+          <HStack
+            boxSize="28px"
+            borderRadius="50%"
+            backgroundColor="ink"
+            color="accent"
+            justify="center"
+          >
+            <Icon as={LuCircleUserRound} boxSize={4} aria-hidden />
+          </HStack>
+          <Text fontSize="sm" fontWeight="700">
+            {t("HeadNavBar.navList.accounts")}
+          </Text>
+        </>
+      )}
+    </HStack>
   );
 };
 

@@ -1750,6 +1750,9 @@
     "Text": {
       "noSelectedPlayer": "キャラクターを選択していない",
       "noSelectedGame": "インスタンスを選択していない"
+    },
+    "stats": {
+      "loader": "ローダー"
     }
   },
   "LaunchProcessModal": {

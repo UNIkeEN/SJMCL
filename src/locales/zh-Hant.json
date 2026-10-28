@@ -1750,6 +1750,9 @@
     "Text": {
       "noSelectedPlayer": "尚未選擇角色",
       "noSelectedGame": "尚未選擇遊戲實例"
+    },
+    "stats": {
+      "loader": "載入器"
     }
   },
   "LaunchProcessModal": {

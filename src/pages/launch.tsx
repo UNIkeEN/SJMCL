@@ -1,24 +1,20 @@
-import { Flex, HStack } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import HomeWidgetContainer from "@/components/extension/home-widget-container";
-import HomeButtonGroup from "@/components/home-button-group";
+import LaunchHome from "@/components/launch-home";
 
 const LaunchPage = () => {
   const layoutRef = useRef<HTMLDivElement>(null);
-  const [maxWidgetWidth, setMaxWidgetWidth] = useState<number>(550);
+  const [maxWidgetWidth, setMaxWidgetWidth] = useState<number>(320);
 
   useEffect(() => {
     const layoutEl = layoutRef.current;
     if (!layoutEl) return;
 
     const updateMaxWidgetWidth = () => {
-      const spacing = 88; // main layout padding + spacing
-      const minButtonGroupWidth =
-        document.getElementById("main-launch-button")?.getBoundingClientRect()
-          .width ?? 14.5 * 16;
-      const available = layoutEl.clientWidth - minButtonGroupWidth - spacing;
-      const safeMax = Math.max(0, available);
-      setMaxWidgetWidth(safeMax);
+      // keep a margin for the stats card overlay on the stage panel
+      const available = Math.min(320, layoutEl.clientWidth * 0.35);
+      setMaxWidgetWidth(Math.max(240, Math.floor(available)));
     };
 
     updateMaxWidgetWidth();
@@ -28,13 +24,11 @@ const LaunchPage = () => {
   }, []);
 
   return (
-    <HStack ref={layoutRef} p={7} pt={1} align="stretch" h="100%" spacing={6}>
-      <HomeWidgetContainer maxWidth={maxWidgetWidth} />
-
-      <Flex justify="flex-end" align="flex-end" minW="14.5rem" w="100%">
-        <HomeButtonGroup />
-      </Flex>
-    </HStack>
+    <Flex ref={layoutRef} h="100%" w="100%">
+      <LaunchHome
+        widgetSlot={<HomeWidgetContainer maxWidth={maxWidgetWidth} />}
+      />
+    </Flex>
   );
 };
 

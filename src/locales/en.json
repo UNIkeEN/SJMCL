@@ -1750,6 +1750,9 @@
     "Text": {
       "noSelectedPlayer": "No player selected",
       "noSelectedGame": "No game instance selected"
+    },
+    "stats": {
+      "loader": "Loader"
     }
   },
   "LaunchProcessModal": {
