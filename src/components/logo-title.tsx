@@ -10,7 +10,7 @@ const pixelFont = {
 export const TitleShort: React.FC<LogoTitleProps> = (props) => {
   return (
     <Heading size="md" style={pixelFont} {...props}>
-      easy-launcher
+      Easy-Launcher
     </Heading>
   );
 };

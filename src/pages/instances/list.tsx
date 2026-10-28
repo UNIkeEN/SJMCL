@@ -4,11 +4,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
   Text,
   Tooltip,
 } from "@chakra-ui/react";
@@ -26,6 +21,7 @@ import {
   LuPlus,
 } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import { DropdownMenu } from "@/components/common/dropdown-menu";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import InstancesView from "@/components/instances-view";
@@ -103,37 +99,33 @@ const InstanceListPage = () => {
   ];
 
   const FilterAndSortMenu = () => (
-    <Menu>
-      <Tooltip label={t("AllInstancesPage.button.sortAndFilter")}>
-        <MenuButton
-          as={IconButton}
-          size="xs"
-          fontSize="sm"
-          variant="ghost"
-          icon={<LuListFilter />}
-        ></MenuButton>
-      </Tooltip>
-      <MenuList>
-        <MenuOptionGroup
-          title={t("AllInstancesPage.sortBy")}
-          type="radio"
-          value={selectedSortByType}
-          onChange={(s) => {
-            update("states.allInstancesPage.sortBy", s as string);
-            getInstanceList(true);
-          }}
-        >
-          {sortByTypeList.map((item) => (
-            <MenuItemOption key={item.key} value={item.key} fontSize="xs">
-              <HStack spacing={2}>
-                {item.icon}
-                <Text>{t(`AllInstancesPage.sortByTypeList.${item.key}`)}</Text>
-              </HStack>
-            </MenuItemOption>
-          ))}
-        </MenuOptionGroup>
-      </MenuList>
-    </Menu>
+    <DropdownMenu
+      trigger={(p) => (
+        <Tooltip label={t("AllInstancesPage.button.sortAndFilter")}>
+          <IconButton
+            size="xs"
+            fontSize="sm"
+            variant="ghost"
+            icon={<LuListFilter />}
+            aria-label={t("AllInstancesPage.button.sortAndFilter")}
+            {...p}
+          />
+        </Tooltip>
+      )}
+      items={sortByTypeList.map((item) => ({
+        label: (
+          <HStack spacing={2}>
+            {item.icon}
+            <Text>{t(`AllInstancesPage.sortByTypeList.${item.key}`)}</Text>
+          </HStack>
+        ),
+        selected: selectedSortByType === item.key,
+        onClick: () => {
+          update("states.allInstancesPage.sortBy", item.key);
+          getInstanceList(true);
+        },
+      }))}
+    />
   );
 
   return (

@@ -1,13 +1,4 @@
-import {
-  HStack,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Portal,
-  Text,
-} from "@chakra-ui/react";
+import { HStack, IconButton } from "@chakra-ui/react";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { useRouter } from "next/router";
 import React from "react";
@@ -19,6 +10,7 @@ import {
   LuTrash,
 } from "react-icons/lu";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import { DropdownMenu } from "@/components/common/dropdown-menu";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { InstanceSummary } from "@/models/instance/misc";
 
@@ -66,32 +58,23 @@ export const InstanceMenu: React.FC<InstanceMenuProps> = ({
   return (
     <>
       {variant === "dropdown" ? (
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            size="xs"
-            variant="ghost"
-            aria-label="operations"
-            icon={<LuEllipsis />}
-          />
-          <Portal>
-            <MenuList>
-              {instanceMenuOperations.map((item) => (
-                <MenuItem
-                  key={item.label}
-                  fontSize="xs"
-                  color={item.danger ? "red.500" : "inherit"}
-                  onClick={item.onClick}
-                >
-                  <HStack>
-                    <item.icon />
-                    <Text>{item.label}</Text>
-                  </HStack>
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Portal>
-        </Menu>
+        <DropdownMenu
+          trigger={(p) => (
+            <IconButton
+              size="xs"
+              variant="ghost"
+              aria-label="operations"
+              icon={<LuEllipsis />}
+              {...p}
+            />
+          )}
+          items={instanceMenuOperations.map((item) => ({
+            icon: item.icon,
+            label: item.label,
+            danger: item.danger,
+            onClick: item.onClick,
+          }))}
+        />
       ) : (
         <HStack spacing={0}>
           {instanceMenuOperations.map((item) => (

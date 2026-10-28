@@ -7,9 +7,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuCheck, LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { LuCheck, LuChevronDown } from "react-icons/lu";
+import { DropdownSurface } from "@/components/common/dropdown-menu";
 
 type OptionValue = string;
 type OptionLabel = React.ReactNode | { title: string; desc: string };
@@ -51,14 +52,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
 }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{
-    left: number;
-    top?: number;
-    bottom?: number;
-    w: number;
-  } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
 
   const buildOptions = (opt: MenuSelectorOption) =>
     typeof opt === "string" ? { value: opt, label: opt } : opt;
@@ -134,38 +128,8 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
     };
   }, [open]);
 
-  // viewport-fixed placement: cards/navbars use overflow clipping, so the list
-  // must not live inside them. Measure the real list height, then drop below
-  // the button or flip up when it would leave the viewport.
-  const place = (target: "start" | "flip") => {
-    const rect = rootRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const h = listRef.current?.offsetHeight ?? 0;
-    const roomBelow = window.innerHeight - rect.bottom;
-    const w = Math.max(160, rect.width);
-    if (
-      target === "start" &&
-      placement === "bottom" &&
-      roomBelow < h + 8 &&
-      rect.top > h + 8
-    ) {
-      setPos({ left: rect.left, bottom: window.innerHeight - rect.top + 4, w });
-    } else if (target === "start" && placement === "top") {
-      setPos({
-        left: rect.left,
-        bottom: window.innerHeight - rect.top + 4,
-        w,
-      });
-    } else {
-      setPos({ left: rect.left, top: rect.bottom + 4, w });
-    }
-  };
-
-  useLayoutEffect(() => {
-    if (open) place("start");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, placement, options]);
-
+  // viewport-fixed surface: cards/navbars use overflow clipping, so the list
+  // must not live inside them.
   return (
     <Box
       ref={rootRef}
@@ -175,7 +139,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       className="menu-selector"
     >
       <Button
-        rightIcon={pos?.bottom != null ? <LuChevronUp /> : <LuChevronDown />}
+        rightIcon={<LuChevronDown />}
         isDisabled={disabled}
         aria-expanded={open}
         aria-haspopup="listbox"
@@ -189,86 +153,64 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       >
         {renderButtonLabel()}
       </Button>
-      {open && (
-        <Box
-          ref={listRef}
-          role="listbox"
-          position="fixed"
-          left={pos?.left ?? 0}
-          top={pos?.top}
-          bottom={pos?.bottom}
-          width={pos?.w}
-          zIndex={20}
-          maxH="40vh"
-          overflowY="auto"
-          py={1}
-          backgroundColor="#141414"
-          border="1px solid"
-          borderColor="line"
-          borderRadius="el-md"
-          boxShadow="0 8px 24px rgba(0,0,0,0.5)"
-          {...menuListProps}
-        >
-          {options.map((opt, i) => {
-            const {
-              value: v,
-              label,
-              disabled: optDisabled,
-            } = buildOptions(opt);
-            const selected = isSelected(v);
-            return (
-              <HStack
-                key={i}
-                as="button"
-                type="button"
-                role="option"
-                aria-selected={selected}
-                w="100%"
-                px={3}
-                py={1.5}
-                gap={2}
-                cursor={optDisabled ? "not-allowed" : "pointer"}
-                opacity={optDisabled ? 0.4 : 1}
-                bg={selected ? "rgba(255,255,255,0.08)" : "transparent"}
-                _hover={
-                  optDisabled
-                    ? undefined
-                    : { bg: "rgba(255,255,255,0.12)", color: "inherit" }
-                }
-                onClick={() => !optDisabled && pick(v)}
+      <DropdownSurface
+        rootRef={rootRef}
+        open={open}
+        placement={placement}
+        {...menuListProps}
+      >
+        {options.map((opt, i) => {
+          const { value: v, label, disabled: optDisabled } = buildOptions(opt);
+          const selected = isSelected(v);
+          return (
+            <HStack
+              key={i}
+              as="button"
+              type="button"
+              role="option"
+              aria-selected={selected}
+              w="100%"
+              px={3}
+              py={1.5}
+              gap={2}
+              cursor={optDisabled ? "not-allowed" : "pointer"}
+              opacity={optDisabled ? 0.4 : 1}
+              bg={selected ? "rgba(255,255,255,0.08)" : "transparent"}
+              _hover={
+                optDisabled
+                  ? undefined
+                  : { bg: "rgba(255,255,255,0.12)", color: "inherit" }
+              }
+              onClick={() => !optDisabled && pick(v)}
+              alignItems="center"
+            >
+              <Box
+                w="14px"
+                h="14px"
+                flexShrink={0}
+                display="flex"
                 alignItems="center"
+                justifyContent="center"
+                {...(multiple
+                  ? {
+                      border: "1px solid",
+                      borderColor: selected ? "#FAFAFA" : "line",
+                      borderRadius: "2px",
+                      bg: selected ? "#FAFAFA" : "transparent",
+                    }
+                  : {})}
               >
-                <Box
-                  w="14px"
-                  h="14px"
-                  flexShrink={0}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  {...(multiple
-                    ? {
-                        border: "1px solid",
-                        borderColor: selected ? "#FAFAFA" : "line",
-                        borderRadius: "2px",
-                        bg: selected ? "#FAFAFA" : "transparent",
-                      }
-                    : {})}
-                >
-                  {selected && (
-                    <LuCheck
-                      size={12}
-                      color={multiple ? "#0A0A0A" : "#FAFAFA"}
-                    />
-                  )}
-                </Box>
-                <Box minW={0} textAlign="left" fontSize={fontSize}>
-                  {renderLabel(label)}
-                </Box>
-              </HStack>
-            );
-          })}
-        </Box>
-      )}
+                {selected && (
+                  <LuCheck size={12} color={multiple ? "#0A0A0A" : "#FAFAFA"} />
+                )}
+              </Box>
+              <Box minW={0} textAlign="left" fontSize={fontSize}>
+                {renderLabel(label)}
+              </Box>
+            </HStack>
+          );
+        })}
+      </DropdownSurface>
     </Box>
   );
 };

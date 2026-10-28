@@ -112,6 +112,7 @@ export interface LauncherConfig {
     accessibility: {
       invertColors: boolean;
       enhanceContrast: boolean;
+      potatoMode: boolean;
     };
   };
   download: {
@@ -305,6 +306,7 @@ export const defaultConfig: LauncherConfig = {
     accessibility: {
       invertColors: false,
       enhanceContrast: false,
+      potatoMode: false,
     },
   },
   download: {

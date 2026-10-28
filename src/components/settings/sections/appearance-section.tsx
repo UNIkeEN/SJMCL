@@ -422,6 +422,23 @@ const AppearanceSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t(
+            "AppearanceSettingsPage.accessibility.settings.potatoMode.title"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={appearanceConfigs.accessibility.potatoMode}
+              onChange={(e) => {
+                update(
+                  "appearance.accessibility.potatoMode",
+                  e.target.checked
+                );
+              }}
+            />
+          ),
+        },
       ],
     },
   ];

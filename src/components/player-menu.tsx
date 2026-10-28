@@ -1,14 +1,4 @@
-import {
-  HStack,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Portal,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { HStack, IconButton, useDisclosure } from "@chakra-ui/react";
 import { useToast as useChakraToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,6 +11,7 @@ import {
 } from "react-icons/lu";
 import { TbHanger } from "react-icons/tb";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import { DropdownMenu } from "@/components/common/dropdown-menu";
 import ManageSkinModal from "@/components/modals/manage-skin-modal";
 import MicrosoftFriendsModal from "@/components/modals/microsoft-friends-modal";
 import ViewSkinModal from "@/components/modals/view-skin-modal";
@@ -193,32 +184,23 @@ export const PlayerMenu: React.FC<PlayerMenuProps> = ({
               onClick={onMicrosoftFriendsModalOpen}
             />
           )}
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              size="xs"
-              variant="ghost"
-              aria-label="operations"
-              icon={<LuEllipsis />}
-            />
-            <Portal>
-              <MenuList>
-                {playerMenuOperations.map((item) => (
-                  <MenuItem
-                    key={item.label}
-                    fontSize="xs"
-                    color={item.danger ? "red.500" : "inherit"}
-                    onClick={item.onClick}
-                  >
-                    <HStack>
-                      <item.icon />
-                      <Text>{item.label}</Text>
-                    </HStack>
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Portal>
-          </Menu>
+          <DropdownMenu
+            trigger={(p) => (
+              <IconButton
+                size="xs"
+                variant="ghost"
+                aria-label="operations"
+                icon={<LuEllipsis />}
+                {...p}
+              />
+            )}
+            items={playerMenuOperations.map((item) => ({
+              icon: item.icon,
+              label: item.label,
+              danger: item.danger,
+              onClick: item.onClick,
+            }))}
+          />
         </HStack>
       ) : (
         <HStack spacing={0}>
