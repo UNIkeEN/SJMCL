@@ -46,6 +46,9 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       ResourceType::ForgeInstall => Ok(Url::parse(
         "https://maven.minecraftforge.net/net/minecraftforge/forge/",
       )?),
+      ResourceType::ForgeFmlLibraries => {
+        Ok(Url::parse("https://hmcl.glavo.site/metadata/fmllibs/")?)
+      }
       ResourceType::ForgeMeta => Err(ResourceError::NoDownloadApi.into()), // https://github.com/HMCL-dev/HMCL/pull/3259/files
       ResourceType::Liteloader => Ok(Url::parse(
         "https://dl.liteloader.com/versions/versions.json",
@@ -93,6 +96,9 @@ pub fn get_download_api(source: SourceType, resource_type: ResourceType) -> SJMC
       }
       ResourceType::ForgeInstall => Ok(Url::parse(
         "https://bmclapi2.bangbang93.com/forge/download/",
+      )?),
+      ResourceType::ForgeFmlLibraries => Ok(Url::parse(
+        "https://alist.8mi.tech/d/mirror/HMCL-Metadata/Auto/fmllibs/",
       )?),
       ResourceType::ForgeMeta => Ok(Url::parse("https://bmclapi2.bangbang93.com/forge/")?),
       ResourceType::Liteloader => Ok(Url::parse(

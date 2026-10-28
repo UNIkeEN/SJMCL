@@ -30,6 +30,12 @@ pub fn get_instance_game_config(app: &AppHandle, instance: &Instance) -> GameCon
   get_global_game_config(app)
 }
 
+pub fn get_instance_native_libraries_dir(instance: &Instance, arch: &str) -> PathBuf {
+  instance
+    .version_path
+    .join(format!("natives-{}-{}", tauri_plugin_os::platform(), arch))
+}
+
 pub fn get_instance_subdir_paths(
   app: &AppHandle,
   instance: &Instance,
@@ -60,11 +66,9 @@ pub fn get_instance_subdir_paths(
         InstanceSubdirType::ServerResourcePacks => path.join("server-resource-packs"),
         InstanceSubdirType::ShaderPacks => path.join("shaderpacks"),
         // native libraries extracted by SJMCL
-        InstanceSubdirType::NativeLibraries => version_path.join(format!(
-          "natives-{}-{}",
-          tauri_plugin_os::platform(),
-          tauri_plugin_os::arch()
-        )),
+        InstanceSubdirType::NativeLibraries => {
+          get_instance_native_libraries_dir(instance, tauri_plugin_os::arch())
+        }
       };
 
       // Create directory if it doesn't exist

@@ -80,7 +80,15 @@ pub async fn install_mod_loader(
       .await
     }
     ModLoaderType::Forge => {
-      install_forge_loader(priority, game_version, loader, lib_dir.clone(), task_params).await
+      install_forge_loader(
+        &app,
+        priority,
+        game_version,
+        loader,
+        lib_dir.clone(),
+        task_params,
+      )
+      .await
     }
     ModLoaderType::Cleanroom => {
       install_cleanroom_loader(priority, loader, lib_dir.clone(), task_params).await

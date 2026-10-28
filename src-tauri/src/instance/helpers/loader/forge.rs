@@ -1,31 +1,33 @@
+use cafebabe::constant_pool::{ConstantPoolItem, LiteralConstant};
 use serde::{Deserialize, Serialize};
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::Read;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
 use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{
-  LibrariesValue, McClientInfo, reset_fields_from_patches,
+  DownloadsArtifact, LibrariesDownloads, LibrariesValue, McClientInfo, reset_fields_from_patches,
 };
 use crate::instance::helpers::loader::common::{InstallPlan, add_library_entry};
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
+use crate::resource::helpers::loader_meta::forge::{ForgeFile, get_legacy_forge_file};
 use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
 
-pub async fn install_forge_loader(
+fn get_forge_file_sources(
   priority: &[SourceType],
   game_version: &str,
   loader: &ModLoader,
-  lib_dir: PathBuf,
-  task_params: &mut Vec<DownloadTask>,
-) -> SJMCLResult<()> {
+  category: &str,
+  format: &str,
+) -> SJMCLResult<Vec<Url>> {
   let loader_ver = &loader.version;
 
   let mut sources = Vec::new();
@@ -42,7 +44,7 @@ pub async fn install_forge_loader(
           .filter(|s| !s.is_empty())
           .collect::<Vec<_>>()
           .join("-");
-          root.join(&format!("{full_ver}/forge-{full_ver}-installer.jar"))?
+          root.join(&format!("{full_ver}/forge-{full_ver}-{category}.{format}"))?
         }
         SourceType::BMCLAPIMirror => {
           let mut url = root;
@@ -50,8 +52,8 @@ pub async fn install_forge_loader(
             ("mcversion", game_version),
             ("version", loader_ver.as_str()),
             ("branch", loader.branch.as_deref().unwrap_or("")),
-            ("category", "installer"),
-            ("format", "jar"),
+            ("category", category),
+            ("format", format),
           ]);
           url
         }
@@ -63,8 +65,35 @@ pub async fn install_forge_loader(
   if sources.is_empty() {
     return Err(SJMCLError("failed to resolve Forge installer URL".into()));
   }
+  Ok(sources)
+}
 
-  let installer_coord = format!("net.minecraftforge:forge:{}-installer", loader.version);
+fn legacy_forge_coordinate(game_version: &str, loader: &ModLoader, file: &ForgeFile) -> String {
+  format!(
+    "net.minecraftforge:forge:{}-{}:{}@{}",
+    game_version, loader.version, file.category, file.format
+  )
+}
+
+pub async fn install_forge_loader(
+  app: &AppHandle,
+  priority: &[SourceType],
+  game_version: &str,
+  loader: &ModLoader,
+  lib_dir: PathBuf,
+  task_params: &mut Vec<DownloadTask>,
+) -> SJMCLResult<()> {
+  let legacy_file = get_legacy_forge_file(app, game_version, &loader.version).await?;
+  let (category, format) = legacy_file
+    .as_ref()
+    .map(|file| (file.category.as_str(), file.format.as_str()))
+    .unwrap_or(("installer", "jar"));
+  let sources = get_forge_file_sources(priority, game_version, loader, category, format)?;
+
+  let installer_coord = legacy_file
+    .as_ref()
+    .map(|file| legacy_forge_coordinate(game_version, loader, file))
+    .unwrap_or_else(|| format!("net.minecraftforge:forge:{}-installer", loader.version));
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
 
@@ -73,7 +102,7 @@ pub async fn install_forge_loader(
     dest: installer_path.clone(),
     filename: None,
     size: None,
-    sha1: None,
+    sha1: legacy_file.map(|file| file.hash),
   });
 
   Ok(())
@@ -96,6 +125,12 @@ pub async fn download_forge_libraries(
   };
   let mut task_params = vec![];
   let mut processors = vec![];
+
+  if let Some(file) =
+    get_legacy_forge_file(app, &instance.version, &instance.mod_loader.version).await?
+  {
+    return prepare_legacy_forge(priority, instance, root_dir, lib_dir, client_info, &file);
+  }
 
   let installer_coord = format!(
     "net.minecraftforge:forge:{}-installer",
@@ -415,6 +450,131 @@ pub async fn download_forge_libraries(
     tasks: task_params,
     processors,
   })
+}
+
+fn prepare_legacy_forge(
+  priority: &[SourceType],
+  instance: &Instance,
+  root_dir: &Path,
+  lib_dir: &Path,
+  client_info: &mut McClientInfo,
+  file: &ForgeFile,
+) -> SJMCLResult<InstallPlan> {
+  let name = legacy_forge_coordinate(&instance.version, &instance.mod_loader, file);
+  let path = convert_library_name_to_path(&name, None)?;
+  let archive_path = lib_dir.join(&path);
+  if !archive_path.is_file() {
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
+  let mut archive = ZipArchive::new(File::open(&archive_path)?)?;
+  let tasks = get_legacy_fml_library_tasks(&mut archive, root_dir, priority)?;
+  let sources = get_forge_file_sources(
+    &[SourceType::Official],
+    &instance.version,
+    &instance.mod_loader,
+    &file.category,
+    &file.format,
+  )?;
+
+  // Pre-installer Forge overrides vanilla classes through the classpath, not processors.
+  client_info.patches.push(McClientInfo {
+    id: "forge".to_string(),
+    version: Some(instance.mod_loader.version.clone()),
+    priority: Some(30000),
+    inherits_from: Some(instance.version.clone()),
+    libraries: vec![LibrariesValue {
+      name,
+      downloads: Some(LibrariesDownloads {
+        artifact: Some(DownloadsArtifact {
+          path,
+          url: sources[0].to_string(),
+          sha1: file.hash.clone(),
+          size: fs::metadata(&archive_path)?.len() as i64,
+        }),
+        ..Default::default()
+      }),
+      ..Default::default()
+    }],
+    ..Default::default()
+  });
+  reset_fields_from_patches(client_info);
+
+  Ok(InstallPlan {
+    tasks,
+    processors: Vec::new(),
+  })
+}
+
+fn get_legacy_fml_library_tasks(
+  archive: &mut ZipArchive<File>,
+  root_dir: &Path,
+  priority: &[SourceType],
+) -> SJMCLResult<Vec<DownloadTask>> {
+  let mut bytes = Vec::new();
+  match archive.by_name("cpw/mods/fml/relauncher/CoreFMLLibraries.class") {
+    Ok(mut file) => {
+      file.read_to_end(&mut bytes)?;
+    }
+    Err(zip::result::ZipError::FileNotFound) => return Ok(Vec::new()),
+    Err(error) => return Err(error.into()),
+  }
+  let class = cafebabe::parse_class(&bytes).map_err(|_| InstanceError::InstallProfileParseError)?;
+  let strings = class
+    .constantpool_iter()
+    .filter_map(|item| match item {
+      ConstantPoolItem::LiteralConstant(LiteralConstant::String(value)) => Some(value.into_owned()),
+      _ => None,
+    })
+    .collect::<Vec<_>>();
+
+  // CoreFMLLibraries declares parallel filename/hash arrays in constant-pool order.
+  let names = strings
+    .iter()
+    .filter(|value| value.ends_with(".jar") || value.ends_with(".zip"))
+    .cloned()
+    .collect::<Vec<_>>();
+  let hashes = strings
+    .iter()
+    .filter(|value| value.len() == 40 && value.bytes().all(|byte| byte.is_ascii_hexdigit()))
+    .cloned()
+    .collect::<Vec<_>>();
+  if names.len() != hashes.len() {
+    return Err(InstanceError::InstallProfileParseError.into());
+  }
+  let mut libraries = names.into_iter().zip(hashes).collect::<Vec<_>>();
+  let properties = java_properties::read(archive.by_name("fmlversion.properties")?)?;
+  if let Some(hash) = properties.get("fmlbuild.deobfuscation.hash") {
+    let version = properties
+      .get("fmlbuild.mcversion")
+      .ok_or(InstanceError::InstallProfileParseError)?;
+    libraries.push((format!("deobfuscation_data_{version}.zip"), hash.clone()));
+  }
+
+  let base_url = get_download_api(SourceType::Official, ResourceType::ForgeFmlLibraries)?;
+  libraries
+    .into_iter()
+    .map(|(name, hash)| {
+      if !name
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || b"._-".contains(&byte))
+        || hash.len() != 40
+        || !hash.bytes().all(|byte| byte.is_ascii_hexdigit())
+      {
+        return Err(InstanceError::InstallProfileParseError.into());
+      }
+      Ok(DownloadTask {
+        sources: get_download_urls(
+          &base_url.join(&name)?,
+          &[ResourceType::ForgeFmlLibraries],
+          priority,
+        )?,
+        dest: root_dir.join("lib").join(name),
+        filename: None,
+        size: None,
+        sha1: Some(hash),
+      })
+    })
+    .collect()
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

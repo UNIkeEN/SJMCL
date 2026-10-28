@@ -32,7 +32,7 @@ pub fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Ve
   cmd
 }
 
-pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
+pub fn get_natives_string(natives: &HashMap<String, String>, arch: &str) -> Option<String> {
   let target_os = cfg_select! {
     target_os = "windows" => "windows",
     target_os = "linux" => "linux",
@@ -41,7 +41,11 @@ pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
   };
   if let Some(native) = natives.get(target_os) {
     let mut map = HashMap::<String, String>::new();
-    let arch = std::mem::size_of::<usize>() * 8;
+    let arch = if matches!(arch, "x86" | "arm") {
+      32
+    } else {
+      64
+    };
     map.insert("arch".to_string(), arch.to_string());
     replace_arguments(vec![native.clone()], &map).pop()
   } else {
