@@ -3,6 +3,22 @@
     "about": {
       "title": "Acerca de",
       "settings": {
+        "aboutSJMC": {
+          "title": "Acerca de SJTU Minecraft Club (SJMC)"
+        },
+        "basedOn": {
+          "title": "Basado en SJMCL",
+          "description": "Este launcher está construido sobre SJMCL (GNU GPL v3.0)."
+        },
+        "contributors": {
+          "title": "Colaboradores"
+        },
+        "developer": {
+          "title": "Desarrollador"
+        },
+        "sourceCode": {
+          "title": "Ver Código Fuente en GitHub"
+        },
         "version": {
           "title": "Versión",
           "foundNew": "Nueva Versión Disponible",
@@ -12,15 +28,6 @@
             "up2date": "Ya está actualizado",
             "error": "Error al buscar actualizaciones"
           }
-        },
-        "contributors": {
-          "title": "Colaboradores"
-        },
-        "sourceCode": {
-          "title": "Ver Código Fuente en GitHub"
-        },
-        "aboutSJMC": {
-          "title": "Acerca de SJTU Minecraft Club (SJMC)"
         }
       }
     },

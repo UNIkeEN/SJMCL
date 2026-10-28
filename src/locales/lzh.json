@@ -3,6 +3,22 @@
     "about": {
       "title": "有涉",
       "settings": {
+        "aboutSJMC": {
+          "title": "有涉上海交通大學礦藝社（SJMC）"
+        },
+        "basedOn": {
+          "title": "承 SJMCL",
+          "description": "此啟動器以 SJMCL (GNU GPL v3.0) 為本。"
+        },
+        "contributors": {
+          "title": "開發諸君之列"
+        },
+        "developer": {
+          "title": "開發者"
+        },
+        "sourceCode": {
+          "title": "覽源碼於群碼之匯"
+        },
         "version": {
           "title": "版",
           "foundNew": "有新版",
@@ -12,15 +28,6 @@
             "up2date": "今已至新",
             "error": "驗迭更未成"
           }
-        },
-        "contributors": {
-          "title": "開發諸君之列"
-        },
-        "sourceCode": {
-          "title": "覽源碼於群碼之匯"
-        },
-        "aboutSJMC": {
-          "title": "有涉上海交通大學礦藝社（SJMC）"
         }
       }
     },

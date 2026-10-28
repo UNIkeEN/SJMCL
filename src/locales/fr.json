@@ -3,6 +3,22 @@
     "about": {
       "title": "À propos",
       "settings": {
+        "aboutSJMC": {
+          "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
+        },
+        "basedOn": {
+          "title": "Basé sur SJMCL",
+          "description": "Ce launcher est construit sur SJMCL (GNU GPL v3.0)."
+        },
+        "contributors": {
+          "title": "Liste des développeurs"
+        },
+        "developer": {
+          "title": "Développeur"
+        },
+        "sourceCode": {
+          "title": "Voir le code source sur GitHub"
+        },
         "version": {
           "title": "Version",
           "foundNew": "Il y a une nouvelle version.",
@@ -12,15 +28,6 @@
             "up2date": "Vous utilisez déjà la dernière version.",
             "error": "Échec de la vérification des mises à jour."
           }
-        },
-        "contributors": {
-          "title": "Liste des développeurs"
-        },
-        "sourceCode": {
-          "title": "Voir le code source sur GitHub"
-        },
-        "aboutSJMC": {
-          "title": "À propos de Minecraft society à l’université jiao tong shanghai (SJMC)"
         }
       }
     },

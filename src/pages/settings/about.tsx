@@ -66,7 +66,7 @@ const AboutSettingsPage = () => {
     setCheckingUpdate(false);
   }, [handleCheckLauncherUpdate, t, toast, closeToast, openSharedModal]);
 
-  const avatarUserList = ["UNIkeEN", "xunying123", "SundayChen"];
+  const avatarUserList = ["Rzfan03"];
 
   const aboutSettingGroups: OptionItemGroupProps[] = [
     {
@@ -121,7 +121,7 @@ const AboutSettingsPage = () => {
                 ))}
               </AvatarGroup>
               <CommonIconButton
-                label="https://github.com/UNIkeEN/SJMCL/graphs/contributors?all=1"
+                label="https://github.com/Rzfan03/easy-launcher/graphs/contributors?all=1"
                 icon="external"
                 withTooltip
                 tooltipPlacement="bottom-end"
@@ -129,7 +129,7 @@ const AboutSettingsPage = () => {
                 h={18}
                 onClick={() => {
                   openUrl(
-                    "https://github.com/UNIkeEN/SJMCL/graphs/contributors?all=1"
+                    "https://github.com/Rzfan03/easy-launcher/graphs/contributors?all=1"
                   );
                 }}
               />
@@ -137,7 +137,42 @@ const AboutSettingsPage = () => {
           ),
         },
         {
+          title: t("AboutSettingsPage.about.settings.developer.title"),
+          children: (
+            <CommonIconButton
+              label="https://github.com/Rzfan03"
+              icon="external"
+              withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              h={18}
+              onClick={() => {
+                openUrl("https://github.com/Rzfan03");
+              }}
+            />
+          ),
+        },
+        {
           title: t("AboutSettingsPage.about.settings.sourceCode.title"),
+          children: (
+            <CommonIconButton
+              label="https://github.com/Rzfan03/easy-launcher"
+              icon="external"
+              withTooltip
+              tooltipPlacement="bottom-end"
+              size="xs"
+              h={18}
+              onClick={() => {
+                openUrl("https://github.com/Rzfan03/easy-launcher");
+              }}
+            />
+          ),
+        },
+        {
+          title: t("AboutSettingsPage.about.settings.basedOn.title"),
+          description: t(
+            "AboutSettingsPage.about.settings.basedOn.description"
+          ),
           children: (
             <CommonIconButton
               label="https://github.com/UNIkeEN/SJMCL"
@@ -148,22 +183,6 @@ const AboutSettingsPage = () => {
               h={18}
               onClick={() => {
                 openUrl("https://github.com/UNIkeEN/SJMCL");
-              }}
-            />
-          ),
-        },
-        {
-          title: t("AboutSettingsPage.about.settings.aboutSJMC.title"),
-          children: (
-            <CommonIconButton
-              label="https://mc.sjtu.cn/welcome/content/3/"
-              icon="external"
-              withTooltip
-              tooltipPlacement="bottom-end"
-              size="xs"
-              h={18}
-              onClick={() => {
-                openUrl("https://mc.sjtu.cn/welcome/content/3/");
               }}
             />
           ),
@@ -230,14 +249,14 @@ const AboutSettingsPage = () => {
           ),
           children: (
             <CommonIconButton
-              label="https://github.com/UNIkeEN/SJMCL?tab=readme-ov-file#copyright"
+              label="https://github.com/Rzfan03/easy-launcher/blob/main/LICENSE"
               icon="external"
               withTooltip
               tooltipPlacement="bottom-end"
               size="xs"
               onClick={() => {
                 openUrl(
-                  "https://github.com/UNIkeEN/SJMCL?tab=readme-ov-file#copyright"
+                  "https://github.com/Rzfan03/easy-launcher/blob/main/LICENSE"
                 );
               }}
             />

@@ -3,6 +3,22 @@
     "about": {
       "title": "SJMCLについて",
       "settings": {
+        "aboutSJMC": {
+          "title": "上海交通大学 Minecraft クラブ (SJMC) について"
+        },
+        "basedOn": {
+          "title": "SJMCL ベース",
+          "description": "このランチャーは SJMCL (GNU GPL v3.0) を基盤としています。"
+        },
+        "contributors": {
+          "title": "開発チーム"
+        },
+        "developer": {
+          "title": "開発者"
+        },
+        "sourceCode": {
+          "title": "GitHub でソースコードを見る"
+        },
         "version": {
           "title": "バージョン",
           "foundNew": "アップデートがあります",
@@ -12,15 +28,6 @@
             "up2date": "最新バージョンです",
             "error": "アップデートの確認に失敗"
           }
-        },
-        "contributors": {
-          "title": "開発チーム"
-        },
-        "sourceCode": {
-          "title": "GitHub でソースコードを見る"
-        },
-        "aboutSJMC": {
-          "title": "上海交通大学 Minecraft クラブ (SJMC) について"
         }
       }
     },

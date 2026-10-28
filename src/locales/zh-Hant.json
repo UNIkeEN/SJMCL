@@ -3,6 +3,22 @@
     "about": {
       "title": "關於",
       "settings": {
+        "aboutSJMC": {
+          "title": "關於上海交通大學 Minecraft 社（SJMC）"
+        },
+        "basedOn": {
+          "title": "基於 SJMCL",
+          "description": "本啟動器基於 SJMCL (GNU GPL v3.0) 建構。"
+        },
+        "contributors": {
+          "title": "開發者名單"
+        },
+        "developer": {
+          "title": "開發者"
+        },
+        "sourceCode": {
+          "title": "在 GitHub 檢視原始碼"
+        },
         "version": {
           "title": "版本",
           "foundNew": "有新版本",
@@ -12,15 +28,6 @@
             "up2date": "目前已是最新版本",
             "error": "檢查更新失敗"
           }
-        },
-        "contributors": {
-          "title": "開發者名單"
-        },
-        "sourceCode": {
-          "title": "在 GitHub 檢視原始碼"
-        },
-        "aboutSJMC": {
-          "title": "關於上海交通大學 Minecraft 社（SJMC）"
         }
       }
     },

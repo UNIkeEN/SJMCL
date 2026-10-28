@@ -3,6 +3,22 @@
     "about": {
       "title": "Tentang",
       "settings": {
+        "aboutSJMC": {
+          "title": "Tentang SJTU Minecraft Club (SJMC)"
+        },
+        "basedOn": {
+          "title": "Didasarkan pada SJMCL",
+          "description": "Launcher ini dibangun di atas SJMCL (GNU GPL v3.0)."
+        },
+        "contributors": {
+          "title": "Kontributor"
+        },
+        "developer": {
+          "title": "Pengembang"
+        },
+        "sourceCode": {
+          "title": "Lihat Kode Sumber di GitHub"
+        },
         "version": {
           "title": "Versi",
           "foundNew": "Versi Baru Tersedia",
@@ -12,15 +28,6 @@
             "up2date": "Sudah versi terbaru",
             "error": "Gagal memeriksa pembaruan"
           }
-        },
-        "contributors": {
-          "title": "Kontributor"
-        },
-        "sourceCode": {
-          "title": "Lihat Kode Sumber di GitHub"
-        },
-        "aboutSJMC": {
-          "title": "Tentang SJTU Minecraft Club (SJMC)"
         }
       }
     },
