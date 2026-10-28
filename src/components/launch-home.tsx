@@ -19,7 +19,6 @@ import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowRight, LuChevronDown, LuPlus } from "react-icons/lu";
 import InstancesView from "@/components/instances-view";
-import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { formatTimeInterval } from "@/utils/datetime";
@@ -37,9 +36,7 @@ const LaunchHome = ({ widgetSlot }: LaunchHomeProps) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { openSharedModal } = useSharedModals();
-  const { bgImageSrc } = useLauncherConfig();
   const { selectedInstance, getInstanceList } = useGlobalData();
-
   const instanceList = getInstanceList() || [];
   const noInstance = !selectedInstance;
 
@@ -76,19 +73,7 @@ const LaunchHome = ({ widgetSlot }: LaunchHomeProps) => {
   return (
     <Flex w="100%" h="100%" gap={8} align="stretch" px={10} py={6}>
       {/* stage: background panel with stats card */}
-      <Box
-        flex="1"
-        minW="0"
-        position="relative"
-        backgroundColor="surface"
-        bgImg={`url('${bgImageSrc}')`}
-        bgSize="cover"
-        bgPosition="center"
-        border="2px solid"
-        borderColor="ink"
-        borderRadius="el-lg"
-        overflow="hidden"
-      >
+      <Box flex="1" minW="0" position="relative">
         {widgetSlot && (
           <Box
             position="absolute"
