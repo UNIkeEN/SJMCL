@@ -47,6 +47,14 @@ fn open_modpack_deeplink(handle: &tauri::AppHandle, path: &str) {
 }
 
 pub async fn run() {
+  // WebKitGTK 2.54 DMABUF renderer drops compositor layers for fade-in
+  // elements: menus/popovers open transparent (visible only with devtools
+  // open, which forces a re-composite). Must be set before any webview exists.
+  #[cfg(target_os = "linux")]
+  unsafe {
+    std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+  }
+
   let exit_code = {
     let builder = tauri::Builder::default()
       .plugin(tauri_plugin_clipboard_manager::init())
