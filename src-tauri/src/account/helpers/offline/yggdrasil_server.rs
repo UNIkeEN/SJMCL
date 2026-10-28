@@ -144,8 +144,8 @@ impl YggdrasilServer {
       "signaturePublickey": get_public_key(),
       "skinDomains": ["127.0.0.1", "localhost"],
       "meta": {
-        "serverName": "SJMCL",
-        "implementationName": "SJMCL",
+        "serverName": "easy-launcher",
+        "implementationName": "easy-launcher",
         "implementationVersion": "1.0",
         "feature.non_email_login": true
       }

@@ -1,4 +1,4 @@
-import { Flex, HStack, Image, Text, useColorModeValue } from "@chakra-ui/react";
+import { Flex, HStack, Text, useColorModeValue } from "@chakra-ui/react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -69,12 +69,6 @@ const WindowTitlebar = () => {
   const [isMainWindow, setIsMainWindow] = useState(true);
   const [windowTitle, setWindowTitle] = useState("");
 
-  const titlebarBg = useColorModeValue("whiteAlpha.600", "blackAlpha.500");
-  const titlebarBorderColor = useColorModeValue(
-    "blackAlpha.200",
-    "whiteAlpha.300"
-  );
-
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -120,7 +114,6 @@ const WindowTitlebar = () => {
       onClick: async () => {
         await getCurrentWindow().close();
       },
-      colorScheme: "red",
     },
   ];
 
@@ -214,16 +207,19 @@ const WindowTitlebar = () => {
 
   if (isMac && isMacFullscreen) return null;
 
+  // Ghost titlebar: transparent strip for dragging; controls appear on hover.
   return (
     <Flex
       h={`${titlebarHeight}px`}
       minH={`${titlebarHeight}px`}
-      bg={titlebarBg}
-      backdropFilter="blur(3px) saturate(140%)"
-      borderBottom="1px solid"
-      borderColor={titlebarBorderColor}
       zIndex={9999}
-      pl={2}
+      position="relative"
+      role="application"
+      aria-label="Window controls"
+      sx={{
+        "& .window-controls": { opacity: 0, transition: "opacity .15s" },
+        "&:hover .window-controls": { opacity: 1 },
+      }}
     >
       {isMainWindow && !router.pathname.startsWith("/standalone") && (
         <MainWindowExtensionTitle />
@@ -235,13 +231,6 @@ const WindowTitlebar = () => {
         h="100%"
         align="center"
       >
-        {(isWindows || isLinux) && (
-          <Image
-            src="/images/icons/Logo_32x32.png"
-            alt="easy-launcher"
-            boxSize="16px"
-          />
-        )}
         {!isMainWindow && windowTitle && (
           <Text
             ml={isMac ? 16 : 2}
@@ -262,7 +251,13 @@ const WindowTitlebar = () => {
         />
       )}
       {isLinux && (
-        <HStack spacing={0} h="100%" align="center" pr={2}>
+        <HStack
+          spacing={0}
+          h="100%"
+          align="center"
+          pr={2}
+          className="window-controls"
+        >
           {linuxWindowButtons.map((button) => (
             <CommonIconButton
               key={button.label}
@@ -272,7 +267,6 @@ const WindowTitlebar = () => {
               withTooltip={false}
               borderRadius="full"
               h={18}
-              colorScheme={button.colorScheme}
               onClick={button.onClick}
             />
           ))}

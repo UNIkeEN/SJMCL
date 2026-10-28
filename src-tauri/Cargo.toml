@@ -1,10 +1,10 @@
 [package]
-name = "SJMCL"
+name = "easy-launcher"
 version.workspace = true
-description = "A Minecraft launcher from SJMC"
-authors = ["SJMCL Team"]
-license = "GNU General Public License v3.0 (with additional terms)"
-repository = "https://github.com/UNIkeEN/SJMCL"
+description = "A fast, no-friction Minecraft launcher"
+authors = ["Rzfan03"]
+license = "GNU General Public License v3.0"
+repository = "https://github.com/Rzfan03/easy-launcher"
 edition.workspace = true
 rust-version.workspace = true
 
