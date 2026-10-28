@@ -48,7 +48,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
 
   return (
     <Flex gap={5} h="100%" align="flex-start">
-      {/* easy-launcher sidebar (docs/design/DESIGN.md): ground card, ink border, hard shadow */}
+      {/* easy-launcher sidebar (docs/design/DESIGN.md): minimal ground card, ink border */}
       <Flex
         direction="column"
         as="nav"
@@ -58,8 +58,7 @@ const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
         backgroundColor="ground"
         border="2px solid"
         borderColor="ink"
-        borderRadius="el-lg"
-        boxShadow="shadow-hard"
+        borderRadius="el-md"
         p={3}
         overflowY="auto"
       >

@@ -1,76 +1,76 @@
 {
   "AboutSettingsPage": {
     "about": {
-      "title": "About",
+      "title": "Tentang",
       "settings": {
         "version": {
-          "title": "Version",
-          "foundNew": "New Version Available",
-          "checkUpdate": "Check for Updates",
+          "title": "Versi",
+          "foundNew": "Versi Baru Tersedia",
+          "checkUpdate": "Periksa Pembaruan",
           "checkToast": {
-            "loading": "Checking for updates",
-            "up2date": "Already up to date",
-            "error": "Failed to check for updates"
+            "loading": "Memeriksa pembaruan",
+            "up2date": "Sudah versi terbaru",
+            "error": "Gagal memeriksa pembaruan"
           }
         },
         "contributors": {
-          "title": "Contributors"
+          "title": "Kontributor"
         },
         "sourceCode": {
-          "title": "View Source Code on GitHub"
+          "title": "Lihat Kode Sumber di GitHub"
         },
         "aboutSJMC": {
-          "title": "About SJTU Minecraft Club (SJMC)"
+          "title": "Tentang SJTU Minecraft Club (SJMC)"
         }
       }
     },
     "ack": {
-      "title": "Acknowledgement",
+      "title": "Ucapan Terima Kasih",
       "settings": {
         "bmclapi": {
           "title": "BMCLAPI",
-          "description": "Thanks to @bangbang93 for providing the high-speed download source mirror"
+          "description": "Terima kasih kepada @bangbang93 karena telah menyediakan mirror sumber unduhan berkecepatan tinggi"
         },
         "hmcl": {
           "title": "Hello Minecraft! Launcher",
-          "description": "Some design and code implementation are referenced from this project"
+          "description": "Beberapa desain dan implementasi kode dirujuk dari proyek ini"
         },
         "littleskin": {
           "title": "LittleSkin",
-          "description": "Thanks to LittleSkin and @tnqzh123 for their help with the login process design"
+          "description": "Terima kasih kepada LittleSkin dan @tnqzh123 atas bantuannya dalam desain proses login"
         },
         "mcim": {
           "title": "mcmod-info-mirror",
-          "description": "Provides Simplified Chinese translations for mod information"
+          "description": "Menyediakan terjemahan Simplified Chinese untuk informasi mod"
         },
         "scl": {
           "title": "Swift Craft Launcher",
-          "description": "Thanks to the SCL developers for the ongoing communication and mutual inspiration with us"
+          "description": "Terima kasih kepada para pengembang SCL atas komunikasi dan saling inspirasi yang berkelanjutan"
         },
         "sinter": {
           "title": "Sinter",
-          "description": "Used as the interface font on Windows and Linux platforms, under the SIL License"
+          "description": "Digunakan sebagai font antarmuka di platform Windows dan Linux, di bawah Lisensi SIL"
         },
         "skinview3d": {
           "title": "bs-community / skinview3d",
-          "description": "Our skin preview component is built based on this open-source project, under the MIT License"
+          "description": "Komponen pratinjau skin kami dibangun berdasarkan proyek open-source ini, di bawah Lisensi MIT"
         }
       }
     },
     "legalInfo": {
-      "title": "Legal Notices",
+      "title": "Informasi Hukum",
       "settings": {
         "copyright": {
-          "title": "Copyright",
+          "title": "Hak Cipta",
           "description": "Copyright © 2024-2026 SJMCL Team."
         },
         "userAgreement": {
-          "title": "User Agreement",
+          "title": "Perjanjian Pengguna",
           "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
         },
         "openSourceLicense": {
-          "title": "Open Source License",
-          "description": "Licensed under the GNU General Public License v3.0, with additional terms."
+          "title": "Lisensi Sumber Terbuka",
+          "description": "Dilisensikan di bawah GNU General Public License v3.0, dengan ketentuan tambahan."
         }
       }
     }
@@ -266,14 +266,14 @@
   },
   "AppearanceSettingsPage": {
     "theme": {
-      "title": "Theme",
+      "title": "Tema",
       "settings": {
         "headNavStyle": {
-          "title": "Navigation Bar Style",
+          "title": "Gaya Bilah Navigasi",
           "type": {
-            "standard": "Standard",
-            "simplified": "Simplified",
-            "adaptive": "Adaptive"
+            "standard": "Standar",
+            "simplified": "Sederhana",
+            "adaptive": "Adaptif"
           }
         }
       }
@@ -282,34 +282,34 @@
       "title": "Font",
       "settings": {
         "fontFamily": {
-          "title": "Font Family",
-          "default": "Default"
+          "title": "Jenis Font",
+          "default": "Bawaan"
         },
         "logFontFamily": {
-          "title": "Log Font"
+          "title": "Font Log"
         },
         "fontSize": {
-          "title": "Font Size",
+          "title": "Ukuran Font",
           "small": "T",
           "large": "T"
         }
       }
     },
     "background": {
-      "title": "Background",
+      "title": "Latar Belakang",
       "settings": {
         "preset": {
-          "title": "Preset Images"
+          "title": "Gambar Bawaan"
         },
         "custom": {
-          "title": "Custom Images",
-          "add": "Add"
+          "title": "Gambar Kustom",
+          "add": "Tambah"
         },
         "randomCustom": {
-          "title": "Random Custom Image"
+          "title": "Gambar Kustom Acak"
         },
         "autoDarken": {
-          "title": "Dim Background in Dark Mode"
+          "title": "Redupkan Latar di Mode Gelap"
         }
       },
       "presetBgList": {
@@ -322,13 +322,13 @@
       }
     },
     "accessibility": {
-      "title": "Display Accessibility",
+      "title": "Aksesibilitas Tampilan",
       "settings": {
         "invertColors": {
-          "title": "Invert Colors"
+          "title": "Balik Warna"
         },
         "enhanceContrast": {
-          "title": "Enhance Contrast"
+          "title": "Tingkatkan Kontras"
         }
       }
     }
@@ -1178,82 +1178,82 @@
   },
   "GeneralSettingsPage": {
     "language": {
-      "title": "Language",
+      "title": "Bahasa",
       "settings": {
         "language": {
-          "title": "Language",
+          "title": "Bahasa",
           "communityAck": ""
         },
         "resourceTranslation": {
-          "title": "Resource Translation",
+          "title": "Terjemahan Sumber Daya",
           "description": "%only available in zh-Hans"
         },
         "translatedFilenamePrefix": {
-          "title": "Add Translation Prefix to Downloaded Resource Filenames",
+          "title": "Tambahkan Awalan Terjemahan ke Nama File Sumber Daya yang Diunduh",
           "description": "%only available in zh-Hans"
         },
         "skipFirstScreenOptions": {
-          "title": "Automatically Set Instance Language",
-          "description": "When enabled, new instances will follow the launcher language and skip the in-game accessibility setup screen."
+          "title": "Atur Bahasa Instance Secara Otomatis",
+          "description": "Saat aktif, instance baru akan mengikuti bahasa launcher dan melewati layar penyiapan aksesibilitas di dalam game."
         }
       }
     },
     "functions": {
-      "title": "Functionality",
+      "title": "Fungsionalitas",
       "settings": {
         "discoverPage": {
-          "title": "Discover Page",
-          "description": "Conveniently browse Minecraft and community news, search and download game resource from the Discover page.",
-          "on": "On",
-          "search-only": "Search Only",
-          "off": "Hidden"
+          "title": "Halaman Jelajah",
+          "description": "Jelajahi berita Minecraft dan komunitas, cari dan unduh sumber daya game dari halaman Jelajah.",
+          "on": "Aktif",
+          "search-only": "Hanya Pencarian",
+          "off": "Sembunyikan"
         },
         "instancesNavType": {
-          "title": "Instance Page Navigation Mode",
-          "description": "Change whether the instance page's left navigation bar is displayed and its grouping method.",
-          "instance": "By Instance",
-          "directory": "By Directory",
-          "tag": "By Tag",
-          "hidden": "Hidden"
+          "title": "Mode Navigasi Halaman Instance",
+          "description": "Ubah apakah bilah navigasi kiri halaman instance ditampilkan dan metode pengelompokannya.",
+          "instance": "Per Instance",
+          "directory": "Per Direktori",
+          "tag": "Per Tag",
+          "hidden": "Sembunyikan"
         },
         "launchPageQuickSwitch": {
-          "title": "Quick Switch for Accounts & Instances",
-          "description": "When enabled, clicking the switch button on the launch page allows direct selection of accounts and instances instead of navigating to another page."
+          "title": "Ganti Cepat Akun & Instance",
+          "description": "Saat aktif, tombol ganti di halaman utama langsung membuka pemilihan akun dan instance tanpa pindah halaman."
         },
         "autoDownloadJava": {
-          "title": "Auto-download Suitable Java Runtime",
-          "description": "When enabled, if no suitable Java runtime is available when creating a new instance, it will be installed automatically to a dedicated directory"
+          "title": "Unduh Otomatis Java Runtime yang Cocok",
+          "description": "Saat aktif, jika tidak ada Java runtime yang cocok saat membuat instance baru, ia akan dipasang otomatis ke direktori khusus"
         }
       }
     },
     "sync": {
-      "title": "Sync",
+      "title": "Sinkronisasi",
       "settings": {
         "internetSync": {
-          "title": "Sync Launcher Settings via Internet",
-          "import": "Import",
-          "export": "Export"
+          "title": "Sinkronkan Setelan Launcher via Internet",
+          "import": "Impor",
+          "export": "Ekspor"
         }
       }
     },
     "advanced": {
-      "title": "Advanced",
+      "title": "Lanjutan",
       "settings": {
         "openConfigJson": {
-          "title": "Launcher Settings File",
-          "description": "Reveal the raw launcher settings file in {{opener}}."
+          "title": "File Setelan Launcher",
+          "description": "Tampilkan file setelan mentah launcher di {{opener}}."
         },
         "launcherLogDir": {
-          "title": "Launcher Logs Directory"
+          "title": "Direktori Log Launcher"
         },
         "autoPurgeLauncherLogs": {
-          "title": "Auto Purge Launcher Logs",
-          "description": "Automatically purge launcher log files older than 30 days"
+          "title": "Hapus Otomatis Log Launcher",
+          "description": "Hapus otomatis file log launcher yang berumur lebih dari 30 hari"
         },
         "resetAll": {
-          "title": "Reset All Settings",
-          "description": "Reset all launcher settings to their default values",
-          "reset": "Reset"
+          "title": "Atur Ulang Semua Setelan",
+          "description": "Kembalikan semua setelan launcher ke nilai bawaan",
+          "reset": "Atur Ulang"
         }
       }
     }
@@ -1657,25 +1657,25 @@
   },
   "JavaSettingsPage": {
     "javaList": {
-      "title": "Java Management",
-      "download": "Download Java",
-      "add": "Add Java",
-      "remove": "Remove this Java"
+      "title": "Manajemen Java",
+      "download": "Unduh Java",
+      "add": "Tambah Java",
+      "remove": "Hapus Java ini"
     },
     "toast": {
       "addSuccess": {
-        "title": "Add Java Successfully",
-        "description": "Java has been added successfully"
+        "title": "Java Berhasil Ditambahkan",
+        "description": "Java berhasil ditambahkan"
       },
       "addFailed": {
-        "title": "Failed to Add Java",
-        "invalid": "Not a valid Java executable or incompatible with the current platform",
-        "duplicated": "The target path has already been added"
+        "title": "Gagal Menambahkan Java",
+        "invalid": "Bukan executable Java yang valid atau tidak kompatibel dengan platform ini",
+        "duplicated": "Path tujuan sudah pernah ditambahkan"
       }
     },
     "confirmDelete": {
-      "title": "Delete Java",
-      "description": "Confirm the removal of this Java? (SJMCL will no longer scan this directory, but your files remain on the disk.)"
+      "title": "Hapus Java",
+      "description": "Yakin menghapus Java ini? (SJMCL tidak akan lagi memindai direktori ini, tapi file-mu tetap ada di disk.)"
     }
   },
   "LanguageMenu": {

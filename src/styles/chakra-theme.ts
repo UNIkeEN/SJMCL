@@ -163,7 +163,7 @@ const chakraExtendTheme = extendTheme({
           backgroundColor: "ground",
           border: "2px solid",
           borderColor: "ink",
-          borderRadius: "el-lg",
+          borderRadius: "el-md",
           header: {
             fontSize: "md",
             paddingLeft: 4,
