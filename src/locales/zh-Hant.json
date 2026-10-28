@@ -98,6 +98,11 @@
       "list": "清單檢視"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "暫無帳戶"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "全域性遊戲設定",
       "java": "Java",
       "general": "一般",
+      "account": "帳戶",
       "appearance": "外觀",
       "download": "下載資源",
       "extension": "擴充套件",
       "help": "文件與幫助",
       "about": "關於"
+    },
+    "back": "返回",
+    "search": {
+      "placeholder": "搜尋設定",
+      "empty": "沒有符合的設定。"
+    },
+    "button": {
+      "manageAccount": "管理帳戶"
     }
   },
   "SkinPreview": {

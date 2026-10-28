@@ -98,6 +98,11 @@
       "list": "List View"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "Belum ada akun"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "Setelan Game",
       "java": "Java",
       "general": "Umum",
+      "account": "Akun",
       "appearance": "Tampilan",
       "download": "Unduhan",
       "extension": "Ekstensi",
       "help": "Dok & Bantuan",
       "about": "Tentang"
+    },
+    "back": "Kembali",
+    "search": {
+      "placeholder": "Cari setelan",
+      "empty": "Tidak ada setelan yang cocok."
+    },
+    "button": {
+      "manageAccount": "Kelola akun"
     }
   },
   "SkinPreview": {

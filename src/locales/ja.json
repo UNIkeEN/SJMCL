@@ -98,6 +98,11 @@
       "list": "リストビュー"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "アカウントがありません"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "グローバルゲーム設定",
       "java": "Java",
       "general": "一般設定",
+      "account": "アカウント",
       "appearance": "表示",
       "download": "ダウンロード",
       "extension": "拡張機能",
       "help": "マニュアルとヘルプ",
       "about": "バージョン情報"
+    },
+    "back": "戻る",
+    "search": {
+      "placeholder": "設定を検索",
+      "empty": "一致する設定はありません。"
+    },
+    "button": {
+      "manageAccount": "アカウント管理"
     }
   },
   "SkinPreview": {

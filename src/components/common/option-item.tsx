@@ -107,7 +107,7 @@ export const OptionItem: React.FC<OptionItemProps> = ({
     ));
 
   return (
-    <Flex justify="space-between" alignItems="center">
+    <Flex justify="space-between" alignItems="center" className="settings-row">
       <Flex
         flex={1}
         justify="space-between"
@@ -247,7 +247,7 @@ export const OptionItemGroup: React.FC<OptionItemGroupProps> = ({
   );
 
   return (
-    <Section {...props}>
+    <Section {...props} data-settings-group>
       {items.length > 0 &&
         // easy-launcher (docs/design/DESIGN-settings.md): rows separated by 1px
         // lines — no nested cards, monochrome.

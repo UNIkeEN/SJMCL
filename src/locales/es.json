@@ -98,6 +98,11 @@
       "list": "Vista de Lista"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "Aún no hay cuentas"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "Configuración del Juego",
       "java": "Java",
       "general": "General",
+      "account": "Cuenta",
       "appearance": "Apariencia",
       "download": "Descarga",
       "extension": "Extensión",
       "help": "Documentos y Ayuda",
       "about": "Acerca de"
+    },
+    "back": "Atrás",
+    "search": {
+      "placeholder": "Buscar ajustes",
+      "empty": "No hay ajustes coincidentes."
+    },
+    "button": {
+      "manageAccount": "Gestionar cuentas"
     }
   },
   "SkinPreview": {

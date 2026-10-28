@@ -98,6 +98,11 @@
       "list": "列覽"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "尚無戶簿"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "全例戲設",
       "java": "爪哇",
       "general": "貫用",
+      "account": "戶簿",
       "appearance": "外觀",
       "download": "引資項",
       "extension": "擴充套件",
       "help": "案文與助",
       "about": "有涉"
+    },
+    "back": "返",
+    "search": {
+      "placeholder": "檢設",
+      "empty": "無所合之設。"
+    },
+    "button": {
+      "manageAccount": "理戶簿"
     }
   },
   "SkinPreview": {

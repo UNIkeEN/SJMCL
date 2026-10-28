@@ -98,6 +98,11 @@
       "list": "List View"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "No accounts yet"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "Game Settings",
       "java": "Java",
       "general": "General",
+      "account": "Account",
       "appearance": "Appearance",
       "download": "Download",
       "extension": "Extension",
       "help": "Docs & Help",
       "about": "About"
+    },
+    "back": "Back",
+    "search": {
+      "placeholder": "Search settings",
+      "empty": "No matching settings."
+    },
+    "button": {
+      "manageAccount": "Manage accounts"
     }
   },
   "SkinPreview": {

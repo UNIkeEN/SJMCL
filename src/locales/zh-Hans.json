@@ -98,6 +98,11 @@
       "list": "列表视图"
     }
   },
+  "AccountsPage": {
+    "addForm": {
+      "empty": "暂无账户"
+    }
+  },
   "AddAndImportInstancePage": {
     "addAndImportOptions": {
       "new": {
@@ -3082,11 +3087,20 @@
       "global-game": "全局游戏设置",
       "java": "Java",
       "general": "通用",
+      "account": "账户",
       "appearance": "外观",
       "download": "下载资源",
       "extension": "扩展插件",
       "help": "文档与帮助",
       "about": "关于"
+    },
+    "back": "返回",
+    "search": {
+      "placeholder": "搜索设置",
+      "empty": "没有匹配的设置。"
+    },
+    "button": {
+      "manageAccount": "管理账户"
     }
   },
   "SkinPreview": {
