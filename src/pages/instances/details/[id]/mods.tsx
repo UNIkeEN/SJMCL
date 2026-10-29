@@ -7,7 +7,6 @@ import {
   HStack,
   Highlight,
   Icon,
-  IconButton,
   Image,
   Input,
   Tag,
@@ -19,7 +18,6 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  LuChevronRight,
   LuCircleCheck,
   LuCircleMinus,
   LuClockArrowUp,
@@ -29,6 +27,7 @@ import {
   LuX,
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import { CardChevron } from "@/components/common/card-chevron";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
@@ -479,17 +478,15 @@ const InstanceModsPage = () => {
                   </VStack>
                 </HStack>
                 <HStack spacing={0}>
-                  <IconButton
-                    aria-label="select"
-                    icon={<Icon as={LuChevronRight} boxSize={3.5} />}
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => handleTypeSelect(type)}
-                  />
+                  <CardChevron isSelected={currentModLoaderType === type} />
                 </HStack>
               </Flex>
             ),
             isSelected: currentModLoaderType === type,
+            as: "button",
+            textAlign: "start",
+            isFullClickZone: true,
+            onSelect: () => handleTypeSelect(type),
           }))}
         />
       </Section>

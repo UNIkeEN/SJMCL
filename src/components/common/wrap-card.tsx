@@ -112,6 +112,7 @@ export const WrapCard: React.FC<WrapCardProps> = ({
   return (
     <Card
       className={cardStyles["card-front"]}
+      data-group=""
       borderColor={isSelected ? `${primaryColor}.500` : "transparent"}
       variant={isSelected ? "outline" : "elevated"}
       position="relative"
