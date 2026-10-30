@@ -2,9 +2,11 @@ import {
   Center,
   HStack,
   Image,
+  Switch,
   Tag,
   TagLabel,
   Text,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -37,8 +39,10 @@ import { UNIXToISOString, formatRelativeTime } from "@/utils/datetime";
 import { base64ImgSrc } from "@/utils/string";
 
 const InstanceWorldsPage = () => {
+  const toast = useToast();
   const { t } = useTranslation();
   const { config, update } = useLauncherConfig();
+  const controlTextColor = useColorModeValue("gray.600", "gray.400");
   const {
     instanceId,
     summary,
@@ -47,8 +51,8 @@ const InstanceWorldsPage = () => {
     getWorldList,
     isWorldListLoading: isLoading,
   } = useInstanceSharedData();
-  const accordionStates = config.states.instanceWorldsPage.accordionStates;
-  const toast = useToast();
+  const { accordionStates, showHiddenServers } =
+    config.states.instanceWorldsPage;
   const { getExtensionSlotItems } = useExtensionHost();
   const { openSharedModal, openGenericConfirmDialog } = useSharedModals();
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
@@ -138,6 +142,10 @@ const InstanceWorldsPage = () => {
     }, 60000);
     return () => clearInterval(intervalId);
   }, [instanceId, handleRetrieveGameServerList, refreshGameServerList]);
+
+  const visibleGameServers = gameServers.filter(
+    (server) => showHiddenServers || !server.hidden
+  );
 
   const handleDeleteServer = useCallback(
     (server: GameServerInfo) => {
@@ -402,7 +410,7 @@ const InstanceWorldsPage = () => {
         isAccordion
         title={t("InstanceWorldsPage.serverList.title")}
         initialIsOpen={accordionStates[1]}
-        titleExtra={<CountTag count={gameServers.length} />}
+        titleExtra={<CountTag count={visibleGameServers.length} />}
         onAccordionToggle={(isOpen) => {
           update(
             "states.instanceWorldsPage.accordionStates",
@@ -411,6 +419,29 @@ const InstanceWorldsPage = () => {
         }}
         headExtra={
           <HStack spacing={2}>
+            <HStack spacing={1.5} mr={1}>
+              <Text
+                as="label"
+                htmlFor="show-hidden-servers"
+                fontSize="xs"
+                color={controlTextColor}
+                cursor="pointer"
+              >
+                {t("InstanceWorldsPage.serverList.showHidden")}
+              </Text>
+              <Switch
+                id="show-hidden-servers"
+                size="sm"
+                colorScheme={config.appearance.theme.primaryColor}
+                isChecked={showHiddenServers}
+                onChange={(e) => {
+                  update(
+                    "states.instanceWorldsPage.showHiddenServers",
+                    e.target.checked
+                  );
+                }}
+              />
+            </HStack>
             {serverSecMenuOperations.map((btn, index) => (
               <CommonIconButton
                 key={index}
@@ -424,11 +455,11 @@ const InstanceWorldsPage = () => {
           </HStack>
         }
       >
-        {gameServers.length > 0 ? (
+        {visibleGameServers.length > 0 ? (
           <OptionItemGroup
-            items={gameServers.map((server) => (
+            items={visibleGameServers.map((server) => (
               <OptionItem
-                key={server.name}
+                key={server.ip}
                 title={server.name}
                 description={server.ip}
                 prefixElement={

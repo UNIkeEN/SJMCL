@@ -72,6 +72,7 @@ export interface GameServerInfo {
   iconSrc: string;
   ip: string;
   name: string;
+  hidden: boolean;
   description: string;
   isQueried: boolean;
   playersOnline?: number;
