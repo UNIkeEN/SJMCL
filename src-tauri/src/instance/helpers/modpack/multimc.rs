@@ -47,6 +47,8 @@ structstruck::strike! {
     pub cfg: HashMap<String, String>,
     #[serde(skip)]
     pub base_path: String,
+    #[serde(skip)]
+    pub game_dir: String,
   }
 }
 
@@ -77,6 +79,20 @@ impl ModpackManifest for MultiMcManifest {
       found_path.ok_or(InstanceError::ModpackManifestParseError)?
     };
 
+    // MultiMC (and SJMCL's export) stores the game directory as `.minecraft`, while
+    // Prism Launcher uses `minecraft`. Prefer the former and fall back to the latter.
+    let has_dir = |dir: &str| {
+      let prefix = format!("{}{}/", base_path, dir);
+      archive
+        .file_names()
+        .any(|name| name.is_ok_and(|name| name.starts_with(&prefix)))
+    };
+    let game_dir = if !has_dir(".minecraft") && has_dir("minecraft") {
+      "minecraft"
+    } else {
+      ".minecraft"
+    };
+
     let mut manifest: MultiMcManifest;
     {
       let manifest_path = format!("{}mmc-pack.json", base_path);
@@ -96,6 +112,7 @@ impl ModpackManifest for MultiMcManifest {
       .build()?;
 
     manifest.base_path = base_path;
+    manifest.game_dir = game_dir.to_string();
     manifest.cfg = config.try_deserialize::<HashMap<String, String>>()?;
 
     Ok(manifest)
@@ -162,7 +179,7 @@ impl ModpackManifest for MultiMcManifest {
   }
 
   fn get_overrides_path(&self) -> String {
-    format!("{}.minecraft/", self.base_path)
+    format!("{}{}/", self.base_path, self.game_dir)
   }
 }
 
@@ -240,6 +257,7 @@ fn generate_multimc_manifest(instance: &Instance) -> MultiMcManifest {
     components,
     cfg: HashMap::new(),
     base_path: String::new(),
+    game_dir: ".minecraft".to_string(),
   }
 }
 
@@ -253,4 +271,83 @@ fn generate_multimc_instance_cfg(options: &ExportModpackOptions) -> String {
     content.push_str(&format!("MinMemAlloc={}\n", min_memory));
   }
   content
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use std::fs;
+  use std::io::Write;
+  use zip::ZipWriter;
+  use zip::write::SimpleFileOptions;
+
+  use crate::instance::helpers::modpack::import::extract_overrides;
+
+  const MMC_PACK: &str =
+    r#"{"formatVersion":1,"components":[{"uid":"net.minecraft","version":"1.20.1"}]}"#;
+
+  fn import_overrides(test_name: &str, entries: &[(&str, &str)]) -> PathBuf {
+    let test_root = std::env::temp_dir().join(format!(
+      "sjmcl-multimc-test-{}-{}",
+      std::process::id(),
+      test_name
+    ));
+    let _ = fs::remove_dir_all(&test_root);
+    let instance_path = test_root.join("instance");
+    fs::create_dir_all(&instance_path).unwrap();
+
+    let archive_path = test_root.join("modpack.zip");
+    let mut writer = ZipWriter::new(File::create(&archive_path).unwrap());
+    for (name, content) in entries {
+      writer
+        .start_file(*name, SimpleFileOptions::default())
+        .unwrap();
+      writer.write_all(content.as_bytes()).unwrap();
+    }
+    writer.finish().unwrap();
+
+    let archive = File::open(&archive_path).unwrap();
+    extract_overrides(&archive, &instance_path).unwrap();
+    test_root
+  }
+
+  #[test]
+  fn extracts_prism_minecraft_directory() {
+    let test_root = import_overrides(
+      "prism",
+      &[
+        ("mmc-pack.json", MMC_PACK),
+        ("instance.cfg", "name=Pack\n"),
+        ("minecraft/mods/example.jar", "mod"),
+        ("minecraft/options.txt", "options"),
+      ],
+    );
+    let instance_path = test_root.join("instance");
+    assert_eq!(
+      fs::read_to_string(instance_path.join("mods/example.jar")).unwrap(),
+      "mod"
+    );
+    assert_eq!(
+      fs::read_to_string(instance_path.join("options.txt")).unwrap(),
+      "options"
+    );
+    fs::remove_dir_all(test_root).unwrap();
+  }
+
+  #[test]
+  fn prefers_dot_minecraft_directory() {
+    let test_root = import_overrides(
+      "multimc",
+      &[
+        ("Pack/mmc-pack.json", MMC_PACK),
+        ("Pack/instance.cfg", "name=Pack\n"),
+        ("Pack/.minecraft/mods/example.jar", "mod"),
+        ("Pack/minecraft/mods/other.jar", "other"),
+      ],
+    );
+    let instance_path = test_root.join("instance");
+    assert!(instance_path.join("mods/example.jar").is_file());
+    assert!(!instance_path.join("mods/other.jar").exists());
+    fs::remove_dir_all(test_root).unwrap();
+  }
 }
