@@ -44,6 +44,17 @@ pub struct ModrinthFile {
 }
 }
 
+impl ModrinthFile {
+  /// Whether the file should be installed on the client. Server-only files are marked with
+  /// `env.client` set to `"unsupported"`.
+  fn is_client_supported(&self) -> bool {
+    self
+      .env
+      .as_ref()
+      .is_none_or(|env| env.client != "unsupported")
+  }
+}
+
 #[serialize_skip_none]
 #[derive(Deserialize, Serialize, Debug, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
@@ -130,6 +141,7 @@ impl ModpackManifest for ModrinthManifest {
     self
       .files
       .iter()
+      .filter(|file| file.is_client_supported())
       .map(|file| {
         if file.downloads.is_empty() {
           return Err(InstanceError::InvalidSourcePath.into());
@@ -333,4 +345,33 @@ async fn collect_modrinth_files(
   }
 
   Ok((modrinth_files, override_files))
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  fn file_with_env(env: Option<(&str, &str)>) -> ModrinthFile {
+    ModrinthFile {
+      path: "mods/example.jar".to_string(),
+      hashes: ModrinthFileHashes {
+        sha1: String::new(),
+        sha512: String::new(),
+      },
+      env: env.map(|(client, server)| ModrinthFileEnv {
+        client: client.to_string(),
+        server: server.to_string(),
+      }),
+      downloads: vec!["https://cdn.modrinth.com/example.jar".to_string()],
+      file_size: 0,
+    }
+  }
+
+  #[test]
+  fn skips_server_only_files_on_client() {
+    assert!(file_with_env(None).is_client_supported());
+    assert!(file_with_env(Some(("required", "required"))).is_client_supported());
+    assert!(file_with_env(Some(("optional", "unsupported"))).is_client_supported());
+    assert!(!file_with_env(Some(("unsupported", "required"))).is_client_supported());
+  }
 }
