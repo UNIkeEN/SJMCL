@@ -816,6 +816,52 @@
       }
     }
   },
+  "ExportServerModal": {
+    "header": {
+      "title": "Export {{param}} as Server Pack"
+    },
+    "stepper": {
+      "basic": "Basic Info",
+      "mods": "Mods",
+      "files": "Saves & Folders"
+    },
+    "label": {
+      "serverPackName": "Server Pack Name",
+      "downloadAndInstall": "Download and Install",
+      "eula": "EULA",
+      "keepSave": "Keep a Save",
+      "folders": "Folders to Include"
+    },
+    "eula": {
+      "agree": "I have read and agree to the",
+      "warning": "Publicly distributing this server pack may violate the Minecraft EULA and some mods' licenses."
+    },
+    "downloadAndInstall": {
+      "proxyHint": "If you use a proxy, you may need to enable TUN mode."
+    },
+    "save": {
+      "none": "Don't Keep"
+    },
+    "mods": {
+      "loading": "Parsing mod info...",
+      "required": "Required",
+      "optional": "Optional",
+      "requiredOrOptionalSuffix": " (or optional)",
+      "unknown": "Unrecognized",
+      "unsupported": "Unsupported",
+      "unsupportedConfirm": {
+        "title": "Keep this mod?",
+        "body": "{{name}} was recognized as client-only and may not work on a server. Keep it anyway?"
+      }
+    },
+    "button": {
+      "export": "Export"
+    },
+    "error": {
+      "invalidName": "Please enter a valid server pack name",
+      "eulaNotAccepted": "Please read and agree to the Minecraft EULA first"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "Failed to render this extension content."
   },
@@ -1512,6 +1558,7 @@
     "secMenu": {
       "createShortcut": "Create Launch Shortcut",
       "exportModPack": "Export as Modpack",
+      "exportServerPack": "Export as Server Pack",
       "star": "Star this instance",
       "unstar": "Unstar"
     },
@@ -3019,6 +3066,17 @@
         "success": "Modpack exported successfully",
         "error": {
           "title": "Failed to export modpack"
+        }
+      },
+      "analyzeServerExport": {
+        "error": {
+          "title": "Failed to analyze mods for server export"
+        }
+      },
+      "exportServerPack": {
+        "success": "Server pack exported successfully",
+        "error": {
+          "title": "Failed to export server pack"
         }
       },
       "addCustomInstanceIcon": {

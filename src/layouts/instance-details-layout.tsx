@@ -22,6 +22,7 @@ import {
   LuPackage,
   LuPackageOpen,
   LuPlay,
+  LuServer,
   LuSettings,
   LuSquareLibrary,
   LuSquarePlus,
@@ -30,6 +31,7 @@ import { CommonIconButton } from "@/components/common/common-icon-button";
 import NavMenu from "@/components/common/nav-menu";
 import { Section } from "@/components/common/section";
 import ExportModpackModal from "@/components/modals/export-modpack-modal";
+import ExportServerModal from "@/components/modals/export-server-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import {
   InstanceContextProvider,
@@ -71,6 +73,12 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
     isOpen: isExportModpackModalOpen,
     onOpen: onExportModpackModalOpen,
     onClose: onExportModpackModalClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: isExportServerModalOpen,
+    onOpen: onExportServerModalOpen,
+    onClose: onExportServerModalClose,
   } = useDisclosure();
 
   const handleCreateLaunchDesktopShortcut = useCallback(
@@ -137,6 +145,16 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
       onClick: () => {
         if (summary) {
           onExportModpackModalOpen();
+        }
+      },
+    },
+    {
+      icon: LuServer,
+      label: t("InstanceDetailsLayout.secMenu.exportServerPack"),
+      danger: false,
+      onClick: () => {
+        if (summary) {
+          onExportServerModalOpen();
         }
       },
     },
@@ -257,6 +275,14 @@ const InstanceDetailsLayoutContent: React.FC<{ children: React.ReactNode }> = ({
         <ExportModpackModal
           isOpen={isExportModpackModalOpen}
           onClose={onExportModpackModalClose}
+          instanceId={summary.id}
+          instanceName={summary.name}
+        />
+      )}
+      {summary && (
+        <ExportServerModal
+          isOpen={isExportServerModalOpen}
+          onClose={onExportServerModalClose}
           instanceId={summary.id}
           instanceName={summary.name}
         />

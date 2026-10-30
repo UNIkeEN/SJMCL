@@ -816,6 +816,52 @@
       }
     }
   },
+  "ExportServerModal": {
+    "header": {
+      "title": "{{param}} をサーバーパックとしてエクスポート"
+    },
+    "stepper": {
+      "basic": "基本情報",
+      "mods": "MOD",
+      "files": "セーブとフォルダー"
+    },
+    "label": {
+      "serverPackName": "サーバーパック名",
+      "downloadAndInstall": "ダウンロードしてインストール",
+      "eula": "EULA",
+      "keepSave": "セーブデータを保持",
+      "folders": "含めるフォルダー"
+    },
+    "eula": {
+      "agree": "以下を読み、同意しました：",
+      "warning": "このサーバーパックを公開配布すると、Minecraft EULA および一部の MOD のライセンスに違反する可能性があります。"
+    },
+    "downloadAndInstall": {
+      "proxyHint": "プロキシを使用する場合、TUNモードを有効にする必要がある場合があります。"
+    },
+    "save": {
+      "none": "保持しない"
+    },
+    "mods": {
+      "loading": "MOD 情報を解析中...",
+      "required": "必須",
+      "optional": "任意",
+      "requiredOrOptionalSuffix": "（または任意）",
+      "unknown": "認識できません",
+      "unsupported": "非対応",
+      "unsupportedConfirm": {
+        "title": "この MOD を保持しますか？",
+        "body": "{{name}} はクライアント専用として認識されました。サーバーでは動作しない可能性があります。それでも保持しますか？"
+      }
+    },
+    "button": {
+      "export": "エクスポート"
+    },
+    "error": {
+      "invalidName": "有効なサーバーパック名を入力してください",
+      "eulaNotAccepted": "先に Minecraft EULA を読んで同意してください"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "この拡張機能の内容を表示できませんでした。"
   },
@@ -1512,6 +1558,7 @@
     "secMenu": {
       "createShortcut": "起動ショートカットを作成",
       "exportModPack": "モッドパックエクスポート",
+      "exportServerPack": "サーバーとしてエクスポート",
       "star": "このインスタンスをスター",
       "unstar": "このインスタンスを非スター"
     },
@@ -3019,6 +3066,17 @@
         "success": "モッドパックをエクスポートした",
         "error": {
           "title": "モッドパックのエクスポートに失敗"
+        }
+      },
+      "analyzeServerExport": {
+        "error": {
+          "title": "サーバーエクスポート用の MOD 解析に失敗しました"
+        }
+      },
+      "exportServerPack": {
+        "success": "サーバーパックをエクスポートしました",
+        "error": {
+          "title": "サーバーパックのエクスポートに失敗しました"
         }
       },
       "addCustomInstanceIcon": {

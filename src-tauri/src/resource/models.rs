@@ -77,6 +77,8 @@ pub enum OtherResourceApiEndpoint {
   FromLocal,
   ById,
   TranslateDesc,
+  VersionFiles,
+  Projects,
 }
 
 // mod, save, resourcepack, datapack and shader

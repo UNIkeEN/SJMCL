@@ -816,6 +816,52 @@
       }
     }
   },
+  "ExportServerModal": {
+    "header": {
+      "title": "将 {{param}} 导出为服务端"
+    },
+    "stepper": {
+      "basic": "基本信息",
+      "mods": "模组",
+      "files": "存档与文件夹"
+    },
+    "label": {
+      "serverPackName": "服务端包名称",
+      "downloadAndInstall": "下载并安装",
+      "eula": "最终用户许可协议",
+      "keepSave": "保留存档",
+      "folders": "需要包含的文件夹"
+    },
+    "eula": {
+      "agree": "我已阅读并同意",
+      "warning": "公开分发该服务端包可能违反 Minecraft EULA 和部分模组的许可协议"
+    },
+    "downloadAndInstall": {
+      "proxyHint": "如需使用代理可能需要开启TUN模式"
+    },
+    "save": {
+      "none": "不保留"
+    },
+    "mods": {
+      "loading": "正在解析模组信息",
+      "required": "必需",
+      "optional": "可选",
+      "requiredOrOptionalSuffix": "（或可选）",
+      "unknown": "无法识别",
+      "unsupported": "不支持",
+      "unsupportedConfirm": {
+        "title": "保留此模组？",
+        "body": "{{name}} 被识别为仅客户端模组，可能无法在服务端运行。仍要保留吗？"
+      }
+    },
+    "button": {
+      "export": "导出"
+    },
+    "error": {
+      "invalidName": "请输入有效的服务端包名称",
+      "eulaNotAccepted": "请先阅读并同意 Minecraft EULA"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "扩展内容渲染失败。"
   },
@@ -1512,6 +1558,7 @@
     "secMenu": {
       "createShortcut": "创建启动快捷方式",
       "exportModPack": "导出为整合包",
+      "exportServerPack": "导出为服务端",
       "star": "星标此实例",
       "unstar": "取消星标"
     },
@@ -3019,6 +3066,17 @@
         "success": "导出整合包成功",
         "error": {
           "title": "导出整合包失败"
+        }
+      },
+      "analyzeServerExport": {
+        "error": {
+          "title": "解析服务端导出模组信息失败"
+        }
+      },
+      "exportServerPack": {
+        "success": "导出服务端包成功",
+        "error": {
+          "title": "导出服务端包失败"
         }
       },
       "addCustomInstanceIcon": {

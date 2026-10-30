@@ -816,6 +816,52 @@
       }
     }
   },
+  "ExportServerModal": {
+    "header": {
+      "title": "將 {{param}} 錄出為伺服端改囊集"
+    },
+    "stepper": {
+      "basic": "基訊",
+      "mods": "改囊",
+      "files": "生界與案夾"
+    },
+    "label": {
+      "serverPackName": "伺服端改囊集之名",
+      "downloadAndInstall": "下載並安裝",
+      "eula": "EULA",
+      "keepSave": "保留生界",
+      "folders": "所納之案夾"
+    },
+    "eula": {
+      "agree": "吾已閱並同意",
+      "warning": "公開分發此伺服端改囊集，或違 Minecraft EULA 與部分改囊之許可"
+    },
+    "downloadAndInstall": {
+      "proxyHint": "若用代理，或須啟 TUN 之式"
+    },
+    "save": {
+      "none": "不保留"
+    },
+    "mods": {
+      "loading": "正在解析改囊資訊",
+      "required": "必需",
+      "optional": "可選",
+      "requiredOrOptionalSuffix": "（或可選）",
+      "unknown": "無法識別",
+      "unsupported": "不支援",
+      "unsupportedConfirm": {
+        "title": "保留此改囊？",
+        "body": "{{name}} 被識別為僅客戶端改囊，或無法於伺服端運行。仍保留之？"
+      }
+    },
+    "button": {
+      "export": "錄出"
+    },
+    "error": {
+      "invalidName": "請書入有效之伺服端改囊集名",
+      "eulaNotAccepted": "請先閱並同意 Minecraft EULA"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "擴充之文渲染未成。"
   },
@@ -1512,6 +1558,7 @@
     "secMenu": {
       "createShortcut": "建立啟捷徑",
       "exportModPack": "錄出為改囊集",
+      "exportServerPack": "錄出為伺服端改囊集",
       "star": "星標此例",
       "unstar": "罷星標"
     },
@@ -3019,6 +3066,17 @@
         "success": "錄出改囊集既成",
         "error": {
           "title": "錄出改囊集未成"
+        }
+      },
+      "analyzeServerExport": {
+        "error": {
+          "title": "解析伺服端改囊資訊未成"
+        }
+      },
+      "exportServerPack": {
+        "success": "伺服端改囊集錄出既成",
+        "error": {
+          "title": "伺服端改囊集錄出未成"
         }
       },
       "addCustomInstanceIcon": {
