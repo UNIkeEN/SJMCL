@@ -382,30 +382,21 @@ pub async fn generate_launch_command(
     ));
   }
 
-  // LWJGL Unsafe Agent for JDK 25+ and LWJGL 3.4.x
+  // JDK 25-26 + LWJGL 3.4.1 only; exclude unsafe/native classifiers (ref: #2122).
   // ref: https://github.com/HMCL-dev/lwjgl-unsafe-agent
-  if game_config.advanced.workaround.use_lwjgl_unsafe_agent && selected_java.major_version >= 25 {
-    let lwjgl_version = client_info.libraries.iter().find_map(|lib| {
-      let parts: Vec<&str> = lib.name.split(':').collect();
-      if parts.len() >= 3
-        && parts[0].eq_ignore_ascii_case("org.lwjgl")
-        && parts[1].eq_ignore_ascii_case("lwjgl")
-      {
-        Some(parts[2].to_string())
-      } else {
-        None
+  if game_config.advanced.workaround.use_lwjgl_unsafe_agent
+    && (25..=26).contains(&selected_java.major_version)
+    && client_info
+      .libraries
+      .iter()
+      .any(|lib| lib.name == "org.lwjgl:lwjgl:3.4.1")
+  {
+    match get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar") {
+      Ok(agent_path) => {
+        cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
       }
-    });
-    if let Some(ver) = lwjgl_version
-      && ver.starts_with("3.4.")
-    {
-      match get_app_resource_filepath(app, "assets/game/lwjgl-unsafe-agent.jar") {
-        Ok(agent_path) => {
-          cmd.push(format!("-javaagent:{}", agent_path.to_string_lossy()));
-        }
-        Err(e) => {
-          log::warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
-        }
+      Err(e) => {
+        log::warn!("Failed to resolve lwjgl-unsafe-agent.jar: {:?}", e);
       }
     }
   }
