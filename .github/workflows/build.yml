@@ -118,38 +118,58 @@ jobs:
           workspaces: "./src-tauri -> target"
           key: ${{ matrix.os }}-${{ matrix.target }}
 
-      - name: Build the app
+      - name: Build the app (Windows)
+        if: matrix.platform == 'windows'
+        run: pnpm tauri build --target ${{ matrix.target }} --no-bundle
+        env:
+          SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
+          SJMCL_BUILD_TYPE: ${{ inputs.build_type }}
+          SJMCL_COMMIT_SHA: ${{ steps.build_metadata.outputs.commit_sha }}
+
+      - name: Build the app (non-Windows)
+        if: matrix.platform != 'windows'
         run: pnpm tauri build --target ${{ matrix.target }}
         env:
           SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
           SJMCL_BUILD_TYPE: ${{ inputs.build_type }}
           SJMCL_COMMIT_SHA: ${{ steps.build_metadata.outputs.commit_sha }}
 
-      - name: Patch portable executable
-        if: matrix.platform == 'windows' || matrix.platform == 'linux'
+      - name: Prepare Windows build input artifact
+        if: matrix.platform == 'windows'
         shell: bash
         run: |
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched.exe" "SJMCL.exe"
-          elif [ "${{ matrix.platform }}" = "linux" ]; then
-            python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched" "SJMCL"
-          fi
+          mkdir -p windows-build-input/app
+          cp "src-tauri/target/${{ matrix.target }}/release/SJMCL.exe" windows-build-input/app/
+          cp -r out windows-build-input/out
+
+      - name: Upload Windows build input artifact
+        if: matrix.platform == 'windows' && inputs.upload_artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-input-${{ inputs.version }}-${{ matrix.arch }}
+          path: windows-build-input/
+          if-no-files-found: error
+
+      - name: Patch portable executable
+        if: matrix.platform == 'linux'
+        shell: bash
+        run: |
+          python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched" "SJMCL"
 
       - name: Setup artifact name
+        if: matrix.platform != 'windows'
         shell: bash
         run: |
           echo "ARTIFACT_NAME=SJMCL_${{ inputs.version }}_${{ matrix.platform }}_${{ matrix.arch }}" >> $GITHUB_ENV
 
       - name: Calculate SHA256 checksums
+        if: matrix.platform != 'windows'
         shell: bash
         run: |
           ARTIFACT_NAME="${{ env.ARTIFACT_NAME }}"
           touch "${ARTIFACT_NAME}.sha256"
 
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            echo "$(sha256sum src-tauri/target/${{ matrix.target }}/release/SJMCL.exe | awk '{print $1}') ${ARTIFACT_NAME}" >> "${ARTIFACT_NAME}.sha256"
-            echo "$(sha256sum "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" | awk '{print $1}') ${ARTIFACT_NAME}_portable" >> "${ARTIFACT_NAME}.sha256"
-          elif [ "${{ matrix.platform }}" = "macos" ]; then
+          if [ "${{ matrix.platform }}" = "macos" ]; then
             echo "$(sha256sum src-tauri/target/${{ matrix.target }}/release/SJMCL | awk '{print $1}') ${ARTIFACT_NAME}_unsigned" >> "${ARTIFACT_NAME}.sha256"
           elif [ "${{ matrix.platform }}" = "linux" ]; then
             echo "$(sha256sum src-tauri/target/${{ matrix.target }}/release/SJMCL | awk '{print $1}') ${ARTIFACT_NAME}" >> "${ARTIFACT_NAME}.sha256"
@@ -159,6 +179,7 @@ jobs:
           cat "${ARTIFACT_NAME}.sha256"
 
       - name: Prepare release artifact
+        if: matrix.platform != 'windows'
         shell: bash
         env:
           VERSION: ${{ inputs.version }}
@@ -169,10 +190,7 @@ jobs:
 
           cp "${ARTIFACT_NAME}.sha256" artifacts/
 
-          if [ "${{ matrix.platform }}" = "windows" ]; then
-            mv "src-tauri/target/${{ matrix.target }}/release/SJMCL-patched.exe" artifacts/"$ARTIFACT_NAME"_portable.exe
-            mv "src-tauri/target/${{ matrix.target }}/release/bundle/nsis/"*.exe artifacts/"$ARTIFACT_NAME"_setup.exe
-          elif [ "${{ matrix.platform }}" = "macos" ]; then
+          if [ "${{ matrix.platform }}" = "macos" ]; then
             ls src-tauri/target/${{ matrix.target }}/release/bundle/macos
             # For MacOS, compress the .app folder
             tar -cvzf artifacts/"$ARTIFACT_NAME".app.tar.gz -C "src-tauri/target/${{ matrix.target }}/release/bundle/macos" "SJMCL.app"
@@ -185,9 +203,9 @@ jobs:
           ls -la artifacts
 
       - name: Upload artifact
-        if: inputs.upload_artifacts
+        if: inputs.upload_artifacts && matrix.platform != 'windows'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: "artifacts/*"
-          if-no-files-found: error 
+          if-no-files-found: error

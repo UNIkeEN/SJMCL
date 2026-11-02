@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "16.3.0",
-    "@tauri-apps/cli": "^2.12.1",
+    "@tauri-apps/cli": "^2.12.4",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20",
     "@types/react": "^18",
