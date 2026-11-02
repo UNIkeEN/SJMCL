@@ -58,89 +58,39 @@ fn try_read_trailer<R: Read + Seek>(
   }))
 }
 
-/// Parses the PE Security Directory (Attribute Certificate Table entry) from the Optional Header.
+/// Parses the PE Security Directory (Attribute Certificate Table entry) using the `object` crate.
 /// Returns `Ok(Some((virtual_address, size)))` where `virtual_address` is the file offset of the certificate table.
 #[cfg(any(windows, test))]
 fn parse_pe_security_directory<R: Read + Seek>(
   reader: &mut R,
   file_len: u64,
 ) -> Result<Option<(u32, u32)>, io::Error> {
-  // DOS Header is 64 (0x40) bytes
-  if file_len < 0x40 {
+  // Read initial header chunk (up to 4096 bytes is ample for DOS + NT + Optional + Section headers)
+  let header_len = (file_len.min(4096)) as usize;
+  if header_len < 64 {
     return Ok(None);
   }
 
   reader.seek(SeekFrom::Start(0))?;
-  let mut dos_header = [0u8; 0x40];
-  reader.read_exact(&mut dos_header)?;
+  let mut header = vec![0u8; header_len];
+  reader.read_exact(&mut header)?;
 
-  if dos_header[0] != b'M' || dos_header[1] != b'Z' {
-    return Ok(None);
+  // Parse PE Optional Header Data Directory via `object`
+  if let Ok(pe) = object::read::pe::PeFile64::parse(&header[..]) {
+    if let Some(dir) = pe.data_directory(object::pe::IMAGE_DIRECTORY_ENTRY_SECURITY) {
+      let virtual_address = dir.virtual_address.get(object::LittleEndian);
+      let size = dir.size.get(object::LittleEndian);
+      return Ok(Some((virtual_address, size)));
+    }
+  } else if let Ok(pe) = object::read::pe::PeFile32::parse(&header[..]) {
+    if let Some(dir) = pe.data_directory(object::pe::IMAGE_DIRECTORY_ENTRY_SECURITY) {
+      let virtual_address = dir.virtual_address.get(object::LittleEndian);
+      let size = dir.size.get(object::LittleEndian);
+      return Ok(Some((virtual_address, size)));
+    }
   }
 
-  let pe_offset = u32::from_le_bytes([
-    dos_header[0x3C],
-    dos_header[0x3D],
-    dos_header[0x3E],
-    dos_header[0x3F],
-  ]) as u64;
-
-  // PE Signature (4 bytes) + COFF File Header (20 bytes) = 24 bytes
-  if pe_offset.checked_add(24).map_or(true, |end| end > file_len) {
-    return Ok(None);
-  }
-
-  reader.seek(SeekFrom::Start(pe_offset))?;
-  let mut pe_signature = [0u8; 4];
-  reader.read_exact(&mut pe_signature)?;
-  if &pe_signature != b"PE\0\0" {
-    return Ok(None);
-  }
-
-  let mut coff_header = [0u8; 20];
-  reader.read_exact(&mut coff_header)?;
-  let size_of_optional_header = u16::from_le_bytes([coff_header[16], coff_header[17]]) as u64;
-  if size_of_optional_header == 0 {
-    return Ok(None);
-  }
-
-  let opt_header_start = pe_offset + 24;
-  if opt_header_start
-    .checked_add(size_of_optional_header)
-    .map_or(true, |end| end > file_len)
-  {
-    return Ok(None);
-  }
-
-  reader.seek(SeekFrom::Start(opt_header_start))?;
-  let mut magic_buf = [0u8; 2];
-  reader.read_exact(&mut magic_buf)?;
-  let magic = u16::from_le_bytes(magic_buf);
-
-  // Security Directory is the 5th entry (index 4) in the Data Directory array:
-  // PE32 (0x10B): Data Directory begins at offset 96. Index 4 offset = 96 + 4 * 8 = 128.
-  // PE32+ (0x20B): Data Directory begins at offset 112. Index 4 offset = 112 + 4 * 8 = 144.
-  let sec_dir_rel_offset = match magic {
-    0x010B => 96 + 4 * 8,
-    0x020B => 112 + 4 * 8,
-    _ => return Ok(None),
-  };
-
-  if (sec_dir_rel_offset + 8) as u64 > size_of_optional_header {
-    return Ok(None);
-  }
-
-  reader.seek(SeekFrom::Start(
-    opt_header_start + sec_dir_rel_offset as u64,
-  ))?;
-  let mut sec_entry = [0u8; 8];
-  reader.read_exact(&mut sec_entry)?;
-
-  let virtual_address =
-    u32::from_le_bytes([sec_entry[0], sec_entry[1], sec_entry[2], sec_entry[3]]);
-  let size = u32::from_le_bytes([sec_entry[4], sec_entry[5], sec_entry[6], sec_entry[7]]);
-
-  Ok(Some((virtual_address, size)))
+  Ok(None)
 }
 
 #[cfg(any(windows, test))]
@@ -262,26 +212,27 @@ mod tests {
 
   fn build_minimal_pe(is_pe32_plus: bool, cert_table: Option<(u32, u32)>) -> Vec<u8> {
     let mut pe = vec![0u8; 512];
-    // DOS header
     pe[0] = b'M';
     pe[1] = b'Z';
-    // e_lfanew = 0x80
     let pe_offset = 0x80u32;
     pe[0x3C..0x40].copy_from_slice(&pe_offset.to_le_bytes());
 
     let pe_off = pe_offset as usize;
-    // PE\0\0
     pe[pe_off..pe_off + 4].copy_from_slice(b"PE\0\0");
 
-    // COFF Header (20 bytes)
-    // SizeOfOptionalHeader at offset 16
     let opt_size = if is_pe32_plus { 240u16 } else { 224u16 };
     pe[pe_off + 20..pe_off + 22].copy_from_slice(&opt_size.to_le_bytes());
 
     let opt_start = pe_off + 24;
-    // Magic: 0x20B (PE32+) or 0x10B (PE32)
     let magic = if is_pe32_plus { 0x020Bu16 } else { 0x010Bu16 };
     pe[opt_start..opt_start + 2].copy_from_slice(&magic.to_le_bytes());
+
+    let rva_count_offset = if is_pe32_plus {
+      opt_start + 108
+    } else {
+      opt_start + 92
+    };
+    pe[rva_count_offset..rva_count_offset + 4].copy_from_slice(&16u32.to_le_bytes());
 
     if let Some((v_addr, size)) = cert_table {
       let sec_dir_rel = if is_pe32_plus {

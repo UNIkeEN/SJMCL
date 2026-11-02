@@ -52,6 +52,11 @@ log = "0.4"
 lite-mc-ping = "0.2"
 murmur2 = "0.1"
 native-dialog = "0.9.6"
+object = { version = "0.40.0", default-features = false, features = [
+  "pe",
+  "read_core",
+  "std",
+] }
 plist = "1"
 proc-macro2 = "1"
 quartz_nbt = { version = "0.2.9", features = ["serde"] }
@@ -238,6 +243,7 @@ walkdir.workspace = true
 zip.workspace = true
 
 [target."cfg(windows)".dependencies]
+object.workspace = true
 tauri-plugin-decorum.workspace = true
 winapi.workspace = true
 winreg.workspace = true
