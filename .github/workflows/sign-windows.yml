@@ -51,8 +51,8 @@ jobs:
           if [ -z "${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}" ]; then
             MISSING_CONFIGS+=("SIGNPATH_SIGNING_POLICY_SLUG")
           fi
-          if [ -z "${{ vars.SIGNPATH_WINDOWS_MAIN_CONFIG }}" ]; then
-            MISSING_CONFIGS+=("SIGNPATH_WINDOWS_MAIN_CONFIG")
+          if [ -z "${{ vars.SIGNPATH_WINDOWS_CORE_CONFIG }}" ]; then
+            MISSING_CONFIGS+=("SIGNPATH_WINDOWS_CORE_CONFIG")
           fi
           if [ -z "${{ vars.SIGNPATH_WINDOWS_FINAL_CONFIG }}" ]; then
             MISSING_CONFIGS+=("SIGNPATH_WINDOWS_FINAL_CONFIG")
@@ -127,7 +127,7 @@ jobs:
           organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
           project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
           signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
-          artifact-configuration-slug: ${{ vars.SIGNPATH_WINDOWS_MAIN_CONFIG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_WINDOWS_CORE_CONFIG }}
           github-artifact-id: ${{ steps.upload-main-app.outputs.artifact-id }}
           wait-for-completion: true
           output-artifact-directory: signed-main-output
