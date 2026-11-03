@@ -146,6 +146,7 @@ impl ModpackManifest for MultiMcManifest {
           return Ok((ModLoaderType::Fabric, get_version(component)?));
         }
         "net.neoforged" => return Ok((ModLoaderType::NeoForge, get_version(component)?)),
+        "org.quiltmc.quilt-loader" => return Ok((ModLoaderType::Quilt, get_version(component)?)),
         _ => continue,
       }
     }
