@@ -73,18 +73,19 @@ jobs:
     secrets:
       SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
-  Code-Sign-macOS:
-    needs: [Version-Check, Build-and-Release]
-    uses: ./.github/workflows/sign-macos.yml
-    with:
-      version: ${{ needs.Version-Check.outputs.version }}
-    secrets:
-      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
-      MACOS_CERT_P12_PASSWORD: ${{ secrets.MACOS_CERT_P12_PASSWORD }}
-      MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
-      MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
-      MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
-      MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
+# [TESTING COMMENTED]
+#  Code-Sign-macOS:
+#    needs: [Version-Check, Build-and-Release]
+#    uses: ./.github/workflows/sign-macos.yml
+#    with:
+#      version: ${{ needs.Version-Check.outputs.version }}
+#    secrets:
+#      MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+#      MACOS_CERT_P12_PASSWORD: ${{ secrets.MACOS_CERT_P12_PASSWORD }}
+#      MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+#      MACOS_NOTARY_APPLE_ID: ${{ secrets.MACOS_NOTARY_APPLE_ID }}
+#      MACOS_NOTARY_PASSWORD: ${{ secrets.MACOS_NOTARY_PASSWORD }}
+#      MACOS_NOTARY_TEAM_ID: ${{ secrets.MACOS_NOTARY_TEAM_ID }}
 
   Code-Sign-Windows:
     needs: [Version-Check, Build-and-Release]
@@ -95,7 +96,8 @@ jobs:
       SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
 
   Create-Release:
-    needs: [Version-Check, Build-and-Release, Code-Sign-macOS, Code-Sign-Windows]
+    needs: [Version-Check, Build-and-Release, Code-Sign-Windows]
+    # [TESTING COMMENTED] original: needs: [Version-Check, Build-and-Release, Code-Sign-macOS, Code-Sign-Windows]
     if: always() && needs.Build-and-Release.result == 'success'
     runs-on: ubuntu-latest
     
@@ -119,13 +121,14 @@ jobs:
           path: artifacts-signed-windows
           merge-multiple: true
 
-      - name: Download signed macOS artifacts
-        if: needs.Code-Sign-macOS.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          pattern: 'SJMCL_${{ needs.Version-Check.outputs.version }}_macos_*_signed'
-          path: artifacts-signed-macos
-          merge-multiple: true
+# [TESTING COMMENTED]
+#      - name: Download signed macOS artifacts
+#        if: needs.Code-Sign-macOS.result == 'success'
+#        uses: actions/download-artifact@v4
+#        with:
+#          pattern: 'SJMCL_${{ needs.Version-Check.outputs.version }}_macos_*_signed'
+#          path: artifacts-signed-macos
+#          merge-multiple: true
 
       - name: Organize release artifacts
         env:
@@ -210,21 +213,22 @@ jobs:
           echo "Final release artifacts:"
           ls -la release-artifacts/
 
-      # Only upload to SJMC server for the main repository
-      - name: Upload artifacts to SJMC server
-        if: github.repository == 'UNIkeEN/SJMCL'
-        timeout-minutes: 10
-        env:
-          SJMC_SECRET_KEY: ${{ secrets.SJMC_DEPLOY_SECRET_KEY }}
-          SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
-          SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
-          VERSION: ${{ needs.Version-Check.outputs.version }}
-        run: |
-          SHA256SUMS_FILE=SHA256SUMS_${{ env.VERSION }}.txt
-          cp SHA256SUMS.txt release-artifacts/${SHA256SUMS_FILE}
-          bash scripts/release/upload_to_sjmc_server.sh
-          rm release-artifacts/${SHA256SUMS_FILE}
-        shell: bash
+# [TESTING COMMENTED] Skip uploading to SJMC server during test
+#      # Only upload to SJMC server for the main repository
+#      - name: Upload artifacts to SJMC server
+#        if: github.repository == 'UNIkeEN/SJMCL'
+#        timeout-minutes: 10
+#        env:
+#          SJMC_SECRET_KEY: ${{ secrets.SJMC_DEPLOY_SECRET_KEY }}
+#          SJMC_DEPLOY_API: ${{ secrets.SJMC_DEPLOY_API }}
+#          SJMC_DEPLOY_PROJECT: ${{ secrets.SJMC_DEPLOY_PROJECT }}
+#          VERSION: ${{ needs.Version-Check.outputs.version }}
+#        run: |
+#          SHA256SUMS_FILE=SHA256SUMS_${{ env.VERSION }}.txt
+#          cp SHA256SUMS.txt release-artifacts/${SHA256SUMS_FILE}
+#          bash scripts/release/upload_to_sjmc_server.sh
+#          rm release-artifacts/${SHA256SUMS_FILE}
+#        shell: bash
 
       - name: Generate Changelog
         id: changelog
@@ -256,14 +260,21 @@ jobs:
           fi
         shell: bash
 
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.Version-Check.outputs.version }}
-        run: |
-          # Create the release
-          gh release create "$GITHUB_REF_NAME" \
-            --title "SJMCL ${{ env.VERSION }}" \
-            --draft \
-            --notes-file release-notes.md \
-            ./release-artifacts/*
+# [TESTING COMMENTED] Do not publish actual release during test run
+#      - name: Create Release
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          VERSION: ${{ needs.Version-Check.outputs.version }}
+#        run: |
+#          # Create the release
+#          gh release create "$GITHUB_REF_NAME" \
+#            --title "SJMCL ${{ env.VERSION }}" \
+#            --draft \
+#            --notes-file release-notes.md \
+#            ./release-artifacts/*
+
+      - name: Upload test release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-release-artifacts-${{ needs.Version-Check.outputs.version }}
+          path: release-artifacts/*
