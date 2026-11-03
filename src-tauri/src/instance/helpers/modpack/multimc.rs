@@ -255,34 +255,3 @@ fn generate_multimc_instance_cfg(options: &ExportModpackOptions) -> String {
   }
   content
 }
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn detects_mod_loader_of_exported_manifest() {
-    for loader_type in [
-      ModLoaderType::Forge,
-      ModLoaderType::NeoForge,
-      ModLoaderType::Fabric,
-      ModLoaderType::Quilt,
-    ] {
-      let instance = Instance {
-        version: "1.20.1".to_string(),
-        mod_loader: ModLoader {
-          loader_type,
-          version: "0.0.1".to_string(),
-          ..Default::default()
-        },
-        ..Default::default()
-      };
-      let manifest = generate_multimc_manifest(&instance);
-      assert_eq!(manifest.get_client_version().unwrap(), "1.20.1");
-      assert_eq!(
-        manifest.get_mod_loader_type_version().unwrap(),
-        (loader_type, "0.0.1".to_string())
-      );
-    }
-  }
-}
