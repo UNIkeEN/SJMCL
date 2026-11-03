@@ -382,7 +382,7 @@ pub async fn generate_launch_command(
     ));
   }
 
-  // JDK 25-26 + LWJGL 3.4.1 only; exclude unsafe/native classifiers (ref: #2122).
+  // JDK 25-26 + LWJGL 3.4.1 only, use LWJGL unsafe agent from HMCL
   // ref: https://github.com/HMCL-dev/lwjgl-unsafe-agent
   if game_config.advanced.workaround.use_lwjgl_unsafe_agent
     && (25..=26).contains(&selected_java.major_version)
