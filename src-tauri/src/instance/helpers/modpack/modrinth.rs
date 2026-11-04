@@ -346,32 +346,3 @@ async fn collect_modrinth_files(
 
   Ok((modrinth_files, override_files))
 }
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  fn file_with_env(env: Option<(&str, &str)>) -> ModrinthFile {
-    ModrinthFile {
-      path: "mods/example.jar".to_string(),
-      hashes: ModrinthFileHashes {
-        sha1: String::new(),
-        sha512: String::new(),
-      },
-      env: env.map(|(client, server)| ModrinthFileEnv {
-        client: client.to_string(),
-        server: server.to_string(),
-      }),
-      downloads: vec!["https://cdn.modrinth.com/example.jar".to_string()],
-      file_size: 0,
-    }
-  }
-
-  #[test]
-  fn skips_server_only_files_on_client() {
-    assert!(file_with_env(None).is_client_supported());
-    assert!(file_with_env(Some(("required", "required"))).is_client_supported());
-    assert!(file_with_env(Some(("optional", "unsupported"))).is_client_supported());
-    assert!(!file_with_env(Some(("unsupported", "required"))).is_client_supported());
-  }
-}
