@@ -1,6 +1,7 @@
 name: Sign Windows Artifacts
 permissions:
   contents: read
+  actions: read
 
 on:
   workflow_call:
@@ -145,6 +146,8 @@ jobs:
       - name: Bundle portable executable
         shell: bash
         run: |
+          mkdir -p "src-tauri/target/${{ matrix.target }}/release/assets"
+          cp -r src-tauri/assets/* "src-tauri/target/${{ matrix.target }}/release/assets/"
           python scripts/release/bundle_portable_assets.py -p "src-tauri/target/${{ matrix.target }}/release/" -o "SJMCL-patched.exe" "SJMCL-unsigned.exe"
 
       - name: Prepare final artifacts for signing
