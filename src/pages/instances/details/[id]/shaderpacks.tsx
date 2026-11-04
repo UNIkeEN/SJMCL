@@ -2,8 +2,6 @@ import {
   Center,
   Flex,
   HStack,
-  Icon,
-  IconButton,
   Image,
   Text,
   VStack,
@@ -12,14 +10,15 @@ import {
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronRight, LuHaze } from "react-icons/lu";
+import { LuHaze } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
+import { CardChevron } from "@/components/common/card-chevron";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
-import { WrapCardGroup } from "@/components/common/wrap-card";
+import { WrapCardGroup, WrapCardProps } from "@/components/common/wrap-card";
 import { ChangeLoaderModal } from "@/components/modals/change-loader-modal";
 import { useFileDnD } from "@/components/special/file-dnd-overlay";
 import { useLauncherConfig } from "@/contexts/config";
@@ -160,7 +159,7 @@ const InstanceShaderPacksPage = () => {
     },
   ];
 
-  const shaderLoaderCardItems = [
+  const shaderLoaderCardItems: WrapCardProps[] = [
     {
       cardContent: (
         <Flex justify="space-between" align="center">
@@ -193,17 +192,17 @@ const InstanceShaderPacksPage = () => {
             </VStack>
           </HStack>
           <HStack spacing={0}>
-            <IconButton
-              aria-label="select"
-              icon={<Icon as={LuChevronRight} boxSize={3.5} />}
-              variant="ghost"
-              size="xs"
-              onClick={onChangeLoaderModalOpen}
+            <CardChevron
+              isSelected={summary?.optifine?.status === "Installed"}
             />
           </HStack>
         </Flex>
       ),
       isSelected: summary?.optifine?.status === "Installed",
+      as: "button",
+      textAlign: "start",
+      isFullClickZone: true,
+      onSelect: onChangeLoaderModalOpen,
     },
   ];
 
