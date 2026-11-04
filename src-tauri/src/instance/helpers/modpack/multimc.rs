@@ -46,7 +46,7 @@ structstruck::strike! {
     #[serde(skip)]
     pub cfg: HashMap<String, String>,
     #[serde(skip)]
-    pub base_path: String,
+    pub overrides_path: String,
   }
 }
 
@@ -77,6 +77,18 @@ impl ModpackManifest for MultiMcManifest {
       found_path.ok_or(InstanceError::ModpackManifestParseError)?
     };
 
+    // Prefer `.minecraft` (MultiMC/SJMCL's export default), then `minecraft` (Prism Launcher's).
+    let overrides_paths = [".minecraft", "minecraft"].map(|dir| format!("{base_path}{dir}/"));
+    let overrides_path = overrides_paths
+      .iter()
+      .find(|prefix| {
+        archive
+          .file_names()
+          .any(|name| name.is_ok_and(|name| name.starts_with(prefix.as_str())))
+      })
+      .unwrap_or(&overrides_paths[0])
+      .clone();
+
     let mut manifest: MultiMcManifest;
     {
       let manifest_path = format!("{}mmc-pack.json", base_path);
@@ -95,7 +107,7 @@ impl ModpackManifest for MultiMcManifest {
       .add_source(config::File::from_str(&cfg_str, config::FileFormat::Ini))
       .build()?;
 
-    manifest.base_path = base_path;
+    manifest.overrides_path = overrides_path;
     manifest.cfg = config.try_deserialize::<HashMap<String, String>>()?;
 
     Ok(manifest)
@@ -163,7 +175,7 @@ impl ModpackManifest for MultiMcManifest {
   }
 
   fn get_overrides_path(&self) -> String {
-    format!("{}.minecraft/", self.base_path)
+    self.overrides_path.clone()
   }
 }
 
@@ -240,7 +252,7 @@ fn generate_multimc_manifest(instance: &Instance) -> MultiMcManifest {
     format_version: 1,
     components,
     cfg: HashMap::new(),
-    base_path: String::new(),
+    overrides_path: ".minecraft/".to_string(),
   }
 }
 
