@@ -44,6 +44,17 @@ pub struct ModrinthFile {
 }
 }
 
+impl ModrinthFile {
+  /// Whether the file should be installed on the client. Server-only files are marked with
+  /// `env.client` set to `"unsupported"`.
+  fn is_client_supported(&self) -> bool {
+    self
+      .env
+      .as_ref()
+      .is_none_or(|env| env.client != "unsupported")
+  }
+}
+
 #[serialize_skip_none]
 #[derive(Deserialize, Serialize, Debug, Clone, SmartDefault)]
 #[serde(rename_all = "camelCase")]
@@ -130,6 +141,7 @@ impl ModpackManifest for ModrinthManifest {
     self
       .files
       .iter()
+      .filter(|file| file.is_client_supported())
       .map(|file| {
         if file.downloads.is_empty() {
           return Err(InstanceError::InvalidSourcePath.into());
