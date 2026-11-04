@@ -10,6 +10,17 @@ import argparse
 
 def bundle_assets(basepath, executable_name, output_executable_name=None):
     assets_path = os.path.join(basepath, "assets")
+    if not os.path.isdir(assets_path) or not os.listdir(assets_path):
+        fallback_path = os.path.join("src-tauri", "assets")
+        if os.path.isdir(fallback_path) and os.listdir(fallback_path):
+            print(f"assets directory not found in {assets_path}, falling back to {fallback_path}")
+            assets_path = fallback_path
+            root_prefix = "src-tauri"
+        else:
+            root_prefix = basepath
+    else:
+        root_prefix = basepath
+
     executable_path = os.path.join(basepath, executable_name)
     if output_executable_name is None:
         name, ext = os.path.splitext(executable_name)
@@ -22,8 +33,13 @@ def bundle_assets(basepath, executable_name, output_executable_name=None):
         for root, dirs, files in os.walk(assets_path):
             for file in files:
                 file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, basepath)
+                arcname = os.path.relpath(file_path, root_prefix).replace("\\", "/")
                 zipf.write(file_path, arcname)
+
+    if not zipf.namelist():
+        raise RuntimeError(f"Error: No assets bundled into portable executable! Checked {assets_path}")
+
+    print(f"Bundled {len(zipf.namelist())} asset files into portable payload.")
     zip_stream.seek(0)
 
     with open(executable_path,'rb') as f:
