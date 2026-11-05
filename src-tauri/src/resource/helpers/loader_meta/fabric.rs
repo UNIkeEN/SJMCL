@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
+use tauri_plugin_http::reqwest::{self, StatusCode};
 
 use crate::instance::models::misc::ModLoaderType;
 use crate::resource::helpers::misc::get_download_api;
@@ -31,6 +31,9 @@ pub async fn get_fabric_meta_by_game_version(
   game_version: &str,
 ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
   let client = app.state::<reqwest::Client>();
+  // whether any source reports that the game version is not supported by Fabric.
+  let mut version_not_found = false;
+
   for source_type in priority_list.iter() {
     let url = get_download_api(*source_type, ResourceType::FabricMeta)?
       .join("v2/versions/loader/")?
@@ -56,11 +59,23 @@ pub async fn get_fabric_meta_by_game_version(
             return Err(ResourceError::ParseError.into());
           }
         } else {
+          // Fabric meta responds 400 and BMCLAPI responds 404 if the game version is not supported.
+          if matches!(
+            response.status(),
+            StatusCode::BAD_REQUEST | StatusCode::NOT_FOUND
+          ) {
+            version_not_found = true;
+          }
           continue;
         }
       }
       Err(_) => continue,
     }
   }
+
+  if version_not_found {
+    return Ok(Vec::new());
+  }
+
   Err(ResourceError::NetworkError.into())
 }
