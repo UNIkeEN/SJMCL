@@ -78,6 +78,8 @@ export interface GameServerInfo {
   playersMax?: number;
   online: boolean;
   latency?: number;
+  /** Position in servers.dat; used for delete/reorder. */
+  index: number;
 }
 
 export interface LocalModInfo {

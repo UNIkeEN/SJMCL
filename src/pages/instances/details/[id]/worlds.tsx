@@ -54,6 +54,9 @@ const InstanceWorldsPage = () => {
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
   const [selectedWorldName, setSelectedWorldName] = useState<string>();
   const [gameServers, setGameServers] = useState<GameServerInfo[]>([]);
+  const [editingServer, setEditingServer] = useState<GameServerInfo | null>(
+    null
+  );
 
   const {
     isOpen: isAddGameServerModalOpen,
@@ -102,54 +105,146 @@ const InstanceWorldsPage = () => {
     },
   });
 
-  const handleRetrieveGameServerList = useCallback(
-    (queryOnline: boolean) => {
-      if (instanceId !== undefined) {
-        InstanceService.retrieveGameServerList(instanceId, queryOnline).then(
-          (response) => {
-            if (response.status === "success") {
-              setGameServers(response.data);
-            } else if (!queryOnline) {
-              toast({
-                title: response.message,
-                description: response.details,
-                status: "error",
-              });
-            }
+  const resolveServerIconSrc = (server: GameServerInfo): string => {
+    const raw = server.iconSrc?.trim() ?? "";
+    if (!raw) return "/images/icons/UnknownWorld.webp";
+    if (
+      raw.startsWith("data:") ||
+      raw.startsWith("http://") ||
+      raw.startsWith("https://") ||
+      raw.startsWith("asset:")
+    ) {
+      return raw;
+    }
+    return base64ImgSrc(raw);
+  };
+
+  const applyPingStatus = (
+    base: GameServerInfo,
+    status: GameServerInfo
+  ): GameServerInfo => ({
+    // Keep the freshly loaded entry (and its servers.dat index / identity).
+    ...base,
+    isQueried: true,
+    online: status.online,
+    latency: status.latency,
+    playersOnline: status.playersOnline,
+    playersMax: status.playersMax,
+    description: status.description,
+    iconSrc: status.iconSrc || base.iconSrc,
+  });
+
+  const applyQueriedServers = useCallback((queried: GameServerInfo[]) => {
+    if (!queried.length) return;
+    setGameServers((prev) => {
+      const map = new Map(queried.map((s) => [s.index, s] as const));
+      return prev.map((s) => {
+        const hit = map.get(s.index);
+        if (!hit || hit.ip !== s.ip) return s;
+        return applyPingStatus(s, hit);
+      });
+    });
+  }, []);
+
+  const loadLocalServerList = useCallback(
+    (opts?: { preserveStatus?: boolean }) => {
+      if (instanceId === undefined) return Promise.resolve();
+      return InstanceService.retrieveGameServerList(instanceId).then(
+        (response) => {
+          if (response.status !== "success") {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+            return;
           }
-        );
-      }
+          const next = response.data;
+          if (!opts?.preserveStatus) {
+            setGameServers(next);
+            return;
+          }
+          setGameServers((prev) => {
+            // Queue by identity so duplicate (ip, name) pairs are matched in order
+            // instead of collapsing into one map key.
+            const statusQueues = new Map<string, GameServerInfo[]>();
+            for (const s of prev) {
+              if (!s.isQueried) continue;
+              const key = s.ip + "|" + s.name;
+              const queue = statusQueues.get(key);
+              if (queue) {
+                queue.push(s);
+              } else {
+                statusQueues.set(key, [s]);
+              }
+            }
+            return next.map((s) => {
+              const queue = statusQueues.get(s.ip + "|" + s.name);
+              const hit = queue?.shift();
+              return hit ? applyPingStatus(s, hit) : s;
+            });
+          });
+        }
+      );
     },
     [toast, instanceId]
   );
 
-  // First fetch from local nbt (queryOnline=false) for instant feedback,
-  // then query online status to avoid long wait harming UX.
+  const queryServerStatus = useCallback(
+    (indexes?: number[]) => {
+      if (instanceId === undefined) return Promise.resolve();
+      return InstanceService.queryGameServerOnlineStatus(
+        instanceId,
+        indexes
+      ).then((response) => {
+        if (response.status === "success") {
+          applyQueriedServers(response.data);
+        }
+      });
+    },
+    [instanceId, applyQueriedServers]
+  );
+
+  useEffect(() => {
+    return InstanceService.onGameServerStatusUpdate((server) => {
+      applyQueriedServers([server]);
+    });
+  }, [applyQueriedServers]);
+
   const refreshGameServerList = useCallback(() => {
-    handleRetrieveGameServerList(false);
-    handleRetrieveGameServerList(true);
-  }, [handleRetrieveGameServerList]);
+    loadLocalServerList({ preserveStatus: false }).then(() =>
+      queryServerStatus()
+    );
+  }, [loadLocalServerList, queryServerStatus]);
+
+  const handleServerModalSuccess = useCallback(
+    (payload: { mode: "add" | "edit"; index: number }) => {
+      loadLocalServerList({ preserveStatus: true }).then(() => {
+        queryServerStatus([payload.index]);
+      });
+    },
+    [loadLocalServerList, queryServerStatus]
+  );
 
   useEffect(() => {
     refreshGameServerList();
-    // refresh every minute to query server info
-    const intervalId = setInterval(async () => {
-      handleRetrieveGameServerList(true);
+    const intervalId = setInterval(() => {
+      queryServerStatus();
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [instanceId, handleRetrieveGameServerList, refreshGameServerList]);
+  }, [instanceId, refreshGameServerList, queryServerStatus]);
 
   const handleDeleteServer = useCallback(
     (server: GameServerInfo) => {
       if (!instanceId) return;
-      InstanceService.deleteGameServer(instanceId, server.ip).then(
+      InstanceService.deleteGameServer(instanceId, server.index).then(
         (response) => {
           if (response.status === "success") {
             toast({
               title: response.message,
               status: "success",
             });
-            refreshGameServerList();
+            loadLocalServerList({ preserveStatus: true });
           } else {
             toast({
               title: response.message,
@@ -160,7 +255,27 @@ const InstanceWorldsPage = () => {
         }
       );
     },
-    [instanceId, toast, refreshGameServerList]
+    [instanceId, toast, loadLocalServerList]
+  );
+
+  const handleMoveServer = useCallback(
+    (server: GameServerInfo, moveUp: boolean) => {
+      if (!instanceId) return;
+      InstanceService.moveGameServer(instanceId, server.index, moveUp).then(
+        (response) => {
+          if (response.status === "success") {
+            loadLocalServerList({ preserveStatus: true });
+          } else {
+            toast({
+              title: response.message,
+              description: response.details,
+              status: "error",
+            });
+          }
+        }
+      );
+    },
+    [instanceId, toast, loadLocalServerList]
   );
 
   const worldSecMenuOperations = [
@@ -204,6 +319,7 @@ const InstanceWorldsPage = () => {
     {
       icon: "add",
       onClick: () => {
+        setEditingServer(null);
         onAddGameServerModalOpen();
       },
     },
@@ -272,6 +388,31 @@ const InstanceWorldsPage = () => {
         summary,
       }
     ),
+    {
+      icon: "moveUp",
+      label: t("General.moveUp"),
+      danger: false,
+      onClick: () => {
+        handleMoveServer(server, true);
+      },
+    },
+    {
+      icon: "moveDown",
+      label: t("General.moveDown"),
+      danger: false,
+      onClick: () => {
+        handleMoveServer(server, false);
+      },
+    },
+    {
+      icon: "edit",
+      label: t("General.edit"),
+      danger: false,
+      onClick: () => {
+        setEditingServer(server);
+        onAddGameServerModalOpen();
+      },
+    },
     {
       icon: "delete",
       danger: true,
@@ -426,22 +567,18 @@ const InstanceWorldsPage = () => {
       >
         {gameServers.length > 0 ? (
           <OptionItemGroup
-            items={gameServers.map((server) => (
+            items={gameServers.map((server, serverIdx) => (
               <OptionItem
-                key={server.name}
+                key={`server-${server.index}`}
                 title={server.name}
                 description={server.ip}
                 prefixElement={
                   <Image
-                    src={
-                      server.isQueried
-                        ? server.iconSrc
-                        : base64ImgSrc(server.iconSrc)
-                    }
+                    src={resolveServerIconSrc(server)}
                     fallbackSrc="/images/icons/UnknownWorld.webp"
                     alt={server.name}
                     boxSize="28px"
-                    style={{ borderRadius: "4px" }}
+                    borderRadius="4px"
                   />
                 }
               >
@@ -492,6 +629,11 @@ const InstanceWorldsPage = () => {
                         icon={item.icon}
                         label={item.label}
                         colorScheme={item.danger ? "red" : "gray"}
+                        isDisabled={
+                          (item.icon === "moveUp" && serverIdx === 0) ||
+                          (item.icon === "moveDown" &&
+                            serverIdx === gameServers.length - 1)
+                        }
                         onClick={item.onClick}
                       />
                     ))}
@@ -507,10 +649,12 @@ const InstanceWorldsPage = () => {
       {instanceId && (
         <AddGameServerModal
           instanceId={instanceId}
+          editingServer={editingServer}
           isOpen={isAddGameServerModalOpen}
+          onSuccess={handleServerModalSuccess}
           onClose={() => {
             onAddGameServerModalClose();
-            refreshGameServerList();
+            setEditingServer(null);
           }}
         />
       )}
