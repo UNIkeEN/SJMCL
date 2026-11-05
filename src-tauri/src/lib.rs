@@ -27,7 +27,9 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex, OnceLock};
 use tauri::Manager;
 use utils::portable::is_portable;
-use utils::web::{build_sjmcl_download_client, build_sjmcl_general_client};
+use utils::web::{
+  build_sjmcl_download_client, build_sjmcl_general_client, build_sjmcl_meta_client,
+};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 use tauri::path::BaseDirectory;
@@ -35,6 +37,14 @@ use tauri_plugin_opener::OpenerExt;
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_decorum::WebviewWindowExt;
+
+use crate::resource::helpers::loader_meta::cleanroom::CleanroomMetaClient;
+use crate::resource::helpers::loader_meta::fabric::FabricMetaClient;
+use crate::resource::helpers::loader_meta::forge::ForgeMetaClient;
+use crate::resource::helpers::loader_meta::neoforge::NeoForgeMetaClient;
+use crate::resource::helpers::loader_meta::optifine::OptiFineMetaClient;
+use crate::resource::helpers::loader_meta::quilt::QuiltMetaClient;
+use crate::resource::helpers::version_manifest::GameVersionManifestClient;
 
 static EXE_PATH: LazyLock<PathBuf> = LazyLock::new(|| std::env::current_exe().unwrap());
 static EXE_DIR: LazyLock<PathBuf> = LazyLock::new(|| EXE_PATH.parent().unwrap().to_path_buf());
@@ -239,6 +249,18 @@ pub async fn run() {
 
         let client = build_sjmcl_general_client(app.handle());
         app.manage(client);
+
+        let meta_client = build_sjmcl_meta_client(app.handle(), true);
+        app.manage(GameVersionManifestClient::new(
+          meta_client.clone(),
+          app.path().app_cache_dir().ok(),
+        ));
+        app.manage(ForgeMetaClient::new(meta_client.clone()));
+        app.manage(CleanroomMetaClient::new(meta_client.clone()));
+        app.manage(FabricMetaClient::new(meta_client.clone()));
+        app.manage(NeoForgeMetaClient::new(meta_client.clone()));
+        app.manage(QuiltMetaClient::new(meta_client.clone()));
+        app.manage(OptiFineMetaClient::new(meta_client.clone()));
 
         let download_client = build_sjmcl_download_client(app.handle(), true);
         app

@@ -42,6 +42,15 @@ pub fn build_sjmcl_general_client(app: &AppHandle) -> Client {
   build_sjmcl_client(app, false, Some(builder))
 }
 
+/// Build a standalone metadata download client, utilizing the launcher's User-Agent and proxy settings
+pub fn build_sjmcl_meta_client(app: &AppHandle, use_proxy: bool) -> Client {
+  let builder = ClientBuilder::new()
+    .timeout(Duration::from_secs(10))
+    .tcp_keepalive(Duration::from_secs(10));
+
+  build_sjmcl_client(app, use_proxy, Some(builder))
+}
+
 /// Builds a separate streaming download client with the launcher User-Agent and proxy settings.
 /// Uses a 10s connect timeout and a 30s read timeout, without a total request deadline.
 pub fn build_sjmcl_download_client(app: &AppHandle, use_proxy: bool) -> Client {

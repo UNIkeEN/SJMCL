@@ -13,12 +13,12 @@ use crate::resource::helpers::curseforge::{
   fetch_remote_resource_by_id_curseforge, fetch_remote_resource_by_local_curseforge,
   fetch_resource_list_by_name_curseforge, fetch_resource_version_packs_curseforge,
 };
-use crate::resource::helpers::loader_meta::cleanroom::get_cleanroom_meta_by_game_version;
-use crate::resource::helpers::loader_meta::fabric::get_fabric_meta_by_game_version;
-use crate::resource::helpers::loader_meta::forge::get_forge_meta_by_game_version;
-use crate::resource::helpers::loader_meta::neoforge::get_neoforge_meta_by_game_version;
-use crate::resource::helpers::loader_meta::optifine::get_optifine_meta_by_game_version;
-use crate::resource::helpers::loader_meta::quilt::get_quilt_meta_by_game_version;
+use crate::resource::helpers::loader_meta::cleanroom::CleanroomMetaClient;
+use crate::resource::helpers::loader_meta::fabric::FabricMetaClient;
+use crate::resource::helpers::loader_meta::forge::ForgeMetaClient;
+use crate::resource::helpers::loader_meta::neoforge::NeoForgeMetaClient;
+use crate::resource::helpers::loader_meta::optifine::OptiFineMetaClient;
+use crate::resource::helpers::loader_meta::quilt::QuiltMetaClient;
 use crate::resource::helpers::misc::{
   get_download_urls, get_source_priority_list, resolve_mod_update_paths,
 };
@@ -26,7 +26,8 @@ use crate::resource::helpers::modrinth::{
   fetch_remote_resource_by_id_modrinth, fetch_remote_resource_by_local_modrinth,
   fetch_resource_list_by_name_modrinth, fetch_resource_version_packs_modrinth,
 };
-use crate::resource::helpers::version_manifest::get_game_version_manifest;
+use crate::resource::helpers::version_manifest::GameVersionManifestClient;
+// use crate::resource::helpers::version_manifest::get_game_version_manifest;
 use crate::resource::models::{
   GameClientResourceInfo, ModLoaderResourceInfo, ModUpdateQuery, OptiFineResourceInfo,
   OtherResourceFileInfo, OtherResourceInfo, OtherResourceSearchQuery, OtherResourceSearchRes,
@@ -41,7 +42,10 @@ pub async fn fetch_game_version_list(app: AppHandle) -> SJMCLResult<Vec<GameClie
     let launcher_config = launcher_config_state.lock()?;
     get_source_priority_list(&launcher_config)
   };
-  get_game_version_manifest(&app, &priority_list).await
+  app
+    .state::<GameVersionManifestClient>()
+    .fetch(&priority_list)
+    .await
 }
 
 #[tauri::command]
@@ -70,17 +74,34 @@ pub async fn fetch_mod_loader_version_list(
   };
   match mod_loader_type {
     ModLoaderType::Forge | ModLoaderType::LegacyForge => {
-      Ok(get_forge_meta_by_game_version(&app, &priority_list, &game_version).await?)
+      app
+        .state::<ForgeMetaClient>()
+        .fetch(&priority_list, &game_version)
+        .await
     }
-    ModLoaderType::Cleanroom => Ok(get_cleanroom_meta_by_game_version(&app, &game_version).await?),
+    ModLoaderType::Cleanroom => {
+      app
+        .state::<CleanroomMetaClient>()
+        .fetch(&game_version)
+        .await
+    }
     ModLoaderType::Fabric => {
-      Ok(get_fabric_meta_by_game_version(&app, &priority_list, &game_version).await?)
+      app
+        .state::<FabricMetaClient>()
+        .fetch(&priority_list, &game_version)
+        .await
     }
     ModLoaderType::NeoForge => {
-      Ok(get_neoforge_meta_by_game_version(&app, &priority_list, &game_version).await?)
+      app
+        .state::<NeoForgeMetaClient>()
+        .fetch(&priority_list, &game_version)
+        .await
     }
     ModLoaderType::Quilt => {
-      Ok(get_quilt_meta_by_game_version(&app, &priority_list, &game_version).await?)
+      app
+        .state::<QuiltMetaClient>()
+        .fetch(&priority_list, &game_version)
+        .await
     }
     // TODO here
     _ => Err(ResourceError::NoDownloadApi.into()),
@@ -97,7 +118,10 @@ pub async fn fetch_optifine_version_list(
     let launcher_config = launcher_config_state.lock()?;
     get_source_priority_list(&launcher_config)
   };
-  get_optifine_meta_by_game_version(&app, &priority_list, &game_version).await
+  app
+    .state::<OptiFineMetaClient>()
+    .fetch(&priority_list, &game_version)
+    .await
 }
 
 #[tauri::command]

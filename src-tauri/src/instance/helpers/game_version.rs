@@ -9,7 +9,8 @@ use tauri::{AppHandle, Manager};
 
 use crate::launcher_config::models::LauncherConfig;
 use crate::resource::helpers::misc::get_source_priority_list;
-use crate::resource::helpers::version_manifest::get_game_version_manifest;
+use crate::resource::helpers::version_manifest::GameVersionManifestClient;
+// use crate::resource::helpers::version_manifest::get_game_version_manifest;
 use crate::utils::fs::get_app_resource_filepath;
 
 fn load_versions(app: &AppHandle, path: &str, from_cache: bool) -> Vec<String> {
@@ -77,7 +78,10 @@ pub async fn compare_game_versions(
       let locked = state.lock().unwrap();
       get_source_priority_list(&locked)
     };
-    let _ = get_game_version_manifest(app, &priority_list).await;
+    let _ = app
+      .state::<GameVersionManifestClient>()
+      .fetch(&priority_list)
+      .await;
     versions = load_versions(app, "game_versions.txt", true);
     idx_a = try_find(&versions, version_a);
     idx_b = try_find(&versions, version_b);
@@ -217,7 +221,10 @@ pub async fn get_major_game_version(
       let locked = state.lock().unwrap();
       get_source_priority_list(&locked)
     };
-    let _ = get_game_version_manifest(app, &priority_list).await;
+    let _ = app
+      .state::<GameVersionManifestClient>()
+      .fetch(&priority_list)
+      .await;
     versions = load_versions(app, "game_versions.txt", true);
     if let Some(idx) = try_find(&versions, version) {
       return find_closest_major_version(&versions, idx);
