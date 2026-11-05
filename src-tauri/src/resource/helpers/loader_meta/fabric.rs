@@ -1,12 +1,15 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sjmcl_types::error::SJMCLResult;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
+use tauri_plugin_http::reqwest::Client;
 
-use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::get_download_api;
-use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
+use crate::{
+  instance::models::misc::ModLoaderType,
+  resource::{
+    helpers::misc::get_download_api,
+    models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType},
+  },
+};
 
 #[derive(Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
@@ -25,42 +28,51 @@ struct FabricLoaderInfo {
   pub stable: bool,
 }
 
-pub async fn get_fabric_meta_by_game_version(
-  app: &AppHandle,
-  priority_list: &[SourceType],
-  game_version: &str,
-) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
-  let client = app.state::<reqwest::Client>();
-  for source_type in priority_list.iter() {
-    let url = get_download_api(*source_type, ResourceType::FabricMeta)?
-      .join("v2/versions/loader/")?
-      .join(game_version)?;
-    match client.get(url).send().await {
-      Ok(response) => {
-        if response.status().is_success() {
-          if let Ok(manifest) = response.json::<Vec<FabricMetaItem>>().await {
-            return Ok(
-              manifest
-                .into_iter()
-                .map(|info| ModLoaderResourceInfo {
-                  loader_type: ModLoaderType::Fabric,
-                  version: info.loader.version,
-                  description: String::new(),
-                  // stable: info.loader.stable,
-                  stable: None,
-                  branch: None,
-                })
-                .collect(),
-            );
-          } else {
-            return Err(ResourceError::ParseError.into());
-          }
-        } else {
-          continue;
-        }
-      }
-      Err(_) => continue,
-    }
+pub struct FabricMetaClient {
+  http: Client,
+}
+
+impl FabricMetaClient {
+  pub fn new(http: Client) -> Self {
+    Self { http }
   }
-  Err(ResourceError::NetworkError.into())
+
+  pub async fn fetch(
+    &self,
+    priority_list: &[SourceType],
+    game_version: &str,
+  ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+    for source_type in priority_list.iter() {
+      let url = get_download_api(*source_type, ResourceType::FabricMeta)?
+        .join("v2/versions/loader/")?
+        .join(game_version)?;
+      match self.http.get(url).send().await {
+        Ok(response) => {
+          if response.status().is_success() {
+            if let Ok(manifest) = response.json::<Vec<FabricMetaItem>>().await {
+              return Ok(
+                manifest
+                  .into_iter()
+                  .map(|info| ModLoaderResourceInfo {
+                    loader_type: ModLoaderType::Fabric,
+                    version: info.loader.version,
+                    description: String::new(),
+                    // stable: info.loader.stable,
+                    stable: None,
+                    branch: None,
+                  })
+                  .collect(),
+              );
+            } else {
+              return Err(ResourceError::ParseError.into());
+            }
+          } else {
+            continue;
+          }
+        }
+        Err(_) => continue,
+      }
+    }
+    Err(ResourceError::NetworkError.into())
+  }
 }

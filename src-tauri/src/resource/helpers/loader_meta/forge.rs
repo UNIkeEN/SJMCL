@@ -1,12 +1,15 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sjmcl_types::error::SJMCLResult;
-use tauri::{AppHandle, Manager};
-use tauri_plugin_http::reqwest;
+use tauri_plugin_http::reqwest::Client;
 
-use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::misc::get_download_api;
-use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType};
+use crate::{
+  instance::models::misc::ModLoaderType,
+  resource::{
+    helpers::misc::get_download_api,
+    models::{ModLoaderResourceInfo, ResourceError, ResourceType, SourceType},
+  },
+};
 
 #[derive(Serialize, Deserialize, Default)]
 struct ForgeMetaItem {
@@ -18,69 +21,75 @@ struct ForgeMetaItem {
   pub version: String,
 }
 
-async fn get_forge_meta_by_game_version_bmcl(
-  app: &AppHandle,
-  game_version: &str,
-) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
-  let client = app.state::<reqwest::Client>();
-  let url = get_download_api(SourceType::BMCLAPIMirror, ResourceType::ForgeMeta)?
-    .join("minecraft/")?
-    .join(game_version)?;
-  match client.get(url).send().await {
-    Ok(response) => {
-      if response.status().is_success() {
-        if let Ok(mut manifest) = response.json::<Vec<ForgeMetaItem>>().await {
-          manifest.sort_by_key(|b| std::cmp::Reverse(b.build));
-          Ok(
-            manifest
-              .into_iter()
-              .map(|info| ModLoaderResourceInfo {
-                loader_type: ModLoaderType::Forge,
-                version: info.version,
-                description: info.modified,
-                // stable: true,
-                stable: None,
-                branch: info.branch.and_then(|v| v.as_str().map(String::from)),
-              })
-              .collect(),
-          )
+pub struct ForgeMetaClient {
+  http: Client,
+}
+
+impl ForgeMetaClient {
+  pub fn new(http: Client) -> Self {
+    Self { http }
+  }
+
+  pub async fn fetch(
+    &self,
+    priority_list: &[SourceType],
+    game_version: &str,
+  ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+    for source_type in priority_list.iter() {
+      match *source_type {
+        SourceType::Official => {
+          if let Ok(meta) = self.fetch_from_official(game_version).await {
+            return Ok(meta);
+          }
+        }
+        SourceType::BMCLAPIMirror => {
+          if let Ok(meta) = self.fetch_from_bmcl(game_version).await {
+            return Ok(meta);
+          }
+        }
+      }
+    }
+    Err(ResourceError::NetworkError.into())
+  }
+
+  async fn fetch_from_official(
+    &self,
+    game_version: &str,
+  ) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+    _ = game_version;
+    Err(ResourceError::NoDownloadApi.into()) // TODO
+  }
+
+  async fn fetch_from_bmcl(&self, game_version: &str) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
+    let url = get_download_api(SourceType::BMCLAPIMirror, ResourceType::ForgeMeta)?
+      .join("minecraft/")?
+      .join(game_version)?;
+    match self.http.get(url).send().await {
+      Ok(response) => {
+        if response.status().is_success() {
+          if let Ok(mut manifest) = response.json::<Vec<ForgeMetaItem>>().await {
+            manifest.sort_by_key(|b| std::cmp::Reverse(b.build));
+            Ok(
+              manifest
+                .into_iter()
+                .map(|info| ModLoaderResourceInfo {
+                  loader_type: ModLoaderType::Forge,
+                  version: info.version,
+                  description: info.modified,
+                  // stable: true,
+                  stable: None,
+                  branch: info.branch.and_then(|v| v.as_str().map(String::from)),
+                })
+                .collect(),
+            )
+          } else {
+            Err(ResourceError::ParseError.into())
+          }
         } else {
-          Err(ResourceError::ParseError.into())
-        }
-      } else {
-        Err(ResourceError::NetworkError.into())
-      }
-    }
-    Err(_) => Err(ResourceError::NetworkError.into()),
-  }
-}
-
-async fn get_forge_meta_by_game_version_official(
-  app: &AppHandle,
-  game_version: &str,
-) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
-  let _ = (app, game_version);
-  Err(ResourceError::NoDownloadApi.into()) // TODO
-}
-
-pub async fn get_forge_meta_by_game_version(
-  app: &AppHandle,
-  priority_list: &[SourceType],
-  game_version: &str,
-) -> SJMCLResult<Vec<ModLoaderResourceInfo>> {
-  for source_type in priority_list.iter() {
-    match *source_type {
-      SourceType::BMCLAPIMirror => {
-        if let Ok(meta) = get_forge_meta_by_game_version_bmcl(app, game_version).await {
-          return Ok(meta);
+          Err(ResourceError::NetworkError.into())
         }
       }
-      SourceType::Official => {
-        if let Ok(meta) = get_forge_meta_by_game_version_official(app, game_version).await {
-          return Ok(meta);
-        }
-      }
+      Err(_) => Err(ResourceError::NetworkError.into()),
     }
   }
-  Err(ResourceError::NetworkError.into())
 }
