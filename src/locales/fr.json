@@ -816,6 +816,52 @@
       }
     }
   },
+  "ExportServerModal": {
+    "header": {
+      "title": "Exporter {{param}} comme pack serveur"
+    },
+    "stepper": {
+      "basic": "Informations de base",
+      "mods": "Mods",
+      "files": "Sauvegardes et dossiers"
+    },
+    "label": {
+      "serverPackName": "Nom du pack serveur",
+      "downloadAndInstall": "Télécharger et installer",
+      "eula": "EULA",
+      "keepSave": "Conserver une sauvegarde",
+      "folders": "Dossiers à inclure"
+    },
+    "eula": {
+      "agree": "J'ai lu et j'accepte la",
+      "warning": "La distribution publique de ce pack serveur peut enfreindre l'EULA de Minecraft et les licences de certains mods."
+    },
+    "downloadAndInstall": {
+      "proxyHint": "Si vous utilisez un proxy, vous devrez peut-être activer le mode TUN."
+    },
+    "save": {
+      "none": "Ne pas conserver"
+    },
+    "mods": {
+      "loading": "Analyse des informations des mods...",
+      "required": "Requis",
+      "optional": "Optionnel",
+      "requiredOrOptionalSuffix": " (ou optionnel)",
+      "unknown": "Non reconnu",
+      "unsupported": "Non pris en charge",
+      "unsupportedConfirm": {
+        "title": "Conserver ce mod ?",
+        "body": "{{name}} a été reconnu comme client uniquement et peut ne pas fonctionner sur un serveur. Le conserver quand même ?"
+      }
+    },
+    "button": {
+      "export": "Exporter"
+    },
+    "error": {
+      "invalidName": "Veuillez saisir un nom de pack serveur valide",
+      "eulaNotAccepted": "Veuillez d'abord lire et accepter l'EULA de Minecraft"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "Impossible d'afficher le contenu de cette extension."
   },
@@ -1512,6 +1558,7 @@
     "secMenu": {
       "createShortcut": "Créer un raccourci de lancement",
       "exportModPack": "Exporter en tant que modpack",
+      "exportServerPack": "Exporter comme serveur",
       "star": "Mettre en favori cette instance",
       "unstar": "Retirer des favoris"
     },
@@ -3019,6 +3066,17 @@
         "success": "Pack de mods exporté avec succès",
         "error": {
           "title": "Échec de l'exportation du pack de mods"
+        }
+      },
+      "analyzeServerExport": {
+        "error": {
+          "title": "Échec de l'analyse des mods pour l'export serveur"
+        }
+      },
+      "exportServerPack": {
+        "success": "Pack serveur exporté avec succès",
+        "error": {
+          "title": "Échec de l'export du pack serveur"
         }
       },
       "addCustomInstanceIcon": {

@@ -816,6 +816,52 @@
       }
     }
   },
+  "ExportServerModal": {
+    "header": {
+      "title": "將 {{param}} 匯出為伺服器包"
+    },
+    "stepper": {
+      "basic": "基本資訊",
+      "mods": "模組",
+      "files": "存檔與資料夾"
+    },
+    "label": {
+      "serverPackName": "伺服器包名稱",
+      "downloadAndInstall": "下載並安裝",
+      "eula": "終端使用者授權協議",
+      "keepSave": "保留存檔",
+      "folders": "需要包含的資料夾"
+    },
+    "eula": {
+      "agree": "我已閱讀並同意",
+      "warning": "公開分發該伺服器包可能違反 Minecraft EULA 和部分模組的許可協議"
+    },
+    "downloadAndInstall": {
+      "proxyHint": "如需使用代理可能需要開啟TUN模式"
+    },
+    "save": {
+      "none": "不保留"
+    },
+    "mods": {
+      "loading": "正在解析模組資訊",
+      "required": "必需",
+      "optional": "可選",
+      "requiredOrOptionalSuffix": "（或可選）",
+      "unknown": "無法識別",
+      "unsupported": "不支援",
+      "unsupportedConfirm": {
+        "title": "保留此模組？",
+        "body": "{{name}} 被識別為僅用戶端模組，可能無法在伺服器上運行。仍要保留嗎？"
+      }
+    },
+    "button": {
+      "export": "匯出"
+    },
+    "error": {
+      "invalidName": "請輸入有效的伺服器包名稱",
+      "eulaNotAccepted": "請先閱讀並同意 Minecraft EULA"
+    }
+  },
   "ExtensionContributionWrapper": {
     "failedToRender": "擴充套件內容繪製失敗。"
   },
@@ -1512,6 +1558,7 @@
     "secMenu": {
       "createShortcut": "建立啟動捷徑",
       "exportModPack": "匯出為模組包",
+      "exportServerPack": "匯出為伺服器",
       "star": "星標此實例",
       "unstar": "取消星標"
     },
@@ -3019,6 +3066,17 @@
         "success": "匯出模組包成功",
         "error": {
           "title": "匯出模組包失敗"
+        }
+      },
+      "analyzeServerExport": {
+        "error": {
+          "title": "解析伺服器匯出模組資訊失敗"
+        }
+      },
+      "exportServerPack": {
+        "success": "匯出伺服器包成功",
+        "error": {
+          "title": "匯出伺服器包失敗"
         }
       },
       "addCustomInstanceIcon": {
