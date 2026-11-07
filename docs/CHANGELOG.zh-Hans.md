@@ -2,6 +2,17 @@
 
 SJMCL 遵循 [语义化版本规范 2.0.0](https://semver.org/lang/zh-CN/)。
 
+## 1.4.1
+
+`2026-11-07`
+
+- 🐛 修复导入部分 MultiMC 格式整合包时，游戏文件遗漏的问题。#2116 @NopeCharon @UNIkeEN
+- 🐛 修复导入 MultiMC 格式整合包时无法识别 Quilt 加载器的问题。#2117 @NopeCharon
+- 🐛 修复导入 Modrinth 整合包时错误安装服务端文件的问题。#2118 @NopeCharon @zaixiZaixiSJTU
+- 🐛 修复 LWJGL Unsafe Agent 应用范围过广的问题。#2123 @xunying123 @UNIkeEN
+- ⚡️ 提升 CurseForge 资源版本列表的加载速度。#2103 @xunying123
+- 📦 更新多项依赖至补丁版本。#2125 #2126 #2128 @dependabot[bot]
+
 ## 1.4.0
 
 `2026-10-25`

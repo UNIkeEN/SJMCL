@@ -2,6 +2,17 @@
 
 SJMCL follows [Semantic Versioning 2.0.0](http://semver.org/).
 
+## 1.4.1
+
+`2026-11-07`
+
+- 🐛 Fix an issue where game files were missing when importing certain MultiMC modpacks. #2116 @NopeCharon @UNIkeEN
+- 🐛 Fix an issue where the Quilt loader could not be detected when importing MultiMC modpacks. #2117 @NopeCharon
+- 🐛 Fix an issue where server-side files were incorrectly installed when importing Modrinth modpacks. #2118 @NopeCharon @zaixiZaixiSJTU
+- 🐛 Fix an issue where the LWJGL Unsafe Agent was applied too broadly. #2123 @xunying123 @UNIkeEN
+- ⚡️ Improve the loading speed of CurseForge resource version lists. #2103 @xunying123
+- 📦 Update multiple dependencies to patch versions. #2125 #2126 #2128 @dependabot[bot]
+
 ## 1.4.0
 
 `2026-10-25`
