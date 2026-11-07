@@ -60,6 +60,8 @@ import { UtilsService } from "@/services/utils";
 import { parseModLoaderVersion } from "@/utils/instance";
 import { base64ImgSrc } from "@/utils/string";
 
+const MOD_FILE_EXTENSIONS = ["jar", "zip", "litemod", "disabled"];
+
 const InstanceModsPage = () => {
   const { t } = useTranslation();
   const toast = useToast();
@@ -82,6 +84,12 @@ const InstanceModsPage = () => {
   const currentModLoaderType =
     summary?.modLoader?.loaderType ?? ModLoaderType.Unknown;
   const currentModLoaderVersion = summary?.modLoader?.version || "";
+  const visibleModLoaderTypes = modLoaderTypes.filter(
+    (type) =>
+      type !== ModLoaderType.Cleanroom ||
+      summary?.version === "1.12.2" ||
+      currentModLoaderType === ModLoaderType.Cleanroom
+  );
 
   const [localMods, setLocalMods] = useState<LocalModInfo[]>([]);
   const [filteredMods, setFilteredMods] = useState<LocalModInfo[]>([]);
@@ -175,11 +183,13 @@ const InstanceModsPage = () => {
       const filtered = localMods.filter((mod) => {
         const name = mod.name?.toLowerCase() || "";
         const fileName = mod.fileName?.toLowerCase() || "";
+        const relativePath = mod.relativePath?.toLowerCase() || "";
         const translatedName = mod.translatedName?.toLowerCase() || "";
         return keywords.some(
           (kw) =>
             name.includes(kw) ||
             fileName.includes(kw) ||
+            relativePath.includes(kw) ||
             translatedName.includes(kw)
         );
       });
@@ -193,7 +203,7 @@ const InstanceModsPage = () => {
   }, [isSearching]);
 
   useFileDnD({
-    extensions: ["jar", "disabled"],
+    extensions: MOD_FILE_EXTENSIONS,
     multiple: true,
     titleKey: "InstanceModsPage.fileDnD.title",
     descKey: "InstanceModsPage.fileDnD.desc",
@@ -201,7 +211,7 @@ const InstanceModsPage = () => {
     onDrop: async (paths) => {
       handleImportResources({
         filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
-        filterExt: ["jar", "disabled"],
+        filterExt: MOD_FILE_EXTENSIONS,
         tgtDirType: InstanceSubdirType.Mods,
         paths,
         multiple: true,
@@ -226,16 +236,20 @@ const InstanceModsPage = () => {
               prevMods.map((prev) => {
                 if (prev.filePath === filePath) {
                   let newFilePath = prev.filePath;
+                  let newRelativePath = prev.relativePath;
                   if (enable && newFilePath.endsWith(".disabled")) {
                     newFilePath = newFilePath.slice(0, -9);
+                    newRelativePath = newRelativePath.slice(0, -9);
                   }
                   if (!enable && !newFilePath.endsWith(".disabled")) {
                     newFilePath = newFilePath + ".disabled";
+                    newRelativePath = newRelativePath + ".disabled";
                   }
 
                   return {
                     ...prev,
                     filePath: newFilePath,
+                    relativePath: newRelativePath,
                     enabled: enable,
                   };
                 }
@@ -324,7 +338,7 @@ const InstanceModsPage = () => {
       onClick: () => {
         handleImportResources({
           filterName: t("InstanceDetailsLayout.instanceTabList.mods"),
-          filterExt: ["zip", "jar", "disabled"],
+          filterExt: MOD_FILE_EXTENSIONS,
           tgtDirType: InstanceSubdirType.Mods,
           multiple: true,
           onSuccessCallback: () => {
@@ -433,7 +447,7 @@ const InstanceModsPage = () => {
         }}
       >
         <WrapCardGroup
-          items={modLoaderTypes.map((type) => ({
+          items={visibleModLoaderTypes.map((type) => ({
             cardContent: (
               <Flex justify="space-between" align="center">
                 <HStack spacing={2}>
@@ -560,7 +574,7 @@ const InstanceModsPage = () => {
           <OptionItemGroup
             items={filteredMods.map((mod) => (
               <OptionItem
-                key={mod.fileName} // unique
+                key={mod.filePath}
                 childrenOnHover
                 title={
                   <Text
@@ -602,7 +616,7 @@ const InstanceModsPage = () => {
                       query={query.trim().toLowerCase().split(/\s+/)}
                       styles={{ bg: "yellow.200" }}
                     >
-                      {mod.fileName}
+                      {mod.relativePath}
                     </Highlight>
                     {showZhTrans && mod.translatedDescription
                       ? `: ${mod.translatedDescription}`

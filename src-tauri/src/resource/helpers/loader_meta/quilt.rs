@@ -1,6 +1,5 @@
 use semver::Version;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
@@ -13,7 +12,8 @@ use crate::resource::models::{ModLoaderResourceInfo, ResourceError, ResourceType
 #[serde(rename_all = "camelCase")]
 struct QuiltMetaItem {
   pub loader: QuiltLoaderInfo,
-  pub intermediary: Value,
+  // Quilt Meta may omit `intermediary` for Minecraft 26.1+ (#1937).
+  // pub intermediary: serde_json::Value,
 }
 
 #[derive(Serialize, Deserialize, Default)]

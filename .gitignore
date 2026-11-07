@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.pnpm-store/
 /.pnp
 .pnp.*
 .yarn/*
@@ -67,3 +68,5 @@ package-lock.json
 !.claude/skills
 .gemini/
 .cursor/
+
+/.prototools

@@ -193,6 +193,7 @@ pub struct LocalModInfo {
   pub loader_type: ModLoaderType,
   pub file_name: String,
   pub file_path: PathBuf,
+  pub relative_path: PathBuf,
   pub description: String,
   pub translated_description: Option<String>,
   pub potential_incompatibility: bool,
@@ -283,10 +284,13 @@ pub enum InstanceError {
   UnsupportedModLoader,
   NotSupportChangeModLoader,
   MainClassNotFound,
-  InstallationDuplicated,
   ProcessorExecutionFailed,
   SemaphoreAcquireFailed,
   LoaderInstallerNotFound,
+  InstallationInstanceMismatch,
+  ModLoaderChanged,
+  OptifineMissing,
+  OptifineChanged,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, Default)]

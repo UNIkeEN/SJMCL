@@ -54,8 +54,9 @@ export interface GameConfig {
       args: string;
     };
     workaround: {
-      noJvmArgs: boolean;
       gameFileValidatePolicy: string;
+      autoCloseGameCrashWindow: string;
+      noJvmArgs: boolean;
       dontCheckJvmValidity: boolean;
       dontPatchNatives: boolean;
       useLwjglUnsafeAgent: boolean;
@@ -252,8 +253,9 @@ export const defaultGameConfig: GameConfig = {
       args: "",
     },
     workaround: {
-      noJvmArgs: false,
       gameFileValidatePolicy: "normal",
+      autoCloseGameCrashWindow: "disabled",
+      noJvmArgs: false,
       dontCheckJvmValidity: false,
       dontPatchNatives: false,
       useLwjglUnsafeAgent: true,
@@ -359,8 +361,8 @@ export const defaultConfig: LauncherConfig = {
   localGameDirectories: [{ name: "Current", dir: ".minecraft/" }],
   globalGameConfig: defaultGameConfig,
   discoverSourceEndpoints: [
-    ["https://mc.sjtu.cn/api-sjmcl/article", true],
-    ["https://mc.sjtu.cn/api-sjmcl/article/mua", true],
+    ["https://www.mualliance.cn/news/api-sjmcl/article", true],
+    ["https://api.jsumc.fun/sjmcl?type=tribee&src=535", true],
   ],
   extraJavaPaths: [],
   suppressedDialogs: [],

@@ -18,7 +18,7 @@ use tauri_plugin_decorum::WebviewWindowExt;
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let config = get_webview_window_config(app, "game_log")?;
 /// ```
 ///
@@ -59,7 +59,7 @@ pub fn get_webview_window_config(app: &AppHandle, label: &str) -> SJMCLResult<Wi
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let window = create_webview_window(app, "game_log_1", "game_log", None, true).await?;
 /// ```
 ///
@@ -99,7 +99,7 @@ pub async fn create_webview_window(
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```rust,ignore
 /// let window = create_webview_window_with_config(app, config, true).await?;
 /// ```
 ///
@@ -124,11 +124,6 @@ pub async fn create_webview_window_with_config(
       config.decorations = false;
     }
 
-    #[cfg(target_os = "linux")]
-    {
-      config.transparent = true;
-    }
-
     #[cfg(target_os = "macos")]
     {
       config.decorations = true;
@@ -136,6 +131,11 @@ pub async fn create_webview_window_with_config(
       config.hidden_title = true;
       config.traffic_light_position = Some(LogicalPosition { x: 10.0, y: 12.0 });
     }
+  }
+
+  #[cfg(target_os = "linux")]
+  {
+    config.transparent = false;
   }
 
   #[allow(unused_variables)]

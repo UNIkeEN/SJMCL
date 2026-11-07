@@ -6,17 +6,15 @@ import {
   HStack,
   Link,
   Text,
-  useColorMode,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir, appLogDir, join } from "@tauri-apps/api/path";
+import { exit } from "@tauri-apps/api/app";
+import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
-import { exit } from "@tauri-apps/plugin-process";
 import { t } from "i18next";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Trans } from "react-i18next";
 import {
   LuGrid2X2Plus,
@@ -48,16 +46,11 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const router = useRouter();
   const isStandAlone = router.pathname.startsWith("/standalone");
-  const { config, update } = useLauncherConfig();
+  const { config, update, bgImageSrc, isBgDarken } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
-  const { colorMode } = useColorMode();
-  const isDarkenBg =
-    colorMode === "dark" && config.appearance.background.autoDarken;
   const { openGenericConfirmDialog } = useSharedModals();
 
-  const [bgImgSrc, setBgImgSrc] = useState<string>("");
-  const isCheckedRunCount = useRef(false);
-  const isCheckedLastRunStatus = useRef(false);
+  const isStartupFlowStarted = useRef(false);
 
   const {
     isOpen: isWelcomeAndTermsModalOpen,
@@ -71,95 +64,106 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onClose: onStarUsModalClose,
   } = useDisclosure();
 
-  const openUnavailableExePathDialog = useCallback(() => {
-    openGenericConfirmDialog({
-      title: t("UnavailableExePathAlertDialog.dialog.title"),
-      body: t("UnavailableExePathAlertDialog.dialog.content"),
-      btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
-      onCancelCallback: () => update("runCount", config.runCount + 1), // because this dialog will skip the run count check
-      btnOK: t("General.exit"),
-      onOKCallback: () => exit(0),
-      footerLeft: (
-        <HStack spacing={2}>
-          <LuLanguages />
-          <LanguageMenu placement="top" />
-        </HStack>
-      ),
-      isAlert: true,
-      closeOnEsc: false,
-      closeOnOverlayClick: false,
-      showCloseBtn: false,
-    });
-  }, [config.runCount, openGenericConfirmDialog, update]);
+  const openUnavailableExePathDialog = useCallback(
+    (onContinue: () => void) => {
+      openGenericConfirmDialog({
+        title: t("UnavailableExePathAlertDialog.dialog.title"),
+        body: t("UnavailableExePathAlertDialog.dialog.content"),
+        btnCancel: t("UnavailableExePathAlertDialog.dialog.btnContinue"),
+        onCancelCallback: onContinue,
+        btnOK: t("General.exit"),
+        onOKCallback: () => exit(0),
+        footerLeft: (
+          <HStack spacing={2}>
+            <LuLanguages />
+            <LanguageMenu placement="top" />
+          </HStack>
+        ),
+        isAlert: true,
+        closeOnEsc: false,
+        closeOnOverlayClick: false,
+        showCloseBtn: false,
+      });
+    },
+    [openGenericConfirmDialog]
+  );
 
-  const openLastExitedAbnormallyDialog = useCallback(() => {
-    openGenericConfirmDialog({
-      title: t("LastExitedAbnormallyDialog.dialog.title"),
-      btnCancel: "",
-      showSuppressBtn: true,
-      suppressKey: "lastExitedAbnormally",
-      body: (
-        <Text color="gray.500">
-          <Trans
-            i18nKey="LastExitedAbnormallyDialog.dialog.content"
-            components={{
-              community: (
-                <Link
-                  color={`${primaryColor}.500`}
-                  onClick={() =>
-                    openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
-                  }
-                />
-              ),
-              github: (
-                <Link
-                  color={`${primaryColor}.500`}
-                  onClick={() =>
-                    openUrl("https://github.com/UNIkeEN/SJMCL/issues")
-                  }
-                />
-              ),
-            }}
-          />
-        </Text>
-      ),
-      footerLeft: (
-        <HStack>
-          <LuScrollText />
-          <Button
-            variant="link"
-            colorScheme={primaryColor}
-            onClick={async () => {
-              const _appLogDir = await appLogDir();
-              const launcherLogDir = await join(_appLogDir, "launcher");
-              await openPath(launcherLogDir);
-            }}
-          >
-            {t("LastExitedAbnormallyDialog.dialog.viewLog")}
-          </Button>
-        </HStack>
-      ),
-    });
-  }, [openGenericConfirmDialog, primaryColor]);
+  const openLastExitedAbnormallyDialog = useCallback(
+    (onContinue: () => void) => {
+      openGenericConfirmDialog({
+        title: t("LastExitedAbnormallyDialog.dialog.title"),
+        btnCancel: "",
+        showSuppressBtn: true,
+        suppressKey: "lastExitedAbnormally",
+        onOKCallback: onContinue,
+        onCancelCallback: onContinue,
+        body: (
+          <Text color="gray.500">
+            <Trans
+              i18nKey="LastExitedAbnormallyDialog.dialog.content"
+              components={{
+                community: (
+                  <Link
+                    color={`${primaryColor}.500`}
+                    onClick={() =>
+                      openUrl(t("HelpSettingsPage.top.settings.UserGroup.url"))
+                    }
+                  />
+                ),
+                github: (
+                  <Link
+                    color={`${primaryColor}.500`}
+                    onClick={() =>
+                      openUrl("https://github.com/UNIkeEN/SJMCL/issues")
+                    }
+                  />
+                ),
+              }}
+            />
+          </Text>
+        ),
+        footerLeft: (
+          <HStack>
+            <LuScrollText />
+            <Button
+              variant="link"
+              colorScheme={primaryColor}
+              onClick={async () => {
+                const _appLogDir = await appLogDir();
+                const launcherLogDir = await join(_appLogDir, "launcher");
+                await openPath(launcherLogDir);
+              }}
+            >
+              {t("LastExitedAbnormallyDialog.dialog.viewLog")}
+            </Button>
+          </HStack>
+        ),
+      });
+    },
+    [openGenericConfirmDialog, primaryColor]
+  );
 
   useEffect(() => {
-    // running in unavailable path, show alert dialog.
-    if (!config.mocked && !config.basicInfo.isExePathAvailable) {
-      openUnavailableExePathDialog();
-      isCheckedRunCount.current = true; // skip run count check below
-    }
+    if (config.mocked || isStandAlone || isStartupFlowStarted.current) return;
+    isStartupFlowStarted.current = true;
 
     // update `last_run_exited_normally` to false, will be updated when this run ends with normal exit.
-    if (!config.mocked && !isCheckedLastRunStatus.current && !isStandAlone) {
-      if (!config.lastRunExitedNormally) {
-        openLastExitedAbnormallyDialog();
-      }
-      update("lastRunExitedNormally", false);
-      isCheckedLastRunStatus.current = true;
-    }
+    update("lastRunExitedNormally", false);
 
-    // update run count, conditionally show some modals.
-    if (!config.mocked && !isCheckedRunCount.current && !isStandAlone) {
+    const handleStartup = async () => {
+      if (!config.basicInfo.isExePathAvailable) {
+        await new Promise<void>((resolve) => {
+          openUnavailableExePathDialog(resolve);
+        });
+      }
+
+      if (!config.lastRunExitedNormally) {
+        await new Promise<void>((resolve) => {
+          openLastExitedAbnormallyDialog(resolve);
+        });
+      }
+
+      // update run count, conditionally show some modals.
       if (!config.runCount) {
         setTimeout(() => {
           onWelcomeAndTermsModalOpen();
@@ -173,8 +177,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         }
         update("runCount", newCount);
       }
-      isCheckedRunCount.current = true;
-    }
+    };
+
+    handleStartup();
   }, [
     config.mocked,
     config.runCount,
@@ -187,25 +192,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     onStarUsModalOpen,
     update,
   ]);
-
-  // construct background img src url from config.
-  useEffect(() => {
-    const constructBgImgSrc = async () => {
-      const bgKey = config.appearance.background.choice;
-      if (bgKey.startsWith("%built-in:")) {
-        const builtInKey = bgKey.replace("%built-in:", "");
-        setBgImgSrc(`/images/backgrounds/${builtInKey}-${colorMode}.jpg`);
-      } else {
-        const _appDataDir = await appDataDir();
-        setBgImgSrc(
-          convertFileSrc(`${_appDataDir}/UserContent/Backgrounds/${bgKey}`) +
-            `?t=${Date.now()}`
-        );
-      }
-    };
-
-    constructBgImgSrc();
-  }, [colorMode, config.appearance.background.choice]);
 
   // update font family to body CSS by config.
   useEffect(() => {
@@ -301,12 +287,12 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     <Flex
       direction="column"
       h="100vh"
-      bgImg={`url('${bgImgSrc}')`}
+      bgImg={`url('${bgImageSrc}')`}
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
-      bgColor={isDarkenBg ? "rgba(0,0,0,0.45)" : "transparent"}
-      bgBlendMode={isDarkenBg ? "darken" : "normal"}
+      bgColor={isBgDarken ? "rgba(0,0,0,0.45)" : "transparent"}
+      bgBlendMode={isBgDarken ? "darken" : "normal"}
       {...(config.basicInfo.osType === "linux" && linuxBorderStyle)}
       overflow="hidden"
       style={getGlobalExtraStyle(config)}

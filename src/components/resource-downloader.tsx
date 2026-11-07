@@ -14,7 +14,6 @@ import {
   Tag,
   Text,
   VStack,
-  useDisclosure,
 } from "@chakra-ui/react";
 import React, {
   useCallback,
@@ -35,9 +34,9 @@ import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { OptionItemProps } from "@/components/common/option-item";
 import { VirtualOptionItemGroup } from "@/components/common/option-item-virtual";
-import DownloadSpecificResourceModal from "@/components/modals/download-specific-resource-modal";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
+import { useSharedModals } from "@/contexts/shared-modal";
 import { useToast } from "@/contexts/toast";
 import { ModLoaderType } from "@/enums/instance";
 import {
@@ -157,10 +156,7 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.resourceTranslation;
 
-  const [selectedItem, setSelectedItem] = useState<OtherResourceInfo | null>(
-    null
-  );
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { openSharedModal } = useSharedModals();
 
   const buildOptionItems = (item: OtherResourceInfo): OptionItemProps => ({
     title: (
@@ -252,43 +248,31 @@ const ResourceDownloaderList: React.FC<ResourceDownloaderListProps> = ({
     ),
     children: <></>,
     isFullClickZone: true,
-    onClick: () => {
-      setSelectedItem(item);
-      onOpen();
-    },
+    onClick: () =>
+      openSharedModal("download-specific-resource", {
+        resource: item,
+        ...(item.type !== OtherResourceType.ModPack && {
+          curInstanceMajorVersion: curInstance?.majorVersion,
+          curInstanceVersion: curInstance?.version,
+        }),
+        ...(item.type === OtherResourceType.Mod &&
+          curInstance?.modLoader.loaderType !== ModLoaderType.Unknown && {
+            curInstanceModLoader: curInstance?.modLoader.loaderType,
+          }),
+      }),
     fontWeight: 400,
   });
 
-  return (
-    <>
-      {list.length > 0 ? (
-        <VirtualOptionItemGroup
-          h="100%"
-          items={list.map(buildOptionItems)}
-          useInfiniteScroll
-          hasMore={hasMore}
-          loadMore={loadMore}
-        />
-      ) : (
-        <Empty withIcon={false} size="sm" />
-      )}
-      {selectedItem && (
-        <DownloadSpecificResourceModal
-          key={selectedItem.id}
-          isOpen={isOpen}
-          onClose={onClose}
-          resource={selectedItem}
-          {...(selectedItem.type !== OtherResourceType.ModPack && {
-            curInstanceMajorVersion: curInstance?.majorVersion,
-            curInstanceVersion: curInstance?.version,
-          })}
-          {...(selectedItem.type === OtherResourceType.Mod &&
-            curInstance?.modLoader.loaderType !== ModLoaderType.Unknown && {
-              curInstanceModLoader: curInstance?.modLoader.loaderType,
-            })}
-        />
-      )}
-    </>
+  return list.length > 0 ? (
+    <VirtualOptionItemGroup
+      h="100%"
+      items={list.map(buildOptionItems)}
+      useInfiniteScroll
+      hasMore={hasMore}
+      loadMore={loadMore}
+    />
+  ) : (
+    <Empty withIcon={false} size="sm" />
   );
 };
 

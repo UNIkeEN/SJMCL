@@ -189,12 +189,16 @@ const AlertResourceDependencyModal: React.FC<
           if (dependencies.length < 2) {
             modalProps.onClose();
           }
-          openSharedModal("download-specific-resource", {
-            resource,
-            curInstanceMajorVersion,
-            curInstanceVersion,
-            curInstanceModLoader,
-          });
+          openSharedModal(
+            "download-specific-resource",
+            {
+              resource,
+              curInstanceMajorVersion,
+              curInstanceVersion,
+              curInstanceModLoader,
+            },
+            { stack: true }
+          );
         }}
         fontWeight={400}
       />

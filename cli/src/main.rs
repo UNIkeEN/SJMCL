@@ -1,15 +1,17 @@
-use comfy_table::{presets::UTF8_FULL_CONDENSED, ContentArrangement, Table};
+use comfy_table::{ContentArrangement, Table, presets::UTF8_FULL_CONDENSED};
 use indicatif::{ProgressBar, ProgressDrawTarget, ProgressStyle};
+use rmcp::ServiceExt;
 use rmcp::model::{CallToolRequestParams, Tool};
 use rmcp::service::{RoleClient, RunningService};
 use rmcp::transport::StreamableHttpClientTransport;
-use rmcp::ServiceExt;
 use serde_json::{Map, Value};
 use std::env;
 use std::ffi::OsString;
 use std::io::{self, IsTerminal};
 use std::process::Command;
-use tokio::time::{sleep, Instant};
+use tokio::time::{Instant, sleep};
+
+mod install;
 
 type LauncherClient = RunningService<RoleClient, ()>;
 
@@ -21,8 +23,7 @@ const EXPECTED_SERVER_NAME: &str = "sjmcl-mcp";
 const MCP_SERVER_HOST: &str = "127.0.0.1";
 const MCP_SERVER_PATH: &str = "/mcp";
 const RUN_SJMCL_DEEPLINK: &str = "sjmcl://run-silently";
-const ENABLE_MCP_HINT: &str =
-  "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
+const ENABLE_MCP_HINT: &str = "Please enable Launcher MCP Server in SJMCL - Intelligence to use the CLI.\nIf your MCP server uses a port other than the default 18970, run the CLI with `-p <port>`.";
 
 #[derive(Clone)]
 struct CliOptions {
@@ -31,6 +32,9 @@ struct CliOptions {
 
 enum CliCommand {
   Help,
+  Install(install::InstallOptions),
+  Download(install::FileDownloadOptions),
+  Downloads,
   Call {
     name: String,
     arguments: Map<String, Value>,
@@ -98,6 +102,24 @@ async fn run() -> Result<(), String> {
 
       Ok(())
     }
+    CliCommand::Install(options) => {
+      let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
+      let result = install::run(&client, options).await;
+      let _ = client.cancel().await;
+      result
+    }
+    CliCommand::Download(options) => {
+      let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
+      let result = install::run_download(&client, options).await;
+      let _ = client.cancel().await;
+      result
+    }
+    CliCommand::Downloads => {
+      let client = with_spinner(async { connect_launcher(&invocation.options).await }).await?;
+      let result = install::list_downloads(&client).await;
+      let _ = client.cancel().await;
+      result
+    }
   }
 }
 
@@ -152,13 +174,21 @@ impl CliInvocation {
       });
     }
 
-    Ok(Self {
-      options,
-      command: CliCommand::Call {
+    let command = match rest[0].as_str() {
+      "install" => CliCommand::Install(install::InstallOptions::parse(&rest[1..])?),
+      "download" => CliCommand::Download(install::FileDownloadOptions::parse(&rest[1..])?),
+      "downloads" => {
+        if rest.len() != 1 {
+          return Err("`downloads` does not take arguments".to_string());
+        }
+        CliCommand::Downloads
+      }
+      _ => CliCommand::Call {
         name: rest[0].clone(),
         arguments: parse_tool_arguments(&rest[1..])?,
       },
-    })
+    };
+    Ok(Self { options, command })
   }
 }
 
@@ -197,8 +227,11 @@ async fn try_connect(port: u16) -> Result<LauncherClient, String> {
     .peer_info()
     .ok_or_else(|| format!("server at {endpoint} did not provide MCP server info"))?;
 
-  if server_info.server_info.name != EXPECTED_SERVER_NAME {
-    let actual_name = server_info.server_info.name.clone();
+  let actual_name = server_info
+    .server_info
+    .as_ref()
+    .map_or_else(|| "<missing>".to_string(), |info| info.name.clone());
+  if actual_name != EXPECTED_SERVER_NAME {
     let _ = client.cancel().await;
     return Err(format!(
       "endpoint {endpoint} is not the SJMCL MCP server (got `{actual_name}`)"
@@ -213,6 +246,11 @@ fn print_help(tools: Option<&[Tool]>, hint: Option<&str>) {
   println!();
   println!("Usage:");
   println!("  sjmcl-cli -h | --help");
+  println!(
+    "  sjmcl-cli [-p | --port <port>] install <game-version> <name> [--directory <name>] [--loader <type>] [--loader-version <version>] [--optifine <patch>] [--no-wait]"
+  );
+  println!("  sjmcl-cli [-p | --port <port>] download <url> <dest> [--sha1 <hash>] [--no-wait]");
+  println!("  sjmcl-cli [-p | --port <port>] downloads");
   println!("  sjmcl-cli [-p | --port <port>] <tool> [json-object]");
 
   if let Some(hint) = hint {
@@ -295,7 +333,7 @@ fn print_call_result(result: &rmcp::model::CallToolResult) {
   }
 
   for content in &result.content {
-    if let Some(text) = content.raw.as_text() {
+    if let Some(text) = content.as_text() {
       println!("{}", text.text);
     } else if let Ok(json) = serde_json::to_string_pretty(content) {
       println!("{json}");

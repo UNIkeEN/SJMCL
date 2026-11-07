@@ -1,5 +1,7 @@
 # Contributing
 
+**English** · [简体中文](docs/CONTRIBUTING.zh-Hans.md)
+
 We warmly welcome all forms of contributions to SJMCL, including issues, new features, documentation, and more. 🥰
 
 The following is a set of guidelines for contributing to SJMCL. Please take a few minutes to review these guidelines before submitting an issue or pull request.
@@ -37,7 +39,7 @@ The core team monitors pull requests regularly. We will review your pull request
 
 ### Preliminaries
 
-This project uses **[Tauri v2](https://v2.tauri.app/)**. Please make sure you have installed [node >=22](https://nodejs.org/) and [Rust](https://www.rust-lang.org/learn/get-started).
+This project uses **[Tauri v2](https://v2.tauri.app/)**. Please make sure you have installed [node >=22](https://nodejs.org/) and [Rust >=1.98.1](https://www.rust-lang.org/learn/get-started).
 
 We use `pnpm` as the preferred package manager for the frontend. After cloning the repository, use the following command to install the dependencies:
 

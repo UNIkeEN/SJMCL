@@ -33,16 +33,13 @@ pub fn replace_arguments(args: Vec<String>, map: &HashMap<String, String>) -> Ve
 }
 
 pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
-  let target_os: String = if cfg!(target_os = "windows") {
-    "windows".to_string()
-  } else if cfg!(target_os = "linux") {
-    "linux".to_string()
-  } else if cfg!(target_os = "macos") {
-    "osx".to_string()
-  } else {
-    "other".to_string()
+  let target_os = cfg_select! {
+    target_os = "windows" => "windows",
+    target_os = "linux" => "linux",
+    target_os = "macos" => "osx",
+    _ => "other",
   };
-  if let Some(native) = natives.get(&target_os) {
+  if let Some(native) = natives.get(target_os) {
     let mut map = HashMap::<String, String>::new();
     let arch = std::mem::size_of::<usize>() * 8;
     map.insert("arch".to_string(), arch.to_string());
@@ -53,5 +50,8 @@ pub fn get_natives_string(natives: &HashMap<String, String>) -> Option<String> {
 }
 
 pub fn get_separator() -> &'static str {
-  if cfg!(windows) { ";" } else { ":" }
+  cfg_select! {
+    windows => ";",
+    _ => ":",
+  }
 }

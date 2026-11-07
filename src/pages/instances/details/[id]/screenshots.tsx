@@ -1,15 +1,7 @@
-import {
-  Center,
-  IconButton,
-  Image,
-  Tooltip,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Center, Image, useDisclosure } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import router from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { LuEllipsis } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
 import { Section } from "@/components/common/section";
@@ -20,8 +12,6 @@ import { GetStateFlag } from "@/hooks/get-state";
 import { ScreenshotInfo } from "@/models/instance/misc";
 
 const InstanceScreenshotsPage: React.FC = () => {
-  const { t } = useTranslation();
-
   const { getScreenshotList, isScreenshotListLoading: isLoading } =
     useInstanceSharedData();
   const [screenshots, setScreenshots] = useState<ScreenshotInfo[]>([]);
@@ -80,48 +70,6 @@ const InstanceScreenshotsPage: React.FC = () => {
     }
   };
 
-  const ScreenshotsCard = ({ screenshot }: { screenshot: ScreenshotInfo }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    return (
-      <div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <Image
-          src={convertFileSrc(screenshot.filePath)}
-          alt={screenshot.fileName}
-          objectFit="cover"
-          w="100%"
-          h="100%"
-          position="relative"
-          borderRadius="md"
-        />
-        {isHovered && (
-          <Tooltip
-            label={t("InstanceScreenshotsPage.button.details")}
-            placement="auto"
-          >
-            <IconButton
-              icon={<LuEllipsis />}
-              aria-label="details"
-              colorScheme="blackAlpha"
-              variant="solid"
-              size="xs"
-              position="absolute"
-              top={1}
-              right={1}
-              onClick={() => {
-                setCurrentScreenshot(screenshot);
-                onScreenshotPreviewModalOpen();
-              }}
-            />
-          </Tooltip>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Section>
       {isLoading ? (
@@ -132,7 +80,23 @@ const InstanceScreenshotsPage: React.FC = () => {
         <WrapCardGroup
           cardAspectRatio={16 / 9}
           items={screenshots.map((screenshot) => ({
-            cardContent: <ScreenshotsCard screenshot={screenshot} />,
+            as: "button",
+            "aria-label": screenshot.fileName,
+            cardContent: (
+              <Image
+                src={convertFileSrc(screenshot.filePath)}
+                alt={screenshot.fileName}
+                objectFit="cover"
+                w="100%"
+                h="100%"
+                borderRadius="md"
+              />
+            ),
+            isFullClickZone: true,
+            onSelect: () => {
+              setCurrentScreenshot(screenshot);
+              onScreenshotPreviewModalOpen();
+            },
             sx: {
               padding: "0 !important",
             },

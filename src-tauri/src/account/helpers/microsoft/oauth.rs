@@ -267,7 +267,7 @@ pub async fn refresh(app: &AppHandle, player: &PlayerInfo) -> SJMCLResult<Player
     .map_err(|_| AccountError::NetworkError)?;
 
   if !token_response.status().is_success() {
-    return Err(AccountError::Expired)?;
+    return Err(AccountError::Expired.into());
   }
 
   let tokens: OAuthTokens = token_response

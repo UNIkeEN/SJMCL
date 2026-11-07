@@ -1,0 +1,80 @@
+.loader {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.book,
+.creeper,
+.gear {
+  animation-duration: var(--logo-loader-duration);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.book {
+  /* Pivot near the book's lower end to fold it down above the anvil. */
+  transform-origin: 6.6px 20.8px;
+  animation-name: open-book;
+}
+
+.creeper {
+  animation-name: reveal-creeper;
+}
+
+.gear {
+  /* Same center as the SVG's 180-degree copy, in viewBox units. */
+  transform-origin: 49.4696px 33.0387px;
+  animation-name: turn-gear;
+}
+
+/* Hold closed at 0–8% and 92–100%, and fully open at 42–62%. */
+@keyframes open-book {
+  0%,
+  8%,
+  92%,
+  100% {
+    /* Rotate the book's original 70-degree tilt clockwise to lay it flat. */
+    transform: translateY(1px) rotate(70deg);
+  }
+  42%,
+  62% {
+    transform: none;
+  }
+}
+
+@keyframes reveal-creeper {
+  0%,
+  8%,
+  92%,
+  100% {
+    /* Clear the 28.5-unit face clip completely, including antialiased edges. */
+    transform: translateY(29px);
+  }
+  42%,
+  62% {
+    transform: none;
+  }
+}
+
+@keyframes turn-gear {
+  0%,
+  8%,
+  92%,
+  100% {
+    /* Open 183 degrees counterclockwise; close clockwise without tiny clipped tooth tips. */
+    transform: rotate(183deg);
+  }
+  42%,
+  62% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book,
+  .creeper,
+  .gear {
+    animation: none;
+  }
+}

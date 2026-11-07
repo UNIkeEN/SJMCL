@@ -132,7 +132,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     ),
     mcp_tool!(
       "create_instance",
-      "Create a Minecraft instance and schedule required client/mod-loader downloads. Resolves game and loader metadata from version IDs. Use `retrieve_instance_icon_options` when choosing a manual `icon_src`. If `icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
+      "Create a Minecraft instance and schedule required client/mod-loader downloads. Returns the initial download group ID; use `retrieve_download_groups` to monitor installation. Resolves game and loader metadata from version IDs. Use `retrieve_instance_icon_options` when choosing a manual `icon_src`. If `icon_src` is omitted, SJMCL chooses a default icon from OptiFine, the selected mod loader, or the game version type.",
       |app, params|
       #[serde(deny_unknown_fields)]
       {
@@ -225,7 +225,7 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     mcp_tool!(
       "retrieve_world_details",
       retrieve_world_details,
-      "Retrieve detailed level.dat data for a local world in a Minecraft instance.",
+      "Retrieve world NBT data keyed by relative file path, including level.dat and available external metadata.",
       #[serde(deny_unknown_fields)]
       {
         #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]

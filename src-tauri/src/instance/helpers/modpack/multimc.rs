@@ -9,13 +9,13 @@ use std::path::{Path, PathBuf};
 use tauri::AppHandle;
 use zip::ZipArchive;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
 use crate::instance::helpers::modpack::import::{ModpackManifest, ModpackMetaInfo};
 use crate::instance::models::misc::{Instance, InstanceError, ModLoader, ModLoaderType};
 use crate::resource::models::OtherResourceSource;
-use crate::tasks::PTaskParam;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -46,7 +46,7 @@ structstruck::strike! {
     #[serde(skip)]
     pub cfg: HashMap<String, String>,
     #[serde(skip)]
-    pub base_path: String,
+    pub overrides_path: String,
   }
 }
 
@@ -61,7 +61,7 @@ impl ModpackManifest for MultiMcManifest {
       let mut found_path = None;
       for i in 0..archive.len() {
         let file = archive.by_index(i)?;
-        let name = file.name();
+        let name = file.name()?;
 
         if name.ends_with("mmc-pack.json")
           && let Some(last_slash) = name.rfind('/')
@@ -76,6 +76,18 @@ impl ModpackManifest for MultiMcManifest {
       }
       found_path.ok_or(InstanceError::ModpackManifestParseError)?
     };
+
+    // Prefer `.minecraft` (MultiMC/SJMCL's export default), then `minecraft` (Prism Launcher's).
+    let overrides_paths = [".minecraft", "minecraft"].map(|dir| format!("{base_path}{dir}/"));
+    let overrides_path = overrides_paths
+      .iter()
+      .find(|prefix| {
+        archive
+          .file_names()
+          .any(|name| name.is_ok_and(|name| name.starts_with(prefix.as_str())))
+      })
+      .unwrap_or(&overrides_paths[0])
+      .clone();
 
     let mut manifest: MultiMcManifest;
     {
@@ -95,7 +107,7 @@ impl ModpackManifest for MultiMcManifest {
       .add_source(config::File::from_str(&cfg_str, config::FileFormat::Ini))
       .build()?;
 
-    manifest.base_path = base_path;
+    manifest.overrides_path = overrides_path;
     manifest.cfg = config.try_deserialize::<HashMap<String, String>>()?;
 
     Ok(manifest)
@@ -146,6 +158,7 @@ impl ModpackManifest for MultiMcManifest {
           return Ok((ModLoaderType::Fabric, get_version(component)?));
         }
         "net.neoforged" => return Ok((ModLoaderType::NeoForge, get_version(component)?)),
+        "org.quiltmc.quilt-loader" => return Ok((ModLoaderType::Quilt, get_version(component)?)),
         _ => continue,
       }
     }
@@ -156,13 +169,13 @@ impl ModpackManifest for MultiMcManifest {
     &self,
     _app: &AppHandle,
     _instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>> {
+  ) -> SJMCLResult<Vec<DownloadTask>> {
     // MultiMC Manifests do not include download parameters
     Ok(Vec::new())
   }
 
   fn get_overrides_path(&self) -> String {
-    format!("{}.minecraft/", self.base_path)
+    self.overrides_path.clone()
   }
 }
 
@@ -239,7 +252,7 @@ fn generate_multimc_manifest(instance: &Instance) -> MultiMcManifest {
     format_version: 1,
     components,
     cfg: HashMap::new(),
-    base_path: String::new(),
+    overrides_path: ".minecraft/".to_string(),
   }
 }
 

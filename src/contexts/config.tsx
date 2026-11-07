@@ -1,4 +1,6 @@
 import { ColorModeScript, useColorMode } from "@chakra-ui/react";
+import { convertFileSrc } from "@tauri-apps/api/core";
+import { appDataDir } from "@tauri-apps/api/path";
 import i18n from "i18next";
 import React, {
   createContext,
@@ -25,6 +27,8 @@ interface LauncherConfigContextType {
   setConfig: React.Dispatch<React.SetStateAction<LauncherConfig>>;
   update: (path: string, value: any) => void;
   isZh: boolean; // value shortcut, true if language is zh-Hans / zh-Hant / lzh
+  bgImageSrc: string;
+  isBgDarken: boolean;
   newerVersion: VersionMetaInfo;
   // other shared data associated with the launcher config.
   getJavaInfos: (sync?: boolean) => JavaInfo[] | undefined;
@@ -46,6 +50,10 @@ export const LauncherConfigContextProvider: React.FC<{
   const language = config.general.general.language;
   const isZh = language.startsWith("zh") || language === "lzh";
   const userSelectedColorMode = config.appearance.theme.colorMode;
+
+  const [bgImageSrc, setBgImageSrc] = useState("");
+  const isBgDarken =
+    colorMode === "dark" && config.appearance.background.autoDarken;
 
   const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
   const [newerVersion, setNewerVersion] = useState<VersionMetaInfo>(
@@ -142,6 +150,29 @@ export const LauncherConfigContextProvider: React.FC<{
     }
   }, [userSelectedColorMode, colorMode, toggleColorMode]);
 
+  // Resolve the same wallpaper for the layout and liquid glass sampling.
+  useEffect(() => {
+    let cancelled = false;
+    const constructBgImageSrc = async () => {
+      const choice = config.appearance.background.choice;
+      let src: string;
+      if (choice.startsWith("%built-in:")) {
+        const builtInKey = choice.replace("%built-in:", "");
+        src = `/images/backgrounds/${builtInKey}-${colorMode}.jpg`;
+      } else {
+        const directory = await appDataDir();
+        src =
+          convertFileSrc(`${directory}/UserContent/Backgrounds/${choice}`) +
+          `?t=${Date.now()}`;
+      }
+      if (!cancelled) setBgImageSrc(src);
+    };
+    constructBgImageSrc();
+    return () => {
+      cancelled = true;
+    };
+  }, [config.appearance.background.choice, colorMode]);
+
   // java list cache and retriever
   const handleRetrieveJavaList = useCallback(() => {
     ConfigService.retrieveJavaList().then((response) => {
@@ -186,6 +217,8 @@ export const LauncherConfigContextProvider: React.FC<{
         setConfig,
         update: handleUpdateLauncherConfig,
         isZh,
+        bgImageSrc,
+        isBgDarken,
         newerVersion,
         getJavaInfos,
         handleCheckLauncherUpdate,

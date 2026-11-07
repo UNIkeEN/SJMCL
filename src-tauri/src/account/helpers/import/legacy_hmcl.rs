@@ -207,11 +207,12 @@ pub async fn retrieve_legacy_hmcl_account_info(
       .parent()
       .ok_or(AccountError::NotFound)?
       .to_path_buf();
-    if cfg!(target_os = "macos") {
-      base.join("hmcl").join("accounts.json")
-    } else {
-      base.join(".hmcl").join("accounts.json")
-    }
+    base
+      .join(cfg_select! {
+        target_os = "macos" => "hmcl",
+        _ => ".hmcl",
+      })
+      .join("accounts.json")
   };
 
   if !hmcl_json_path.is_file() {

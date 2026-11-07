@@ -1,5 +1,6 @@
 import { Box, BoxProps, Card } from "@chakra-ui/react";
 import React, { forwardRef } from "react";
+import LiquidGlassEffect from "@/components/special/liquid-glass-effect";
 import { useLauncherConfig } from "@/contexts/config";
 import cardStyles from "@/styles/card.module.css";
 import liquidGlassStyles from "@/styles/liquid-glass.module.css";
@@ -39,8 +40,7 @@ const AdvancedCard = forwardRef<HTMLDivElement, AdvancedCardProps>(
           {...props}
           className={`${liquidGlassStyles["wrapper"]} ${props.className || ""}`}
         >
-          <div className={liquidGlassStyles["effect"]} />
-          <div className={liquidGlassStyles["shine"]} />
+          <LiquidGlassEffect />
           <Box position="relative" zIndex={3} height="100%" width="100%">
             {children}
           </Box>

@@ -7,36 +7,36 @@ use tauri::AppHandle;
 use url::Url;
 use zip::ZipArchive;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::client_json::{McClientInfo, reset_fields_from_patches};
-use crate::instance::helpers::loader::common::add_library_entry;
+use crate::instance::helpers::loader::common::{InstallPlan, add_library_entry};
 use crate::instance::helpers::loader::forge::InstallProfile;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoader};
 use crate::launch::helpers::file_validator::convert_library_name_to_path;
-use crate::resource::helpers::misc::{convert_url_to_target_source, get_download_api};
+use crate::resource::helpers::misc::{get_download_api, get_download_urls};
 use crate::resource::models::{ResourceType, SourceType};
-use crate::tasks::PTaskParam;
-use crate::tasks::commands::schedule_progressive_task_group;
-use crate::tasks::download::DownloadParam;
 
 pub async fn install_neoforge_loader(
   priority: &[SourceType],
   loader: &ModLoader,
   lib_dir: PathBuf,
-  task_params: &mut Vec<PTaskParam>,
+  task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
   let loader_ver = &loader.version;
 
-  let mut installer_url_opt: Option<Url> = None;
+  let mut sources = Vec::new();
   let mut installer_coord: String = String::new();
 
   if loader_ver.starts_with("1.20.1-") {
-    installer_url_opt = Some(
-      get_download_api(SourceType::Official, ResourceType::NeoforgeInstall)?.join(&format!(
+    sources = get_download_urls(
+      &get_download_api(SourceType::Official, ResourceType::NeoforgeInstall)?.join(&format!(
         "net/neoforged/forge/{v}/forge-{v}-installer.jar",
         v = loader_ver
       ))?,
-    );
+      &[ResourceType::NeoforgeMaven],
+      priority,
+    )?;
     installer_coord = format!("net.neoforged:forge:{}-installer", loader.version);
   } else {
     // fallback priority
@@ -55,23 +55,23 @@ pub async fn install_neoforge_loader(
             root.join(&path)?
           }
         };
-        installer_url_opt = Some(url);
+        sources.push(url);
         installer_coord = format!("net.neoforged:neoforge:{}-installer", loader.version);
-        break;
       }
     }
   }
 
-  if let Some(installer_url) = installer_url_opt {
+  if !sources.is_empty() {
     let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
     let installer_path = lib_dir.join(&installer_rel);
 
-    task_params.push(PTaskParam::Download(DownloadParam {
-      src: installer_url,
+    task_params.push(DownloadTask {
+      sources,
       dest: installer_path,
       filename: None,
+      size: None,
       sha1: None,
-    }));
+    });
   }
 
   Ok(())
@@ -82,7 +82,7 @@ pub async fn download_neoforge_libraries(
   priority: &[SourceType],
   instance: &Instance,
   client_info: &mut McClientInfo,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<InstallPlan> {
   let subdirs = get_instance_subdir_paths(
     app,
     instance,
@@ -123,7 +123,7 @@ pub async fn download_neoforge_libraries(
     // Extract maven folder contents to lib_dir
     for i in 0..archive.len() {
       let mut file = archive.by_index(i)?;
-      let path = file.mangled_name();
+      let path = file.mangled_name()?;
       let outpath = if path.starts_with("maven/") {
         // Remove "maven/" prefix and join with lib_dir
         let relative_path = path.strip_prefix("maven/").unwrap();
@@ -134,7 +134,7 @@ pub async fn download_neoforge_libraries(
         continue;
       };
 
-      if file.name().ends_with('/') {
+      if file.name()?.ends_with('/') {
         // Create directory
         fs::create_dir_all(&outpath)?;
       } else {
@@ -188,17 +188,14 @@ pub async fn download_neoforge_libraries(
     if args_map.contains_key(&format!("{{{key}}}")) {
       continue;
     }
-    let mut value_client = value.client.clone();
-    if value_client.starts_with('[') && value_client.ends_with(']') {
-      value_client = value_client
-        .trim_start_matches('[')
-        .trim_end_matches(']')
-        .to_string();
-      value_client = lib_dir
-        .join(convert_library_name_to_path(&value_client, None)?)
+    let value_client = if let Some(library) = value.client.strip_circumfix('[', ']') {
+      lib_dir
+        .join(convert_library_name_to_path(library, None)?)
         .to_string_lossy()
-        .to_string();
-    }
+        .into_owned()
+    } else {
+      value.client.clone()
+    };
     args_map.insert(format!("{{{key}}}"), value_client);
   }
 
@@ -207,12 +204,17 @@ pub async fn download_neoforge_libraries(
       if let Some(mojmaps) = args_map.get("{MOJMAPS}")
         && let Some(client_mappings) = client_info.downloads.get("client_mappings")
       {
-        task_params.push(PTaskParam::Download(DownloadParam {
-          src: client_mappings.url.parse()?,
+        task_params.push(DownloadTask {
+          sources: get_download_urls(
+            &client_mappings.url.parse()?,
+            &[ResourceType::Launcher],
+            priority,
+          )?,
           dest: lib_dir.join(mojmaps),
           filename: None,
+          size: u64::try_from(client_mappings.size).ok(),
           sha1: Some(client_mappings.sha1.clone()),
-        }));
+        });
       }
       processor.args.clear();
       continue;
@@ -231,15 +233,11 @@ pub async fn download_neoforge_libraries(
     }
 
     for arg in processor.args.iter_mut() {
-      if arg.starts_with('[') && arg.ends_with(']') {
-        *arg = arg
-          .trim_start_matches('[')
-          .trim_end_matches(']')
-          .to_string();
+      if let Some(library) = arg.strip_circumfix('[', ']') {
         *arg = lib_dir
-          .join(convert_library_name_to_path(arg, None)?)
+          .join(convert_library_name_to_path(library, None)?)
           .to_string_lossy()
-          .to_string();
+          .into_owned();
       }
       for (key, value) in &args_map {
         *arg = arg.replace(key, value);
@@ -255,11 +253,6 @@ pub async fn download_neoforge_libraries(
     }
   });
 
-  fs::write(
-    instance.version_path.join("install_profile.json"),
-    &serde_json::to_vec_pretty(&profile)?,
-  )?;
-
   let neoforge_info: McClientInfo = serde_json::from_str(&version)?;
   client_info.main_class = neoforge_info.main_class.clone();
 
@@ -269,26 +262,22 @@ pub async fn download_neoforge_libraries(
     add_library_entry(&mut client_info.libraries, name, Some(lib.clone()))?;
     add_library_entry(&mut loader_libraries, name, Some(lib.clone()))?;
 
-    let url = lib
-      .downloads
-      .as_ref()
-      .and_then(|d| d.artifact.as_ref())
-      .map(|a| a.url.as_str())
-      .unwrap_or_default();
-    if url.is_empty() {
+    let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
+    let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
       continue;
-    }
+    };
 
-    task_params.push(PTaskParam::Download(DownloadParam {
-      src: convert_url_to_target_source(
-        &Url::parse(url)?,
+    task_params.push(DownloadTask {
+      sources: get_download_urls(
+        &Url::parse(&artifact.url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
-        &priority[0],
+        priority,
       )?,
       dest: lib_dir.join(&convert_library_name_to_path(name, None)?),
       filename: None,
-      sha1: None,
-    }));
+      size: u64::try_from(artifact.size).ok(),
+      sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
+    });
   }
 
   let nf_args = neoforge_info
@@ -309,44 +298,33 @@ pub async fn download_neoforge_libraries(
 
   for lib in profile.libraries.iter() {
     let name = &lib.name;
-    let url = lib
-      .downloads
-      .as_ref()
-      .and_then(|d| d.artifact.as_ref())
-      .map(|a| a.url.as_str())
-      .unwrap_or("");
+    let artifact = lib.downloads.as_ref().and_then(|d| d.artifact.as_ref());
 
-    if url.is_empty() {
+    let Some(artifact) = artifact.filter(|artifact| !artifact.url.is_empty()) else {
       continue;
-    }
+    };
 
     let rel = convert_library_name_to_path(&name.to_string(), None)?;
-    task_params.push(PTaskParam::Download(DownloadParam {
-      src: convert_url_to_target_source(
-        &Url::parse(url)?,
+    task_params.push(DownloadTask {
+      sources: get_download_urls(
+        &Url::parse(&artifact.url)?,
         &[ResourceType::NeoforgeMaven, ResourceType::Libraries],
-        &priority[0],
+        priority,
       )?,
       dest: lib_dir.join(&rel),
       filename: None,
-      sha1: None,
-    }));
+      size: u64::try_from(artifact.size).ok(),
+      sha1: Some(artifact.sha1.clone()).filter(|sha1| !sha1.is_empty()),
+    });
   }
 
   reset_fields_from_patches(client_info);
 
   let mut seen = std::collections::HashSet::new();
-  task_params.retain(|param| match param {
-    PTaskParam::Download(dp) => seen.insert(dp.dest.clone()),
-  });
+  task_params.retain(|param| seen.insert(param.dest.clone()));
 
-  schedule_progressive_task_group(
-    app.clone(),
-    format!("neoforge-libraries?{}", instance.id),
-    task_params,
-    true,
-  )
-  .await?;
-
-  Ok(())
+  Ok(InstallPlan {
+    tasks: task_params,
+    processors: profile.processors,
+  })
 }

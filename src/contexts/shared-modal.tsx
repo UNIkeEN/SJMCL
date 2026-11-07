@@ -1,11 +1,21 @@
-import React, { createContext, useCallback, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import { useLauncherConfig } from "@/contexts/config";
 
 interface SharedModalContextType {
-  openSharedModal: (key: string, params?: any) => void;
-  closeSharedModal: (key: string) => void;
+  openSharedModal: (
+    key: string,
+    params?: any,
+    options?: { stack?: boolean }
+  ) => void;
+  closeSharedModal: (key: string, modalId?: number) => void;
   openGenericConfirmDialog: (params?: any) => void;
-  modalStates: Record<string, { isOpen: boolean; params: any }>;
+  modalStates: { key: string; modalId: number; params: any }[];
 }
 
 export const SharedModalContext = createContext<
@@ -16,23 +26,37 @@ export const SharedModalContextProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [modalStates, setModalStates] = useState<
-    Record<string, { isOpen: boolean; params: any }>
-  >({});
+    SharedModalContextType["modalStates"]
+  >([]);
+  const nextModalId = useRef(0);
   const { config } = useLauncherConfig();
 
-  const openSharedModal = useCallback((key: string, params: any = {}) => {
-    setModalStates((prev) => ({
-      ...prev,
-      [key]: { isOpen: true, ...params },
-    }));
-    logger.info("Opened shared modal:", key, params);
-  }, []);
+  const openSharedModal = useCallback(
+    (key: string, params: any = {}, options?: { stack?: boolean }) => {
+      const modalId = nextModalId.current++;
+      setModalStates((prev) => {
+        const index = prev.map((modal) => modal.key).lastIndexOf(key);
+        // Append when stacking or no matching modal exists.
+        // Otherwise, update only the topmost matching modal.
+        return options?.stack || index === -1
+          ? [...prev, { key, modalId, params }]
+          : prev.map((modal, i) =>
+              i === index ? { ...modal, params } : modal
+            );
+      });
+      logger.info("Opened shared modal:", key, params);
+    },
+    []
+  );
 
-  const closeSharedModal = useCallback((key: string) => {
-    setModalStates((prev) => {
-      const { [key]: _, ...newStates } = prev;
-      return newStates;
-    });
+  const closeSharedModal = useCallback((key: string, modalId?: number) => {
+    setModalStates((prev) =>
+      prev.filter(
+        (modal) =>
+          modal.key !== key ||
+          (modalId !== undefined && modal.modalId !== modalId)
+      )
+    );
   }, []);
 
   const openGenericConfirmDialog = useCallback(

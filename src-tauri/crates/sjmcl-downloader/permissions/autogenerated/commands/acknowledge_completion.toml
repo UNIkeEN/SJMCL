@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-acknowledge-completion"
+description = "Enables the acknowledge_completion command without any pre-configured scope."
+commands.allow = ["acknowledge_completion"]
+
+[[permission]]
+identifier = "deny-acknowledge-completion"
+description = "Denies the acknowledge_completion command without any pre-configured scope."
+commands.deny = ["acknowledge_completion"]

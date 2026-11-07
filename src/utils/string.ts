@@ -24,14 +24,14 @@ export const removeFileExt = (filename: string): string => {
 };
 
 export const formatByteSize = (bytes: number) => {
-  bytes = Math.max(0, bytes);
+  bytes = Number.isFinite(bytes) ? Math.max(0, bytes) : 0;
   const units = ["b", "kib", "mib", "gib"];
 
   if (bytes >= 1024) {
     let i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), 3);
     return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${t(`Utils.byteSize.${units[i]}`)}`;
   } else {
-    return `${bytes} ${t(`Utils.byteSize.${units[0]}`)}`;
+    return `${Math.round(bytes)} ${t(`Utils.byteSize.${units[0]}`)}`;
   }
 };
 

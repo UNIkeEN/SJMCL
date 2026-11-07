@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Card,
   Center,
   Flex,
   HStack,
@@ -11,6 +10,7 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Portal,
   Text,
   Tooltip,
   VStack,
@@ -21,16 +21,17 @@ import { useRouter } from "next/router";
 import { cloneElement, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeftRight, LuPlus, LuSettings } from "react-icons/lu";
+import AdvancedCard from "@/components/common/advanced-card";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import { CompactButtonGroup } from "@/components/common/compact-button-group";
 import InstancesView from "@/components/instances-view";
 import PlayerAvatar from "@/components/player-avatar";
 import PlayersView from "@/components/players-view";
+import LiquidGlassEffect from "@/components/special/liquid-glass-effect";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useSharedModals } from "@/contexts/shared-modal";
 import { PlayerType } from "@/enums/account";
-import cardStyles from "@/styles/card.module.css";
 import styles from "@/styles/launch.module.css";
 
 interface CustomButtonProps extends Omit<IconButtonProps, "onClick"> {
@@ -84,13 +85,15 @@ const ButtonWithPopover: React.FC<CustomButtonProps> = ({
       </Tooltip>
 
       {!showAdd && (
-        <PopoverContent maxH="3xs" overflow="auto">
-          <PopoverBody p={0}>
-            {cloneElement(popoverContent, {
-              onSelectCallback: () => setTimeout(handleClose, 100),
-            })}
-          </PopoverBody>
-        </PopoverContent>
+        <Portal>
+          <PopoverContent maxH="3xs" overflow="auto">
+            <PopoverBody p={0}>
+              {cloneElement(popoverContent, {
+                onSelectCallback: () => setTimeout(handleClose, 100),
+              })}
+            </PopoverBody>
+          </PopoverContent>
+        </Portal>
       )}
     </Popover>
   );
@@ -100,6 +103,9 @@ const HomeButtonGroup = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { openSharedModal } = useSharedModals();
+  const { config } = useLauncherConfig();
+  const useLiquidGlass = config.appearance.theme.useLiquidGlassDesign;
+  const subtitleColor = useColorModeValue("gray.600", "gray.400");
   const { selectedPlayer, selectedInstance, getPlayerList, getInstanceList } =
     useGlobalData();
 
@@ -110,72 +116,76 @@ const HomeButtonGroup = () => {
 
   return (
     <Flex wrap="wrap" justify="flex-end" align="flex-end" gap={4}>
-      <Card
-        className={styles["selected-user-card"] + " " + cardStyles["card-back"]}
+      <AdvancedCard
+        className={styles["selected-user-card"]}
+        data-liquid={useLiquidGlass}
       >
-        <Box position="absolute" top={1} right={1}>
-          <ButtonWithPopover
-            tooltip={t(
-              `LaunchPage.SwitchButton.tooltip.${hasPlayers ? "switchPlayer" : "addPlayer"}`
-            )}
-            aria-label="player"
-            variant="subtle"
-            popoverContent={
-              <PlayersView
-                players={playerList}
-                selectedPlayer={selectedPlayer}
-                viewType="list"
-                withMenu={false}
-              />
-            }
-            onClick={() => router.push("/accounts")}
-            showAdd={!hasPlayers}
-            onAddClick={() => router.push("/accounts?add=true")}
-          />
-        </Box>
+        <Box h="100%" p={3}>
+          <Box position="absolute" top={1} right={1}>
+            <ButtonWithPopover
+              tooltip={t(
+                `LaunchPage.SwitchButton.tooltip.${hasPlayers ? "switchPlayer" : "addPlayer"}`
+              )}
+              aria-label="player"
+              variant="subtle"
+              popoverContent={
+                <PlayersView
+                  players={playerList}
+                  selectedPlayer={selectedPlayer}
+                  viewType="list"
+                  withMenu={false}
+                />
+              }
+              onClick={() => router.push("/accounts")}
+              showAdd={!hasPlayers}
+              onAddClick={() => router.push("/accounts?add=true")}
+            />
+          </Box>
 
-        <HStack spacing={2.5} h="100%" w="100%">
-          {selectedPlayer ? (
-            <>
-              <PlayerAvatar
-                boxSize="32px"
-                objectFit="cover"
-                avatar={selectedPlayer.avatar}
-              />
-              <VStack spacing={0} align="left" mt={-2} minW={0}>
-                <Text
-                  fontSize="xs-sm"
-                  fontWeight="bold"
-                  maxW="100%"
-                  mt={2}
-                  isTruncated
-                >
-                  {selectedPlayer.name}
+          <HStack spacing={2.5} h="100%" w="100%">
+            {selectedPlayer ? (
+              <>
+                <PlayerAvatar
+                  boxSize="32px"
+                  objectFit="cover"
+                  avatar={selectedPlayer.avatar}
+                />
+                <VStack spacing={0} align="left" mt={-2} minW={0}>
+                  <Text
+                    fontSize="xs-sm"
+                    fontWeight="bold"
+                    maxW="100%"
+                    mt={2}
+                    isTruncated
+                  >
+                    {selectedPlayer.name}
+                  </Text>
+                  <Text fontSize="2xs" color={subtitleColor} lineHeight={4}>
+                    {t(
+                      `Enums.playerTypes.${selectedPlayer.playerType === PlayerType.ThirdParty ? "3rdpartyShort" : selectedPlayer.playerType}`
+                    )}
+                  </Text>
+                  <Text fontSize="2xs" color={subtitleColor} lineHeight={4}>
+                    {selectedPlayer.playerType === PlayerType.ThirdParty &&
+                      selectedPlayer.authServer?.name}
+                  </Text>
+                </VStack>
+              </>
+            ) : (
+              <Center w="100%" h="100%">
+                <Text fontSize="sm" className="secondary-text">
+                  {t("LaunchPage.Text.noSelectedPlayer")}
                 </Text>
-                <Text fontSize="2xs" className="secondary-text">
-                  {t(
-                    `Enums.playerTypes.${selectedPlayer.playerType === PlayerType.ThirdParty ? "3rdpartyShort" : selectedPlayer.playerType}`
-                  )}
-                </Text>
-                <Text fontSize="2xs" className="secondary-text">
-                  {selectedPlayer.playerType === PlayerType.ThirdParty &&
-                    selectedPlayer.authServer?.name}
-                </Text>
-              </VStack>
-            </>
-          ) : (
-            <Center w="100%" h="100%">
-              <Text fontSize="sm" className="secondary-text">
-                {t("LaunchPage.Text.noSelectedPlayer")}
-              </Text>
-            </Center>
-          )}
-        </HStack>
-      </Card>
+              </Center>
+            )}
+          </HStack>
+        </Box>
+      </AdvancedCard>
 
       <Box position="relative">
         <Button
           id="main-launch-button"
+          data-liquid={useLiquidGlass}
           colorScheme="blackAlpha"
           className={styles["launch-button"]}
           onClick={() => {
@@ -186,7 +196,14 @@ const HomeButtonGroup = () => {
             }
           }}
         >
-          <VStack spacing={1.5} w="100%" color="white">
+          {useLiquidGlass && <LiquidGlassEffect isDark />}
+          <VStack
+            spacing={1.5}
+            w="100%"
+            color="white"
+            position="relative"
+            zIndex={useLiquidGlass ? 3 : undefined}
+          >
             <Text fontSize="lg" fontWeight="bold">
               {t("LaunchPage.button.launch")}
             </Text>

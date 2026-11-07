@@ -34,8 +34,7 @@ pub fn get_minecraft_lang_tag(
   let cmp = build_game_version_cmp_fn(app);
   LANG_TAG_MAPPINGS
     .iter()
-    .filter(|(locale, min_ver, _)| *locale == launcher_locale && cmp(game_version, min_ver).is_ge())
-    .next_back()
+    .rfind(|(locale, min_ver, _)| *locale == launcher_locale && cmp(game_version, min_ver).is_ge())
     .map(|(_, _, tag)| *tag)
 }
 

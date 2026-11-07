@@ -4,6 +4,7 @@ version: '0.0.0'
 summary: SJMCL Minecraft Launcher
 description: |
   SJMC Minecraft Launcher. A modern, lightweight Minecraft launcher.
+icon: src-tauri/assets/icons/128x128@2x.png
 
 grade: stable
 confinement: strict

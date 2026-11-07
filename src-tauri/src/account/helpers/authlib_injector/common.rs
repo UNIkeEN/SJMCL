@@ -67,8 +67,15 @@ pub async fn parse_profile(
 
       for texture_type in TextureType::iter() {
         if let Some(skin) = texture_info_value.textures.get(&texture_type.to_string()) {
+          let image = match fetch_image(app, skin.url.clone()).await {
+            Ok(image) => image,
+            Err(error) => {
+              log::warn!("Failed to fetch third-party {texture_type} texture: {error:?}");
+              continue;
+            }
+          };
           textures.push(Texture {
-            image: fetch_image(app, skin.url.clone()).await?,
+            image,
             texture_type,
             model: skin
               .metadata
@@ -83,9 +90,14 @@ pub async fn parse_profile(
     }
   }
 
-  if textures.is_empty() {
-    // this player didn't have a texture, use preset Steve skin instead
-    textures = load_preset_skin(app, PresetRole::Steve)?;
+  if !textures
+    .iter()
+    .any(|texture| texture.texture_type == TextureType::Skin)
+  {
+    // Keep a skin first for avatar rendering, even when only a cape was downloaded.
+    let mut preset_textures = load_preset_skin(app, PresetRole::Steve)?;
+    preset_textures.append(&mut textures);
+    textures = preset_textures;
   }
 
   Ok(

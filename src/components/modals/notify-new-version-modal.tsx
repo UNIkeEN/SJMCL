@@ -37,8 +37,7 @@ const NotifyNewVersionModal: React.FC<NotifyNewVersionModalProps> = ({
 
   const handleDownloadUpdate = () => {
     if (isLinux) {
-      const lang = isZh ? "zh" : "en";
-      openUrl(`https://mc.sjtu.cn/sjmcl/${lang}`);
+      openUrl(`https://mc.sjtu.cn/sjmcl${isZh ? "" : "/en"}`);
     } else {
       ConfigService.downloadLauncherUpdate(newVersion).then((response) => {
         if (response.status !== "success") {

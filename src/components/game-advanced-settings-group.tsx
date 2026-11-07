@@ -70,6 +70,11 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
   const rendererOptions = supportedRenderers ?? ["default"];
 
   const gameFileValidatePolicies = ["disable", "normal", "full"];
+  const autoCloseGameCrashWindowPolicies = [
+    "disabled",
+    "tenSeconds",
+    "thirtySeconds",
+  ];
   const updateGameAdvancedConfig = useCallback(
     (key: string, value: any) => {
       updateGameConfig(`advanced.${key}`, value);
@@ -345,7 +350,7 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                     onSelect={(val) => {
                       updateGameAdvancedConfig("graphics.renderer", val);
                     }}
-                    menuListProps={{ maxH: 72, overflowY: "auto" }}
+                    menuListProps={{ maxH: "40vh", overflowY: "auto" }}
                   />
                 ),
               },
@@ -391,6 +396,28 @@ const GameAdvancedSettingsGroups: React.FC<GameSettingsGroupsProps> = ({
                 }}
               />
             </HStack>
+          ),
+        },
+        {
+          title: t(
+            "GameAdvancedSettingsPage.workaround.settings.autoCloseGameCrashWindow.title"
+          ),
+          children: (
+            <MenuSelector
+              value={gameConfig.advanced.workaround.autoCloseGameCrashWindow}
+              onSelect={(val) =>
+                updateGameAdvancedConfig(
+                  "workaround.autoCloseGameCrashWindow",
+                  val
+                )
+              }
+              options={autoCloseGameCrashWindowPolicies.map((policy) => ({
+                value: policy,
+                label: t(
+                  `GameAdvancedSettingsPage.workaround.settings.autoCloseGameCrashWindow.${policy}`
+                ),
+              }))}
+            />
           ),
         },
         {

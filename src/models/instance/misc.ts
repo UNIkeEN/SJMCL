@@ -90,6 +90,7 @@ export interface LocalModInfo {
   loaderType: ModLoaderType;
   fileName: string;
   filePath: string;
+  relativePath: string;
   description?: string;
   translatedDescription?: string;
   potentialIncompatibility: boolean;

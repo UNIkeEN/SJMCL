@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { LuArrowDownToLine, LuCheck, LuCircleAlert } from "react-icons/lu";
 import { useLauncherConfig } from "@/contexts/config";
 import { useTaskContext } from "@/contexts/task";
-import { GTaskEventStatusEnums } from "@/models/task";
+import { DownloadFinishKind, DownloadGroupState } from "@/models/download";
 
 export const DownloadIndicator: React.FC = () => {
   const router = useRouter();
@@ -27,13 +27,12 @@ export const DownloadIndicator: React.FC = () => {
   const isAllCompleted =
     tasks.every(
       (group) =>
-        group.status === GTaskEventStatusEnums.Completed ||
-        group.status === GTaskEventStatusEnums.Cancelled
-    ) &&
-    tasks.some((group) => group.status === GTaskEventStatusEnums.Completed);
+        group.state === DownloadGroupState.Finished &&
+        group.finish !== DownloadFinishKind.Failed
+    ) && tasks.some((group) => group.finish === DownloadFinishKind.Completed);
 
   const hasError = tasks.some(
-    (task) => task.status === GTaskEventStatusEnums.Failed
+    (task) => task.finish === DownloadFinishKind.Failed || !!task.error
   );
 
   useEffect(() => {
@@ -65,6 +64,10 @@ export const DownloadIndicator: React.FC = () => {
             color={`${primaryColor}.500`}
             size="30px"
             value={generalPercent}
+            isIndeterminate={
+              generalPercent == null &&
+              tasks.some((group) => group.state === DownloadGroupState.Active)
+            }
           >
             <CircularProgressLabel>
               <Center w="100%">

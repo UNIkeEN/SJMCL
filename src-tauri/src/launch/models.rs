@@ -11,6 +11,7 @@ use crate::launcher_config::models::{GameConfig, JavaInfo};
 #[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
 pub enum LaunchError {
   ModLoaderNotInstalled,
+  OptifineNotInstalled,
   NoSuitableJava,
   SelectedJavaUnavailable,
   GameFilesIncomplete,

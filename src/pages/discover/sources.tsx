@@ -46,8 +46,8 @@ export const DiscoverSourcesPage = () => {
     DiscoverService.fetchNewsSourcesInfo().then((response) => {
       if (response.status === "success") {
         setSourcesInfo(response.data);
-        setIsLoading(false);
       }
+      setIsLoading(false);
       // no toast here, keep silent if no internet connection or etc.
     });
   }, [setSourcesInfo]);
@@ -103,7 +103,11 @@ export const DiscoverSourcesPage = () => {
                 key={source.endpointUrl}
                 title={source.name || ""}
                 titleExtra={
-                  <Text className="secondary-text" fontSize="xs-sm">
+                  <Text
+                    className="secondary-text"
+                    fontSize="xs-sm"
+                    lineHeight="base"
+                  >
                     {source.fullName}
                   </Text>
                 }

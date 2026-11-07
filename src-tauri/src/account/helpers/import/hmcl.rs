@@ -274,11 +274,10 @@ pub async fn retrieve_hmcl_account_info(
       .parent()
       .ok_or(AccountError::NotFound)?
       .to_path_buf();
-    if cfg!(target_os = "macos") {
-      base.join("hmcl")
-    } else {
-      base.join(".hmcl")
-    }
+    base.join(cfg_select! {
+      target_os = "macos" => "hmcl",
+      _ => ".hmcl",
+    })
   };
 
   let hmcl_account_json_path_new = hmcl_base_dir.join("config").join("user-accounts.json");

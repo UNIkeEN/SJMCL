@@ -13,6 +13,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react";
+import { save } from "@tauri-apps/plugin-dialog";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BsPersonRaisedHand } from "react-icons/bs";
@@ -30,10 +31,14 @@ import {
   LuPlay,
   LuRefreshCw,
   LuRefreshCwOff,
+  LuSave,
 } from "react-icons/lu";
 import * as skinview3d from "skinview3d";
+import { CommonIconButton } from "@/components/common/common-icon-button";
 import { useLauncherConfig } from "@/contexts/config";
+import { useToast } from "@/contexts/toast";
 import { SkinModel } from "@/enums/account";
+import { UtilsService } from "@/services/utils";
 
 type AnimationType = "idle" | "walk" | "run" | "wave";
 type backgroundType = "none" | "black" | "panorama";
@@ -50,6 +55,7 @@ interface SkinPreviewProps extends Omit<BoxProps, "width" | "height"> {
   errorMessage?: string | null;
   onSkinError?: (msg: string | null) => void;
   showControlBar?: boolean;
+  showSaveButton?: boolean;
   skinModel?: SkinModel;
 }
 
@@ -65,10 +71,12 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
   errorMessage,
   onSkinError,
   showControlBar = true,
+  showSaveButton = false,
   skinModel,
   ...props
 }) => {
   const { t } = useTranslation();
+  const toast = useToast();
   const { config } = useLauncherConfig();
   const primaryColor = config.appearance.theme.primaryColor;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -78,6 +86,32 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
   const [background, setBackground] = useState<backgroundType>(canvasBg);
   const [autoRotate, setAutoRotate] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
+
+  const handleSaveSkin = async () => {
+    if (!skinSrc) return;
+
+    const savePath = await save({
+      defaultPath: "skin.png",
+      filters: [
+        {
+          name: t("General.dialog.filterName.image"),
+          extensions: ["png"],
+        },
+      ],
+    });
+    if (!savePath) return;
+
+    const response = await UtilsService.writeFile(
+      savePath,
+      skinSrc.replace(/^data:image\/png;base64,/, ""),
+      "base64"
+    );
+    toast({
+      title: t(`SkinPreview.toast.${response.status}`),
+      description: response.status === "error" ? response.details : undefined,
+      status: response.status,
+    });
+  };
 
   // animation
   const animationList = useMemo(
@@ -336,6 +370,13 @@ const SkinPreview: React.FC<SkinPreviewProps> = ({
               onChange={(e) => onCapeVisibilityChange?.(e.target.checked)}
               colorScheme={primaryColor}
             />
+            {showSaveButton && (
+              <CommonIconButton
+                icon={LuSave}
+                label={t("SkinPreview.button.saveToLocal")}
+                onClick={handleSaveSkin}
+              />
+            )}
           </HStack>
         </Flex>
       )}

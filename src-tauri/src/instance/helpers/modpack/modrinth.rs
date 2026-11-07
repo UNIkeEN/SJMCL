@@ -13,6 +13,7 @@ use tauri::AppHandle;
 use tokio::sync::Semaphore;
 use zip::ZipArchive;
 
+use crate::download::DownloadTask;
 use crate::instance::helpers::modpack::export::{
   ExportModpackOptions, ModpackExportBundle, normalize_mod_loader_version,
 };
@@ -23,8 +24,6 @@ use crate::resource::helpers::{
   modrinth::fetch_remote_resource_by_local_modrinth,
 };
 use crate::resource::models::OtherResourceSource;
-use crate::tasks::PTaskParam;
-use crate::tasks::download::DownloadParam;
 
 structstruck::strike! {
 #[strikethrough[serialize_skip_none]]
@@ -43,6 +42,17 @@ pub struct ModrinthFile {
   pub downloads: Vec<String>,
   pub file_size: u64,
 }
+}
+
+impl ModrinthFile {
+  /// Whether the file should be installed on the client. Server-only files are marked with
+  /// `env.client` set to `"unsupported"`.
+  fn is_client_supported(&self) -> bool {
+    self
+      .env
+      .as_ref()
+      .is_none_or(|env| env.client != "unsupported")
+  }
 }
 
 #[serialize_skip_none]
@@ -116,6 +126,7 @@ impl ModpackManifest for ModrinthManifest {
         "forge" => return Ok((ModLoaderType::Forge, val.to_string())),
         "fabric-loader" => return Ok((ModLoaderType::Fabric, val.to_string())),
         "neoforge" => return Ok((ModLoaderType::NeoForge, val.to_string())),
+        "quilt-loader" => return Ok((ModLoaderType::Quilt, val.to_string())),
         _ => return Err(InstanceError::UnsupportedModLoader.into()),
       }
     }
@@ -126,21 +137,26 @@ impl ModpackManifest for ModrinthManifest {
     &self,
     _app: &AppHandle,
     instance_path: &Path,
-  ) -> SJMCLResult<Vec<PTaskParam>> {
+  ) -> SJMCLResult<Vec<DownloadTask>> {
     self
       .files
       .iter()
+      .filter(|file| file.is_client_supported())
       .map(|file| {
-        let download_url = file
-          .downloads
-          .first()
-          .ok_or(InstanceError::InvalidSourcePath)?;
-        Ok(PTaskParam::Download(DownloadParam {
-          src: url::Url::parse(download_url).map_err(|_| InstanceError::InvalidSourcePath)?,
+        if file.downloads.is_empty() {
+          return Err(InstanceError::InvalidSourcePath.into());
+        }
+        Ok(DownloadTask {
+          sources: file
+            .downloads
+            .iter()
+            .map(|url| url::Url::parse(url).map_err(|_| InstanceError::InvalidSourcePath.into()))
+            .collect::<SJMCLResult<Vec<_>>>()?,
           sha1: Some(file.hashes.sha1.clone()),
           dest: instance_path.join(&file.path),
           filename: None,
-        }))
+          size: Some(file.file_size),
+        })
       })
       .collect::<SJMCLResult<Vec<_>>>()
   }

@@ -190,7 +190,7 @@ pub async fn refresh(
     .await?;
 
   if !token_response.status().is_success() {
-    return Err(AccountError::Expired)?;
+    return Err(AccountError::Expired.into());
   }
 
   let tokens: OAuthTokens = token_response

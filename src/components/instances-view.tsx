@@ -22,12 +22,13 @@ import { isChakraColor } from "@/enums/misc";
 import { InstanceSummary } from "@/models/instance/misc";
 import { generateInstanceDesc, getInstanceIconSrc } from "@/utils/instance";
 
-interface InstancesViewProps extends BoxProps {
+interface InstancesViewProps extends Omit<BoxProps, "onDoubleClick"> {
   instances: InstanceSummary[];
   selectedInstance: InstanceSummary | undefined;
   viewType: string;
   onSelectInstance?: (instance: InstanceSummary) => void;
   onSelectCallback?: () => void;
+  onDoubleClick?: (instance: InstanceSummary) => void;
   withMenu?: boolean;
 }
 
@@ -37,6 +38,7 @@ const InstancesView: React.FC<InstancesViewProps> = ({
   viewType,
   onSelectInstance,
   onSelectCallback = () => {},
+  onDoubleClick,
   withMenu = true,
   ...boxProps
 }) => {
@@ -78,12 +80,8 @@ const InstancesView: React.FC<InstancesViewProps> = ({
     maxDescriptionLines: 2,
     titleLineWrap: false,
     prefixElement: (
-      <HStack spacing={2.5}>
-        <Radio
-          value={instance.id}
-          onClick={() => handleSelectInstance(instance)}
-          colorScheme={primaryColor}
-        />
+      <HStack spacing={2.5} pointerEvents="none">
+        <Radio value={instance.id} colorScheme={primaryColor} />
         <Image
           boxSize="32px"
           src={getInstanceIconSrc(instance.iconSrc, instance.versionPath)}
@@ -92,15 +90,15 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       </HStack>
     ),
-    ...(!withMenu && {
-      isFullClickZone: true,
-      onClick: () => handleSelectInstance(instance),
-    }),
+    isFullClickZone: true,
+    onClick: () => handleSelectInstance(instance),
+    onDoubleClick: () => onDoubleClick?.(instance),
     children: withMenu ? (
       <InstanceMenu instance={instance} variant="buttonGroup" />
     ) : (
       <></>
     ),
+    isChildrenIndependent: true,
   }));
 
   const gridItems = instances.map((instance) => ({
@@ -131,15 +129,24 @@ const InstancesView: React.FC<InstancesViewProps> = ({
         />
       ),
       extraContent: (
-        <HStack spacing={0.5} position="absolute" top={0.5} right={1}>
+        <HStack
+          spacing={0.5}
+          position="absolute"
+          top={0.5}
+          right={1}
+          onClick={(e) => e.stopPropagation()}
+          onDoubleClick={(e) => e.stopPropagation()}
+        >
           {instance.starred && <Icon as={FaStar} color="yellow.500" />}
           {withMenu && <InstanceMenu instance={instance} />}
         </HStack>
       ),
     },
     isSelected: selectedInstance?.id === instance.id,
+    isFullClickZone: true,
     radioValue: instance.id,
     onSelect: () => handleSelectInstance(instance),
+    onDoubleClick: () => onDoubleClick?.(instance),
   }));
 
   return (

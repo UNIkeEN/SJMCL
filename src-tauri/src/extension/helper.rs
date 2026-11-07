@@ -77,7 +77,7 @@ pub fn extract_extension_package(package_path: &Path, target_dir: &Path) -> SJMC
     let mut zip_file = zip
       .by_index(i)
       .map_err(|_| io::Error::other(ExtensionError::InvalidPackageFormat))?;
-    let relative_path = zip_file.mangled_name();
+    let relative_path = zip_file.mangled_name()?;
     let output_path = target_dir.join(relative_path);
 
     if zip_file.is_dir() {
