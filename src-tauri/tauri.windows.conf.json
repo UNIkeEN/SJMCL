@@ -10,7 +10,8 @@
           "French",
           "Japanese",
           "SimpChinese",
-          "TradChinese"
+          "TradChinese",
+          "Russian"
         ],
         "sidebarImage": "assets/misc/nsis_sidebar.bmp"
       }
