@@ -2,4 +2,6 @@
 ignore = [
   # RSA is used for local signing and JWT verification; no decryption. No upstream fix is available yet.
   "RUSTSEC-2023-0071",
+  # Only RS256 JWTs are validated and no upstream fix is available yet (jsonwebtoken still pins p256 0.13).
+  "RUSTSEC-2026-0387",
 ]
