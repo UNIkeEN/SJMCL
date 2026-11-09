@@ -286,6 +286,8 @@ pub struct DownloadReader<R> {
   inner: R,
   task_id: String,
   token: tokio_util::sync::CancellationToken,
+  /// Registers this reader's waker with the token so cancellation wakes a pending read.
+  cancelled: Pin<Box<tokio_util::sync::WaitForCancellationFutureOwned>>,
   report: Option<tokio::sync::mpsc::Sender<TaskReport>>,
   report_interval: Duration,
   limiter: Option<Arc<TokenBucket>>,
@@ -312,6 +314,7 @@ impl<R> DownloadReader<R> {
     DownloadReader {
       inner,
       task_id,
+      cancelled: Box::pin(token.clone().cancelled_owned()),
       token,
       report,
       report_interval,
@@ -337,7 +340,8 @@ impl<R: AsyncRead + Unpin> AsyncRead for DownloadReader<R> {
     buf: &mut ReadBuf<'_>,
   ) -> Poll<io::Result<()>> {
     // Cancellation interrupts the copy through an I/O error.
-    if self.token.is_cancelled() {
+    // Polling the cancellation future also registers the waker for a pending read or rate-limit wait.
+    if self.token.is_cancelled() || self.cancelled.as_mut().poll(cx).is_ready() {
       return Poll::Ready(Err(io::Error::new(io::ErrorKind::Interrupted, "cancelled")));
     }
     // Poll any pending rate-limit delay before reading again.
@@ -522,5 +526,40 @@ mod hex {
       s.push_str(&format!("{b:02x}"));
     }
     s
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use tokio::io::AsyncReadExt;
+  use tokio_util::sync::CancellationToken;
+
+  #[tokio::test]
+  async fn cancelling_a_stalled_reader_wakes_the_read() {
+    // Keep the writer open without sending data so the read stays pending.
+    let (_writer, stalled) = tokio::io::duplex(64);
+    let token = CancellationToken::new();
+    let mut reader = DownloadReader::new(
+      stalled,
+      "t".into(),
+      token.clone(),
+      None,
+      Duration::from_secs(1),
+      0,
+      0,
+      None,
+    );
+    let read = tokio::spawn(async move {
+      let mut buf = [0u8; 8];
+      reader.read(&mut buf).await
+    });
+    tokio::time::sleep(Duration::from_millis(50)).await;
+    token.cancel();
+    let res = tokio::time::timeout(Duration::from_millis(500), read)
+      .await
+      .expect("read should wake on cancel")
+      .unwrap();
+    assert_eq!(res.unwrap_err().kind(), io::ErrorKind::Interrupted);
   }
 }
