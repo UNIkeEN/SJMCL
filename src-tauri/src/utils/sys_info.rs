@@ -47,6 +47,7 @@ pub fn get_mapped_locale() -> String {
       ("es", vec!["es"]),
       ("fr", vec!["fr"]),
       ("ja", vec!["ja"]),
+      ("ru", vec!["ru"]),
       ("zh-Hans", vec!["zh-Hans", "wuu-Hans", "yue-Hans"]),
       ("zh-Hant", vec!["zh-Hant", "yue-Hant"]),
     ];
@@ -63,6 +64,7 @@ pub fn get_mapped_locale() -> String {
       ("es", vec!["es"]),
       ("fr", vec!["fr"]),
       ("ja", vec!["ja"]),
+      ("ru", vec!["ru"]),
       ("zh-Hans", vec!["zh-CN", "zh-SG"]),
       ("zh-Hant", vec!["zh-TW", "zh-HK", "zh-MO"]),
     ];

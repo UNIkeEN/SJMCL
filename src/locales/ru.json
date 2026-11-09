@@ -1,0 +1,3268 @@
+{
+  "AboutSettingsPage": {
+    "about": {
+      "title": "О программе",
+      "settings": {
+        "version": {
+          "title": "Версия",
+          "foundNew": "Доступна новая версия",
+          "checkUpdate": "Проверить обновления",
+          "checkToast": {
+            "loading": "Проверка обновлений",
+            "up2date": "Установлена последняя версия",
+            "error": "Не удалось проверить обновления"
+          }
+        },
+        "contributors": {
+          "title": "Участники проекта"
+        },
+        "sourceCode": {
+          "title": "Исходный код на GitHub"
+        },
+        "aboutSJMC": {
+          "title": "О клубе Minecraft Шанхайского университета Цзяотун (SJMC)"
+        }
+      }
+    },
+    "ack": {
+      "title": "Благодарности",
+      "settings": {
+        "bmclapi": {
+          "title": "BMCLAPI",
+          "description": "Благодарим @bangbang93 за высокоскоростное зеркало загрузки"
+        },
+        "hmcl": {
+          "title": "Hello Minecraft! Launcher",
+          "description": "Часть дизайнерских и программных решений позаимствована из этого проекта"
+        },
+        "littleskin": {
+          "title": "LittleSkin",
+          "description": "Благодарим LittleSkin и @tnqzh123 за помощь в разработке процесса входа в аккаунт"
+        },
+        "mcim": {
+          "title": "mcmod-info-mirror",
+          "description": "Предоставляет перевод описаний модов на упрощённый китайский"
+        },
+        "scl": {
+          "title": "Swift Craft Launcher",
+          "description": "Благодарим разработчиков SCL за постоянное общение и взаимное вдохновение"
+        },
+        "sinter": {
+          "title": "Sinter",
+          "description": "Используется как шрифт интерфейса в Windows и Linux по лицензии SIL"
+        },
+        "skinview3d": {
+          "title": "bs-community / skinview3d",
+          "description": "Компонент предпросмотра скинов создан на основе этого проекта с открытым кодом по лицензии MIT"
+        }
+      }
+    },
+    "legalInfo": {
+      "title": "Юридическая информация",
+      "settings": {
+        "copyright": {
+          "title": "Авторские права",
+          "description": "© 2024–2026 Команда SJMCL. Все права защищены."
+        },
+        "userAgreement": {
+          "title": "Пользовательское соглашение",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/tos"
+        },
+        "openSourceLicense": {
+          "title": "Лицензия с открытым исходным кодом",
+          "description": "Распространяется по лицензии GNU General Public License v3.0 с дополнительными условиями."
+        }
+      }
+    }
+  },
+  "AccountsPage": {
+    "button": {
+      "addPlayer": "Добавить игрока",
+      "add3rdPartyServer": "Добавить сервер аутентификации",
+      "sourceHomepage": "Открыть сайт",
+      "deleteServer": "Удалить сервер аутентификации",
+      "importFromOtherLaunchers": "Импорт"
+    },
+    "playerTypeList": {
+      "all": "Все источники"
+    },
+    "viewTypeList": {
+      "grid": "Вид сеткой",
+      "list": "Вид списком"
+    }
+  },
+  "AddAndImportInstancePage": {
+    "addAndImportOptions": {
+      "new": {
+        "title": "Установить новый экземпляр",
+        "description": "Выберите и установите версию игры, загрузчик модов и моды"
+      },
+      "modpack": {
+        "title": "Импортировать модпак",
+        "description": "Импортировать модпак из локального файла или из интернета (форматы CurseForge, Modrinth и MultiMC)"
+      },
+      "manageDirs": {
+        "title": "Управление папками игры",
+        "description": "Управляйте локальными папками игры, чтобы добавлять уже установленные экземпляры"
+      }
+    },
+    "modpackOperations": {
+      "fromdisk": "Импорт с диска",
+      "download": "Скачать модпак"
+    },
+    "moreOptions": {
+      "title": "Ещё",
+      "server": {
+        "title": "Скачать сервер игры",
+        "description": "Скачивание файлов игрового сервера для разных версий"
+      }
+    }
+  },
+  "AddAuthServerModal": {
+    "header": {
+      "title": "Добавить сервер аутентификации"
+    },
+    "placeholder": {
+      "inputServerUrl": "Введите URL сервера"
+    },
+    "page1": {
+      "serverUrl": "URL сервера",
+      "serverUrlRequired": "Укажите URL сервера"
+    },
+    "page2": {
+      "name": "Название",
+      "serverUrl": "URL сервера"
+    }
+  },
+  "AddDiscoverSourceModal": {
+    "modal": {
+      "header": "Добавить источник данных"
+    },
+    "label": {
+      "endpointUrl": "URL конечной точки"
+    },
+    "placeholder": {
+      "endpointUrl": "URL конечной точки"
+    }
+  },
+  "AddGameServerModal": {
+    "header": {
+      "title": "Добавить игровой сервер"
+    },
+    "serverAddrRequired": "Укажите адрес сервера",
+    "label": {
+      "serverAddr": "Адрес сервера",
+      "serverName": "Название сервера"
+    },
+    "placeholder": {
+      "serverAddr": "Введите адрес сервера",
+      "serverName": "Сервер Minecraft"
+    }
+  },
+  "AddPlayerModal": {
+    "modal": {
+      "header": "Добавить игрока"
+    },
+    "label": {
+      "playerType": "Тип игрока"
+    },
+    "offline": {
+      "playerName": {
+        "label": "Имя игрока",
+        "placeholder": "Имя игрока",
+        "errorMessage": "Можно использовать только буквы, цифры и символ подчёркивания (не более 16 символов)."
+      },
+      "advancedOptions": {
+        "title": "Дополнительные параметры",
+        "uuid": {
+          "label": "UUID",
+          "placeholder": "(Сгенерировано SJMCL)",
+          "errorMessage": "Некорректный формат UUID"
+        }
+      }
+    },
+    "3rdparty": {
+      "authServer": {
+        "label": "Источник аутентификации",
+        "selectSource": "Выберите источник аутентификации",
+        "noSource": "Источники аутентификации не добавлены.",
+        "addSource": "Добавить"
+      },
+      "email": {
+        "label": "Электронная почта",
+        "placeholder": "Электронная почта"
+      },
+      "emailOrPlayerName": {
+        "label": "Электронная почта или имя игрока",
+        "placeholder": "Электронная почта или имя игрока"
+      },
+      "password": {
+        "label": "Пароль",
+        "placeholder": "Пароль"
+      }
+    },
+    "oauthCommon": {
+      "description": {
+        "start": {
+          "3rdparty": "Этот источник аутентификации поддерживает спецификацию Yggdrasil Connect",
+          "microsoft": "Поддерживается поток авторизации устройств Microsoft OAuth 2.0"
+        },
+        "next": "Нажмите «Продолжить» и введите указанный выше код (он уже скопирован)"
+      },
+      "button": {
+        "start": {
+          "3rdparty": "Войти через OAuth",
+          "microsoft": "Войти через Microsoft OAuth"
+        },
+        "next": "Продолжить"
+      }
+    },
+    "button": {
+      "buyMinecraft": "Купить Minecraft",
+      "useOAuthLogin": "Вход через OAuth",
+      "usePasswordLogin": "Вход по логину и паролю"
+    }
+  },
+  "AlertResourceDependencyModal": {
+    "header": {
+      "title": "У ресурса есть зависимости"
+    },
+    "description": "Убедитесь, что установлены все необходимые ресурсы, или продолжите загрузку исходного ресурса.",
+    "button": {
+      "continue": "Скачать исходный ресурс",
+      "cancel": "Отмена"
+    },
+    "fallback": {
+      "title": "ID ресурса: {{resourceId}}",
+      "description": "Не удалось получить ресурс с сервера. Проверьте подключение к сети или повторите попытку позже."
+    },
+    "dependencyType": {
+      "required": "Обязательный",
+      "optional": "Необязательный",
+      "incompatible": "Несовместимый",
+      "embedded": "Встроенный",
+      "tool": "Инструмент",
+      "include": "Включает"
+    }
+  },
+  "AllInstancesPage": {
+    "button": {
+      "addAndImport": "Добавить и импортировать",
+      "globalSettings": "Общие настройки игры",
+      "launch": "Запустить игру",
+      "sortAndFilter": "Сортировка и фильтры"
+    },
+    "viewTypeList": {
+      "grid": "Вид сеткой",
+      "list": "Вид списком"
+    },
+    "sortByTypeList": {
+      "versionAsc": "Версия игры: по возрастанию",
+      "versionDesc": "Версия игры: по убыванию",
+      "name": "Название экземпляра"
+    },
+    "sortBy": "Сортировать по",
+    "title": "Все экземпляры"
+  },
+  "AppearanceSettingsPage": {
+    "theme": {
+      "title": "Тема",
+      "settings": {
+        "primaryColor": {
+          "title": "Основной цвет лаунчера"
+        },
+        "colorMode": {
+          "title": "Цветовая схема",
+          "type": {
+            "system": "Системная",
+            "light": "Светлая",
+            "dark": "Тёмная"
+          }
+        },
+        "useLiquidGlassDesign": {
+          "title": "Эффект «жидкого стекла»",
+          "description": "Если включено, часть элементов интерфейса будет использовать эффект «жидкого стекла». Это может снизить производительность."
+        },
+        "headNavStyle": {
+          "title": "Стиль панели навигации",
+          "type": {
+            "standard": "Стандартный",
+            "simplified": "Упрощённый",
+            "adaptive": "Адаптивный"
+          }
+        }
+      }
+    },
+    "font": {
+      "title": "Шрифт",
+      "settings": {
+        "fontFamily": {
+          "title": "Семейство шрифтов",
+          "default": "По умолчанию"
+        },
+        "logFontFamily": {
+          "title": "Шрифт журнала"
+        },
+        "fontSize": {
+          "title": "Размер шрифта",
+          "small": "T",
+          "large": "T"
+        }
+      }
+    },
+    "background": {
+      "title": "Фон",
+      "settings": {
+        "preset": {
+          "title": "Встроенные изображения"
+        },
+        "custom": {
+          "title": "Свои изображения",
+          "add": "Добавить"
+        },
+        "randomCustom": {
+          "title": "Случайный пользовательский фон"
+        },
+        "autoDarken": {
+          "title": "Затемнять фон в тёмной теме"
+        }
+      },
+      "presetBgList": {
+        "Florwyn": {
+          "name": "Florwyn"
+        },
+        "SJTU-eastgate": {
+          "name": "Восточные ворота SJTU"
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Специальные возможности отображения",
+      "settings": {
+        "invertColors": {
+          "title": "Инвертировать цвета"
+        },
+        "enhanceContrast": {
+          "title": "Повысить контрастность"
+        }
+      }
+    }
+  },
+  "ChangeLoaderModal": {
+    "header": {
+      "modloader": {
+        "title": {
+          "change": "Сменить загрузчик модов",
+          "install": "Установить загрузчик модов"
+        }
+      },
+      "optifine": {
+        "title": {
+          "change": "Сменить OptiFine",
+          "install": "Установить OptiFine"
+        }
+      }
+    },
+    "notSelectedLoader": "Новый загрузчик не выбран",
+    "notSelectedOptifine": "Новая версия OptiFine не выбрана",
+    "footer": {
+      "installFabricApi": "Установить мод Fabric API",
+      "installQFAPI": "Установить моды QFAPI / QSL (если доступны)",
+      "reinstall": "Переустановить",
+      "removeCurrentInstallation": "Удалить установку"
+    }
+  },
+  "CheckModUpdateModal": {
+    "header": {
+      "title": "Проверить обновления модов"
+    },
+    "button": {
+      "update": "Обновить",
+      "cancel": "Отмена"
+    },
+    "label": {
+      "noUpdate": "Обновления для модов не требуются",
+      "loading": "Проверка обновлений... {{x}}/{{y}}"
+    },
+    "updateList": {
+      "mod": "Мод",
+      "currentVersion": "Текущая версия",
+      "latestVersion": "Последняя версия",
+      "source": "Источник"
+    },
+    "error": {
+      "renameOldMod": "Не удалось переименовать старый файл мода"
+    }
+  },
+  "ClearDownloadCacheAlertDialog": {
+    "dialog": {
+      "title": "Очистить кэш загрузок",
+      "content": "Вы действительно хотите очистить кэш загрузок? Это действие нельзя отменить."
+    }
+  },
+  "ComingSoonSign": {
+    "text": "Эта страница пока недоступна, скоро всё появится!"
+  },
+  "CopyOrMoveModal": {
+    "modal": {
+      "header": "Копировать или переместить ресурс"
+    },
+    "operation": {
+      "copy": "Копировать",
+      "move": "Переместить"
+    },
+    "tag": {
+      "source": "Источник"
+    },
+    "content": "{{type}} <b>{{name}}</b> в",
+    "resourceType": {
+      "Root": "",
+      "ResourcePacks": "Наборы текстур",
+      "Saves": "Мир",
+      "Schematics": "Схема",
+      "ShaderPacks": "Наборы шейдеров"
+    },
+    "error": {
+      "lackOfArguments": "Не хватает необходимых параметров. Сообщите об этом разработчику."
+    }
+  },
+  "CreateInstanceModal": {
+    "header": {
+      "title": "Создать новый экземпляр"
+    },
+    "stepper": {
+      "game": "Клиент игры",
+      "loader": "Загрузчик модов",
+      "skipped": "Пропущено",
+      "info": "Основные настройки"
+    },
+    "footer": {
+      "installFabricApi": "Установить мод Fabric API",
+      "installQFAPI": "Установить моды QFAPI / QSL (если доступны)"
+    }
+  },
+  "CreateRenamedInstShortcutAlertDialog": {
+    "content": "Название этого экземпляра недавно изменилось. Обновите список экземпляров или перезапустите лаунчер, прежде чем снова добавлять ярлык запуска."
+  },
+  "DeleteAuthServerAlertDialog": {
+    "dialog": {
+      "title": "Удалить сервер аутентификации",
+      "content": "Удалить сервер аутентификации «{{name}}»? Он будет удалён из списка серверов."
+    }
+  },
+  "DeleteGameFriendDialog": {
+    "dialog": {
+      "title": "Удалить из друзей",
+      "content": "Удалить «{{name}}» из друзей?"
+    }
+  },
+  "DeleteGameServerAlertDialog": {
+    "title": "Удалить игровой сервер",
+    "content": "Удалить игровой сервер «{{name}}» ({{addr}})? Он пропадёт навсегда! (Очень надолго!)"
+  },
+  "DeleteInstanceAlertDialog": {
+    "dialog": {
+      "title": "Удалить игровой экземпляр",
+      "content": "Удалить игровой экземпляр «{{instanceName}}»? Он пропадёт навсегда! (Очень надолго!)",
+      "warning": {
+        "withVerIso": "Обратите внимание: для этого экземпляра включена изоляция, поэтому вместе с ним будут удалены миры и другие связанные файлы. Если хотите сохранить данные, сначала перенесите их.",
+        "woVerIso": "Обратите внимание: если для этого экземпляра ранее была включена изоляция, все неперенесённые миры и другие файлы тоже будут удалены."
+      }
+    }
+  },
+  "DeleteModAlertDialog": {
+    "dialog": {
+      "title": "Удалить мод",
+      "content": "Удалить мод «{{modName}}» из игрового экземпляра «{{instanceName}}»?"
+    }
+  },
+  "DeletePlayerAlertDialog": {
+    "dialog": {
+      "title": "Удалить игрока",
+      "content": "Удалить игрока «{{name}}»? Это действие нельзя отменить!"
+    }
+  },
+  "DevToolbar": {
+    "tooltip": "Панель разработчика"
+  },
+  "DiscoverCommunityNewsPage": {
+    "title": "Обзор",
+    "noMore": "Больше нет",
+    "sources": "Управление источниками",
+    "NoSources": "Источники не добавлены"
+  },
+  "DiscoverHomePage": {
+    "minecraft-news": "Новости Minecraft",
+    "community-news": "Новости сообщества",
+    "hotModpacks": "Популярные модпаки с {{source}}"
+  },
+  "DiscoverLayout": {
+    "discoverDomainList": {
+      "search": "Поиск",
+      "home": "Главная",
+      "community-news": "Сообщество",
+      "minecraft-news": "Новости Minecraft",
+      "modpack": "Модпаки",
+      "mod": "Моды",
+      "world": "Миры",
+      "resourcepack": "Наборы текстур",
+      "shader": "Наборы шейдеров",
+      "datapack": "Наборы данных"
+    }
+  },
+  "DiscoverSourcesPage": {
+    "button": {
+      "addSource": "Добавить источник",
+      "deleteSource": "Удалить"
+    },
+    "tag": {
+      "online": "В сети"
+    }
+  },
+  "DownloadJavaModal": {
+    "header": {
+      "title": "Скачать Java"
+    },
+    "selector": {
+      "vendor": "Поставщик",
+      "version": "Версия",
+      "type": "Тип"
+    },
+    "warning": {
+      "mojang": "SJMCL установит среду выполнения Java от Mojang в отдельную папку.",
+      "oracle": "Для загрузки с сайта Oracle может потребоваться вход в аккаунт."
+    }
+  },
+  "DownloadModpackModal": {
+    "header": {
+      "title": "Скачать модпак"
+    }
+  },
+  "DownloadResourceModal": {
+    "header": {
+      "title": "Скачать ресурс"
+    },
+    "resourceTypeList": {
+      "world": "Миры",
+      "mod": "Моды",
+      "resourcepack": "Наборы текстур",
+      "shader": "Наборы шейдеров",
+      "datapack": "Наборы данных"
+    }
+  },
+  "DownloadSettingPage": {
+    "source": {
+      "title": "Источник",
+      "settings": {
+        "strategy": {
+          "title": "Стратегия выбора источника загрузки",
+          "auto": "Автоматический выбор",
+          "official": "Приоритет официального источника",
+          "mirror": "Приоритет зеркала"
+        }
+      }
+    },
+    "download": {
+      "title": "Загрузка",
+      "settings": {
+        "autoConcurrent": {
+          "title": "Автоматически определять число потоков"
+        },
+        "concurrentCount": {
+          "title": "Число потоков загрузки"
+        },
+        "enableSpeedLimit": {
+          "title": "Ограничение скорости загрузки"
+        },
+        "speedLimitValue": {
+          "title": "Настройки ограничения скорости"
+        }
+      }
+    },
+    "cache": {
+      "title": "Кэш",
+      "settings": {
+        "directory": {
+          "title": "Папка кэша загрузок",
+          "select": "Изменить"
+        },
+        "clear": {
+          "title": "Очистить кэш загрузок",
+          "description": "Удалить все файлы из папки кэша. На уже скачанные ресурсы это не повлияет.",
+          "button": "Очистить"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Прокси",
+      "headExtra": "Требуется перезапуск",
+      "settings": {
+        "enabled": {
+          "title": "Использовать прокси для загрузок",
+          "description": "Если отключено, лаунчер будет автоматически использовать системный прокси для загрузки ресурсов"
+        }
+      }
+    }
+  },
+  "DownloadSpecificResourceModal": {
+    "title": "Скачать ресурс — {{name}} — {{source}}",
+    "label": {
+      "all": "Все",
+      "recommendedVersion": "Рекомендуемая версия",
+      "currentModLoader": "Текущий загрузчик"
+    },
+    "releaseType": {
+      "alpha": "Альфа",
+      "beta": "Бета",
+      "release": "Релиз"
+    },
+    "button": {
+      "cancel": "Отмена",
+      "download": "Скачать",
+      "installToInstance": "Установить в экземпляр",
+      "installToCurrentInstance": "Установить в текущий экземпляр",
+      "install": "Установить"
+    }
+  },
+  "DownloadTasksPage": {
+    "title": "Задачи загрузки",
+    "button": {
+      "settings": "Настройки загрузки",
+      "pause": "Пауза",
+      "begin": "Начать",
+      "retry": "Повторить",
+      "clearHistory": "Очистить историю"
+    },
+    "label": {
+      "paused": "Приостановлено",
+      "finalizing": "Завершение установки",
+      "completed": "Завершено",
+      "error": "Ошибка",
+      "cancelled": "Отменено"
+    },
+    "task": {
+      "game-client": "Клиент игры {{param}}",
+      "game-client-w-java": "Клиент игры {{param1}} (с Java {{param2}})",
+      "game-server": "Сервер игры {{param}}",
+      "change-mod-loader": "Смена загрузчика модов {{param}}",
+      "change-optifine": "Смена загрузчика шейдеров {{param}}",
+      "mod": "Мод",
+      "world": "Мир",
+      "resourcepack": "Набор текстур",
+      "shader": "Набор шейдеров",
+      "modpack": "Модпак",
+      "modpack-wo-install": "Модпак",
+      "datapack": "Набор данных",
+      "patch-files": "Патч файлов игры {{param}}",
+      "mod-update": "Обновление мода",
+      "retry": "Повторить",
+      "neoforge-libraries": "Библиотеки NeoForge",
+      "cleanroom-libraries": "Библиотеки Cleanroom",
+      "forge-libraries": "Библиотеки Forge",
+      "optifine-libraries": "Библиотеки OptiFine",
+      "launcher-update": "Обновление лаунчера",
+      "extension-update": "Обновление расширения {{param1}} {{param2}}",
+      "mojang-java": "Среда выполнения Java {{param}}"
+    }
+  },
+  "Editable": {
+    "edit": "Редактировать",
+    "save": "Сохранить",
+    "cancel": "Отмена"
+  },
+  "EditGameDirectoryModal": {
+    "header": {
+      "title": {
+        "add": "Добавить папку игры",
+        "edit": "Изменить папку игры"
+      }
+    },
+    "label": {
+      "dirName": "Название",
+      "dirPath": "Папка игры"
+    },
+    "placeholder": {
+      "dirName": "Название папки",
+      "dirPath": "Выберите папку игры"
+    },
+    "dialog": {
+      "browse": {
+        "title": "Выберите папку"
+      },
+      "addSubDir": {
+        "title": "Добавить вложенную папку",
+        "body": "Найдена вложенная папка Minecraft с игровым экземпляром. Добавить вложенную папку?",
+        "addOriginDir": "Добавить исходную папку",
+        "addSubDir": "Добавить вложенную папку"
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "Не удалось добавить папку игры"
+      }
+    },
+    "errorMessage": {
+      "dirName": {
+        "empty": "Название папки не может быть пустым",
+        "tooLong": "Название папки не может быть длиннее 20 символов",
+        "exist": "Папка с таким названием уже существует",
+        "hasInvalidChar": "Название папки содержит недопустимые символы"
+      },
+      "dirPath": {
+        "exist": "Такая папка уже существует",
+        "invalid": "Недопустимый путь к папке"
+      }
+    }
+  },
+  "Empty": {
+    "noData": "Нет данных"
+  },
+  "EnableExtensionConfirmDialog": {
+    "title": "Включить расширение",
+    "body": "Включить расширение <hl>{{name}}</hl> (<hl>{{identifier}}</hl>) от <hl>{{author}}</hl>? ",
+    "button": {
+      "enable": "Включить"
+    },
+    "unknownDeveloper": "Неизвестный разработчик"
+  },
+  "Enums": {
+    "chakraColors": {
+      "gray": "Серый",
+      "red": "Красный",
+      "orange": "Оранжевый",
+      "yellow": "Жёлтый",
+      "green": "Зелёный",
+      "teal": "Бирюзовый",
+      "blue": "Синий",
+      "cyan": "Голубой",
+      "purple": "Фиолетовый",
+      "pink": "Розовый"
+    },
+    "ctrlKey": {
+      "linux": "Ctrl",
+      "macos": "Control(⌃)",
+      "windows": "Ctrl"
+    },
+    "ctrlKeyShort": {
+      "linux": "Ctrl",
+      "macos": "⌃",
+      "windows": "Ctrl"
+    },
+    "metaKey": {
+      "linux": "Meta",
+      "macos": "Command(⌘)",
+      "windows": "Win"
+    },
+    "metaKeyShort": {
+      "linux": "Meta",
+      "macos": "⌘",
+      "windows": "Win"
+    },
+    "playerTypes": {
+      "microsoft": "Microsoft",
+      "offline": "Автономный режим",
+      "3rdparty": "Сторонняя аутентификация",
+      "3rdpartyShort": "Сторонняя аутентификация"
+    },
+    "systemFileManager": {
+      "linux": "Файловый менеджер",
+      "macos": "Finder",
+      "windows": "Проводник"
+    }
+  },
+  "ExportModpackModal": {
+    "header": {
+      "title": "Экспортировать {{param}} как модпак"
+    },
+    "label": {
+      "exportFormat": "Формат экспорта",
+      "basicInfo": "Основная информация",
+      "modpackName": "Название модпака",
+      "modpackVersion": "Версия модпака",
+      "author": "Автор",
+      "description": "Описание",
+      "includedFiles": "Включаемые файлы",
+      "exportOptions": "Параметры экспорта",
+      "packWithLauncher": "Включить лаунчер в архив",
+      "minMemory": "Минимальный объём памяти (МиБ)",
+      "noCreateRemoteFiles": "Не создавать удалённые файлы",
+      "skipCurseForgeRemoteFiles": "Пропустить удалённые файлы CurseForge"
+    },
+    "button": {
+      "export": "Экспорт"
+    },
+    "error": {
+      "invalidName": "Введите корректное название модпака",
+      "invalidVersion": "Введите корректный номер версии",
+      "noFileSelected": "Выберите хотя бы один файл или папку для включения"
+    },
+    "errorMessage": {
+      "error-1": "Название не может быть пустым",
+      "error-2": "Название содержит недопустимые символы",
+      "error-3": "Название слишком длинное (не более 255 символов)"
+    },
+    "fileTreeTranslation": {
+      "mods": "Моды",
+      "config": "Файлы конфигурации модов",
+      "shaderpacks": "Шейдеры",
+      "resourcepacks": "Наборы текстур",
+      "optionsTxt": "Настройки игры",
+      "saves": "Миры"
+    },
+    "tooltip": {
+      "exportFormat": {
+        "Modrinth": "Меньший размер архива; необходимые моды скачиваются при импорте по манифесту.",
+        "MultiMC": "Поддерживается большинством популярных лаунчеров; упаковывается как готовый экземпляр."
+      }
+    }
+  },
+  "ExtensionContributionWrapper": {
+    "failedToRender": "Не удалось отобразить содержимое этого расширения."
+  },
+  "ExtensionHostContextProvider": {
+    "extensionProvidedDialog": "Это диалоговое окно предоставлено расширением {{name}}",
+    "toast": {
+      "activateError": "Не удалось активировать расширение {{name}}"
+    }
+  },
+  "ExtensionInfoModal": {
+    "label": {
+      "author": "Автор",
+      "description": "Описание"
+    }
+  },
+  "ExtensionOpenExternalLinkConfirmDialog": {
+    "title": "Открыть внешнюю ссылку",
+    "body": "Расширение {{extension}} хочет открыть {{link}} во внешнем браузере.",
+    "button": {
+      "open": "Открыть"
+    }
+  },
+  "ExtensionSettingsDetailPage": {
+    "title": "Настройки {{name}}"
+  },
+  "ExtensionSettingsPage": {
+    "alert": "SJMCL не контролирует поведение сторонних расширений, в том числе работу с вашими личными данными. Устанавливайте и включайте расширения только из проверенных источников.",
+    "fileDnD": {
+      "title": "Установить расширение SJMCL",
+      "desc": "Установить файл расширения {{fileName}} в SJMCL"
+    },
+    "installed": "Установленные расширения",
+    "menu": {
+      "info": "Сведения о расширении"
+    },
+    "top": {
+      "settings": {
+        "extensionDocs": {
+          "title": "Документация по разработке расширений",
+          "description": "Ознакомьтесь с описанием системы расширений и документацией API и начните работу с готового шаблона.",
+          "url": "https://mc.sjtu.cn/sjmcl/en/dev/extension/"
+        },
+        "awesomeExtensions": {
+          "title": "Расширения от сообщества",
+          "description": "Список расширений, созданных сообществом, можно посмотреть на GitHub.",
+          "url": "https://github.com/SJMC-Dev/awesome-SJMCL-extensions"
+        }
+      }
+    }
+  },
+  "ExtensionUpdateConfirmDialog": {
+    "title": "Обновление расширения",
+    "body": "Расширение {{identifier}} загрузило новую версию {{version}} из {{src}}. Подтвердить установку?"
+  },
+  "FileDnDProvider": {
+    "fileName": "{{fileName}} и другие (всего {{count}})"
+  },
+  "GameAdvancedSettingsPage": {
+    "title": "Дополнительные настройки",
+    "topWarning": "Эти настройки предназначены для опытных пользователей. Изменение параметров может нарушить работу игры. Не меняйте их, если не уверены в своих действиях.",
+    "customCommands": {
+      "title": "Пользовательские команды",
+      "settings": {
+        "minecraftArgument": {
+          "title": "Аргументы запуска",
+          "placeholder": "По умолчанию"
+        },
+        "precallCommand": {
+          "title": "Команда перед запуском",
+          "placeholder": "Команды, выполняемые перед запуском игры"
+        },
+        "wrapperLauncher": {
+          "title": "Команда-обёртка",
+          "placeholder": "Позволяет запускать игру через дополнительную программу-обёртку, например «optirun» в Linux"
+        },
+        "postExitCommand": {
+          "title": "Команда после выхода",
+          "placeholder": "Команды, выполняемые после выхода из игры"
+        }
+      }
+    },
+    "jvm": {
+      "title": "Параметры виртуальной машины Java",
+      "settings": {
+        "garbageCollector": {
+          "title": "Сборщик мусора",
+          "desc": "В старых версиях Java некоторые сборщики мусора могут отсутствовать.",
+          "options": {
+            "auto": "Авто (по умолчанию)",
+            "g1gc": "G1GC",
+            "zgc": "ZGC",
+            "shenandoah": "ShenandoahGC",
+            "parallel": "ParallelGC",
+            "serial": "SerialGC"
+          }
+        },
+        "javaPermanentGenerationSpace": {
+          "title": "Область PermGen",
+          "placeholder": "в МиБ"
+        },
+        "environmentVariable": {
+          "title": "Переменные окружения"
+        },
+        "args": {
+          "title": "Другие аргументы JVM"
+        }
+      }
+    },
+    "graphics": {
+      "title": "Графика",
+      "settings": {
+        "api": {
+          "title": "Графический API",
+          "default": {
+            "label": "По умолчанию",
+            "desc": "Использовать настройки Minecraft и драйвера по умолчанию."
+          },
+          "opengl": {
+            "label": "OpenGL",
+            "desc": "Использовать отрисовку через OpenGL."
+          },
+          "vulkan": {
+            "label": "Vulkan",
+            "desc": "Использовать отрисовку через Vulkan."
+          }
+        },
+        "renderer": {
+          "title": "Рендерер / драйвер",
+          "default": "По умолчанию",
+          "llvmpipe": "LLVMpipe",
+          "zink": "Zink",
+          "d3d12": "D3D12",
+          "lavapipe": "Lavapipe",
+          "dozen": "Dozen",
+          "nvidia_vulkan": "NVIDIA Vulkan",
+          "nvidia_nvk": "NVK",
+          "amdvlk": "AMDVLK",
+          "amd_radv": "RADV",
+          "intel_vulkan": "Intel Vulkan",
+          "intel_anv": "ANV",
+          "intel_hasvk": "HASVK",
+          "qualcomm": "Qualcomm Vulkan",
+          "turnip": "Turnip",
+          "moltenvk": "MoltenVK",
+          "kosmickrisp": "KosmicKrisp",
+          "powervr": "PowerVR",
+          "panvk": "PanVK",
+          "v3dv": "V3DV"
+        }
+      }
+    },
+    "proxy": {
+      "title": "Прокси",
+      "settings": {
+        "enabled": {
+          "title": "Использовать прокси для игрового процесса",
+          "description": "Если отключено, игра будет автоматически использовать системный прокси"
+        }
+      }
+    },
+    "workaround": {
+      "title": "Обходные решения",
+      "settings": {
+        "noJvmArgs": "Не добавлять стандартные аргументы виртуальной машины Java",
+        "gameFileValidatePolicy": {
+          "title": "Политика проверки файлов игры",
+          "disable": "Отключить проверку",
+          "normal": "Обычная проверка",
+          "full": "Полная проверка",
+          "disableDesc": "",
+          "normalDesc": "Проверять наличие файлов и автоматически скачивать недостающие",
+          "fullDesc": "Проверять целостность файлов по SHA1 и автоматически скачивать недостающие (занимает больше времени)"
+        },
+        "dontCheckJvmValidity": {
+          "title": "Не проверять совместимость виртуальной машины Java"
+        },
+        "dontPatchNatives": {
+          "title": "Не пытаться автоматически заменять нативные библиотеки"
+        },
+        "useLwjglUnsafeAgent": {
+          "title": "Использовать LWJGL Unsafe Agent",
+          "description": "Автоматически применять <hmcl>LWJGL Unsafe Agent</hmcl> от HMCL на подверженных проблеме версиях Minecraft для устранения проблем с производительностью."
+        },
+        "useCustomAuthlibInjector": {
+          "title": "Использовать свой Authlib Injector",
+          "description": {
+            "notSet": "Свой путь не задан, будет использована встроенная версия"
+          },
+          "select": "Изменить"
+        },
+        "useNativeGlfw": {
+          "title": "Использовать системный GLFW (только Linux)"
+        },
+        "useNativeOpenal": {
+          "title": "Использовать системный OpenAL (только Linux)"
+        },
+        "autoCloseGameCrashWindow": {
+          "title": "Автоматически закрывать окно уведомления о сбое",
+          "disabled": "Не закрывать автоматически",
+          "tenSeconds": "Закрывать через 10 секунд",
+          "thirtySeconds": "Закрывать через 30 секунд"
+        }
+      }
+    }
+  },
+  "GameErrorPage": {
+    "title": "Игра завершилась неожиданно. Проверьте журналы или обратитесь за помощью.",
+    "basicInfo": {
+      "arch": "Архитектура",
+      "launcherVersion": "Версия лаунчера",
+      "os": "ОС"
+    },
+    "gameInfo": {
+      "gameVersion": "Версия Minecraft"
+    },
+    "javaInfo": {
+      "javaVersion": "Версия Java"
+    },
+    "button": {
+      "exportGameInfo": "Экспортировать отчёт о сбое",
+      "gameLogs": "Журнал игры",
+      "help": "Помощь"
+    },
+    "autoCloseCountdown": "Окно автоматически закроется через {{seconds}} сек. (нажмите в любом месте окна, чтобы отменить)",
+    "bottomAlert": "Чтобы получить помощь, отправьте экспортированный отчёт о сбое, а не скриншот этой страницы.",
+    "helpUrl": "https://mc.sjtu.cn/sjmcl/en/docs/user-group.html",
+    "crashDetails": {
+      "title": "Подробности сбоя",
+      "OPENJ9": "JVM OpenJ9 не поддерживается. Используйте HotSpot JVM.",
+      "NEED_JDK11": "Требуются возможности JDK 11. Выберите JDK 11 для запуска.",
+      "TOO_OLD_JAVA": "Версия Java слишком старая. Используйте последнюю версию Java.",
+      "JVM_32BIT": "Объём выделяемой памяти превышает ограничение 32-битной JVM. Если у вас 64-битная система, используйте 64-битную Java.",
+      "GL_OPERATION_FAILURE": "Проблему вызвал мод, набор шейдеров или набор текстур. Попробуйте отключить их и запустить игру снова.",
+      "OPENGL_NOT_SUPPORTED": "Ваш графический драйвер не поддерживает OpenGL. Проверьте драйвер или попробуйте другой рендерер.",
+      "GRAPHICS_DRIVER": "Сбой вызван проблемой в графическом драйвере. Обновите драйвер.",
+      "MACOS_FAILED_TO_FIND_SERVICE_PORT_FOR_DISPLAY": "Не удалось инициализировать окно OpenGL на платформе Apple Silicon.",
+      "OUT_OF_MEMORY": "Недостаточно памяти. Уменьшите объём памяти, выделяемой игре, или закройте другие программы.",
+      "MEMORY_EXCEEDED": "Превышен лимит выделяемой памяти. Уменьшите объём памяти, выделяемой игре, или закройте другие программы.",
+      "RESOLUTION_TOO_HIGH": "Слишком высокое разрешение. Попробуйте набор текстур с меньшим разрешением.",
+      "JDK_9": "Требуются возможности JDK 9. Выберите JDK 9 для запуска.",
+      "MAC_JDK_8U261": "Сбой вызван конфликтом Forge/OptiFine и Java. Обновите Forge/OptiFine или используйте Java 8u251 и ниже.",
+      "FILE_CHANGED": "Проверка файлов не пройдена. Проверьте целостность файлов.",
+      "NO_SUCH_METHOD_ERROR": "Обнаружен неполный код. Возможно, мод отсутствует, повреждён или несовместим. Переустановите игру и моды или обратитесь за помощью.",
+      "NO_CLASS_DEF_FOUND_ERROR": "Обнаружен неполный код. Возможно, мод отсутствует, повреждён или несовместим. Переустановите игру и моды или обратитесь за помощью.",
+      "ILLEGAL_ACCESS_ERROR": "Мод вызвал ошибку доступа. Если вам известен {{param1}}, попробуйте обновить или удалить соответствующий мод.",
+      "DUPLICATED_MOD": "Мод {{param1}} установлен несколько раз. Удалите дубликаты и попробуйте снова.",
+      "MOD_RESOLUTION": "Обнаружены проблемы с зависимостями модов. Fabric сообщает: {{param1}}",
+      "FORGEMOD_RESOLUTION": "Обнаружены проблемы с зависимостями модов. Forge/NeoForge сообщают: {{param1}}",
+      "FORGE_FOUND_DUPLICATE_MODS": "Обнаружены дубликаты модов. Forge/NeoForge сообщают: {{param1}}",
+      "MOD_RESOLUTION_CONFLICT": "Конфликт между модами {{param1}} и {{param2}}.",
+      "MOD_RESOLUTION_MISSING": "Моду {{param1}} не хватает обязательной зависимости {{param2}}.",
+      "MOD_RESOLUTION_MISSING_MINECRAFT": "Для работы мода {{param1}} требуется Minecraft {{param2}}.",
+      "MOD_RESOLUTION_COLLECTION": "Моду {{param1}} не хватает обязательной зависимости {{param2}}.",
+      "FILE_ALREADY_EXISTS": "{{param1}} уже существует. Если этот файл можно удалить, сделайте резервную копию, удалите его и перезапустите игру.",
+      "LOADING_CRASHED_FORGE": "Мод {{param1}} ({{param2}}) вызвал ошибку. Удалите или обновите этот мод.",
+      "BOOTSTRAP_FAILED": "Мод {{param1}} вызвал ошибку при запуске. Удалите или обновите этот мод.",
+      "LOADING_CRASHED_FABRIC": "Мод {{param1}} вызвал ошибку. Удалите или обновите этот мод.",
+      "FABRIC_VERSION_0_12": "Fabric Loader 0.12 и новее может быть несовместим с установленными модами. Откатите Fabric Loader до версии 0.11.7.",
+      "MODLAUNCHER_8": "Конфликт между версиями Forge и Java. Обновите Forge до 36.2.26 или новее либо используйте Java ниже 1.8.0.320.",
+      "DEBUG_CRASH": "Сбой вызван вручную.",
+      "CONFIG": "Не удалось разобрать файл конфигурации {{param2}} мода {{param1}}.",
+      "FABRIC_WARNINGS": "Fabric выдал предупреждения: {{param1}}",
+      "ENTITY": "Сущность (тип {{param1}}, координаты {{param2}}) работает некорректно. Удалите её с помощью MCEdit или удалите соответствующий мод.",
+      "BLOCK": "Блок (тип {{param1}}, координаты {{param2}}) работает некорректно. Удалите его с помощью MCEdit или удалите соответствующий мод.",
+      "UNSATISFIED_LINK_ERROR": "Отсутствуют нативные библиотеки: {{param1}}",
+      "OPTIFINE_IS_NOT_COMPATIBLE_WITH_FORGE": "OptiFine несовместим с Forge. Используйте последнюю версию OptiFine или откажитесь от него.",
+      "MOD_FILES_ARE_DECOMPRESSED": "Файлы модов распакованы. Помещайте файл мода целиком прямо в папку mods.",
+      "OPTIFINE_CAUSES_THE_WORLD_TO_FAIL_TO_LOAD": "В некоторых версиях OptiFine может мешать загрузке мира.",
+      "TOO_MANY_MODS_LEAD_TO_EXCEEDING_THE_ID_LIMIT": "Установлено слишком много модов: превышен лимит ID игры. Попробуйте установить JEID или похожие моды либо удалить часть крупных модов.",
+      "MODMIXIN_FAILURE": "Ошибка внедрения мода. Проверьте совместимость модов или попробуйте заменить их.",
+      "MIXIN_APPLY_MOD_FAILED": "Не удалось применить Mixin к моду {{param1}}. Удалите или обновите этот мод.",
+      "FORGE_ERROR": "Forge/NeoForge сообщают об ошибке: {{param1}}",
+      "MOD_RESOLUTION0": "Обнаружены проблемы с некоторыми модами. Найдите проблемный мод в журнале.",
+      "FORGE_REPEAT_INSTALLATION": "Обнаружена повторная установка Forge / NeoForge. Удалите экземпляр и установите его заново вручную.",
+      "OPTIFINE_REPEAT_INSTALLATION": "Обнаружена повторная установка OptiFine. Удалите экземпляр и установите его заново вручную.",
+      "JAVA_VERSION_IS_TOO_HIGH": "Версия Java слишком новая. Используйте Java 8 или ниже.",
+      "INSTALL_MIXINBOOTSTRAP": "MixinBootstrap не установлен. Установите MixinBootstrap и попробуйте снова.",
+      "MOD_NAME": "В именах файлов модов допускаются только латинские буквы (A-Z, a-z), цифры (0-9), дефисы (-), подчёркивания (_) и точки (.). Переименуйте все файлы модов в папке mods, которые не соответствуют этим правилам.",
+      "INCOMPLETE_FORGE_INSTALLATION": "Установка Forge выполнена не полностью. Попробуйте переустановить Forge.",
+      "NIGHT_CONFIG_FIXES": "Обнаружены проблемы с библиотекой Night Config. Может помочь мод Night Config Fixes.",
+      "SHADERS_MOD": "Установлены и OptiFine, и мод Shaders. Удалите мод Shaders.",
+      "RTSS_FOREST_SODIUM": "RTSS несовместим с Sodium.",
+      "NATIVE_LIBRARY_ARCH_INCOMPATIBLE": "Некоторые нативные библиотеки, используемые игрой, несовместимы с архитектурой вашей системы.",
+      "MAC_DS_STORE": "Экземпляр не может продолжить работу из-за файла .DS_Store на Mac. Удалите файл .DS_Store в папке игры и попробуйте снова.",
+      "LEVEL_DAT_CORRUPTED": "Экземпляр не может продолжить работу из-за повреждённого файла сохранения level.dat. Попробуйте восстановить мир или вернуть его из резервной копии.",
+      "GL_OUT_OF_MEMORY": "Экземпляр не может продолжить работу из-за нехватки памяти OpenGL. Снизьте разрешение игры, отключите шейдеры или закройте другие программы.",
+      "MOD_JAVA_VERSION_MISMATCH": "Экземпляр не может продолжить работу из-за несоответствия версий модов и Java. Проверьте, какая версия Java требуется вашим модам.",
+      "DUPLICATE_MOD_INSTALLED": "Экземпляр не может продолжить работу из-за дублирования мода. Проверьте список модов и удалите дубликаты.",
+      "MOD_ZIP_CORRUPTED": "Экземпляр не может продолжить работу из-за повреждённого ZIP-архива мода. Попробуйте скачать мод заново.",
+      "MOD_INTERNET_ERROR": "Экземпляр не может продолжить работу из-за сбоя загрузки мода. Проверьте подключение к сети или используйте прокси.",
+      "VICS_MODERN_WARFARE_ERROR": "Экземпляр не может продолжить работу из-за ошибки мода Vic's Modern Warfare. Попробуйте обновить или удалить мод.",
+      "FORGE_LITELOADER_CONFLICT": "Экземпляр не может продолжить работу из-за конфликта Forge и LiteLoader. Удалите LiteLoader или смените версию Forge.",
+      "UNKNOWN": "Не удалось определить причину сбоя. Подробности смотрите в журнале или экспортируйте отчёт о сбое."
+    }
+  },
+  "GameLogPage": {
+    "placeholder": "Фильтр по тексту",
+    "revealRawLog": "Показать исходный файл журнала",
+    "clearLogs": "Очистить журнал",
+    "scrollToBottom": "Прокрутить вниз"
+  },
+  "GameVersionSelector": {
+    "old_beta": "Бета",
+    "release": "Релиз",
+    "snapshot": "Снапшот",
+    "april_fools": "Первоапрельские версии",
+    "searchPlaceholder": "Поиск"
+  },
+  "General": {
+    "add": "Добавить",
+    "alert": {
+      "noFullLogin": {
+        "title": "Функция пока недоступна",
+        "description": "Для доступа к этой функции войдите в аккаунт Microsoft."
+      }
+    },
+    "browse": "Выбрать",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "confirm": "ОК",
+    "copy": {
+      "text": "Копировать",
+      "toast": {
+        "success": "Скопировано в буфер обмена",
+        "error": "Не удалось скопировать в буфер обмена"
+      }
+    },
+    "copyOrMove": {
+      "linux": "Копировать / переместить",
+      "macos": "Копировать / переместить",
+      "windows": "Копировать / переместить"
+    },
+    "delete": "Удалить",
+    "dialog": {
+      "filterName": {
+        "image": "Изображение",
+        "modpack": "Модпак"
+      }
+    },
+    "disable": "Отключить",
+    "dontShowAgain": "Больше не показывать",
+    "download": "Скачать",
+    "edit": "Редактировать",
+    "enable": "Включить",
+    "exit": "Выход",
+    "finish": "Готово",
+    "import": "Импорт",
+    "launch": "Запуск",
+    "more": "Ещё",
+    "new": "Новый",
+    "next": "Далее",
+    "notice": "Уведомление",
+    "open": "Открыть",
+    "openFolder": "Открыть папку",
+    "optional": "Необязательный",
+    "previous": "Назад",
+    "refresh": "Обновить",
+    "revealFile": "Показать в файловом менеджере: {{opener}}",
+    "search": "Поиск",
+    "settings": "Настройки",
+    "share": {
+      "text": "Поделиться",
+      "toast": {
+        "error": "Не удалось поделиться"
+      }
+    },
+    "skip": "Пропустить",
+    "version": {
+      "dev": "версия для разработчиков",
+      "nightly": "ночная сборка",
+      "beta": "бета-версия",
+      "test-build": "тестовая сборка"
+    },
+    "viewOnWiki": "Открыть в Minecraft Wiki"
+  },
+  "GeneralSettingsPage": {
+    "language": {
+      "title": "Язык",
+      "settings": {
+        "language": {
+          "title": "Язык",
+          "communityAck": "Локализация на русский язык выполнена сообществом. Благодарим @CotalorrEE0000 за вклад в перевод."
+        },
+        "resourceTranslation": {
+          "title": "Перевод ресурсов",
+          "description": "Доступно только для упрощённого китайского языка"
+        },
+        "translatedFilenamePrefix": {
+          "title": "Добавлять префикс перевода к именам скачанных ресурсов",
+          "description": "Доступно только для упрощённого китайского языка"
+        },
+        "skipFirstScreenOptions": {
+          "title": "Автоматически задавать язык экземпляра",
+          "description": "Если включено, новые экземпляры будут использовать язык лаунчера, а экран первичной настройки доступности в игре будет пропущен."
+        }
+      }
+    },
+    "functions": {
+      "title": "Функции",
+      "settings": {
+        "discoverPage": {
+          "title": "Страница «Обзор»",
+          "description": "Просматривайте новости Minecraft и сообщества, ищите и скачивайте игровые ресурсы на странице «Обзор».",
+          "on": "Включено",
+          "search-only": "Только поиск",
+          "off": "Скрыто"
+        },
+        "instancesNavType": {
+          "title": "Режим навигации на странице экземпляров",
+          "description": "Настройте отображение левой панели навигации на странице экземпляров и способ группировки.",
+          "instance": "По экземплярам",
+          "directory": "По папкам",
+          "tag": "По меткам",
+          "hidden": "Скрыто"
+        },
+        "launchPageQuickSwitch": {
+          "title": "Быстрое переключение аккаунтов и экземпляров",
+          "description": "Если включено, кнопка переключения на странице запуска позволяет сразу выбрать аккаунт и экземпляр без перехода на другую страницу."
+        },
+        "autoDownloadJava": {
+          "title": "Автоматически скачивать подходящую версию Java",
+          "description": "Если включено, при создании экземпляра и отсутствии подходящей версии Java она будет установлена автоматически в отдельную папку"
+        }
+      }
+    },
+    "sync": {
+      "title": "Синхронизация",
+      "settings": {
+        "internetSync": {
+          "title": "Синхронизация настроек лаунчера через интернет",
+          "import": "Импорт",
+          "export": "Экспорт"
+        }
+      }
+    },
+    "advanced": {
+      "title": "Дополнительные",
+      "settings": {
+        "openConfigJson": {
+          "title": "Файл настроек лаунчера",
+          "description": "Показать исходный файл настроек лаунчера в файловом менеджере: {{opener}}."
+        },
+        "launcherLogDir": {
+          "title": "Папка журналов лаунчера"
+        },
+        "autoPurgeLauncherLogs": {
+          "title": "Автоматически удалять старые журналы лаунчера",
+          "description": "Автоматически удалять файлы журналов лаунчера старше 30 дней"
+        },
+        "resetAll": {
+          "title": "Сбросить все настройки",
+          "description": "Вернуть все настройки лаунчера к значениям по умолчанию",
+          "reset": "Сбросить"
+        }
+      }
+    }
+  },
+  "GlobalGameSettingsPage": {
+    "directories": {
+      "title": "Папки игры",
+      "settings": {
+        "directories": {
+          "special": {
+            "CURRENT_DIR": "Текущая",
+            "APP_DATA_SUBDIR": "Данные SJMCL",
+            "OFFICIAL_DIR": "Официальный лаунчер"
+          }
+        }
+      },
+      "deleteDialog": {
+        "title": "Удалить папку игры",
+        "content": "Удалить папку игры {{dirName}}? (SJMCL больше не будет сканировать эту папку, но файлы останутся на диске.)"
+      },
+      "directoryNotExist": "Папка не существует, укажите путь заново."
+    },
+    "gameJava": {
+      "title": "Java для игры",
+      "settings": {
+        "autoSelect": {
+          "title": "Автоматически выбирать Java для игры"
+        },
+        "execPath": {
+          "title": "Указать версию Java"
+        }
+      }
+    },
+    "gameWindow": {
+      "title": "Окно игры",
+      "settings": {
+        "resolution": {
+          "title": "Разрешение игры",
+          "preset": "Предустановленное",
+          "switch": "Полный экран",
+          "warning": "Разрешение может превышать возможности монитора"
+        },
+        "customTitle": {
+          "title": "Свой заголовок окна"
+        },
+        "customInfo": {
+          "title": "Своя информация",
+          "description": "Отображается в нижнем левом углу главного экрана игры и в верхнем левом углу страницы отладки F3 (только для версий Minecraft до 26.1)."
+        }
+      }
+    },
+    "performance": {
+      "title": "Производительность",
+      "settings": {
+        "autoMemAllocation": {
+          "title": "Автоматически выделять память"
+        },
+        "maxMemAllocation": {
+          "title": "Максимальный объём выделяемой памяти"
+        },
+        "memoryUsage": {
+          "title": "Использование памяти",
+          "description": "Использовано {{usedMemory}} ГиБ; игре выделено {{allocatedMemory}} ГиБ; всего {{totalMemory}} ГиБ"
+        },
+        "processPriority": {
+          "title": "Приоритет процесса",
+          "low": "Низкий",
+          "belowNormal": "Ниже среднего",
+          "normal": "Обычный",
+          "aboveNormal": "Выше среднего",
+          "high": "Высокий"
+        }
+      }
+    },
+    "versionIsolation": {
+      "settings": {
+        "title": "Включить изоляцию экземпляров"
+      }
+    },
+    "moreOptions": {
+      "title": "Дополнительные параметры",
+      "settings": {
+        "launcherVisibility": {
+          "title": "Видимость лаунчера",
+          "startHidden": "Скрывать лаунчер после запуска игры",
+          "runningHidden": "Скрывать лаунчер во время игры",
+          "always": "Лаунчер всегда виден"
+        },
+        "autoJoinGameServer": {
+          "title": "Автоматически подключаться к игровому серверу"
+        },
+        "serverUrl": {
+          "title": "Адрес сервера"
+        },
+        "displayGameLog": {
+          "title": "Показывать журнал игры"
+        },
+        "advancedOptions": {
+          "title": "Дополнительные параметры запуска",
+          "button": "Изменить дополнительные параметры"
+        }
+      }
+    },
+    "topWarning": {
+      "specGameConfigWarning": "Для текущего экземпляра «{{instance}}» включены собственные настройки игры, поэтому параметры на этой странице на него не влияют. ",
+      "editInstanceSettings": "Изменить настройки игры для экземпляра"
+    }
+  },
+  "GuidedTourProvider": {
+    "step1": {
+      "title": "Страница экземпляров",
+      "content": "Здесь можно добавлять и выбирать игровые экземпляры Minecraft, а также скачивать игровые ресурсы и управлять ими."
+    },
+    "step2": {
+      "title": "Страница аккаунтов",
+      "content": "Здесь можно добавлять аккаунты и выбирать игрока, за которого хотите играть."
+    },
+    "step3": {
+      "title": "Страница «Обзор»",
+      "content": "Здесь можно читать новости Minecraft и сообщества, находить и скачивать моды, карты, модпаки и другие ресурсы.<br/>Также можно быстро открыть «Глобальный поиск» сочетанием клавиш <key>{{keyname}}</key> + <key>F</key>."
+    },
+    "step4": {
+      "title": "Запускаем Minecraft!",
+      "content": "Выберите экземпляр и игрока, настройте параметры и нажмите кнопку запуска — приятной игры! 🥳"
+    }
+  },
+  "HeadNavBar": {
+    "navList": {
+      "launch": "Запуск",
+      "instances": "Игры",
+      "accounts": "Аккаунты",
+      "discover": "Обзор",
+      "search": "Поиск",
+      "settings": "Настройки"
+    }
+  },
+  "HelpSettingsPage": {
+    "community": {
+      "title": "Сообщество игроков из университетов",
+      "settings": {
+        "MUA": {
+          "title": "Minecraft University Alliance (MUA)",
+          "description": "Играйте с игроками из университетов по всему Китаю",
+          "url": "https://www.mualliance.cn/en"
+        },
+        "SJMC": {
+          "title": "Клуб Minecraft Шанхайского университета Цзяотун (SJMC)",
+          "url": "https://mc.sjtu.cn/en/"
+        }
+      }
+    },
+    "minecraft": {
+      "title": "Minecraft",
+      "settings": {
+        "mcWiki": {
+          "title": "Minecraft Wiki",
+          "description": "Самая подробная энциклопедия по Minecraft",
+          "url": "https://minecraft.wiki/"
+        },
+        "mcMod": {
+          "title": "MCMod",
+          "description": "Китайская энциклопедия модов для Minecraft"
+        },
+        "curseforge": {
+          "title": "CurseForge",
+          "description": "Крупнейший в мире репозиторий модов для Minecraft"
+        },
+        "modrinth": {
+          "title": "Modrinth",
+          "description": "Открытая современная платформа ресурсов для Minecraft"
+        }
+      }
+    },
+    "top": {
+      "settings": {
+        "LauncherDocs": {
+          "title": "Документация SJMCL",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs"
+        },
+        "UserGroup": {
+          "title": "Сообщество пользователей",
+          "description": "Присоединяйтесь к QQ-группе или GitHub Discussions, чтобы сообщать об ошибках, предлагать функции и получать помощь",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/user-group"
+        }
+      }
+    }
+  },
+  "HomeWidget": {
+    "extraOpMenu": {
+      "moveUp": "Переместить виджет вверх",
+      "moveDown": "Переместить виджет вниз",
+      "extensionInfo": "Сведения о расширении",
+      "settings": "Открыть настройки расширения"
+    }
+  },
+  "ImportAccountInfoModal": {
+    "header": {
+      "title": "Импортировать игроков и серверы аутентификации"
+    },
+    "launcherName": {
+      "HMCL": "HMCL (3.16+)",
+      "LegacyHMCL": "HMCL (< 3.16)",
+      "MultiMC": "MultiMC"
+    },
+    "launcherDesc": {
+      "HMCL": "Hello Minecraft! Launcher",
+      "LegacyHMCL": "Hello Minecraft! Launcher",
+      "MultiMC": "MultiMC"
+    },
+    "body": {
+      "authServers": "Серверы аутентификации",
+      "players": "Игроки"
+    },
+    "footer": {
+      "parentDirHint": "Файлы аккаунтов будут искаться в родительских папках добавленных папок игры."
+    },
+    "tooltips": {
+      "existingServer": "Данные существующего сервера аутентификации с таким же адресом будут перезаписаны.",
+      "existingPlayer": "Данные существующего игрока с таким же UUID будут перезаписаны.",
+      "expired": "Срок действия токена этого игрока истёк, импорт невозможен."
+    }
+  },
+  "ImportModpackModal": {
+    "header": {
+      "title": "Импортировать модпак"
+    },
+    "label": {
+      "instanceSettings": "Настройки экземпляра",
+      "modpackInfo": "Сведения о модпаке",
+      "modpackName": "Название модпака",
+      "modpackVersion": "Версия модпака",
+      "author": "Автор",
+      "modLoader": "Загрузчик модов",
+      "gameVersion": "Версия игры"
+    }
+  },
+  "InstanceBasicSettings": {
+    "selectDirectory": "Выберите папку игры"
+  },
+  "InstanceDetailsLayout": {
+    "secMenu": {
+      "createShortcut": "Создать ярлык запуска",
+      "exportModPack": "Экспортировать как модпак",
+      "star": "Добавить экземпляр в избранное",
+      "unstar": "Убрать из избранного"
+    },
+    "instanceTabList": {
+      "overview": "Общая информация",
+      "worlds": "Миры",
+      "mods": "Моды",
+      "resourcepacks": "Наборы текстур",
+      "schematics": "Схемы",
+      "shaderpacks": "Наборы шейдеров",
+      "screenshots": "Скриншоты",
+      "settings": "Настройки"
+    },
+    "button": {
+      "launch": "Запустить экземпляр"
+    }
+  },
+  "InstanceIconSelector": {
+    "customize": "Настроить значок"
+  },
+  "InstanceMenu": {
+    "label": {
+      "details": "Сведения об экземпляре",
+      "delete": "Удалить"
+    }
+  },
+  "InstanceModsPage": {
+    "fileDnD": {
+      "title": "Установить моды",
+      "desc": "Установить файл мода {{fileName}} в этот экземпляр"
+    },
+    "modLoaderList": {
+      "title": "Загрузчик модов",
+      "notInstalled": "Не установлено",
+      "installed": "Установлено"
+    },
+    "modList": {
+      "title": "Моды",
+      "warning": "Загрузчик модов не найден: эти моды могут работать некорректно",
+      "menu": {
+        "alert": "Возможна несовместимость",
+        "info": "Сведения о моде",
+        "update": "Обновить",
+        "search": "Поиск",
+        "placeholder": " Поиск модов..."
+      }
+    }
+  },
+  "InstanceResourcePacksPage": {
+    "fileDnD": {
+      "title": "Добавить наборы текстур",
+      "desc": "Добавить файл набора текстур {{fileName}} в этот экземпляр"
+    },
+    "resourcePackList": {
+      "title": "Глобальные наборы текстур"
+    },
+    "serverResPackList": {
+      "title": "Наборы текстур сервера"
+    }
+  },
+  "InstanceSchematicsPage": {
+    "fileDnD": {
+      "title": "Добавить схемы",
+      "desc": "Добавить файл схемы {{fileName}} в этот экземпляр"
+    },
+    "schematicList": {
+      "title": "Схемы"
+    }
+  },
+  "InstanceSettingsPage": {
+    "name": "Название экземпляра",
+    "description": "Описание экземпляра",
+    "colorTag": "Цветовая метка",
+    "icon": "Значок экземпляра",
+    "applySettings": "Применять следующие собственные настройки",
+    "resetSettings": "Сбросить собственные настройки",
+    "resetSettingsDesc": "Вернуть следующие собственные настройки к общим настройкам игры.",
+    "reset": "Сбросить",
+    "errorMessage": {
+      "error-1": "Название экземпляра не может быть пустым",
+      "error-2": "Недопустимое название экземпляра",
+      "error-3": "Название экземпляра слишком длинное"
+    },
+    "tipsToGlobal": {
+      "content": "Для этого экземпляра не используются собственные настройки. <toGlobal>Перейти к общим настройкам игры</toGlobal>"
+    }
+  },
+  "InstanceShaderPacksPage": {
+    "fileDnD": {
+      "title": "Добавить наборы шейдеров",
+      "desc": "Добавить файл набора шейдеров {{fileName}} в этот экземпляр"
+    },
+    "shaderLoaderList": {
+      "title": "Загрузчики",
+      "notInstalled": "Не установлено"
+    },
+    "shaderPackList": {
+      "title": "Наборы шейдеров"
+    }
+  },
+  "InstanceWidgets": {
+    "basicInfo": {
+      "title": "Основная информация",
+      "gameVersion": "Версия",
+      "playTime": "Время в игре"
+    },
+    "screenshots": {
+      "title": "Скриншоты"
+    },
+    "mods": {
+      "title": "Моды",
+      "summary": "Всего модов: {{totalMods}}, включено: {{enabledMods}}",
+      "manage": "Управлять"
+    },
+    "lastPlayed": {
+      "title": "Последний запуск",
+      "continuePlaying": "Продолжить"
+    },
+    "more": {
+      "title": "Ещё"
+    }
+  },
+  "InstanceWorldsPage": {
+    "fileDnD": {
+      "title": "Добавить миры",
+      "desc": "Добавить файл мира {{fileName}} в этот экземпляр"
+    },
+    "worldList": {
+      "title": "Миры",
+      "lastPlayedAt": "Последний запуск",
+      "difficulty": {
+        "peaceful": "Мирная",
+        "easy": "Лёгкая",
+        "normal": "Нормальная",
+        "hard": "Сложная",
+        "hardcore": "Хардкор"
+      },
+      "gamemode": {
+        "survival": "Режим выживания",
+        "creative": "Творческий режим",
+        "adventure": "Режим приключений",
+        "spectator": "Режим наблюдателя"
+      },
+      "gamemodeDesc": ", {{gamemode}}",
+      "difficultyDesc": " (Сложность: {{difficulty}})",
+      "viewLevelData": "Показать данные мира",
+      "launch": "Играть в этом мире"
+    },
+    "serverList": {
+      "title": "Серверы",
+      "players": "Игроки",
+      "tag": {
+        "online": "В сети",
+        "offline": "Не в сети"
+      },
+      "launch": "Подключиться к серверу"
+    }
+  },
+  "IntelligenceSettingsPage": {
+    "title": "ИИ-возможности SJMCL",
+    "description": "Встроить ИИ-модели в лаунчер и в игровой процесс Minecraft.",
+    "mcpServer": {
+      "title": "Служба MCP",
+      "headExtra": "Требуется перезапуск",
+      "settings": {
+        "enabled": {
+          "title": "Служба MCP лаунчера",
+          "description": "Включите локальную службу MCP, чтобы подключать внешние ИИ-агенты для автоматического управления лаунчером."
+        },
+        "docs": {
+          "title": "Руководство пользователя",
+          "description": "Узнайте, как подключить лаунчер к внешним ИИ-приложениям (Claude, Cherry Studio и другим).",
+          "url": "https://mc.sjtu.cn/sjmcl/en/docs/intelligence/launcher-mcp"
+        },
+        "port": {
+          "title": "Порт",
+          "description": "Фиксированный локальный порт, который использует служба MCP лаунчера."
+        }
+      }
+    }
+  },
+  "JavaSettingsPage": {
+    "javaList": {
+      "title": "Управление Java",
+      "download": "Скачать Java",
+      "add": "Добавить Java",
+      "remove": "Удалить эту версию Java"
+    },
+    "toast": {
+      "addSuccess": {
+        "title": "Java успешно добавлена",
+        "description": "Версия Java успешно добавлена"
+      },
+      "addFailed": {
+        "title": "Не удалось добавить Java",
+        "invalid": "Файл не является исполняемым файлом Java или несовместим с текущей платформой",
+        "duplicated": "Этот путь уже добавлен"
+      }
+    },
+    "confirmDelete": {
+      "title": "Удалить Java",
+      "description": "Удалить эту версию Java? (SJMCL больше не будет сканировать этот каталог, но файлы останутся на диске.)"
+    }
+  },
+  "LanguageMenu": {
+    "localeName": {
+      "en": "Английский",
+      "es": "Испанский",
+      "fr": "Французский",
+      "ja": "Японский",
+      "ru": "Русский",
+      "lzh": "Литературный китайский (вэньянь)",
+      "zh-Hans": "Китайский (упрощённый)",
+      "zh-Hant": "Китайский (традиционный)"
+    }
+  },
+  "LastExitedAbnormallyDialog": {
+    "dialog": {
+      "title": "Прошлый запуск завершился некорректно",
+      "content": "При прошлом запуске SJMCL завершился некорректно. Вы можете отправить журналы в <community>сообщество</community> или создать issue на <github>GitHub</github>, чтобы получить помощь.",
+      "viewLog": "Просмотреть журналы"
+    }
+  },
+  "LaunchPage": {
+    "button": {
+      "launch": "Запустить игру",
+      "instanceSettings": "Настройки экземпляра"
+    },
+    "SwitchButton": {
+      "tooltip": {
+        "switchPlayer": "Сменить игрока",
+        "addPlayer": "Добавить игрока",
+        "switchInstance": "Сменить игровой экземпляр",
+        "addInstance": "Добавить игровой экземпляр"
+      }
+    },
+    "Text": {
+      "noSelectedPlayer": "Игрок не выбран",
+      "noSelectedGame": "Игровой экземпляр не выбран"
+    }
+  },
+  "LaunchProcessModal": {
+    "header": {
+      "title": "Запуск игры — {{name}}"
+    },
+    "step": {
+      "selectSuitableJRE": "Выбор подходящей среды выполнения Java",
+      "validateGameFiles": "Проверка файлов игры и зависимостей",
+      "validateSelectedPlayer": "Проверка учётных данных игрока",
+      "launchGame": "Ожидание запуска игры"
+    },
+    "toast": {
+      "noSelectedPlayer": "Сначала добавьте и выберите игрока",
+      "noSelectedInstance": "Сначала добавьте и выберите игровой экземпляр"
+    }
+  },
+  "LoaderSelector": {
+    "stable": "Стабильная",
+    "beta": "Бета",
+    "releaseDate": "Выпущено {{date}}",
+    "notCompatibleWith": "Несовместимо с {{item}}",
+    "noVersionSelected": "Версия не выбрана"
+  },
+  "MainLayout": {
+    "fileDnD": {
+      "title": "Импортировать модпак",
+      "desc": "Импортировать файл модпака {{fileName}} в SJMCL"
+    }
+  },
+  "ManageSkinModal": {
+    "skinManage": "Управление скином",
+    "default": "По умолчанию",
+    "steve": "Стив",
+    "alex": "Алекс",
+    "upload": "Выбрать скин с компьютера",
+    "skin": "Скин",
+    "cape": "Плащ",
+    "model": {
+      "label": "Модель",
+      "default": "Широкая",
+      "slim": "Узкая"
+    }
+  },
+  "ManualAddJavaPathModal": {
+    "modal": {
+      "header": "Добавить Java"
+    },
+    "label": {
+      "javaPath": "Путь к Java"
+    },
+    "placeholder": {
+      "javaPath": "Введите или выберите путь к исполняемому файлу Java"
+    }
+  },
+  "MCVersionNumberHelper": {
+    "content": "С 2026 года Minecraft переходит на новую систему нумерации версий. Номера версий начинаются с года выпуска (например, 26.1) вместо прежней схемы 1.x.",
+    "linkText": "Читать официальную статью",
+    "url": "https://www.minecraft.net/en-us/article/minecraft-new-version-numbering-system"
+  },
+  "MemoryStatusProgress": {
+    "title": "Состояние памяти",
+    "info": "Использовано {{used}} / {{total}} ГиБ",
+    "label": {
+      "now": "Используется",
+      "maxAllocation": "Максимально выделено для Minecraft"
+    }
+  },
+  "MenuSelector": {
+    "selectedCount": "Выбрано: {{count}}"
+  },
+  "MicrosoftFriendsModal": {
+    "title": "Друзья Minecraft аккаунта Microsoft {{name}}",
+    "placeholder": {
+      "playerName": "Введите имя игрока, которого хотите добавить в друзья"
+    },
+    "group": {
+      "requests": "Заявки",
+      "friends": "Друзья"
+    },
+    "request": {
+      "incoming": "Входящая заявка в друзья",
+      "outgoing": "Исходящая заявка в друзья"
+    },
+    "button": {
+      "add": "Добавить",
+      "accept": "Принять",
+      "decline": "Отклонить",
+      "revoke": "Отменить",
+      "remove": "Удалить из друзей",
+      "xboxSettings": "Настройки Xbox"
+    },
+    "empty": {
+      "requests": "Нет заявок",
+      "friends": "Нет друзей"
+    },
+    "status": {
+      "INVITED": "Приглашает вас в свой мир",
+      "ONLINE": "В сети",
+      "PLAYING_OFFLINE": "Играет офлайн",
+      "PLAYING_REALMS": "Играет в Realms",
+      "PLAYING_SERVER": "Играет на сервере",
+      "PLAYING_HOSTED_SERVER": "Играет в локальном мире",
+      "OFFLINE": "Не в сети"
+    }
+  },
+  "NoSuitableJavaDialog": {
+    "title": "Для этого экземпляра не найдена подходящая версия Java",
+    "body": "Для этого экземпляра нет подходящей версии Java. Нажмите «ОК», чтобы открыть раздел управления Java и добавить или скачать Java вручную."
+  },
+  "NotFoundPage": {
+    "text": "Страница не найдена, через {{seconds}} сек. вы будете перенаправлены на страницу запуска..."
+  },
+  "NotifyNewVersionModal": {
+    "title": "Доступна новая версия"
+  },
+  "OptionItemGroup": {
+    "button": {
+      "loadMore": "Показать ещё (+{{left}})",
+      "showAll": "Показать все (+{{left}})"
+    }
+  },
+  "PingTestPage": {
+    "PingServerList": {
+      "title": "Проверка доступности сервисов",
+      "offline": "Не в сети",
+      "bmclapi": "BMCLAPI",
+      "curseforge": "CurseForge",
+      "modrinth": "Modrinth",
+      "mojang": "Mojang",
+      "forge": "Forge",
+      "fabric": "Fabric",
+      "neoforge": "NeoForge",
+      "authlibInjector": "Authlib Injector",
+      "github": "GitHub",
+      "sjmclapi": "SJMC Launcher API"
+    }
+  },
+  "PlayerMenu": {
+    "label": {
+      "friends": "Друзья",
+      "manageSkin": "Управление скином",
+      "viewSkin": "Посмотреть скин",
+      "delete": "Удалить",
+      "copyUUID": "Скопировать UUID"
+    },
+    "toast": {
+      "refreshing": "Обновление данных игрока",
+      "deleting": "Удаление игрока"
+    }
+  },
+  "ProxySettingsGroup": {
+    "type": {
+      "title": "Тип прокси"
+    },
+    "host": {
+      "title": "Хост"
+    },
+    "port": {
+      "title": "Порт"
+    }
+  },
+  "ReLoginPlayerModal": {
+    "modal": {
+      "title": "Повторный вход"
+    },
+    "label": {
+      "user": "Имя пользователя",
+      "password": "Пароль"
+    },
+    "placeholder": {
+      "password": "Пароль"
+    },
+    "button": {
+      "login": "Войти"
+    }
+  },
+  "RemoveModLoaderDialog": {
+    "dialog": {
+      "title": "Удалить загрузчик модов",
+      "content": "Удалить {{type}} {{version}}, установленный для {{instanceName}}? Моды могут перестать работать."
+    }
+  },
+  "RemoveOptifineDialog": {
+    "dialog": {
+      "title": "Удалить OptiFine",
+      "content": "Удалить OptiFine {{version}}, установленный для {{instanceName}}? Наборы шейдеров могут перестать работать."
+    }
+  },
+  "ResetConfigConfirmDialog": {
+    "title": "Сброс настроек лаунчера",
+    "body": "Все настройки лаунчера будут возвращены к значениям по умолчанию. Продолжить?"
+  },
+  "ResetInstanceConfigConfirmDialog": {
+    "title": "Сброс настроек экземпляра",
+    "body": "Собственные настройки игры этого экземпляра будут приведены к текущим общим настройкам. Продолжить?"
+  },
+  "ResourceDownloader": {
+    "label": {
+      "source": "Источник",
+      "gameVer": "Версия игры",
+      "tag": "Тип",
+      "sortBy": "Сортировать по",
+      "name": "Название"
+    },
+    "button": {
+      "search": "Поиск"
+    },
+    "modTagList": {
+      "CurseForge": {
+        "All": "Все",
+        "Addons": "Аддоны",
+        "Adventure and RPG": "Приключения и RPG",
+        "API and Library": "API и библиотеки",
+        "Applied Energistics 2": "Applied Energistics 2",
+        "Armor, Tools, and Weapons": "Броня, инструменты и оружие",
+        "Automation": "Автоматизация",
+        "Biomes": "Биомы",
+        "Blood Magic": "Blood Magic",
+        "Buildcraft": "Buildcraft",
+        "Bug Fixes": "Исправления ошибок",
+        "Cosmetic": "Косметика",
+        "CraftTweaker": "CraftTweaker",
+        "Create": "Create",
+        "Dimensions": "Измерения",
+        "Education": "Обучение",
+        "Energy": "Энергия",
+        "Energy, Fluid, and Item Transport": "Передача энергии, жидкостей и предметов",
+        "Farming": "Сельское хозяйство",
+        "Food": "Еда",
+        "Forestry": "Forestry",
+        "Galacticraft": "Galacticraft",
+        "Genetics": "Генетика",
+        "Industrial Craft": "Industrial Craft",
+        "Integrated Dynamics": "Integrated Dynamics",
+        "KubeJS": "KubeJS",
+        "Magic": "Магия",
+        "Map and Information": "Карты и информация",
+        "MCreator": "MCreator",
+        "Miscellaneous": "Разное",
+        "Mobs": "Мобы",
+        "Ores and Resources": "Руды и ресурсы",
+        "Performance": "Производительность",
+        "Player Transport": "Перемещение игроков",
+        "Processing": "Переработка",
+        "Redstone": "Редстоун",
+        "Server Utility": "Сервер",
+        "Skyblock": "Скайблок",
+        "Storage": "Хранилище",
+        "Structures": "Структуры",
+        "Technology": "Технологии",
+        "Thaumcraft": "Thaumcraft",
+        "Thermal Expansion": "Thermal Expansion",
+        "Tinker's Construct": "Tinker's Construct",
+        "Twilight Forest": "Twilight Forest",
+        "Twitch Integration": "Интеграция с Twitch",
+        "Utility & QoL": "Утилиты и удобство",
+        "World Gen": "Генерация мира",
+        "Auxiliary": "Вспомогательные",
+        "World": "Мир"
+      },
+      "Modrinth": {
+        "All": "Все",
+        "adventure": "Приключения",
+        "cursed": "Проклятые",
+        "decoration": "Декорации",
+        "economy": "Экономика",
+        "equipment": "Снаряжение",
+        "food": "Еда",
+        "game-mechanics": "Игровая механика",
+        "library": "Библиотеки",
+        "magic": "Магия",
+        "management": "Управление",
+        "minigame": "Мини-игры",
+        "mobs": "Мобы",
+        "optimization": "Оптимизация",
+        "social": "Социальные",
+        "storage": "Хранилище",
+        "technology": "Технологии",
+        "transportation": "Транспорт",
+        "utility": "Утилиты",
+        "worldgen": "Генерация мира"
+      }
+    },
+    "worldTagList": {
+      "CurseForge": {
+        "All": "Все",
+        "Types": "Типы",
+        "Adventure": "Приключения",
+        "Creation": "Творчество",
+        "Game Map": "Игровая карта",
+        "Modded World": "Мир с модами",
+        "Parkour": "Паркур",
+        "Puzzle": "Головоломки",
+        "Survival": "Выживание"
+      }
+    },
+    "resourcepackTagList": {
+      "CurseForge": {
+        "All": "Все",
+        "Resolution": "Разрешение",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x and Higher": "512x и выше",
+        "Styles": "Стили",
+        "Animated": "Анимированные",
+        "Special": "Особые",
+        "Data Packs": "Наборы данных",
+        "Font Packs": "Наборы шрифтов",
+        "Medieval": "Средневековье",
+        "Miscellaneous": "Разное",
+        "Mod Support": "Поддержка модов",
+        "Modern": "Современные",
+        "Photo Realistic": "Фотореалистичные",
+        "Steampunk": "Стимпанк",
+        "Traditional": "Традиционные"
+      },
+      "Modrinth": {
+        "All": "Все",
+        "Resolution": "Разрешение",
+        "8x-": "8x и ниже",
+        "16x": "16x",
+        "32x": "32x",
+        "64x": "64x",
+        "128x": "128x",
+        "256x": "256x",
+        "512x+": "512x и выше",
+        "Styles": "Стили",
+        "audio": "Звук",
+        "blocks": "Блоки",
+        "core-shaders": "Базовые шейдеры",
+        "entities": "Сущности",
+        "environment": "Окружение",
+        "equipment": "Снаряжение",
+        "fonts": "Шрифты",
+        "gui": "Интерфейс",
+        "items": "Предметы",
+        "locale": "Локализация",
+        "models": "Модели",
+        "combat": "Бой",
+        "cursed": "Проклятые",
+        "decoration": "Декорации",
+        "modded": "С модами",
+        "realistic": "Реалистичные",
+        "simplistic": "Минималистичные",
+        "themed": "Тематические",
+        "tweaks": "Доработки",
+        "utility": "Утилиты",
+        "vanilla-like": "В стиле ванили"
+      }
+    },
+    "shaderTagList": {
+      "CurseForge": {
+        "All": "Все",
+        "Styles": "Стили",
+        "Fantasy": "Фэнтези",
+        "Realistic": "Реалистичные",
+        "Vanilla": "Ванильная"
+      },
+      "Modrinth": {
+        "All": "Все",
+        "Styles": "Стили",
+        "cartoon": "Мультяшные",
+        "cursed": "Проклятые",
+        "fantasy": "Фэнтези",
+        "realistic": "Реалистичные",
+        "semi-realistic": "Полуреалистичные",
+        "vanilla-like": "В стиле ванили",
+        "atmosphere": "Атмосфера",
+        "bloom": "Свечение",
+        "colored-lighting": "Цветное освещение",
+        "foliage": "Листва",
+        "path-tracing": "Трассировка лучей",
+        "pbr": "PBR",
+        "reflections": "Отражения",
+        "shadows": "Тени",
+        "potato": "Для слабых ПК",
+        "performance": "Влияние на производительность",
+        "low": "Низкий",
+        "medium": "Среднее",
+        "high": "Высокий",
+        "screenshot": "Для скриншотов"
+      }
+    },
+    "modpackTagList": {
+      "CurseForge": {
+        "All": "Все",
+        "Styles": "Стили",
+        "Adventure and RPG": "Приключения и RPG",
+        "Combat / PvP": "Бой / PvP",
+        "Exploration": "Исследование",
+        "Extra Large": "Очень большие",
+        "FTB Official Pack": "Официальные сборки FTB",
+        "Hardcore": "Хардкор",
+        "Horror": "Хоррор",
+        "Magic": "Магия",
+        "Map Based": "На основе карты",
+        "Mini Game": "Мини-игры",
+        "Multiplayer": "Мультиплеер",
+        "Quests": "Задания",
+        "Sci-Fi": "Научная фантастика",
+        "Skyblock": "Скайблок",
+        "Small / Light": "Малые / лёгкие",
+        "Tech": "Технологии",
+        "Vanilla+": "Vanilla+"
+      },
+      "Modrinth": {
+        "All": "Все",
+        "styles": "Стили",
+        "adventure": "Приключения",
+        "challenging": "Сложные",
+        "combat": "Бой",
+        "kitchen-sink": "Всё подряд",
+        "lightweight": "Лёгкие",
+        "magic": "Магия",
+        "multiplayer": "Мультиплеер",
+        "optimization": "Оптимизация",
+        "quests": "Задания",
+        "technology": "Технологии"
+      }
+    },
+    "datapackTagList": {
+      "CurseForge": {
+        "All": "Все",
+        "Styles": "Стили",
+        "Magic": "Магия",
+        "Miscellaneous": "Разное",
+        "Fantasy": "Фэнтези",
+        "Mod Support": "Поддержка модов",
+        "Tech": "Технологии",
+        "Library": "Библиотеки",
+        "Utility": "Утилиты",
+        "Adventure": "Приключения"
+      },
+      "Modrinth": {
+        "All": "Все",
+        "styles": "Стили",
+        "adventure": "Приключения",
+        "cursed": "Проклятые",
+        "decoration": "Декорации",
+        "economy": "Экономика",
+        "equipment": "Снаряжение",
+        "food": "Еда",
+        "game-mechanics": "Игровая механика",
+        "library": "Библиотеки",
+        "magic": "Магия",
+        "management": "Управление",
+        "minigame": "Мини-игры",
+        "mobs": "Мобы",
+        "optimization": "Оптимизация",
+        "social": "Социальные",
+        "storage": "Хранилище",
+        "technology": "Технологии",
+        "transportation": "Транспорт",
+        "utility": "Утилиты",
+        "worldgen": "Генерация мира"
+      }
+    },
+    "sortByList": {
+      "CurseForge": {
+        "Popularity": "Популярность",
+        "Latest update": "Последнее обновление",
+        "Creation date": "Дата создания",
+        "Total downloads": "Всего загрузок",
+        "A-Z": "A-Z"
+      },
+      "Modrinth": {
+        "relevance": "Релевантность",
+        "downloads": "Загрузки",
+        "follows": "Подписчики",
+        "newest": "Дата публикации",
+        "updated": "Дата обновления"
+      }
+    },
+    "versionList": {
+      "All": "Все"
+    }
+  },
+  "RestartForUpdateConfirmDialog": {
+    "title": "Обновление лаунчера",
+    "body": "Новая версия скачана. Перезапустите SJMCL, чтобы завершить обновление.",
+    "bodyWinInstaller": "Новая версия скачана. При нажатии «Установить» SJMCL закроется и запустится установщик.",
+    "button": {
+      "restart": "Перезапустить",
+      "install": "Установить",
+      "later": "Позже"
+    }
+  },
+  "RevealConfigJsonConfirmDialog": {
+    "body": "Будьте осторожны при редактировании исходного файла настроек лаунчера. Неправильный формат может привести к потере исходных настроек или нарушить работу лаунчера."
+  },
+  "ScreenshotPreviewModal": {
+    "menu": {
+      "setAsBg": "Сделать фоном лаунчера"
+    }
+  },
+  "SelectInstanceModal": {
+    "header": {
+      "title": "Выберите экземпляр",
+      "titleForLaunch": "Выберите экземпляр для запуска"
+    }
+  },
+  "SelectPlayerModal": {
+    "header": {
+      "title": "Выберите игрока",
+      "titleForAdd": "Выберите нового игрока для добавления",
+      "titleForLaunch": "Выберите игрока для игры"
+    }
+  },
+  "Services": {
+    "config": {
+      "retrieveLauncherConfig": {
+        "error": {
+          "title": "Не удалось получить настройки лаунчера"
+        }
+      },
+      "updateLauncherConfig": {
+        "error": {
+          "title": "Не удалось обновить настройки лаунчера"
+        }
+      },
+      "resetLauncherConfig": {
+        "success": "Настройки лаунчера успешно сброшены",
+        "error": {
+          "title": "Не удалось сбросить настройки лаунчера"
+        }
+      },
+      "exportLauncherConfig": {
+        "success": "Настройки лаунчера успешно экспортированы",
+        "error": {
+          "title": "Не удалось экспортировать настройки лаунчера",
+          "description": {
+            "FETCH_ERROR": "Не удалось связаться с метасервером"
+          }
+        }
+      },
+      "importLauncherConfig": {
+        "success": "Настройки лаунчера успешно импортированы",
+        "error": {
+          "title": "Не удалось импортировать настройки лаунчера",
+          "description": {
+            "FETCH_ERROR": "Не удалось связаться с метасервером",
+            "INVALID_CODE": "Неверный код",
+            "CODE_EXPIRED": "Срок действия кода истёк",
+            "VERSION_MISMATCH": "Несовпадение версий лаунчера"
+          }
+        }
+      },
+      "retrieveCustomBackgroundList": {
+        "success": "Список пользовательских фонов успешно получен",
+        "error": {
+          "title": "Не удалось получить список пользовательских фонов"
+        }
+      },
+      "addCustomBackground": {
+        "success": "Пользовательский фон успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить пользовательский фон"
+        }
+      },
+      "deleteCustomBackground": {
+        "success": "Пользовательский фон успешно удалён",
+        "error": {
+          "title": "Не удалось удалить пользовательский фон"
+        }
+      },
+      "retrieveJavaList": {
+        "error": {
+          "title": "Не удалось получить список установленных версий Java"
+        }
+      },
+      "validateJava": {
+        "error": {
+          "title": "Не удалось проверить Java",
+          "description": {
+            "JAVA_EXEC_INVALID": "Некорректный исполняемый файл Java"
+          }
+        }
+      },
+      "downloadMojangJava": {
+        "error": {
+          "title": "Не удалось скачать среду выполнения Java от Mojang",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "checkGameDirectory": {
+        "error": {
+          "title": "Недопустимая папка игры",
+          "description": {
+            "GAME_DIR_ALREADY_ADDED": "Эта папка уже добавлена",
+            "GAME_DIR_NOT_EXIST": "Папка не существует"
+          }
+        }
+      },
+      "clearDownloadCache": {
+        "success": "Кэш загрузок успешно очищен",
+        "error": {
+          "title": "Не удалось очистить кэш загрузок",
+          "description": {
+            "HAS_ACTIVE_DOWNLOAD_TASKS": "Есть активные задачи загрузки.",
+            "FILE_DELETION_FAILED": "Не удалось удалить файлы: возможно, они используются.",
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "downloadLauncherUpdate": {
+        "error": {
+          "title": "Не удалось скачать обновление лаунчера",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      }
+    },
+    "account": {
+      "retrievePlayerList": {
+        "error": {
+          "title": "Не удалось получить список игроков"
+        }
+      },
+      "addPlayerOffline": {
+        "success": "Автономный игрок успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить автономного игрока",
+          "description": {
+            "DUPLICATE": "Такой игрок уже существует",
+            "FULL_LOGIN_UNAVAILABLE": "Для доступа к этой функции войдите в аккаунт Microsoft.",
+            "INVALID": "Некорректный UUID",
+            "TEXTURE_ERROR": "Не удалось получить текстуру игрока"
+          }
+        }
+      },
+      "fetchOAuthCode": {
+        "error": {
+          "title": "Не удалось получить код аутентификации",
+          "description": {
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "INVALID": "Недопустимый тип игрока",
+            "NOT_FOUND": "Сервер не существует"
+          }
+        }
+      },
+      "addPlayerOAuth": {
+        "success": "Игрок успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить игрока",
+          "description": {
+            "DUPLICATE": "Такой игрок уже существует",
+            "FULL_LOGIN_UNAVAILABLE": "Для доступа к этой функции войдите в аккаунт Microsoft.",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NOT_FOUND": "Сервер аутентификации не существует",
+            "CANCELLED": "Вход через OAuth отменён",
+            "INVALID": "Недопустимый тип сервера",
+            "NO_MINECRAFT_PROFILE": "Профиль Minecraft не найден",
+            "XSTS_BANNED": "Ваш аккаунт заблокирован в службах XBOX",
+            "XSTS_PARENTAL_RESTRICTION": "Ваш аккаунт ограничен родительским контролем",
+            "XSTS_NO_XBOX_ACCOUNT": "К вашему аккаунту Microsoft не привязан аккаунт XBOX. Создайте его на minecraft.net",
+            "XSTS_TERMS_NOT_ACCEPTED": "Перед продолжением примите условия использования XBOX",
+            "XSTS_REGION_BANNED": "Ваш аккаунт зарегистрирован в регионе, где недоступен XBOX Live",
+            "XSTS_CHILD_ACCOUNT": "Ваш аккаунт является детским и требует согласия родителей. Выдайте разрешение на family.microsoft.com",
+            "XSTS_UNKNOWN_ERROR": "Неизвестная ошибка аутентификации XSTS"
+          }
+        }
+      },
+      "reloginPlayerOAuth": {
+        "success": "Повторный вход выполнен успешно",
+        "error": {
+          "title": "Не удалось выполнить повторный вход",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "INVALID": "Недопустимый тип игрока",
+            "CANCELLED": "Повторный вход через OAuth отменён",
+            "NO_MINECRAFT_PROFILE": "Профиль Minecraft не найден",
+            "XSTS_BANNED": "Ваш аккаунт заблокирован в службах XBOX",
+            "XSTS_PARENTAL_RESTRICTION": "Ваш аккаунт ограничен родительским контролем",
+            "XSTS_NO_XBOX_ACCOUNT": "К вашему аккаунту Microsoft не привязан аккаунт XBOX. Создайте его на minecraft.net",
+            "XSTS_TERMS_NOT_ACCEPTED": "Перед продолжением примите условия использования XBOX",
+            "XSTS_REGION_BANNED": "Ваш аккаунт зарегистрирован в регионе, где недоступен XBOX Live",
+            "XSTS_CHILD_ACCOUNT": "Ваш аккаунт является детским и требует согласия родителей. Выдайте разрешение на family.microsoft.com",
+            "XSTS_UNKNOWN_ERROR": "Неизвестная ошибка аутентификации XSTS"
+          }
+        }
+      },
+      "addPlayer3rdPartyPassword": {
+        "success": "Игрок успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить игрока",
+          "description": {
+            "DUPLICATE": "Такой игрок уже существует",
+            "FULL_LOGIN_UNAVAILABLE": "Для доступа к этой функции войдите в аккаунт Microsoft.",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "INVALID": "Неверный логин или пароль",
+            "NOT_FOUND": "Сервер не существует",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново"
+          }
+        }
+      },
+      "reloginPlayer3rdPartyPassword": {
+        "success": "Повторный вход выполнен успешно",
+        "error": {
+          "title": "Не удалось выполнить повторный вход",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "INVALID": "Неверный логин или пароль"
+          }
+        }
+      },
+      "addPlayerFromSelection": {
+        "success": "Игрок успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить игрока",
+          "description": {
+            "DUPLICATE": "Такой игрок уже существует",
+            "FULL_LOGIN_UNAVAILABLE": "Для доступа к этой функции войдите в аккаунт Microsoft.",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново"
+          }
+        }
+      },
+      "updatePlayerSkinOfflinePreset": {
+        "success": "Скин игрока успешно обновлён",
+        "error": {
+          "title": "Не удалось обновить скин игрока",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "INVALID": "Недопустимый тип игрока",
+            "TEXTURE_ERROR": "Не удалось получить текстуру игрока"
+          }
+        }
+      },
+      "updatePlayerSkinOfflineLocal": {
+        "success": "Скин игрока успешно обновлён",
+        "error": {
+          "title": "Не удалось обновить скин игрока",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "INVALID": "Недопустимый тип игрока",
+            "TEXTURE_ERROR": "Не удалось получить текстуру игрока"
+          }
+        }
+      },
+      "deletePlayer": {
+        "success": "Игрок успешно удалён",
+        "error": {
+          "title": "Не удалось удалить игрока",
+          "description": {
+            "NOT_FOUND": "Игрок не существует"
+          }
+        }
+      },
+      "refreshPlayer": {
+        "success": "Данные игрока успешно обновлены",
+        "error": {
+          "title": "Не удалось обновить данные игрока",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "INVALID": "Недопустимый тип игрока"
+          }
+        }
+      },
+      "retrieveMicrosoftFriendList": {
+        "success": "Список друзей успешно получен",
+        "error": {
+          "title": "Не удалось получить список друзей Microsoft",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "INVALID": "Текущий игрок не использует аккаунт Microsoft",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к службам Minecraft",
+            "FORBIDDEN": "Этому аккаунту запрещён доступ к списку друзей",
+            "TOO_MANY_REQUESTS": "Слишком много запросов, попробуйте позже",
+            "SERVICE_UNAVAILABLE": "Службы Minecraft временно недоступны"
+          }
+        }
+      },
+      "updateMicrosoftFriend": {
+        "success": "Статус дружбы успешно обновлён",
+        "error": {
+          "title": "Не удалось обновить список друзей Microsoft",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "INVALID": "Некорректные параметры действия с другом",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к службам Minecraft",
+            "FORBIDDEN": "Сейчас нельзя добавить друга. Проверьте настройки аккаунтов — вашего и второго игрока",
+            "TOO_MANY_REQUESTS": "Слишком много запросов, попробуйте позже",
+            "SERVICE_UNAVAILABLE": "Службы Minecraft временно недоступны",
+            "UNKNOWN_PROFILE": "Целевой игрок не существует",
+            "CANNOT_ADD_SELF": "Нельзя добавить в друзья самого себя",
+            "DUPLICATED_PROFILES": "Повторный запрос на действие с другом"
+          }
+        }
+      },
+      "retrieveAuthServerList": {
+        "error": {
+          "title": "Не удалось получить список серверов"
+        }
+      },
+      "fetchAuthServer": {
+        "error": {
+          "title": "Не удалось получить сведения о сервере аутентификации",
+          "description": {
+            "DUPLICATE": "Этот сервер уже добавлен",
+            "INVALID": "Некорректный URL сервера",
+            "NOT_FOUND": "Сервер не существует"
+          }
+        }
+      },
+      "addAuthServer": {
+        "success": "Сервер аутентификации успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить сервер аутентификации",
+          "description": {
+            "DUPLICATE": "Этот сервер уже добавлен",
+            "INVALID": "Некорректный URL сервера",
+            "NOT_FOUND": "Сервер не существует"
+          }
+        }
+      },
+      "deleteAuthServer": {
+        "success": "Сервер аутентификации успешно удалён",
+        "error": {
+          "title": "Не удалось удалить сервер аутентификации",
+          "description": {
+            "NOT_FOUND": "Сервер аутентификации не существует"
+          }
+        }
+      },
+      "retrieveOtherLauncherAccountInfo": {
+        "error": {
+          "title": "Не удалось получить сведения о внешних аккаунтах",
+          "description": {
+            "NOT_FOUND": "Не удалось прочитать файл внешних аккаунтов."
+          }
+        }
+      },
+      "importExternalAccountInfo": {
+        "success": "Внешние игроки и серверы аутентификации успешно импортированы",
+        "error": {
+          "title": "Не удалось импортировать внешних игроков и серверы аутентификации"
+        }
+      }
+    },
+    "launch": {
+      "selectSuitableJRE": {
+        "error": {
+          "title": "Не удалось подобрать подходящую JRE",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "NO_SUITABLE_JAVA": "Подходящая версия Java не найдена",
+            "SELECTED_JAVA_UNAVAILABLE": "Выбранная вручную версия Java удалена или недоступна"
+          }
+        }
+      },
+      "validateGameFiles": {
+        "error": {
+          "title": "Не удалось проверить файлы игры",
+          "description": {
+            "MOD_LOADER_NOT_INSTALLED": "Установка загрузчика модов не завершена",
+            "OPTIFINE_NOT_INSTALLED": "Установка OptiFine не завершена",
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "GAME_FILES_INCOMPLETE": "Файлы игры неполные",
+            "LAUNCHING_STATE_NOT_FOUND": "Состояние запуска не найдено",
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "validateSelectedPlayer": {
+        "error": {
+          "title": "Не удалось проверить игрока",
+          "description": {
+            "NOT_FOUND": "Игрок не существует",
+            "EXPIRED": "Срок действия токена доступа истёк, выполните вход заново",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "AUTHLIB_INJECTOR_NOT_READY": "Не удалось скачать Authlib-Injector, проверьте подключение к интернету",
+            "SAVE_ERROR": "Не удалось сохранить Authlib-Injector",
+            "LAUNCHING_STATE_NOT_FOUND": "Состояние запуска не найдено"
+          }
+        }
+      },
+      "launchGame": {
+        "error": {
+          "title": "Не удалось запустить игру",
+          "description": {
+            "LAUNCHING_STATE_NOT_FOUND": "Состояние запуска не найдено",
+            "AUTH_SERVER_NOT_FOUND": "Сервер аутентификации не найден"
+          }
+        }
+      }
+    },
+    "resource": {
+      "fetchGameVersionList": {
+        "error": {
+          "title": "Не удалось получить список версий игры",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу"
+          }
+        }
+      },
+      "fetchGameVersionSpecific": {
+        "error": {
+          "title": "Не удалось получить метаданные версии игры",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "CLIENT_VERSION_NOT_FOUND": "Запрошенная версия игры не существует"
+          }
+        }
+      },
+      "fetchModLoaderVersionList": {
+        "error": {
+          "title": "Не удалось получить список версий загрузчика модов",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "NO_DOWNLOAD_API": "Нет доступной стратегии загрузки, проверьте подключение к интернету"
+          }
+        }
+      },
+      "fetchOptiFineVersionList": {
+        "error": {
+          "title": "Не удалось получить список версий OptiFine",
+          "description": {
+            "NETWORK_ERROR": "Не удалось подключиться к серверу"
+          }
+        }
+      },
+      "fetchResourceListByName": {
+        "error": {
+          "title": "Не удалось получить список ресурсов",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "NO_DOWNLOAD_API": "Нет доступной стратегии загрузки, проверьте подключение к интернету"
+          }
+        }
+      },
+      "fetchResourceVersionPacks": {
+        "error": {
+          "title": "Не удалось получить список версий ресурса",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "NO_DOWNLOAD_API": "Нет доступной стратегии загрузки, проверьте подключение к интернету"
+          }
+        }
+      },
+      "downloadGameServer": {
+        "error": {
+          "title": "Не удалось скачать сервер игры",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "fetchRemoteResourceByLocal": {
+        "error": {
+          "title": "Не удалось получить удалённый ресурс",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "NO_DOWNLOAD_API": "Нет доступной стратегии загрузки, проверьте подключение к интернету"
+          }
+        }
+      },
+      "updateMods": {
+        "error": {
+          "title": "Не удалось скачать последнюю версию мода",
+          "description": {
+            "PARSE_ERROR": "Сервер вернул данные в неверном формате",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "FILE_OPERATION_ERROR": "Не удалось переименовать старый файл мода",
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      }
+    },
+    "instance": {
+      "retrieveInstanceList": {
+        "error": {
+          "title": "Не удалось получить список игровых экземпляров",
+          "description": {
+            "INVALID_NAME_ERROR": "Недопустимое название экземпляра",
+            "INVALID_SOURCE_PATH": "Недопустимый исходный путь",
+            "CONFLICT_NAME_ERROR": "Экземпляр с таким названием уже существует",
+            "FILE_MOVE_FAILED": "Не удалось переместить файлы экземпляра"
+          }
+        }
+      },
+      "createInstance": {
+        "error": {
+          "title": "Не удалось создать задачу загрузки экземпляра",
+          "description": {
+            "CONFLICT_NAME_ERROR": "Экземпляр с таким названием уже существует",
+            "FOLDER_CREATION_FAILED": "Не удалось создать целевую папку",
+            "FILE_CREATION_FAILED": "Не удалось создать целевой файл",
+            "NETWORK_ERROR": "Не удалось подключиться к серверу",
+            "CLIENT_JSON_PARSE_ERROR": "Не удалось разобрать сведения о версии экземпляра",
+            "ASSET_INDEX_PARSE_ERROR": "Не удалось разобрать индекс ресурсов",
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "updateInstanceConfig": {
+        "error": {
+          "title": "Не удалось обновить настройки экземпляра",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "NOT_FOUND": "Экземпляр не найден"
+          }
+        }
+      },
+      "retrieveInstanceGameConfig": {
+        "error": {
+          "title": "Не удалось получить настройки игры экземпляра",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует"
+          }
+        }
+      },
+      "resetInstanceGameConfig": {
+        "success": "Настройки игры экземпляра успешно сброшены",
+        "error": {
+          "title": "Не удалось сбросить настройки игры экземпляра",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "SAVE_ERROR": "Не удалось сохранить настройки экземпляра"
+          }
+        }
+      },
+      "retrieveInstanceSubdirPath": {
+        "error": {
+          "title": "Не удалось получить путь к папке экземпляра",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует или указан неверный тип"
+          }
+        }
+      },
+      "deleteInstance": {
+        "success": "Экземпляр успешно удалён",
+        "error": {
+          "title": "Не удалось удалить экземпляр",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует"
+          }
+        }
+      },
+      "renameInstance": {
+        "error": {
+          "title": "Не удалось переименовать экземпляр",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "CONFLICT_NAME_ERROR": "Экземпляр с таким названием уже существует",
+            "INVALID_NAME_ERROR": "Недопустимое название экземпляра",
+            "INVALID_SOURCE_PATH": "Недопустимый исходный путь",
+            "FILE_MOVE_FAILED": "Не удалось переместить файлы экземпляра"
+          }
+        }
+      },
+      "copyResourcesToInstances": {
+        "success": "Ресурс успешно скопирован",
+        "error": {
+          "title": "Не удалось скопировать ресурс",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует или указан неверный тип",
+            "INVALID_SOURCE_PATH": "Недопустимый исходный путь",
+            "ZIP_FILE_PROCESS_FAILED": "Не удалось обработать ZIP-архив",
+            "FILE_COPY_FAILED": "Не удалось выполнить команду копирования файла",
+            "FOLDER_CREATION_FAILED": "Не удалось создать целевую папку"
+          }
+        }
+      },
+      "moveResourceToInstance": {
+        "success": "Ресурс успешно перемещён",
+        "error": {
+          "title": "Не удалось переместить ресурс",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует или указан неверный тип",
+            "INVALID_SOURCE_PATH": "Недопустимый исходный путь",
+            "FILE_MOVE_FAILED": "Не удалось выполнить команду перемещения файла",
+            "FOLDER_CREATION_FAILED": "Не удалось создать целевую папку"
+          }
+        }
+      },
+      "retrieveWorldList": {
+        "error": {
+          "title": "Не удалось получить список миров"
+        }
+      },
+      "retrieveGameServerList": {
+        "error": {
+          "title": "Не удалось получить список игровых серверов",
+          "description": {
+            "SERVER_NBT_READ_ERROR": "Возможно, файл servers.dat повреждён"
+          }
+        }
+      },
+      "addGameServer": {
+        "success": "Игровой сервер успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить игровой сервер",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "FILE_OPERATION_ERROR": "Не удалось записать сведения о сервере",
+            "DUPLICATE_SERVER": "Такой сервер уже существует"
+          }
+        }
+      },
+      "deleteGameServer": {
+        "success": "Игровой сервер успешно удалён",
+        "error": {
+          "title": "Не удалось удалить игровой сервер",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "FILE_OPERATION_ERROR": "Не удалось записать сведения о сервере",
+            "SERVER_NOT_FOUND": "Сервер не найден"
+          }
+        }
+      },
+      "retrieveLocalModList": {
+        "error": {
+          "title": "Не удалось получить локальный список модов",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует"
+          }
+        }
+      },
+      "retrieveResourcePackList": {
+        "error": {
+          "title": "Не удалось получить список наборов текстур"
+        }
+      },
+      "retrieveServerResourcePackList": {
+        "error": {
+          "title": "Не удалось получить список наборов текстур с серверов"
+        }
+      },
+      "retrieveSchematicList": {
+        "error": {
+          "title": "Не удалось получить список схем"
+        }
+      },
+      "retrieveShaderPackList": {
+        "error": {
+          "title": "Не удалось получить список наборов шейдеров"
+        }
+      },
+      "retrieveScreenshotList": {
+        "error": {
+          "title": "Не удалось получить список скриншотов"
+        }
+      },
+      "toggleModByExtension": {
+        "error": {
+          "title": "Не удалось переключить состояние мода",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "Файл мода не существует: возможно, он переименован, перемещён или удалён"
+          }
+        }
+      },
+      "retrieveWorldDetails": {
+        "error": {
+          "title": "Не удалось получить подробные сведения о мирах",
+          "description": {
+            "WORLD_NOT_EXIST_ERROR": "Мир не существует",
+            "LEVEL_NOT_EXIST_ERROR": "Данные мира отсутствуют",
+            "LEVEL_PARSE_ERROR": "Ошибка разбора данных мира"
+          }
+        }
+      },
+      "createLaunchDesktopShortcut": {
+        "success": "Ярлык запуска добавлен на рабочий стол",
+        "error": {
+          "title": "Не удалось создать ярлык запуска",
+          "description": {
+            "SHORTCUT_CREATION_FAILED": "Не удалось выполнить команду",
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует"
+          }
+        }
+      },
+      "checkChangeModLoaderAvailablity": {
+        "error": {
+          "title": "Невозможно сменить загрузчик модов",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Установлено внешней программой, изменение настроек недоступно"
+          }
+        }
+      },
+      "changeModLoader": {
+        "error": {
+          "title": "Не удалось сменить загрузчик модов",
+          "description": {
+            "NOT_SUPPORT_CHANGE_MOD_LOADER": "Установлено внешней программой, изменение настроек недоступно",
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "changeOptiFine": {
+        "error": {
+          "title": "Не удалось сменить OptiFine",
+          "description": {
+            "DOWNLOAD_ENGINE_ERROR": "Механизму загрузки не удалось завершить операцию"
+          }
+        }
+      },
+      "removeModLoader": {
+        "success": "Загрузчик модов успешно удалён",
+        "error": {
+          "title": "Не удалось удалить загрузчик модов",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "FILE_CREATION_FAILED": "Не удалось сохранить конфигурацию экземпляра"
+          }
+        }
+      },
+      "removeOptifine": {
+        "success": "OptiFine успешно удалён",
+        "error": {
+          "title": "Не удалось удалить OptiFine",
+          "description": {
+            "INSTANCE_NOT_FOUND_BY_ID": "Экземпляр с таким ID не существует",
+            "FILE_CREATION_FAILED": "Не удалось сохранить конфигурацию экземпляра"
+          }
+        }
+      },
+      "retrieveModpackMetaInfo": {
+        "error": {
+          "title": "Не удалось получить сведения о ресурсе модпака",
+          "description": {
+            "FILE_NOT_FOUND_ERROR": "Файл модпака не найден: возможно, он переименован, перемещён или удалён",
+            "MODPACK_MANIFEST_PARSE_ERROR": "Ошибка разбора файла манифеста модпака",
+            "NETWORK_ERROR": "Не удалось получить сведения о загрузчике модов, необходимом для модпака",
+            "MOD_LOADER_VERSION_PARSE_ERROR": "Не удалось определить версию загрузчика модов, необходимую для этого модпака"
+          }
+        }
+      },
+      "retrieveExportableFileList": {
+        "error": {
+          "title": "Не удалось получить список файлов для экспорта"
+        }
+      },
+      "exportModpack": {
+        "success": "Модпак успешно экспортирован",
+        "error": {
+          "title": "Не удалось экспортировать модпак"
+        }
+      },
+      "addCustomInstanceIcon": {
+        "success": "Пользовательский значок экземпляра успешно добавлен",
+        "error": {
+          "title": "Не удалось добавить пользовательский значок экземпляра"
+        }
+      }
+    },
+    "extension": {
+      "retrieveExtensionList": {
+        "error": {
+          "title": "Не удалось получить список расширений"
+        }
+      },
+      "addExtension": {
+        "success": "Расширение успешно добавлено",
+        "error": {
+          "title": "Не удалось добавить расширение",
+          "description": {
+            "INVALID_PACKAGE_FORMAT": "Некорректный формат содержимого пакета расширения",
+            "INVALID_IDENTIFIER": "Некорректный идентификатор расширения",
+            "IDENTIFIER_MISMATCH": "Идентификатор расширения не соответствует ожидаемому",
+            "INVALID_NAME": "Некорректное имя расширения",
+            "LAUNCHER_VERSION_TOO_LOW": "Версия лаунчера слишком старая",
+            "EXTENSION_NOT_FOUND": "Целевой файл пакета не найден"
+          }
+        }
+      },
+      "deleteExtension": {
+        "success": "Расширение успешно удалено",
+        "error": {
+          "title": "Не удалось удалить расширение",
+          "description": {
+            "INVALID_IDENTIFIER": "Некорректный идентификатор расширения",
+            "EXTENSION_NOT_FOUND": "Расширение не найдено"
+          }
+        }
+      }
+    },
+    "task": {
+      "common": {
+        "title": "Ошибка загрузки",
+        "description": {
+          "NETWORK_ERROR": "Сетевая ошибка: {{details}}",
+          "HTTP_ERROR": "Ошибка HTTP: {{status}}",
+          "IO_ERROR": "Ошибка файловой операции: {{details}}",
+          "CHECKSUM_MISMATCH": "Несовпадение контрольной суммы файла: ожидалось {{expected}}, получено {{actual}}",
+          "CORRUPT_FILES": "Повреждённые файлы: {{paths, list}}",
+          "MISSING_FIELD": "Отсутствует поле задачи: {{field}}",
+          "UNKNOWN_EXECUTOR": "Неизвестный исполнитель задачи: {{executor}}",
+          "INVALID_CONTENT_RANGE": "Сервер вернул некорректный заголовок Content-Range",
+          "RESUME_OFFSET_MISMATCH": "Несовпадение смещения при докачке: ожидалось {{expected}}, получено {{actual}}",
+          "OTHER_ERROR": "Ошибка задачи: {{details}}",
+          "EMPTY_GROUP": "Группа задач должна содержать хотя бы одну задачу",
+          "CHANNEL_CLOSED": "Соединение с механизмом загрузки закрыто",
+          "UNKNOWN_GROUP": "Группа задач {{groupId}} не найдена",
+          "INVALID_STATE": "Группа задач {{groupId}} не может выполнить эту операцию в текущем состоянии",
+          "STORAGE_ERROR": "Не удалось сохранить состояние загрузки: {{details}}",
+          "ENGINE_NOT_INITIALIZED": "Механизм загрузки не инициализирован",
+          "INSTALLATION_INSTANCE_MISMATCH": "Экземпляр установки не соответствует задаче",
+          "MOD_LOADER_CHANGED": "Во время установки изменился загрузчик модов",
+          "OPTIFINE_MISSING": "OptiFine отсутствует",
+          "OPTIFINE_CHANGED": "Во время установки изменился OptiFine"
+        }
+      },
+      "onDownloadGroupUpdate": {
+        "status": {
+          "Started": "Загрузка {{param}} началась",
+          "Failed": "Загрузка {{param}} частично не удалась, попробуйте снова",
+          "Completed": "Загрузка {{param}} завершена успешно",
+          "Stopped": "Загрузка {{param}} остановлена",
+          "Cancelled": "Загрузка {{param}} отменена"
+        }
+      }
+    },
+    "utils": {
+      "deleteFile": {
+        "success": "Файл успешно удалён",
+        "error": {
+          "title": "Не удалось удалить файл"
+        }
+      }
+    }
+  },
+  "SettingsLayout": {
+    "settingsDomainList": {
+      "global-game": "Настройки игры",
+      "java": "Java",
+      "general": "Общие",
+      "appearance": "Оформление",
+      "download": "Загрузка",
+      "intelligence": "ИИ-функции",
+      "extension": "Расширения",
+      "help": "Документация и помощь",
+      "about": "О программе"
+    }
+  },
+  "SkinPreview": {
+    "cape": "Плащ",
+    "animation": {
+      "idle": "Покой",
+      "walk": "Ходьба",
+      "run": "Бег",
+      "wave": "Приветствие"
+    },
+    "button": {
+      "saveToLocal": "Сохранить на компьютер",
+      "enableRotation": "Включить вращение",
+      "disableRotation": "Отключить вращение",
+      "play": "Воспроизвести",
+      "pause": "Пауза"
+    },
+    "error": {
+      "loadSkin": "Не удалось загрузить скин"
+    },
+    "toast": {
+      "error": "Не удалось сохранить скин локально",
+      "success": "Скин сохранён локально"
+    }
+  },
+  "SpotlightSearchModal": {
+    "input": {
+      "placeholder": "Глобальный поиск"
+    },
+    "tip": "Ищите локальные и сетевые игровые ресурсы в одном месте",
+    "empty": "Ничего не найдено",
+    "resource": {
+      "mod": "Искать моды «{{query}}»",
+      "world": "Искать миры «{{query}}»",
+      "resourcepack": "Искать наборы текстур «{{query}}»",
+      "shader": "Искать наборы шейдеров «{{query}}»",
+      "datapack": "Искать наборы данных «{{query}}»",
+      "modpack": "Искать модпаки «{{query}}»",
+      "curseforge": "на CurseForge",
+      "modrinth": "на Modrinth"
+    },
+    "result": {
+      "page": "Страница",
+      "recentViewed": "Недавно просмотренные",
+      "instance": "Экземпляр",
+      "player": "Игрок",
+      "curseforge": "Искать на CurseForge",
+      "modrinth": "Искать на Modrinth"
+    }
+  },
+  "StarUsModal": {
+    "header": {
+      "title": "Поставьте нам звезду на GitHub"
+    },
+    "body": "Если вам нравится SJMCL и вы хотите нас поддержать, поставьте проекту звезду на GitHub. Этот маленький жест очень много для нас значит и помогает нам продолжать разработку новых функций.",
+    "button": {
+      "later": "Позже",
+      "starUs": "Поставить звезду"
+    }
+  },
+  "SyncConfigExportModal": {
+    "header": {
+      "title": "Синхронизация настроек — экспорт"
+    },
+    "label": {
+      "token": "Токен"
+    },
+    "helper": "Введите этот токен на устройстве, на которое хотите экспортировать настройки",
+    "countdown": "Обновление через {{seconds}} сек."
+  },
+  "SyncConfigImportModal": {
+    "header": {
+      "title": "Синхронизация настроек — импорт"
+    },
+    "label": {
+      "token": "Токен"
+    },
+    "helper": "Введите токен, созданный на устройстве, с которого хотите импортировать настройки"
+  },
+  "Tauri": {
+    "windowTitle": {
+      "gameLog": "Журнал игры",
+      "gameError": "Упс! Игра вылетела."
+    }
+  },
+  "UnavailableExePathAlertDialog": {
+    "dialog": {
+      "title": "Небезопасный путь запуска",
+      "content": "SJMCL запущен из временной или недопустимой папки. Ваши настройки и игровые данные могут быть потеряны. Переместите SJMCL в другую папку и запустите снова.",
+      "btnContinue": "Всё равно запустить"
+    }
+  },
+  "Utils": {
+    "byteSize": {
+      "b": "Б",
+      "kib": "КиБ",
+      "mib": "МиБ",
+      "gib": "ГиБ"
+    },
+    "datetime": {
+      "formatRelativeTime": {
+        "now": "сейчас",
+        "minutes-ago": "{{count}} мин. назад",
+        "last-hour": "в последний час",
+        "hours-ago": "{{count}} ч. назад",
+        "yesterday": "вчера",
+        "others": "{{time}}"
+      }
+    },
+    "env": {
+      "checkFrontendCompatibility": {
+        "warning": {
+          "title": "Версия системного веб-просмотрщика устарела. Некоторые элементы интерфейса могут отображаться некорректно."
+        }
+      }
+    },
+    "wiki": {
+      "baseUrl": "https://minecraft.wiki/w/{{key}}",
+      "key": {
+        "javaEdition": "Java_Edition_{{version}}"
+      }
+    }
+  },
+  "ViewSkinModal": {
+    "skinView": "Посмотреть скин"
+  },
+  "WelcomeAndTermsModal": {
+    "header": {
+      "title": "Добро пожаловать!"
+    },
+    "body": {
+      "text": "Добро пожаловать в SJMCL! Перед началом работы ознакомьтесь с <terms>Пользовательским соглашением</terms> и примите его."
+    },
+    "warning": {
+      "unstableVersion": "Вы используете {{versionLabel}} SJMCL. Некоторые функции могут работать нестабильно или быть неполными. Будем рады сообщениям об ошибках и предложениям.",
+      "winArm64Notice": "SJMCL теперь поддерживает Windows на Arm. Если вы используете платформу <b>QUALCOMM</b>, перед запуском игры может потребоваться установить <glpack>Пакет совместимости OpenGL</glpack>."
+    },
+    "button": {
+      "agree": "Принять"
+    }
+  },
+  "WindowTitlebar": {
+    "extensionProvidedPage": "Эта страница предоставлена расширением {{name}}"
+  },
+  "WorldLevelDataModal": {
+    "header": {
+      "title": "Данные мира — {{worldName}}"
+    }
+  }
+}
