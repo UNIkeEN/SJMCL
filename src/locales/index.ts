@@ -3,8 +3,8 @@ import en from "./en.json";
 import es from "./es.json";
 import fr from "./fr.json";
 import ja from "./ja.json";
-import ru from "./ru.json";
 import lzh from "./lzh.json";
+import ru from "./ru.json";
 import zh_Hans from "./zh-Hans.json";
 import zh_Hant from "./zh-Hant.json";
 
