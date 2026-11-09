@@ -1722,10 +1722,10 @@
       "es": "",
       "fr": "Francés",
       "ja": "Japonés",
+      "ru": "Ruso",
       "lzh": "Chino literario",
       "zh-Hans": "Chino simplificado",
-      "zh-Hant": "Chino tradicional",
-      "ru": "Ruso"
+      "zh-Hant": "Chino tradicional"
     }
   },
   "LastExitedAbnormallyDialog": {

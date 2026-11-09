@@ -37,6 +37,11 @@ export const localeResources: LocaleResources = {
     display_name: "日本語",
     htmlLang: "ja",
   },
+  ru: {
+    translation: ru,
+    display_name: "Русский",
+    htmlLang: "ru",
+  },
   "zh-Hans": {
     translation: zh_Hans,
     display_name: "简体中文",
@@ -51,11 +56,6 @@ export const localeResources: LocaleResources = {
     translation: lzh,
     display_name: "文言",
     htmlLang: "zh",
-  },
-  ru: {
-    translation: ru,
-    display_name: "Русский",
-    htmlLang: "ru",
   },
 };
 
