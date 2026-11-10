@@ -139,7 +139,9 @@ async fn get_neoforge_meta_by_game_version_official(
           let patch: i32 = cap[3].parse()?;
 
           if game_version.starts_with("1.") {
+            // Minecraft release IDs like 1.21 omit the zero patch component.
             game_version == format!("1.{}.{}", major, minor)
+              || (minor == 0 && game_version == format!("1.{major}"))
           } else {
             let mut derived = if patch != 0 {
               format!("{}.{}.{}", major, minor, patch)
