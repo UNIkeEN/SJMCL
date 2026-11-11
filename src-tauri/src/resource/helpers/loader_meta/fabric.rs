@@ -5,7 +5,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_http::reqwest;
 
 use crate::instance::models::misc::ModLoaderType;
-use crate::resource::helpers::loader_meta::misc::{
+use crate::resource::helpers::loader_meta::common::{
   fetch_loader_versions_with_fallback, fetch_meta_game_versions,
 };
 use crate::resource::helpers::misc::get_download_api;
