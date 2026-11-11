@@ -344,6 +344,10 @@
         },
         "enhanceContrast": {
           "title": "Augmenter le contraste"
+        },
+        "reduceMotion": {
+          "title": "Réduire les animations",
+          "description": "Lorsque cette option est activée, les animations telles que les transitions de page et les fenêtres contextuelles seront désactivées."
         }
       }
     }

@@ -344,6 +344,10 @@
         },
         "enhanceContrast": {
           "title": "增強對比度"
+        },
+        "reduceMotion": {
+          "title": "減弱動態效果",
+          "description": "啟用後，將關閉頁面切換、彈窗等介面動畫"
         }
       }
     }
