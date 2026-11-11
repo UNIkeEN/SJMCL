@@ -10,7 +10,7 @@ const LANG_TAG_MAPPINGS: &[(&str, &str, &str)] = &[
   ("es", "1.1", "es_ES"),
   ("fr", "1.1", "fr_FR"),
   ("ja", "1.1", "ja_JP"),
-  ("ru", "1.1", "ru_Ru"),
+  ("ru", "1.1", "ru_RU"),
   ("zh-Hans", "1.1", "zh_CN"),
   ("zh-Hant", "1.1", "zh_TW"),
   ("lzh", "1.1", "zh_CN"), // fallback
