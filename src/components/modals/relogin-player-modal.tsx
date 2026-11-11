@@ -23,6 +23,7 @@ import { useToast } from "@/contexts/toast";
 import { PlayerType } from "@/enums/account";
 import { DeviceAuthResponseInfo, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface ReLoginPlayerModalProps extends Omit<ModalProps, "children"> {
   player: Player;
@@ -156,6 +157,10 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={onEnterKeyDown(
+                      () => handleReLogin(),
+                      !password.trim() || isLoading
+                    )}
                     placeholder={t("ReLoginPlayerModal.placeholder.password")}
                     focusBorderColor={`${primaryColor}.500`}
                   />
