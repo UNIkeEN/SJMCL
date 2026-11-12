@@ -462,6 +462,7 @@ pub enum LauncherConfigError {
   GameDirAlreadyAdded,
   GameDirNotExist,
   JavaExecInvalid,
+  MojangJavaUnavailable,
   HasActiveDownloadTasks,
   FileDeletionFailed,
 }

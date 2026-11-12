@@ -530,7 +530,8 @@
     },
     "warning": {
       "mojang": "Mojang 所布之爪哇行時，將由 SJMCL 置於特定夾。",
-      "oracle": "自 Oracle 源引之，或須登入。"
+      "oracle": "自 Oracle 源引之，或須登入。",
+      "mojangUnavailable": "Mojang 未備此平臺之爪哇行時，請另擇發行方。"
     }
   },
   "DownloadModpackModal": {
@@ -2332,11 +2333,21 @@
           }
         }
       },
+      "retrieveMojangJavaVersions": {
+        "error": {
+          "title": "Mojang 爪哇可用諸版取得未成",
+          "description": {
+            "FETCH_ERROR": "Mojang 爪哇行時之目未得，請察網路。"
+          }
+        }
+      },
       "downloadMojangJava": {
         "error": {
           "title": "Mojang 爪哇行時引之未成",
           "description": {
-            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能成此操作"
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能成此操作",
+            "FETCH_ERROR": "Mojang 爪哇行時之目未得，請察網路。",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang 未備此平臺之爪哇此版，請另擇發行方，或手動添之。"
           }
         }
       },
@@ -2773,7 +2784,9 @@
             "NETWORK_ERROR": "網路謬",
             "CLIENT_JSON_PARSE_ERROR": "例版資訊解析謬",
             "ASSET_INDEX_PARSE_ERROR": "資源索引案解析謬",
-            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能成此操作"
+            "DOWNLOAD_ENGINE_ERROR": "下載引擎未能成此操作",
+            "FETCH_ERROR": "Mojang 爪哇行時之目未得，請察網路。",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang 未備此平臺之爪哇此版，請另擇發行方，或手動添之。"
           }
         }
       },

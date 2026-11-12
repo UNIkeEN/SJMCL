@@ -530,7 +530,8 @@
     },
     "warning": {
       "mojang": "Mojang によって配布される Java ランタイムは SJMCL によって特定のディレクトリにインストールされます",
-      "oracle": "Oracle ソースからのダウンロードにはログインの必要な場合があります"
+      "oracle": "Oracle ソースからのダウンロードにはログインの必要な場合があります",
+      "mojangUnavailable": "Mojang は現在のプラットフォーム向けの Java ランタイムを提供していません。別の配布元を選択してください。"
     }
   },
   "DownloadModpackModal": {
@@ -2332,11 +2333,21 @@
           }
         }
       },
+      "retrieveMojangJavaVersions": {
+        "error": {
+          "title": "利用可能な Mojang Java バージョンの取得に失敗",
+          "description": {
+            "FETCH_ERROR": "Mojang Java ランタイム一覧を取得できません。ネットワーク接続を確認してください。"
+          }
+        }
+      },
       "downloadMojangJava": {
         "error": {
           "title": "Mojang Java ランタイムのダウンロードに失敗",
           "description": {
-            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした",
+            "FETCH_ERROR": "Mojang Java ランタイム一覧を取得できません。ネットワーク接続を確認してください。",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang は現在のプラットフォーム向けにこの Java バージョンを提供していません。別の配布元を選択するか、Java を手動で追加してください。"
           }
         }
       },
@@ -2773,7 +2784,9 @@
             "NETWORK_ERROR": "ネットワークエラー",
             "CLIENT_JSON_PARSE_ERROR": "インスタンスバージョン情報の解析エラー",
             "ASSET_INDEX_PARSE_ERROR": "リソースインデックスファイルの解析エラー",
-            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした"
+            "DOWNLOAD_ENGINE_ERROR": "ダウンロードエンジンが操作を完了できませんでした",
+            "FETCH_ERROR": "Mojang Java ランタイム一覧を取得できません。ネットワーク接続を確認してください。",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang は現在のプラットフォーム向けにこの Java バージョンを提供していません。別の配布元を選択するか、Java を手動で追加してください。"
           }
         }
       },

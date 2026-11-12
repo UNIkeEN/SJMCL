@@ -530,7 +530,8 @@
     },
     "warning": {
       "mojang": "Le runtime Java distribué par Mojang sera installé par SJMCL dans un répertoire spécifique.",
-      "oracle": "Le téléchargement à partir de la source Oracle peut nécessiter une connexion."
+      "oracle": "Le téléchargement à partir de la source Oracle peut nécessiter une connexion.",
+      "mojangUnavailable": "Mojang ne propose pas de runtime Java pour la plateforme actuelle. Choisissez un autre fournisseur."
     }
   },
   "DownloadModpackModal": {
@@ -2332,11 +2333,21 @@
           }
         }
       },
+      "retrieveMojangJavaVersions": {
+        "error": {
+          "title": "Échec de la récupération des versions Java Mojang disponibles",
+          "description": {
+            "FETCH_ERROR": "Impossible de récupérer la liste des runtimes Java Mojang. Vérifiez votre connexion réseau."
+          }
+        }
+      },
       "downloadMojangJava": {
         "error": {
           "title": "Échec du téléchargement du runtime Java Mojang.",
           "description": {
-            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération",
+            "FETCH_ERROR": "Impossible de récupérer la liste des runtimes Java Mojang. Vérifiez votre connexion réseau.",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang ne propose pas cette version de Java pour la plateforme actuelle. Choisissez un autre fournisseur ou ajoutez Java manuellement."
           }
         }
       },
@@ -2773,7 +2784,9 @@
             "NETWORK_ERROR": "Erreur réseau",
             "CLIENT_JSON_PARSE_ERROR": "Erreur d'analyse des informations de version de l'instance",
             "ASSET_INDEX_PARSE_ERROR": "Erreur d'analyse du fichier d'index des ressources",
-            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
+            "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération",
+            "FETCH_ERROR": "Impossible de récupérer la liste des runtimes Java Mojang. Vérifiez votre connexion réseau.",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang ne propose pas cette version de Java pour la plateforme actuelle. Choisissez un autre fournisseur ou ajoutez Java manuellement."
           }
         }
       },
