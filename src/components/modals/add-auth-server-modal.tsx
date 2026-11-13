@@ -26,6 +26,7 @@ import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { AccountService } from "@/services/account";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {
   presetUrl?: string;
@@ -160,6 +161,10 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
                 value={serverUrl}
                 onChange={(e) => setServerUrl(e.target.value)}
                 onBlur={() => setIsServerUrlTouched(true)}
+                onKeyDown={onEnterKeyDown(
+                  handleNextStep,
+                  !trimmedServerUrl || isLoading
+                )}
                 ref={initialRef}
                 focusBorderColor={`${primaryColor}.500`}
               />

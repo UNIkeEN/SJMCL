@@ -15,6 +15,7 @@ import {
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
   ...props
@@ -52,6 +53,7 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
             <Input
               value={endpointUrl}
               onChange={(e) => setEndpointUrl(e.target.value)}
+              onKeyDown={onEnterKeyDown(handleConfirm, !endpointUrl.trim())}
               placeholder={t("AddDiscoverSourceModal.placeholder.endpointUrl")}
               focusBorderColor={`${primaryColor}.500`}
               required
