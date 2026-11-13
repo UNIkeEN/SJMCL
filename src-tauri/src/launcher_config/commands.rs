@@ -15,7 +15,7 @@ use crate::instance::helpers::misc::refresh_instances;
 use crate::launcher_config::helpers::graphics::supported_graphics_renderers;
 use crate::launcher_config::helpers::java::{
   build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
-  refresh_and_update_javas,
+  get_mojang_java_versions, refresh_and_update_javas,
 };
 use crate::launcher_config::helpers::updater::{
   self, download_target_version, fetch_latest_version,
@@ -236,6 +236,11 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
   } else {
     Err(LauncherConfigError::JavaExecInvalid.into())
   }
+}
+
+#[tauri::command]
+pub async fn retrieve_mojang_java_versions(app: AppHandle) -> SJMCLResult<Vec<String>> {
+  get_mojang_java_versions(&app).await
 }
 
 #[tauri::command]

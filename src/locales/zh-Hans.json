@@ -530,7 +530,8 @@
     },
     "warning": {
       "mojang": "由 Mojang 分发的 Java 运行时将由 SJMCL 安装到特定目录",
-      "oracle": "从 Oracle 源下载可能需要登录"
+      "oracle": "从 Oracle 源下载可能需要登录",
+      "mojangUnavailable": "Mojang 未提供适用于当前平台的 Java 运行时，请选择其他发行方。"
     }
   },
   "DownloadModpackModal": {
@@ -2334,11 +2335,21 @@
           }
         }
       },
+      "retrieveMojangJavaVersions": {
+        "error": {
+          "title": "获取可用的 Mojang Java 版本失败",
+          "description": {
+            "FETCH_ERROR": "无法获取 Mojang Java 运行时列表，请检查网络连接。"
+          }
+        }
+      },
       "downloadMojangJava": {
         "error": {
           "title": "Mojang Java 运行时下载失败",
           "description": {
-            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作",
+            "FETCH_ERROR": "无法获取 Mojang Java 运行时列表，请检查网络连接。",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang 未提供适用于当前平台的此 Java 版本，请选择其他发行方或手动添加 Java。"
           }
         }
       },
@@ -2775,7 +2786,9 @@
             "NETWORK_ERROR": "网络错误",
             "CLIENT_JSON_PARSE_ERROR": "实例版本信息解析错误",
             "ASSET_INDEX_PARSE_ERROR": "资源索引文件解析错误",
-            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作"
+            "DOWNLOAD_ENGINE_ERROR": "下载引擎未能完成操作",
+            "FETCH_ERROR": "无法获取 Mojang Java 运行时列表，请检查网络连接。",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang 未提供适用于当前平台的此 Java 版本，请选择其他发行方或手动添加 Java。"
           }
         }
       },

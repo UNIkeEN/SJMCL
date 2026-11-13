@@ -530,7 +530,8 @@
     },
     "warning": {
       "mojang": "Java runtime from Mojang will be installed by SJMCL into a specific directory.",
-      "oracle": "Downloading from Oracle may require login."
+      "oracle": "Downloading from Oracle may require login.",
+      "mojangUnavailable": "Mojang does not provide a Java runtime for the current platform. Choose another vendor."
     }
   },
   "DownloadModpackModal": {
@@ -2334,11 +2335,21 @@
           }
         }
       },
+      "retrieveMojangJavaVersions": {
+        "error": {
+          "title": "Failed to retrieve available Mojang Java versions",
+          "description": {
+            "FETCH_ERROR": "Unable to retrieve the Mojang Java runtime list. Check your network connection."
+          }
+        }
+      },
       "downloadMojangJava": {
         "error": {
           "title": "Failed to download Mojang Java runtime",
           "description": {
-            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation",
+            "FETCH_ERROR": "Unable to retrieve the Mojang Java runtime list. Check your network connection.",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang does not provide this Java version for the current platform. Choose another vendor or add Java manually."
           }
         }
       },
@@ -2775,7 +2786,9 @@
             "NETWORK_ERROR": "Failed to connect to the server",
             "CLIENT_JSON_PARSE_ERROR": "Failed to parse instance version info",
             "ASSET_INDEX_PARSE_ERROR": "Failed to parse asset index",
-            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation"
+            "DOWNLOAD_ENGINE_ERROR": "The download engine could not complete the operation",
+            "FETCH_ERROR": "Unable to retrieve the Mojang Java runtime list. Check your network connection.",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang does not provide this Java version for the current platform. Choose another vendor or add Java manually."
           }
         }
       },

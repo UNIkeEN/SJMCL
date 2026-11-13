@@ -1124,22 +1124,32 @@ pub async fn create_instance(
 
   // auto download recommended java if needed
   let mut java_version_to_download: Option<String> = None;
-  if auto_download_java {
-    let client_java_version = version_info
-      .java_version
-      .as_ref()
-      .map_or(0i32, |version| version.major_version);
-
-    if let Err(err) = select_java_runtime(&app, None, &instance, client_java_version).await
-      && err.0 == LaunchError::NoSuitableJava.to_string()
-    {
-      let minimum_java_version =
-        get_minimum_java_version_by_game(&app, &instance, client_java_version, false).await;
-      let minimum_java_version = minimum_java_version.to_string();
-      task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
-      java_version_to_download = Some(minimum_java_version);
+  let client_java_version = version_info
+    .java_version
+    .as_ref()
+    .map_or(0i32, |version| version.major_version);
+  let game_config = get_instance_game_config(&app, &instance);
+  let java_arch = match select_java_runtime(
+    &app,
+    Some(&game_config.game_java),
+    &instance,
+    client_java_version,
+  )
+  .await
+  {
+    Ok(java) => java.arch,
+    Err(err) => {
+      if auto_download_java && err.0 == LaunchError::NoSuitableJava.to_string() {
+        let minimum_java_version =
+          get_minimum_java_version_by_game(&app, &instance, client_java_version, false).await;
+        let minimum_java_version = minimum_java_version.to_string();
+        task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
+        java_version_to_download = Some(minimum_java_version);
+      }
+      // A newly downloaded runtime follows the launcher's platform.
+      tauri_plugin_os::arch().to_string()
     }
-  }
+  };
 
   // Download client (use task)
   let client_download_info = version_info
@@ -1172,13 +1182,20 @@ pub async fn create_instance(
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
 
-  replace_native_libraries(&app, &mut version_info, &instance)
+  replace_native_libraries(&app, &mut version_info, &instance, &java_arch)
     .await
     .map_err(|_| InstanceError::ClientJsonParseError)?;
 
   // We only download libraries if they are invalid (not already downloaded)
   task_params.extend(
-    get_invalid_library_files(priority_list[0], libraries_dir, &version_info, false).await?,
+    get_invalid_library_files(
+      priority_list[0],
+      libraries_dir,
+      &version_info,
+      &java_arch,
+      false,
+    )
+    .await?,
   );
 
   // We only download assets if they are invalid (not already downloaded)
