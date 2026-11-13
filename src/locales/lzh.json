@@ -770,6 +770,10 @@
       "windows": "案資源司器"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "引務方行",
+    "body": "尚有引務方行。今辭則諸務將中輟，待復啟 SJMCL 時可續之。仍欲辭乎？"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "將 {{param}} 錄出為改囊集"

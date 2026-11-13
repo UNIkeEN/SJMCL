@@ -770,6 +770,10 @@
       "windows": "Explorateur de fichiers"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "Téléchargements en cours",
+    "body": "Des tâches de téléchargement sont encore en cours. Si vous quittez maintenant, elles seront interrompues et pourront être reprises à la prochaine ouverture de SJMCL. Quitter quand même ?"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "Exporter {{param}} en pack de mods"
