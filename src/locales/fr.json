@@ -99,7 +99,7 @@
       },
       "modpack": {
         "title": "Importer un modpack",
-        "description": "Importer un modpack depuis un fichier local ou Internet (formats CurseForge, Modrinth ou HMCL)"
+        "description": "Importer un modpack depuis un fichier local ou Internet (formats CurseForge, Modrinth ou MultiMC)"
       },
       "manageDirs": {
         "title": "Gérer les répertoires du jeu",
@@ -1129,7 +1129,7 @@
     "alert": {
       "noFullLogin": {
         "title": "Fonction actuelle n'est pas disponible",
-        "description": "Veuillez utiliser cette fonction avant de vous connecter à votre compte microsoft."
+        "description": "Veuillez vous connecter à votre compte Microsoft avant d'utiliser cette fonction."
       }
     },
     "browse": "Parcourir",
@@ -2678,7 +2678,7 @@
           "title": "Échec de la récupération des métadonnées de la version du jeu",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "CLIENT_VERSION_NOT_FOUND": "La version du jeu spécifiée n'existe pas"
           }
         }
@@ -2688,7 +2688,7 @@
           "title": "Échec de la récupération de la liste des chargeurs de mods",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
@@ -2706,7 +2706,7 @@
           "title": "Échec de la récupération de la liste des ressources",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
@@ -2716,7 +2716,7 @@
           "title": "Échec de la récupération de la liste des versions de la ressource",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
@@ -2726,7 +2726,7 @@
           "title": "Échec du téléchargement du serveur de jeu",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
@@ -2736,7 +2736,7 @@
           "title": "Échec de la récupération de la ressource distante",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible. Veuillez vérifier votre connexion réseau"
           }
         }
@@ -2746,7 +2746,7 @@
           "title": "Échec de la mise à jour du mod",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "FILE_OPERATION_ERROR": "Impossible de renommer l'ancien fichier de mod",
             "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }

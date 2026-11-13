@@ -99,7 +99,7 @@
       },
       "modpack": {
         "title": "モッドパックインポート",
-        "description": "ローカルファイル或はインタネットからモッドパックをインポート（ CurseForge、 Modrinth あるいは HMCL フォーマット）"
+        "description": "ローカルファイルまたはインターネットから Mod パックをインポート（CurseForge、Modrinth または MultiMC 形式）"
       },
       "manageDirs": {
         "title": "ゲームディレクトリ管理",
