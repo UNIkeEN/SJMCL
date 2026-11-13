@@ -1069,7 +1069,7 @@
       "MOD_RESOLUTION_MISSING": "今例以改囊 {{param1}} 缺少前置改囊 {{param2}}，不能續行。",
       "MOD_RESOLUTION_MISSING_MINECRAFT": "今例中改囊 {{param1}} 須 礦藝 {{param2}} 才能行。",
       "MOD_RESOLUTION_COLLECTION": "今例以改囊 {{param1}} 缺少前置改囊 {{param2}}，不能續行。",
-      "FILE_ALREADY_EXISTS": "今例以 {{param}} 既存在，不能續行。若你認為這個案可刪，你可在備份這個案後嘗試刪它，並復戲。",
+      "FILE_ALREADY_EXISTS": "今例以 {{param1}} 既存在，不能續行。若你認為這個案可刪，你可在備份這個案後嘗試刪它，並復戲。",
       "LOADING_CRASHED_FORGE": "今例以改囊 {{param1}} ({{param2}}) 謬，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
       "BOOTSTRAP_FAILED": "今例以改囊 {{param1}} 出現問題，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
       "LOADING_CRASHED_FABRIC": "今例以改囊 {{param1}} 謬，不能續行。你可嘗試刪或迭更該改囊以解決問題。",
@@ -2247,7 +2247,8 @@
   },
   "ScreenshotPreviewModal": {
     "menu": {
-      "setAsBg": "置設為啟者繪景"
+      "setAsBg": "置設為啟者繪景",
+      "share": "分享"
     }
   },
   "SelectInstanceModal": {

@@ -99,7 +99,7 @@
       },
       "modpack": {
         "title": "モッドパックインポート",
-        "description": "ローカルファイル或はインタネットからモッドパックをインポート（ CurseForge、 Modrinth あるいは HMCL フォーマット）"
+        "description": "ローカルファイルまたはインターネットから Mod パックをインポート（CurseForge、Modrinth または MultiMC 形式）"
       },
       "manageDirs": {
         "title": "ゲームディレクトリ管理",
@@ -447,7 +447,7 @@
   "DeleteAuthServerAlertDialog": {
     "dialog": {
       "title": "認証サーバーを削除",
-      "content": "この認証サーバー「{{name}}」を削除しますか。「{{name}}」はサーバーリストの中から消えます。"
+      "content": "この認証サーバー「{{name}}」を削除しますか？削除すると、サーバーリストから消えます。"
     }
   },
   "DeleteGameFriendDialog": {
@@ -463,7 +463,7 @@
   "DeleteInstanceAlertDialog": {
     "dialog": {
       "title": "インスタンス削除",
-      "content": "このインスタンス「{{gameName}}」を消去しますか。インスタンスは完全に消えます。（戻せません！）",
+      "content": "このインスタンス「{{instanceName}}」を消去しますか。インスタンスは完全に消えます。（戻せません！）",
       "warning": {
         "withVerIso": "バージョン分離が有効化されています。セーブデータなども消去されます。保存が必要な場合は事前移行をしてください。",
         "woVerIso": "バージョン分離が有効時、未移行のセーブデータなども消去することをご注意してください。"
@@ -479,7 +479,7 @@
   "DeletePlayerAlertDialog": {
     "dialog": {
       "title": "キャラクターを削除",
-      "content": "このキャラクターを削除しますか。この操作は取り消せません！"
+      "content": "このプレイヤー「{{name}}」を削除しますか？この操作は取り消せません！"
     }
   },
   "DevToolbar": {
@@ -1069,7 +1069,7 @@
       "MOD_RESOLUTION_MISSING": "モッド {{param1}} に前提モッド {{param2}} が不足しています",
       "MOD_RESOLUTION_MISSING_MINECRAFT": "モッド {{param1}} を実行するには Minecraft {{param2}} が必要です。",
       "MOD_RESOLUTION_COLLECTION": "モッド {{param1}} に前提モッド {{param2}} が不足しています。",
-      "FILE_ALREADY_EXISTS": "{{param}} が既に存在するため実行できません。このファイルをバックアップ後に削除してゲームを再起動してみてください。",
+      "FILE_ALREADY_EXISTS": "{{param1}} が既に存在するため実行できません。このファイルをバックアップ後に削除してゲームを再起動してみてください。",
       "LOADING_CRASHED_FORGE": "モッド {{param1}} ({{param2}}) のエラーにより実行できません。このモッドを削除または更新して再起動してください。",
       "BOOTSTRAP_FAILED": "モッド {{param1}} に問題があります。このモッドを削除または更新して再起動してください。",
       "LOADING_CRASHED_FABRIC": "モッド {{param1}} のエラーにより実行できません。このモッドを削除または更新して再起動してください",
@@ -2247,7 +2247,8 @@
   },
   "ScreenshotPreviewModal": {
     "menu": {
-      "setAsBg": "これをランチャーのバックグラウンドにする"
+      "setAsBg": "これをランチャーのバックグラウンドにする",
+      "share": "共有"
     }
   },
   "SelectInstanceModal": {
@@ -3219,8 +3220,8 @@
       "formatRelativeTime": {
         "now": "現在",
         "minutes-ago": "{{count}} 分前",
-        "last-hour": "1 时前",
-        "hours-ago": "{{count}} 时前",
+        "last-hour": "1 時間前",
+        "hours-ago": "{{count}} 時間前",
         "yesterday": "昨日",
         "others": "{{time}}"
       }

@@ -99,7 +99,7 @@
       },
       "modpack": {
         "title": "Importer un modpack",
-        "description": "Importer un modpack depuis un fichier local ou Internet (formats CurseForge, Modrinth ou HMCL)"
+        "description": "Importer un modpack depuis un fichier local ou Internet (formats CurseForge, Modrinth ou MultiMC)"
       },
       "manageDirs": {
         "title": "Gérer les répertoires du jeu",
@@ -605,7 +605,7 @@
     }
   },
   "DownloadSpecificResourceModal": {
-    "title": "Téléchargement de ressource - {{name}}",
+    "title": "Téléchargement de ressource - {{name}} - {{source}}",
     "label": {
       "all": "Tout",
       "recommendedVersion": "Version recommandée",
@@ -1069,7 +1069,7 @@
       "MOD_RESOLUTION_MISSING": "Cette instance ne peut pas continuer à s'exécuter car le mod {{param1}} nécessite le mod prérequis {{param2}}.",
       "MOD_RESOLUTION_MISSING_MINECRAFT": "Le mod {{param1}} dans cette instance nécessite Minecraft {{param2}} pour s'exécuter.",
       "MOD_RESOLUTION_COLLECTION": "Cette instance ne peut pas continuer à s'exécuter car le mod {{param1}} nécessite le(s) mod(s) prérequis {{param2}}.",
-      "FILE_ALREADY_EXISTS": "Cette instance ne peut pas continuer à s'exécuter car {{param}} existe déjà. Si vous pensez que ce fichier peut être supprimé, vous pouvez essayer de le supprimer après l'avoir sauvegardé, puis redémarrer le jeu.",
+      "FILE_ALREADY_EXISTS": "Cette instance ne peut pas continuer à s'exécuter car {{param1}} existe déjà. Si vous pensez que ce fichier peut être supprimé, vous pouvez essayer de le supprimer après l'avoir sauvegardé, puis redémarrer le jeu.",
       "LOADING_CRASHED_FORGE": "Cette instance ne peut pas continuer à s'exécuter en raison d'une erreur avec le mod {{param1}} ({{param2}}). Vous pouvez essayer de supprimer ou de mettre à jour ce mod pour résoudre le problème.",
       "BOOTSTRAP_FAILED": "Cette instance ne peut pas continuer à s'exécuter en raison d'un problème avec le mod {{param1}}. Vous pouvez essayer de supprimer ou de mettre à jour ce mod pour résoudre le problème.",
       "LOADING_CRASHED_FABRIC": "Cette instance ne peut pas continuer à s'exécuter en raison d'une erreur avec le mod {{param1}}. Vous pouvez essayer de supprimer ou de mettre à jour ce mod pour résoudre le problème.",
@@ -1106,7 +1106,7 @@
       "DUPLICATE_MOD_INSTALLED": "Cette instance ne peut pas continuer à s'exécuter en raison de l'installation en double de mods. Vérifiez la liste des mods et supprimez les mods en double.",
       "MOD_ZIP_CORRUPTED": "Cette instance ne peut pas continuer à s'exécuter car l'archive du mod est corrompue. Essayez de retélécharger le mod.",
       "MOD_INTERNET_ERROR": "Cette instance ne peut pas continuer à s'exécuter en raison d'un échec de téléchargement du mod. Vérifiez votre connexion Internet ou utilisez un proxy.",
-      "VICS_MODERN_WARFARE_ERROR": "当前实例由于 Vics Modern Warfare Cette instance ne peut pas continuer à s'exécuter en raison d'une erreur avec le mod Vics Modern Warfare. Essayez de mettre à jour ou de supprimer ce mod.",
+      "VICS_MODERN_WARFARE_ERROR": "Cette instance ne peut pas continuer à s'exécuter en raison d'une erreur avec le mod Vics Modern Warfare. Essayez de mettre à jour ou de supprimer ce mod.",
       "FORGE_LITELOADER_CONFLICT": "Cette instance ne peut pas continuer à s'exécuter en raison d'un conflit entre Forge et LiteLoader. Essayez de supprimer LiteLoader ou de changer la version de Forge.",
       "UNKNOWN": "Impossible d'analyser cette erreur pour le moment. Veuillez consulter les journaux du jeu ou exporter un rapport de plantage."
     }
@@ -1129,7 +1129,7 @@
     "alert": {
       "noFullLogin": {
         "title": "Fonction actuelle n'est pas disponible",
-        "description": "Veuillez utiliser cette fonction avant de vous connecter à votre compte microsoft."
+        "description": "Veuillez vous connecter à votre compte Microsoft avant d'utiliser cette fonction."
       }
     },
     "browse": "Parcourir",
@@ -2247,7 +2247,8 @@
   },
   "ScreenshotPreviewModal": {
     "menu": {
-      "setAsBg": "Définir comme fond du lanceur"
+      "setAsBg": "Définir comme fond du lanceur",
+      "share": "Partager"
     }
   },
   "SelectInstanceModal": {
@@ -2677,7 +2678,7 @@
           "title": "Échec de la récupération des métadonnées de la version du jeu",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "CLIENT_VERSION_NOT_FOUND": "La version du jeu spécifiée n'existe pas"
           }
         }
@@ -2687,7 +2688,7 @@
           "title": "Échec de la récupération de la liste des chargeurs de mods",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
@@ -2705,7 +2706,7 @@
           "title": "Échec de la récupération de la liste des ressources",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
@@ -2715,7 +2716,7 @@
           "title": "Échec de la récupération de la liste des versions de la ressource",
           "description": {
             "PARSE_ERROR": "Format de données du serveur incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible, veuillez vérifier la connexion réseau"
           }
         }
@@ -2725,7 +2726,7 @@
           "title": "Échec du téléchargement du serveur de jeu",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
         }
@@ -2735,7 +2736,7 @@
           "title": "Échec de la récupération de la ressource distante",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "NO_DOWNLOAD_API": "Aucune stratégie de téléchargement disponible. Veuillez vérifier votre connexion réseau"
           }
         }
@@ -2745,7 +2746,7 @@
           "title": "Échec de la mise à jour du mod",
           "description": {
             "PARSE_ERROR": "Le serveur a renvoyé des données dans un format incorrect",
-            "NETWORK_ERROR": "Échec du démarrage du jeu",
+            "NETWORK_ERROR": "Impossible de se connecter au serveur",
             "FILE_OPERATION_ERROR": "Impossible de renommer l'ancien fichier de mod",
             "DOWNLOAD_ENGINE_ERROR": "Le moteur de téléchargement n’a pas pu terminer l’opération"
           }
@@ -3134,7 +3135,7 @@
       "pause": "Pause"
     },
     "error": {
-      "loadSkin": "加载皮肤失败"
+      "loadSkin": "Échec du chargement du skin"
     },
     "toast": {
       "error": "Échec de l’enregistrement local du skin",
