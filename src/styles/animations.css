@@ -43,3 +43,19 @@ div[role="progressbar"] {
 .drop-in-elastic {
   animation: dropInElastic 0.7s ease-out forwards;
 }
+
+/*
+ * Reduce motion (appearance.accessibility.reduceMotion), framer-motion animations are skipped in main-layout.
+ * Keep a tiny duration rather than none, so that transitionend / animationend listeners still get notified.
+ */
+body[reduce-motion] *,
+body[reduce-motion] *::before,
+body[reduce-motion] *::after {
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+}
+
+body[reduce-motion] .animated-card.animate,
+body[reduce-motion] .drop-in-elastic {
+  animation-duration: 0.01ms !important;
+}

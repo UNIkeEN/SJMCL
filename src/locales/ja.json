@@ -344,6 +344,10 @@
         },
         "enhanceContrast": {
           "title": "コントラスト強化"
+        },
+        "reduceMotion": {
+          "title": "視差効果を減らす",
+          "description": "有効にすると、ページ切り替えやポップアップなどのアニメーションがオフになります。"
         }
       }
     }

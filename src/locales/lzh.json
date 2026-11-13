@@ -344,6 +344,10 @@
         },
         "enhanceContrast": {
           "title": "益其對比"
+        },
+        "reduceMotion": {
+          "title": "省其動效",
+          "description": "啟之，則止換頁、彈窗諸動畫"
         }
       }
     }

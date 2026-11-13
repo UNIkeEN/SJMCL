@@ -114,6 +114,7 @@ export interface LauncherConfig {
     accessibility: {
       invertColors: boolean;
       enhanceContrast: boolean;
+      reduceMotion: boolean;
     };
   };
   download: {
@@ -307,6 +308,7 @@ export const defaultConfig: LauncherConfig = {
     accessibility: {
       invertColors: false,
       enhanceContrast: false,
+      reduceMotion: false,
     },
   },
   download: {
