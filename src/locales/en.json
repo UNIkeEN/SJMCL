@@ -770,6 +770,10 @@
       "windows": "File Explorer"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "Downloads in Progress",
+    "body": "Some download tasks are still in progress. If you exit now, they will be interrupted and can be continued the next time you open SJMCL. Exit anyway?"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "Export {{param}} as Modpack"

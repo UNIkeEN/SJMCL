@@ -1,5 +1,6 @@
 import { emit } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import React, {
   createContext,
   useCallback,
@@ -712,6 +713,33 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
     t,
     toast,
   ]);
+
+  // Confirm before closing the main window while downloads are still running.
+  useEffect(() => {
+    const currentWindow = getCurrentWindow();
+    if (currentWindow.label !== "main") return;
+    const subscription = currentWindow.onCloseRequested((event) => {
+      const hasRunningDownloads = tasksRef.current.some(
+        (group) =>
+          group.state === DownloadGroupState.Active ||
+          group.state === DownloadGroupState.Queued
+      );
+      if (!hasRunningDownloads) return;
+      event.preventDefault();
+      openGenericConfirmDialog({
+        title: t("ExitWithActiveDownloadsConfirmDialog.title"),
+        body: t("ExitWithActiveDownloadsConfirmDialog.body"),
+        btnOK: t("General.exit"),
+        isAlert: true,
+        onOKCallback: () => {
+          void currentWindow.destroy();
+        },
+      });
+    });
+    return () => {
+      void subscription.then((stop) => stop());
+    };
+  }, [openGenericConfirmDialog, t]);
 
   const generalPercent = useMemo(() => {
     const active = tasks.filter(

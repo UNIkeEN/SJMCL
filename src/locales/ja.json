@@ -770,6 +770,10 @@
       "windows": "エクスプローラー"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "ダウンロード中",
+    "body": "まだ進行中のダウンロードタスクがあります。今終了するとタスクは中断され、次回 SJMCL を開いたときに続行できます。それでも終了しますか？"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "{{param}} をモッドパックとしてエクスポート"
