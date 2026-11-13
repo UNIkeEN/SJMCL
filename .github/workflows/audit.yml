@@ -30,7 +30,40 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: rustsec/audit-check@v2.0.0
+      - uses: actions/checkout@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: ${{ matrix.path }}
+          repository: rustsec/audit-check
+          ref: v2.0.0
+          path: .audit-check
+          persist-credentials: false
+      - name: Run audit and label new issues
+        shell: bash
+        env:
+          INPUT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_WORKING_DIRECTORY: ${{ matrix.path }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          log_file="$(mktemp)"
+          trap 'rm -f "$log_file"' EXIT
+
+          set +e
+          node .audit-check/dist/index.js | tee "$log_file"
+          audit_exit=${PIPESTATUS[0]}
+          set -e
+
+          label_failed=0
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ "$line" =~ ^Created\ an\ issue\ for\ [^:]+:\ (https://[^[:space:]]+/issues/[0-9]+)$ ]]; then
+              issue_url="${BASH_REMATCH[1]}"
+              if ! gh issue edit "$issue_url" --add-label '🦀 RUSTSEC' </dev/null; then
+                echo "::warning::Failed to add label '🦀 RUSTSEC' to $issue_url"
+                label_failed=1
+              fi
+            fi
+          done < "$log_file"
+
+          if (( audit_exit != 0 )); then
+            exit "$audit_exit"
+          fi
+          exit "$label_failed"
