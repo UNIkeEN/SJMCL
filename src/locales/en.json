@@ -2247,7 +2247,8 @@
   },
   "ScreenshotPreviewModal": {
     "menu": {
-      "setAsBg": "Set as Launcher Background"
+      "setAsBg": "Set as Launcher Background",
+      "share": "Share"
     }
   },
   "SelectInstanceModal": {

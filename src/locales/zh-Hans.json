@@ -1069,7 +1069,7 @@
       "MOD_RESOLUTION_MISSING": "当前实例由于模组 {{param1}} 缺少前置模组 {{param2}}，无法继续运行。",
       "MOD_RESOLUTION_MISSING_MINECRAFT": "当前实例中模组 {{param1}} 需要 Minecraft {{param2}} 才能运行。",
       "MOD_RESOLUTION_COLLECTION": "当前实例由于模组 {{param1}} 缺少前置模组 {{param2}}，无法继续运行。",
-      "FILE_ALREADY_EXISTS": "当前实例由于 {{param}} 已经存在，无法继续运行。如果你认为这个文件可以删除，你可以在备份这个文件后尝试删除它，并重新启动游戏。",
+      "FILE_ALREADY_EXISTS": "当前实例由于 {{param1}} 已经存在，无法继续运行。如果你认为这个文件可以删除，你可以在备份这个文件后尝试删除它，并重新启动游戏。",
       "LOADING_CRASHED_FORGE": "当前实例由于模组 {{param1}} ({{param2}}) 错误，无法继续运行。你可以尝试删除或更新该模组以解决问题。",
       "BOOTSTRAP_FAILED": "当前实例由于模组 {{param1}} 出现问题，无法继续运行。你可以尝试删除或更新该模组以解决问题。",
       "LOADING_CRASHED_FABRIC": "当前实例由于模组 {{param1}} 错误，无法继续运行。你可以尝试删除或更新该模组以解决问题。",
@@ -2247,7 +2247,8 @@
   },
   "ScreenshotPreviewModal": {
     "menu": {
-      "setAsBg": "设置为启动器背景"
+      "setAsBg": "设置为启动器背景",
+      "share": "分享"
     }
   },
   "SelectInstanceModal": {
