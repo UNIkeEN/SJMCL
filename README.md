@@ -135,10 +135,19 @@ To run the project in development mode:
 pnpm tauri dev
 ```
 
-On Linux, Nix users can use the provided flake instead. It provides a development shell with the required toolchain and system libraries, as well as a package for building the application:
+On Linux, Nix users can use the provided flake:
+
+For development, enter the development shell and run the usual commands:
 
 ```bash
-nix develop # run `pnpm install` once inside the shell
+nix develop
+pnpm install
+pnpm tauri dev
+```
+
+To build the application:
+
+```bash
 nix build .#sjmcl
 ```
 

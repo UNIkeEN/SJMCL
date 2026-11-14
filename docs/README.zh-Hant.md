@@ -134,10 +134,19 @@ pnpm install
 pnpm tauri dev
 ```
 
-Linux 上的 Nix 使用者也可以使用倉庫提供的 flake。它會提供包含完整工具鏈與系統函式庫的開發環境，以及用於建置應用程式的軟體包：
+Linux 上的 Nix 使用者也可以使用倉庫提供的 flake。
+
+開發時，進入開發環境後執行一般指令：
 
 ```bash
-nix develop # 進入環境後執行一次 `pnpm install`
+nix develop
+pnpm install
+pnpm tauri dev
+```
+
+建置應用程式：
+
+```bash
 nix build .#sjmcl
 ```
 
