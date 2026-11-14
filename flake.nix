@@ -40,6 +40,9 @@
             cargoRoot = "src-tauri";
             buildAndTestSubdir = finalAttrs.cargoRoot;
 
+            # Fixed-output hashes. After changing pnpm-lock.yaml or
+            # src-tauri/Cargo.lock, set both hashes to pkgs.lib.fakeHash, run
+            # `nix build .#sjmcl`, and copy the hashes from the mismatch errors.
             cargoHash = "sha256-nq5YHtHMSsABapor97wYcuqyIJucpHIP6brXM8gbWiE=";
 
             pnpmDeps = pkgs.fetchPnpmDeps {
@@ -136,6 +139,7 @@
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
             shellHook = ''
+              export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath (linuxInputs pkgs)}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
               export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:''${XDG_DATA_DIRS:-/run/current-system/sw/share}"
             '';
           };
