@@ -81,7 +81,14 @@
       "add3rdPartyServer": "添加认证服务器",
       "sourceHomepage": "访问主页",
       "deleteServer": "删除此服务器",
-      "importFromOtherLaunchers": "从其他启动器导入"
+      "importFromOtherLaunchers": "从其他启动器导入",
+      "rename": "重命名"
+    },
+    "renameServer": {
+      "title": "重命名认证服务器",
+      "label": "新认证服务器名称",
+      "error": "重命名认证服务器失败",
+      "success": "重命名认证服务器成功"
     },
     "playerTypeList": {
       "all": "全部来源"
