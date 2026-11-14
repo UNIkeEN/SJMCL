@@ -73,6 +73,7 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   const [activeStep, setActiveStep] = useState<number>(-1);
 
   const previousStep = useRef<number>(-1);
+  const launchingId = useRef<number>(); // set after step 1 creates the launching state
   const candidatePlayers = getPlayerList();
   const candidateInstances = getInstanceList();
   const shouldPickInstance = instanceId?.toLowerCase() === "tbd";
@@ -123,7 +124,10 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
   }, [playerId]);
 
   const handleCloseModalWithCancel = useCallback(() => {
-    LaunchService.cancelLaunchProcess();
+    // only cancel the launching process created by this modal, never touch other running games
+    if (launchingId.current !== undefined) {
+      LaunchService.cancelLaunchProcess(launchingId.current);
+    }
     setErrorPaused(false);
     onSelectPlayerModalClose();
     onSelectInstanceModalClose();
@@ -160,7 +164,14 @@ const LaunchProcessModal: React.FC<LaunchProcessModalProps> = ({
       {
         label: "selectSuitableJRE",
         function: () =>
-          LaunchService.selectSuitableJRE(effectiveInstance?.id || ""),
+          LaunchService.selectSuitableJRE(effectiveInstance?.id || "").then(
+            (response) => {
+              if (response.status === "success") {
+                launchingId.current = response.data;
+              }
+              return response;
+            }
+          ),
         isOK: (data: any) => true,
         onResCallback: (data: any) => {},
         onErrCallback: (error: ResponseError) => {
