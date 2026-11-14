@@ -33,6 +33,9 @@ export interface MenuSelectorProps extends Omit<MenuProps, "children"> {
   fontSize?: string;
   buttonProps?: ButtonProps;
   menuListProps?: MenuListProps;
+  renderOptions?: (
+    renderOption: (index: number, label?: OptionLabel) => React.ReactElement
+  ) => React.ReactNode;
 }
 
 export const MenuSelector: React.FC<MenuSelectorProps> = ({
@@ -46,6 +49,7 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
   fontSize = "xs",
   buttonProps,
   menuListProps,
+  renderOptions,
   ...menuProps
 }) => {
   const { t } = useTranslation();
@@ -96,6 +100,38 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
     return getLabel(value as OptionValue);
   };
 
+  const renderOption = (index: number, labelOverride?: OptionLabel) => {
+    const { value: v, label, disabled } = buildOptions(options[index]);
+    const selected = Array.isArray(value) ? value : [];
+    const handleSelect = () => {
+      if (multiple) {
+        onSelect(
+          selected.includes(v)
+            ? selected.filter((item) => item !== v)
+            : [...selected, v]
+        );
+      } else {
+        onSelect(v);
+      }
+    };
+
+    return (
+      <MenuItemOption
+        key={index}
+        value={v}
+        fontSize={fontSize}
+        isDisabled={disabled}
+        {...(renderOptions && {
+          type: multiple ? "checkbox" : "radio",
+          isChecked: multiple ? selected.includes(v) : value === v,
+          onClick: handleSelect,
+        })}
+      >
+        {renderLabel(labelOverride ?? label)}
+      </MenuItemOption>
+    );
+  };
+
   return (
     <Menu closeOnSelect={!multiple} {...menuProps}>
       <MenuButton
@@ -113,32 +149,27 @@ export const MenuSelector: React.FC<MenuSelectorProps> = ({
       >
         {renderButtonLabel()}
       </MenuButton>
-      <MenuList {...menuListProps}>
-        <MenuOptionGroup
-          type={multiple ? "checkbox" : "radio"}
-          value={value ?? (multiple ? [] : "")}
-          onChange={(val) => {
-            if (multiple) {
-              onSelect(Array.isArray(val) ? val : []);
-            } else {
-              onSelect(typeof val === "string" ? val : null);
-            }
-          }}
-        >
-          {options.map((opt, i) => {
-            const { value: v, label, disabled } = buildOptions(opt);
-            return (
-              <MenuItemOption
-                key={i}
-                value={v}
-                fontSize={fontSize}
-                isDisabled={disabled}
-              >
-                {renderLabel(label)}
-              </MenuItemOption>
-            );
-          })}
-        </MenuOptionGroup>
+      <MenuList
+        {...(renderOptions && { display: "flex", flexDirection: "column" })}
+        {...menuListProps}
+      >
+        {renderOptions ? (
+          renderOptions(renderOption)
+        ) : (
+          <MenuOptionGroup
+            type={multiple ? "checkbox" : "radio"}
+            value={value ?? (multiple ? [] : "")}
+            onChange={(val) => {
+              if (multiple) {
+                onSelect(Array.isArray(val) ? val : []);
+              } else {
+                onSelect(typeof val === "string" ? val : null);
+              }
+            }}
+          >
+            {options.map((_, index) => renderOption(index))}
+          </MenuOptionGroup>
+        )}
       </MenuList>
     </Menu>
   );
