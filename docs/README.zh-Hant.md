@@ -134,6 +134,22 @@ pnpm install
 pnpm tauri dev
 ```
 
+Linux 上的 Nix 使用者也可以使用倉庫提供的 flake。
+
+開發時，進入開發環境後執行一般指令：
+
+```bash
+nix develop
+pnpm install
+pnpm tauri dev
+```
+
+建置應用程式：
+
+```bash
+nix build .#sjmcl
+```
+
 我們熱烈歡迎每一位開發者的貢獻。
 
 * 在開始前，請先閱讀我們的 [貢獻指南](https://github.com/UNIkeEN/SJMCL/blob/main/CONTRIBUTING.md)（內含開發流程詳細說明）。
