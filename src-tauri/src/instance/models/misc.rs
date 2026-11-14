@@ -259,7 +259,7 @@ pub struct ScreenshotInfo {
 pub enum InstanceError {
   InstanceNotFoundByID,
   ServerNbtReadError,
-  DuplicateServer,
+  ServerNotFound,
   FileNotFoundError,
   InvalidSourcePath,
   FileCreationFailed,

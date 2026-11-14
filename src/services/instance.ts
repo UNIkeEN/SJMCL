@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { InstanceSubdirType } from "@/enums/instance";
 import { GameConfig, GameDirectory } from "@/models/config";
 import {
@@ -21,6 +22,8 @@ import {
 } from "@/models/resource";
 import { InvokeResponse } from "@/models/response";
 import { responseHandler } from "@/utils/response";
+
+export const GAME_SERVER_STATUS_EVENT = "instance:game-server-status";
 
 /**
  * Service class for managing instances and its local resources.
@@ -261,20 +264,52 @@ export class InstanceService {
   }
 
   /**
-   * RETRIEVE the list of game servers.
+   * RETRIEVE the list of game servers from local servers.dat (no network ping).
    * @param {string} instanceId - The instance ID to retrieve the game servers for.
-   * @param {boolean} queryOnline - A flag to determine whether to query online server status.
    * @returns {Promise<InvokeResponse<GameServerInfo[]>>}
    */
   @responseHandler("instance")
   static async retrieveGameServerList(
-    instanceId: string,
-    queryOnline: boolean
+    instanceId: string
   ): Promise<InvokeResponse<GameServerInfo[]>> {
     return await invoke("retrieve_game_server_list", {
       instanceId,
-      queryOnline,
+      queryOnline: false,
     });
+  }
+
+  /**
+   * PING game server online status. Returns only queried entries; merge by `index`.
+   * Also emits `instance:game-server-status` per finished server for progressive UI.
+   * @param {string} instanceId - The instance ID.
+   * @param {number[]} [indexes] - servers.dat indexes to ping; omit to ping all visible servers.
+   * @returns {Promise<InvokeResponse<GameServerInfo[]>>}
+   */
+  @responseHandler("instance")
+  static async queryGameServerOnlineStatus(
+    instanceId: string,
+    indexes?: number[]
+  ): Promise<InvokeResponse<GameServerInfo[]>> {
+    return await invoke("query_game_server_online_status", {
+      instanceId,
+      indexes,
+    });
+  }
+
+  /**
+   * LISTEN to progressive game-server ping results (one server at a time).
+   */
+  static onGameServerStatusUpdate(callback: (server: GameServerInfo) => void) {
+    const unlisten = getCurrentWebview().listen<GameServerInfo>(
+      GAME_SERVER_STATUS_EVENT,
+      (event) => {
+        callback(event.payload);
+      }
+    );
+
+    return () => {
+      unlisten.then((f) => f());
+    };
   }
 
   /**
@@ -307,18 +342,18 @@ export class InstanceService {
 
   /**
    * ADD a game server entry into the instance's `servers.dat`.
-   * The command rejects duplicate `serverAddr` values in the same instance.
+   * Appends at the end; duplicate addresses are allowed (vanilla behavior).
    * @param {string} instanceId - The target instance ID.
    * @param {string} serverAddr - The server address (for example: `example.com` or `example.com:25565`).
    * @param {string} serverName - The display name stored in `servers.dat`.
-   * @returns {Promise<InvokeResponse<void>>}
+   * @returns {Promise<InvokeResponse<number>>} The servers.dat index of the new entry.
    */
   @responseHandler("instance")
   static async addGameServer(
     instanceId: string,
     serverAddr: string,
     serverName: string
-  ): Promise<InvokeResponse<void>> {
+  ): Promise<InvokeResponse<number>> {
     return await invoke("add_game_server", {
       instanceId,
       serverAddr,
@@ -327,19 +362,62 @@ export class InstanceService {
   }
 
   /**
-   * DELETE a game server from the instance's servers.dat.
+   * DELETE a game server entry from the instance's servers.dat by list index.
    * @param {string} instanceId - The ID of the instance.
-   * @param {string} serverAddr - The server address (IP) to delete.
+   * @param {number} index - The entry index in servers.dat (from retrieveGameServerList).
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("instance")
   static async deleteGameServer(
     instanceId: string,
-    serverAddr: string
+    index: number
   ): Promise<InvokeResponse<void>> {
     return await invoke("delete_game_server", {
       instanceId,
+      index,
+    });
+  }
+
+  /**
+   * MOVE a game server entry up or down in the instance's servers.dat list.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {number} index - The entry index in servers.dat (from retrieveGameServerList).
+   * @param {boolean} moveUp - true to move up, false to move down.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async moveGameServer(
+    instanceId: string,
+    index: number,
+    moveUp: boolean
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("move_game_server", {
+      instanceId,
+      index,
+      moveUp,
+    });
+  }
+
+  /**
+   * UPDATE a game server entry (name/address) by list index.
+   * @param {string} instanceId - The ID of the instance.
+   * @param {number} index - The entry index in servers.dat.
+   * @param {string} serverAddr - The new server address.
+   * @param {string} serverName - The new display name (empty keeps current).
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async updateGameServer(
+    instanceId: string,
+    index: number,
+    serverAddr: string,
+    serverName: string
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("update_game_server", {
+      instanceId,
+      index,
       serverAddr,
+      serverName,
     });
   }
 
