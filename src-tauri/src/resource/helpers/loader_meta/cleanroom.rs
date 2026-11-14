@@ -55,7 +55,26 @@ pub async fn get_cleanroom_meta_by_game_version(
   }
 
   if let Ok(meta) = get_cleanroom_meta_by_game_version_official(app).await {
-    return Ok(meta);
+    let list = meta
+      .into_iter()
+      .filter(|it| {
+        let parsed_cleanroom_version = semver::Version::parse(it.version.as_ref());
+        let cleanroom_0_7_0_version = semver::Version::parse("0.7.0-alpha");
+        return if let Ok(parsed) = parsed_cleanroom_version
+          && let Ok(cleanroom_0_7_0) = cleanroom_0_7_0_version
+        {
+          if parsed.cmp(&cleanroom_0_7_0).is_lt() {
+            true
+          } else {
+            false
+          }
+        } else {
+          false
+        };
+      })
+      .collect();
+
+    return Ok(list);
   }
 
   Err(ResourceError::NetworkError.into())
