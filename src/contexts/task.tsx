@@ -1,5 +1,4 @@
 import { emit } from "@tauri-apps/api/event";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import React, {
   createContext,
@@ -453,7 +452,7 @@ export const TaskContextProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
     if (
-      getCurrentWebview().label !== "main" ||
+      getCurrentWindow().label !== "main" ||
       completion.current ||
       modalStates.some(
         ({ key }) => key === "generic-confirm" || key === "import-modpack"
