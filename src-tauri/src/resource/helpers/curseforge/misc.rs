@@ -79,6 +79,9 @@ pub fn get_curseforge_api(
       let mod_id = id.ok_or(ResourceError::ParseError)?;
       format!("https://mod.mcimirror.top/translate/curseforge/{}", mod_id)
     }
+    OtherResourceApiEndpoint::VersionFiles | OtherResourceApiEndpoint::Projects => {
+      return Err(ResourceError::NoDownloadApi.into());
+    }
   };
 
   Ok(url_str)
