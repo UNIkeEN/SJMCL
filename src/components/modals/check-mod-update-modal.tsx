@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Checkbox,
@@ -29,6 +30,7 @@ import {
   OtherResourceFileInfo,
 } from "@/models/resource";
 import { ResourceService } from "@/services/resource";
+import { base64ImgSrc } from "@/utils/string";
 
 interface CheckModUpdateModalProps extends Omit<ModalProps, "children"> {
   summary: InstanceSummary | undefined;
@@ -47,6 +49,9 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const addPrefix =
     config.general.general.language === "zh-Hans" &&
     config.general.functionality.translatedFilenamePrefix;
+  const showZhTrans =
+    config.general.general.language === "zh-Hans" &&
+    config.general.functionality.resourceTranslation;
 
   const [selectedMods, setSelectedMods] = useState<ModUpdateRecord[]>([]);
   const [isCheckingUpdate, setIsCheckingUpdate] = useState<boolean>(true);
@@ -70,6 +75,11 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       setSelectedMods([...updateList]);
     }
   };
+
+  const getModDisplayName = (mod: ModUpdateRecord) =>
+    showZhTrans && mod.translatedName
+      ? `${mod.translatedName} | ${mod.name}`
+      : mod.name || mod.fileName;
 
   const handleModToggle = (mod: ModUpdateRecord) => {
     setSelectedMods((prev) => {
@@ -220,6 +230,8 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
               mod,
               updateRecord: {
                 name: mod.name,
+                translatedName: mod.translatedName,
+                iconSrc: mod.iconSrc,
                 oldFilePath: mod.filePath,
                 relativePath: mod.relativePath,
                 curVersion: mod.version,
@@ -390,9 +402,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                   colorScheme={primaryColor}
                 />
                 <Box flex="2" minW="0">
-                  <Text textAlign="center">
-                    {t("CheckModUpdateModal.updateList.mod")}
-                  </Text>
+                  <Text>{t("CheckModUpdateModal.updateList.mod")}</Text>
                 </Box>
                 <Box flex="2" minW="0">
                   <Text textAlign="center">
@@ -441,25 +451,32 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
                         onChange={() => handleModToggle(mod)}
                         colorScheme={primaryColor}
                       />
-                      <Box flex="2" minW="0">
-                        <Text
-                          fontSize="xs"
-                          noOfLines={1}
-                          title={mod.name || mod.relativePath}
-                          textAlign="center"
-                        >
-                          {mod.name || mod.fileName}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color={secondaryTextColor}
-                          noOfLines={1}
-                          title={mod.relativePath}
-                          textAlign="center"
-                        >
-                          {mod.relativePath}
-                        </Text>
-                      </Box>
+                      <HStack flex="2" minW="0" spacing={2.5}>
+                        <Avatar
+                          src={base64ImgSrc(mod.iconSrc)}
+                          name={mod.name || mod.fileName}
+                          boxSize="28px"
+                          borderRadius="4px"
+                          flexShrink={0}
+                        />
+                        <Box minW="0">
+                          <Text
+                            fontSize="xs"
+                            noOfLines={1}
+                            title={getModDisplayName(mod)}
+                          >
+                            {getModDisplayName(mod)}
+                          </Text>
+                          <Text
+                            fontSize="xs"
+                            color={secondaryTextColor}
+                            noOfLines={1}
+                            title={mod.relativePath}
+                          >
+                            {mod.relativePath}
+                          </Text>
+                        </Box>
+                      </HStack>
                       <Box flex="2" minW="0">
                         <Text
                           fontSize="xs"

@@ -102,6 +102,9 @@ const InstanceModsPage = () => {
 
   const [modInfoSelectedMod, setModInfoSelectedMod] =
     useState<LocalModInfo | null>(null);
+  const [modsToCheckUpdate, setModsToCheckUpdate] = useState<LocalModInfo[]>(
+    []
+  );
 
   const {
     isOpen: isChangeLoaderModalOpen,
@@ -114,6 +117,11 @@ const InstanceModsPage = () => {
     onOpen: onCheckUpdateModalOpen,
     onClose: onCheckUpdateModalClose,
   } = useDisclosure();
+
+  const handleCheckModUpdate = (mods: LocalModInfo[]) => {
+    setModsToCheckUpdate(mods);
+    onCheckUpdateModalOpen();
+  };
 
   const {
     isOpen: isModInfoModalOpen,
@@ -330,7 +338,7 @@ const InstanceModsPage = () => {
     {
       icon: LuClockArrowUp,
       label: t("InstanceModsPage.modList.menu.update"),
-      onClick: onCheckUpdateModalOpen,
+      onClick: () => handleCheckModUpdate(localMods),
       disable: isLoading || localMods.length === 0,
     },
     {
@@ -385,6 +393,14 @@ const InstanceModsPage = () => {
       danger: false,
       onClick: () => {
         revealItemInDir(mod.filePath);
+      },
+    },
+    {
+      label: t("InstanceModsPage.modList.menu.update"),
+      icon: LuClockArrowUp,
+      danger: false,
+      onClick: () => {
+        handleCheckModUpdate([mod]);
       },
     },
     {
@@ -673,7 +689,7 @@ const InstanceModsPage = () => {
         isOpen={isCheckUpdateModalOpen}
         onClose={onCheckUpdateModalClose}
         summary={summary}
-        localMods={localMods}
+        localMods={modsToCheckUpdate}
       />
 
       <ChangeLoaderModal
