@@ -17,7 +17,7 @@ import {
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -59,6 +59,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   const [updateList, setUpdateList] = useState<ModUpdateRecord[]>([]);
   const [modsToUpdate, setModsToUpdate] = useState<LocalModInfo[]>([]);
   const [checkingUpdateIndex, setCheckingUpdateIndex] = useState<number>(1);
+  const scanIdRef = useRef(0);
 
   const headerBg = useColorModeValue("gray.50", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.600");
@@ -93,6 +94,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
   };
 
   const onCheckUpdateModalClear = useCallback(() => {
+    scanIdRef.current += 1; // invalidate any in-flight scan
     setIsCheckingUpdate(true);
     setUpdateList([]);
     setModsToUpdate([]);
@@ -146,6 +148,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     const currentSummary = summary;
     const currentLocalMods = localMods;
     onCheckUpdateModalClear();
+    const scanId = scanIdRef.current;
 
     try {
       if (!currentSummary?.id || currentLocalMods.length === 0) {
@@ -257,10 +260,13 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
       await Promise.allSettled(
         updatePromises.map(async (p) => {
           const res = await p;
+          if (scanId !== scanIdRef.current) return;
           setCheckingUpdateIndex(results.length + 1);
           results.push(res);
         })
       );
+
+      if (scanId !== scanIdRef.current) return;
 
       const validUpdates = results.filter(
         (result): result is NonNullable<typeof result> => result !== null
@@ -271,7 +277,7 @@ const CheckModUpdateModal: React.FC<CheckModUpdateModalProps> = ({
     } catch (error) {
       logger.error("Failed to check mod updates:", error);
     } finally {
-      setIsCheckingUpdate(false);
+      if (scanId === scanIdRef.current) setIsCheckingUpdate(false);
     }
   }, [summary, localMods, handleFetchLatestMod, onCheckUpdateModalClear]);
 
