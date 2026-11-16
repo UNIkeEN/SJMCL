@@ -4,4 +4,8 @@ ignore = [
   "RUSTSEC-2023-0071",
   # Only RS256 JWTs are validated and no upstream fix is available yet (jsonwebtoken still pins p256 0.13).
   "RUSTSEC-2026-0387",
+  # Decorum is enabled only on Windows; its linicon/memmap2 dependency is Linux-only.
+  "RUSTSEC-2026-0186",
+  # pin-utils is pulled only by reqwest-retry's wasm32 timer; the launcher ships native targets.
+  "RUSTSEC-2026-0441",
 ]

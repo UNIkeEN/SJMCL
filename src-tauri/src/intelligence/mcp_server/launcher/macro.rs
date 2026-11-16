@@ -195,7 +195,7 @@ macro_rules! mcp_tool {
         $crate::intelligence::mcp_server::launcher::McpContext,
       >| {
         use futures::FutureExt;
-        $handler(context).boxed()
+        $handler(context).map(|result| result.map(Into::into)).boxed()
       },
     )
   }};
@@ -233,7 +233,7 @@ macro_rules! mcp_tool {
 
           Ok(rmcp::model::CallToolResult::success(vec![
             rmcp::model::ContentBlock::text(format!("Opened deeplink: {deeplink}")),
-          ]))
+          ]).into())
         }
         .boxed()
       },
@@ -264,7 +264,7 @@ macro_rules! mcp_tool {
 
           Ok(rmcp::model::CallToolResult::success(vec![
             rmcp::model::ContentBlock::text(format!("Opened deeplink: {deeplink}")),
-          ]))
+          ]).into())
         }
         .boxed()
       },

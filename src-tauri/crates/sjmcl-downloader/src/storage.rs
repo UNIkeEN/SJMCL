@@ -90,7 +90,7 @@ impl SqliteStore {
       .execute(
         "DELETE FROM groups WHERE state = '\"finished\"' AND finish IS NOT NULL
          AND completion_pending = 0 AND finished_at < unixepoch() - ?1",
-        [DOWNLOAD_HISTORY_RETENTION.as_secs()],
+        [DOWNLOAD_HISTORY_RETENTION.as_secs() as i64],
       )
       .map_err(|e| e.to_string())?;
     Ok(SqliteStore {
