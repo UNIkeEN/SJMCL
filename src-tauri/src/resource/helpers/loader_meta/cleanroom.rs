@@ -1,3 +1,4 @@
+use semver::Version;
 use serde::{Deserialize, Serialize};
 use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
@@ -54,27 +55,9 @@ pub async fn get_cleanroom_meta_by_game_version(
     return Ok(Vec::new());
   }
 
-  if let Ok(meta) = get_cleanroom_meta_by_game_version_official(app).await {
-    let list = meta
-      .into_iter()
-      .filter(|it| {
-        let parsed_cleanroom_version = semver::Version::parse(it.version.as_ref());
-        let cleanroom_0_7_0_version = semver::Version::parse("0.7.0-alpha");
-        return if let Ok(parsed) = parsed_cleanroom_version
-          && let Ok(cleanroom_0_7_0) = cleanroom_0_7_0_version
-        {
-          if parsed.cmp(&cleanroom_0_7_0).is_lt() {
-            true
-          } else {
-            false
-          }
-        } else {
-          false
-        };
-      })
-      .collect();
-
-    return Ok(list);
+  if let Ok(mut meta) = get_cleanroom_meta_by_game_version_official(app).await {
+    meta.retain(|it| Version::parse(&it.version).is_ok_and(|v| (v.major, v.minor) < (0, 7)));
+    return Ok(meta);
   }
 
   Err(ResourceError::NetworkError.into())
