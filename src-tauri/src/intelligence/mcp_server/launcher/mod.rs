@@ -1,8 +1,10 @@
 mod r#macro;
 pub mod tools;
 
-use rmcp::handler::server::router::Router;
-use rmcp::model::{CallToolResult, Implementation, ServerCapabilities, ServerInfo};
+use rmcp::handler::server::tool::ToolRouter;
+use rmcp::model::{
+  CallToolResponse, CallToolResult, Implementation, ServerCapabilities, ServerConfig,
+};
 use rmcp::transport::streamable_http_server::{
   StreamableHttpServerConfig, StreamableHttpService, session::local::LocalSessionManager,
 };
@@ -20,17 +22,26 @@ pub const MCP_SERVER_PATH: &str = "/mcp";
 #[derive(Clone)]
 pub struct McpContext {
   pub app_handle: AppHandle,
+  tool_router: ToolRouter<Self>,
 }
 
 impl McpContext {
   pub fn new(app_handle: AppHandle) -> Self {
-    Self { app_handle }
+    let mut tool_router = ToolRouter::new();
+    for route in tools::tool_routes() {
+      tool_router.add_route(route);
+    }
+    Self {
+      app_handle,
+      tool_router,
+    }
   }
 }
 
+#[rmcp::tool_handler(router = self.tool_router)]
 impl ServerHandler for McpContext {
-  fn get_info(&self) -> ServerInfo {
-    ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+  fn get_info(&self) -> ServerConfig {
+    ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
       .with_server_info(
         Implementation::new("sjmcl-mcp", env!("CARGO_PKG_VERSION"))
           .with_title("SJMCL MCP")
@@ -44,7 +55,7 @@ impl ServerHandler for McpContext {
 
 pub fn command_result_to_tool_result<T>(
   command_result: SJMCLResult<T>,
-) -> Result<CallToolResult, McpError>
+) -> Result<CallToolResponse, McpError>
 where
   T: Serialize,
 {
@@ -61,7 +72,7 @@ where
     _ => serde_json::json!({ "value": json_value }),
   };
 
-  Ok(CallToolResult::structured(structured_content))
+  Ok(CallToolResult::structured(structured_content).into())
 }
 
 pub fn run(app_handle: AppHandle, mcp_config: &LauncherMcpServerConfig) {
@@ -122,16 +133,11 @@ async fn serve(
   port: u16,
 ) -> SJMCLResult<()> {
   let service_app_handle = app_handle.clone();
-  let service: StreamableHttpService<Router<McpContext>, LocalSessionManager> =
-    StreamableHttpService::new(
-      move || {
-        Ok(
-          Router::new(McpContext::new(service_app_handle.clone())).with_tools(tools::tool_routes()),
-        )
-      },
-      Default::default(),
-      StreamableHttpServerConfig::default().with_stateful_mode(true),
-    );
+  let service: StreamableHttpService<McpContext, LocalSessionManager> = StreamableHttpService::new(
+    move || Ok(McpContext::new(service_app_handle.clone())),
+    Default::default(),
+    StreamableHttpServerConfig::default().with_legacy_session_mode(true),
+  );
 
   let axum_router = axum::Router::new().nest_service(MCP_SERVER_PATH, service);
   let bind_addr = format!("{MCP_SERVER_HOST}:{port}");
