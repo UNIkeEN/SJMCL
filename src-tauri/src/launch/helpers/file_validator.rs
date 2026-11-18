@@ -10,11 +10,6 @@ use tauri::AppHandle;
 use tokio::fs;
 use zip::ZipArchive;
 
-#[cfg(target_os = "windows")]
-use std::sync::Mutex;
-#[cfg(target_os = "windows")]
-use tauri::Manager;
-
 use crate::download::DownloadTask;
 use crate::instance::helpers::asset_index::AssetIndex;
 use crate::instance::helpers::asset_index::load_asset_index;
@@ -33,13 +28,16 @@ use crate::instance::helpers::client_json::load_native_libraries_replace_map;
 #[cfg(target_os = "windows")]
 use crate::launcher_config::helpers::graphics::mesa_driver_name;
 #[cfg(target_os = "windows")]
-use crate::launcher_config::models::{GameConfig, LauncherConfig};
+use crate::launcher_config::models::GameConfig;
 
-pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
+pub fn get_nonnative_library_artifacts(
+  client_info: &McClientInfo,
+  arch: &str,
+) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
-    if !library.is_allowed(&feature).unwrap_or(false) {
+    if !library.is_allowed(&feature, arch).unwrap_or(false) {
       continue;
     }
     if library.natives.is_some() {
@@ -54,16 +52,19 @@ pub fn get_nonnative_library_artifacts(client_info: &McClientInfo) -> Vec<Downlo
   artifacts.into_iter().collect()
 }
 
-pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<DownloadsArtifact> {
+pub fn get_native_library_artifacts(
+  client_info: &McClientInfo,
+  arch: &str,
+) -> Vec<DownloadsArtifact> {
   let mut artifacts = HashSet::new();
   let feature = FeaturesInfo::default();
 
   for library in &client_info.libraries {
-    if !library.is_allowed(&feature).unwrap_or(false) {
+    if !library.is_allowed(&feature, arch).unwrap_or(false) {
       continue;
     }
     if let Some(natives) = &library.natives {
-      if let Some(native) = get_natives_string(natives) {
+      if let Some(native) = get_natives_string(natives, arch) {
         if let Some(downloads) = &library.downloads
           && let Some(classifiers) = &downloads.classifiers
           && let Some(artifact) = classifiers.get(&native)
@@ -82,11 +83,12 @@ pub async fn get_invalid_library_files(
   source: SourceType,
   library_path: &Path,
   client_info: &McClientInfo,
+  arch: &str,
   check_hash: bool,
 ) -> SJMCLResult<Vec<DownloadTask>> {
   let mut artifacts = Vec::new();
-  artifacts.extend(get_native_library_artifacts(client_info));
-  artifacts.extend(get_nonnative_library_artifacts(client_info));
+  artifacts.extend(get_native_library_artifacts(client_info, arch));
+  artifacts.extend(get_nonnative_library_artifacts(client_info, arch));
 
   let futs = artifacts.into_iter().map(move |artifact| async move {
     let file_path = library_path.join(&artifact.path);
@@ -129,14 +131,12 @@ pub async fn get_invalid_library_files(
 }
 
 #[cfg(target_os = "windows")]
-pub fn get_windows_mesa_loader_library(app: &AppHandle) -> SJMCLResult<Option<LibrariesValue>> {
+pub fn get_windows_mesa_loader_library(
+  app: &AppHandle,
+  arch: &str,
+) -> SJMCLResult<Option<LibrariesValue>> {
   let all_replace_map = load_native_libraries_replace_map(app)?;
-  let (os, arch) = {
-    let launcher_config_state = app.state::<Mutex<LauncherConfig>>();
-    let cfg = launcher_config_state.lock().unwrap();
-    (cfg.basic_info.os_type.clone(), cfg.basic_info.arch.clone())
-  };
-  let platform_key = format!("{}-{}", os.to_lowercase(), arch.to_lowercase());
+  let platform_key = format!("windows-{arch}");
   Ok(
     all_replace_map
       .get(platform_key.as_str())
@@ -150,8 +150,9 @@ pub fn get_windows_mesa_loader_library(app: &AppHandle) -> SJMCLResult<Option<Li
 pub fn get_windows_mesa_loader_path(
   app: &AppHandle,
   library_path: &Path,
+  arch: &str,
 ) -> SJMCLResult<Option<PathBuf>> {
-  Ok(get_windows_mesa_loader_library(app)?.and_then(|lib| {
+  Ok(get_windows_mesa_loader_library(app, arch)?.and_then(|lib| {
     lib
       .downloads
       .and_then(|downloads| downloads.artifact)
@@ -165,6 +166,7 @@ pub async fn get_invalid_windows_mesa_loader_file(
   source: SourceType,
   library_path: &Path,
   game_config: &GameConfig,
+  arch: &str,
   check_hash: bool,
 ) -> SJMCLResult<Vec<DownloadTask>> {
   if mesa_driver_name(
@@ -176,7 +178,7 @@ pub async fn get_invalid_windows_mesa_loader_file(
     return Ok(Vec::new());
   }
 
-  let Some(lib) = get_windows_mesa_loader_library(app)? else {
+  let Some(lib) = get_windows_mesa_loader_library(app, arch)? else {
     return Ok(Vec::new());
   };
   let Some(artifact) = lib.downloads.and_then(|downloads| downloads.artifact) else {
@@ -336,11 +338,12 @@ pub fn get_nonnative_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
   mod_loader_type: ModLoaderType,
+  arch: &str,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut libraries = Vec::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
-    if !library.is_allowed(&feature).unwrap_or(false) {
+    if !library.is_allowed(&feature, arch).unwrap_or(false) {
       continue;
     }
     if library.natives.is_some() {
@@ -379,17 +382,18 @@ pub fn get_nonnative_library_paths(
 pub fn get_native_library_paths(
   client_info: &McClientInfo,
   library_path: &Path,
+  arch: &str,
   #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_glfw: bool,
   #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_openal: bool,
 ) -> SJMCLResult<Vec<PathBuf>> {
   let mut result = Vec::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
-    if !library.is_allowed(&feature).unwrap_or(false) {
+    if !library.is_allowed(&feature, arch).unwrap_or(false) {
       continue;
     }
     if let Some(natives) = &library.natives {
-      if let Some(native) = get_natives_string(natives) {
+      if let Some(native) = get_natives_string(natives, arch) {
         let path = convert_library_name_to_path(&library.name, Some(native))?;
         #[cfg(target_os = "linux")]
         {
@@ -457,6 +461,7 @@ pub async fn extract_native_libraries(
   client_info: &McClientInfo,
   library_path: &Path,
   natives_dir: &Path,
+  arch: &str,
   use_native_glfw: bool,
   use_native_openal: bool,
 ) -> SJMCLResult<()> {
@@ -471,6 +476,7 @@ pub async fn extract_native_libraries(
   let native_libraries = get_native_library_paths(
     client_info,
     library_path,
+    arch,
     use_native_glfw,
     use_native_openal,
   )?;

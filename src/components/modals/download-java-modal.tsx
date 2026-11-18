@@ -60,17 +60,19 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   const arch = config.basicInfo.arch;
 
   const [vendor, setVendor] = useState<VendorKey | "">(DEFAULT_VENDOR);
-  const [version, setVersion] = useState<"" | "8" | "11" | "17" | "21" | "25">(
-    DEFAULT_VERSION
-  );
+  const [version, setVersion] = useState<string>(DEFAULT_VERSION);
   const [type, setType] = useState<"" | "jdk" | "jre">(DEFAULT_TYPE);
+  const [mojangVersions, setMojangVersions] = useState<string[] | null>(null);
+  const [isLoadingMojangVersions, setIsLoadingMojangVersions] = useState(false);
+  const isVersionAvailable =
+    vendor !== "mojang" || (mojangVersions?.includes(version) ?? false);
 
   const VENDORS: Record<VendorKey, JavaVendor> = {
     mojang: {
       label: "Mojang",
       hasJre: true,
       archMap: { x86_64: "x64", aarch64: "arm64" },
-      versions: [...(os === "macos" ? [] : ["8"]), "17", "21", "25"],
+      versions: mojangVersions ?? [],
       getUrl: () => "",
     },
     zulu: {
@@ -126,8 +128,44 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
     setType(DEFAULT_TYPE);
   }, [props.isOpen]);
 
+  useEffect(() => {
+    if (!props.isOpen) return;
+    let active = true;
+    setMojangVersions(null);
+    setIsLoadingMojangVersions(true);
+
+    const handleRetrieveMojangJavaVersions = async () => {
+      const res = await ConfigService.retrieveMojangJavaVersions();
+      if (!active) return;
+      if (res.status === "success") {
+        setMojangVersions(res.data);
+      } else {
+        toast({
+          title: res.message,
+          description: res.details,
+          status: "error",
+        });
+      }
+      setIsLoadingMojangVersions(false);
+    };
+    handleRetrieveMojangJavaVersions();
+    return () => {
+      active = false;
+    };
+  }, [props.isOpen, os, arch, toast]);
+
+  useEffect(() => {
+    if (
+      vendor === "mojang" &&
+      mojangVersions &&
+      !mojangVersions.includes(version)
+    ) {
+      setVersion(mojangVersions[mojangVersions.length - 1] ?? "");
+    }
+  }, [vendor, version, mojangVersions]);
+
   const handleConfirm = async () => {
-    if (!vendor || !version || !type) return;
+    if (!vendor || !version || !type || !isVersionAvailable) return;
 
     if (vendor === "mojang") {
       ConfigService.downloadMojangJava(version).then((res) => {
@@ -137,6 +175,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
         } else {
           toast({
             title: res.message,
+            description: res.details,
             status: "error",
           });
         }
@@ -205,6 +244,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
                   ]
                 }
                 value={version}
+                disabled={vendor === "mojang" && !mojangVersions?.length}
                 onSelect={(val) => setVersion(val as typeof version)}
                 placeholder={t("DownloadJavaModal.selector.version")}
                 size="sm"
@@ -229,7 +269,13 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
 
             {["mojang", "oracle"].includes(vendor) && (
               <Text color="gray.500">
-                {t(`DownloadJavaModal.warning.${vendor}`)}
+                {t(
+                  `DownloadJavaModal.warning.${
+                    vendor === "mojang" && mojangVersions?.length === 0
+                      ? "mojangUnavailable"
+                      : vendor
+                  }`
+                )}
               </Text>
             )}
           </VStack>
@@ -241,7 +287,8 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
           <Button
             colorScheme={primaryColor}
             rightIcon={vendor !== "mojang" ? <LuExternalLink /> : undefined}
-            isDisabled={!(vendor && version && type)}
+            isDisabled={!(vendor && version && type) || !isVersionAvailable}
+            isLoading={vendor === "mojang" && isLoadingMojangVersions}
             onClick={handleConfirm}
           >
             {t("General.confirm")}

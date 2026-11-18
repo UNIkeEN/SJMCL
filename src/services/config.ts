@@ -132,6 +132,14 @@ export class ConfigService {
   }
 
   /**
+   * RETRIEVE Mojang Java versions available for the current platform.
+   */
+  @responseHandler("config")
+  static async retrieveMojangJavaVersions(): Promise<InvokeResponse<string[]>> {
+    return await invoke("retrieve_mojang_java_versions");
+  }
+
+  /**
    * DOWNLOAD Java runtime distributed by Mojang API.
    * @param {string} version - Java version to download
    * @returns {Promise<InvokeResponse<void>>}

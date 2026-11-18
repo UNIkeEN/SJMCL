@@ -12,7 +12,7 @@ use tauri_plugin_http::reqwest;
 use std::os::windows::process::CommandExt;
 
 use crate::download::DownloadTask;
-use crate::launcher_config::models::{JavaInfo, LauncherConfig};
+use crate::launcher_config::models::{JavaInfo, LauncherConfig, LauncherConfigError};
 use crate::resource::helpers::misc::{
   get_download_api, get_download_urls, get_source_priority_list,
 };
@@ -74,18 +74,23 @@ fn discover_and_update_javas(app: &AppHandle) {
     // ensure execute permissions (for Linux and macOS)
     let _ = manage_permissions_unix(&java_exec_path, 0o111, PermissionOperation::Upgrade);
 
-    // get java version and vendor (prioritize release file, fallback to command)
-    let (mut vendor, mut version) = get_java_info_from_release_file(&java_exec_path);
-    if vendor.is_none() || version.is_none() {
-      let (cmd_vendor, cmd_version) = get_java_info_from_command(&java_exec_path);
+    // Get Java metadata from the release file, falling back to the JVM properties.
+    let (mut vendor, mut version, mut arch) = get_java_info_from_release_file(&java_exec_path);
+    if vendor.is_none() || version.is_none() || arch.is_none() {
+      let (cmd_vendor, cmd_version, cmd_arch) = get_java_info_from_command(&java_exec_path);
       vendor = vendor.or(cmd_vendor);
       version = version.or(cmd_version);
+      arch = arch.or(cmd_arch);
     }
     let full_version = match version {
       Some(v) => v,
       None => continue, // if no version, skip as invalid
     };
     let vendor = vendor.unwrap_or_else(|| "Unknown Vendor".to_string());
+    let arch = match arch {
+      Some(arch) => normalize_java_arch(&arch).to_string(),
+      None => continue,
+    };
 
     let java_path_buf = PathBuf::from(&java_exec_path);
     let java_bin_path = java_path_buf
@@ -108,6 +113,7 @@ fn discover_and_update_javas(app: &AppHandle) {
       is_lts,
       exec_path: java_exec_path.clone(),
       vendor,
+      arch,
       is_user_added,
     };
 
@@ -351,11 +357,11 @@ fn scan_java_paths_in_sjmcl_data_directory(app: &AppHandle) -> Vec<String> {
   }
   #[cfg(target_os = "macos")]
   {
-    if let Ok(rt) = app.path().app_data_dir().map(|p| p.join("runtime")) {
-      for v in [8, 11, 17, 21, 25] {
-        java_paths.extend(search_java_homes_in_mac_java_virtual_machines(
-          rt.join(format!("java-{v}")),
-        ));
+    if let Ok(rt) = app.path().app_data_dir().map(|p| p.join("runtime"))
+      && let Ok(entries) = fs::read_dir(rt)
+    {
+      for entry in entries.flatten() {
+        java_paths.extend(search_java_homes_in_mac_java_virtual_machines(entry.path()));
       }
     }
   }
@@ -419,25 +425,38 @@ fn scan_java_paths_in_windows_registry() -> Vec<String> {
     .collect()
 }
 
-pub fn get_java_info_from_release_file(java_path: &str) -> (Option<String>, Option<String>) {
+pub fn normalize_java_arch(arch: &str) -> &str {
+  match arch {
+    "amd64" | "x86_64" => "x86_64",
+    "x86" | "i386" | "i486" | "i586" | "i686" => "x86",
+    "arm64" | "aarch64" => "aarch64",
+    "arm" | "arm32" | "armv7" | "armv7l" => "arm",
+    _ => arch,
+  }
+}
+
+pub fn get_java_info_from_release_file(
+  java_path: &str,
+) -> (Option<String>, Option<String>, Option<String>) {
   // Typically, executable files are located in .../Home/bin/java, release file and bin folder are at the same level.
   let java_path_buf = PathBuf::from(java_path);
   let java_home = match java_path_buf.parent().and_then(|p| p.parent()) {
     Some(p) => p,
-    None => return (None, None),
+    None => return (None, None, None),
   };
   let release_file = java_home.join("release");
 
   if !release_file.exists() {
-    return (None, None);
+    return (None, None, None);
   }
   let content = match fs::read_to_string(release_file) {
     Ok(c) => c,
-    Err(_) => return (None, None),
+    Err(_) => return (None, None, None),
   };
 
   let mut vendor = None;
   let mut full_version = None;
+  let mut arch = None;
 
   // Try to parse info from release file
   for line in content.lines() {
@@ -449,13 +468,17 @@ pub fn get_java_info_from_release_file(java_path: &str) -> (Option<String>, Opti
       && let Some(val) = line.split('=').nth(1)
     {
       vendor = Some(val.trim().trim_matches('"').to_string());
+    } else if let Some(val) = line.strip_prefix("OS_ARCH=") {
+      arch = Some(val.trim().trim_matches('"').to_string());
     }
   }
 
-  (vendor, full_version)
+  (vendor, full_version, arch)
 }
 
-pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<String>) {
+pub fn get_java_info_from_command(
+  java_path: &str,
+) -> (Option<String>, Option<String>, Option<String>) {
   // use "java -version -XshowSettings:properties" command to get info
   #[cfg(target_os = "windows")]
   let output = Command::new(java_path)
@@ -469,7 +492,7 @@ pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<St
 
   let output = match output {
     Ok(o) if o.status.success() => o,
-    _ => return (None, None),
+    _ => return (None, None, None),
   };
 
   let mut output_str = String::new();
@@ -478,6 +501,7 @@ pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<St
 
   let mut vendor = None;
   let mut full_version = None;
+  let mut arch = None;
 
   for line in output_str.lines() {
     let trimmed = line.trim();
@@ -491,9 +515,12 @@ pub fn get_java_info_from_command(java_path: &str) -> (Option<String>, Option<St
     {
       full_version = Some(val.trim().trim_matches('"').to_string());
     }
+    if let Some(val) = trimmed.strip_prefix("os.arch = ") {
+      arch = Some(val.trim().to_string());
+    }
   }
 
-  (vendor, full_version)
+  (vendor, full_version, arch)
 }
 
 pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
@@ -519,49 +546,107 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
   (major_version, is_lts)
 }
 
+const MOJANG_JAVA_RUNTIMES: &[(&str, &str)] = &[
+  ("8", "jre-legacy"),
+  ("16", "java-runtime-alpha"),
+  ("17", "java-runtime-gamma"),
+  ("21", "java-runtime-delta"),
+  ("25", "java-runtime-epsilon"),
+];
+
+fn mojang_java_platform(os: &str, arch: &str) -> Option<&'static str> {
+  Some(match (os, normalize_java_arch(arch)) {
+    ("windows", "aarch64") => "windows-arm64",
+    ("windows", "x86_64") => "windows-x64",
+    ("windows", "x86") => "windows-x86",
+    ("macos", "aarch64") => "mac-os-arm64",
+    ("macos", "x86_64") => "mac-os",
+    ("linux", "x86_64") => "linux",
+    ("linux", "x86") => "linux-i386",
+    _ => return None,
+  })
+}
+
+fn mojang_java_manifest_url<'a>(
+  manifest: &'a Value,
+  platform: &str,
+  runtime: &str,
+) -> Option<&'a str> {
+  manifest[platform][runtime]
+    .as_array()?
+    .first()?
+    .get("manifest")?
+    .get("url")?
+    .as_str()
+}
+
+async fn fetch_mojang_java_manifest(
+  app: &AppHandle,
+  config: &LauncherConfig,
+) -> SJMCLResult<Value> {
+  let client = app.state::<reqwest::Client>();
+
+  for source_type in get_source_priority_list(config) {
+    if let Ok(api_url) = get_download_api(source_type, ResourceType::MojangJava)
+      && let Ok(response) = client.get(api_url).send().await
+      && let Ok(response) = response.error_for_status()
+      && let Ok(parsed_json) = response.json::<Value>().await
+      && parsed_json.is_object()
+    {
+      return Ok(parsed_json);
+    }
+  }
+
+  Err(LauncherConfigError::FetchError.into())
+}
+
+pub async fn get_mojang_java_versions(app: &AppHandle) -> SJMCLResult<Vec<String>> {
+  let config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
+  let Some(platform) = mojang_java_platform(&config.basic_info.os_type, &config.basic_info.arch)
+  else {
+    return Ok(Vec::new());
+  };
+  let manifest = fetch_mojang_java_manifest(app, &config).await?;
+  Ok(
+    MOJANG_JAVA_RUNTIMES
+      .iter()
+      .filter(|(_, runtime)| mojang_java_manifest_url(&manifest, platform, runtime).is_some())
+      .map(|(version, _)| version.to_string())
+      .collect(),
+  )
+}
+
 pub async fn build_mojang_java_download_params(
   app: &AppHandle,
   version: &str,
 ) -> SJMCLResult<Vec<DownloadTask>> {
   let config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let client = app.state::<reqwest::Client>();
-
-  let platform = match (&*config.basic_info.os_type, &*config.basic_info.arch) {
-    ("windows", "aarch64") => "windows-arm64",
-    ("windows", "x86_64") => "windows-x64",
-    ("windows", _) => "windows-x86",
-    ("macos", "aarch64") => "mac-os-arm64",
-    ("macos", _) => "mac-os",
-    ("linux", "x86_64") => "linux",
-    _ => "linux-i386",
+  let platform = mojang_java_platform(&config.basic_info.os_type, &config.basic_info.arch);
+  let runtime = MOJANG_JAVA_RUNTIMES.iter().find(|(v, _)| *v == version);
+  let (Some(platform), Some((_, runtime))) = (platform, runtime) else {
+    log::warn!(
+      "Mojang Java {} is unavailable for {}/{}",
+      version,
+      config.basic_info.os_type,
+      config.basic_info.arch
+    );
+    return Err(LauncherConfigError::MojangJavaUnavailable.into());
   };
-  let runtime_type = match version {
-    "8" => "jre-legacy",
-    "21" => "java-runtime-delta",
-    "25" => "java-runtime-epsilon",
-    _ => "java-runtime-gamma",
-  };
+  let json = fetch_mojang_java_manifest(app, &config).await?;
+  let manifest_url = mojang_java_manifest_url(&json, platform, runtime).ok_or_else(|| {
+    log::warn!("Mojang Java {} is unavailable for {}", version, platform);
+    LauncherConfigError::MojangJavaUnavailable
+  })?;
 
+  let manifest: Value = client
+    .get(manifest_url)
+    .send()
+    .await?
+    .error_for_status()?
+    .json()
+    .await?;
   let priority_list = get_source_priority_list(&config);
-  let mut json: Option<Value> = None;
-
-  for source_type in priority_list.iter() {
-    if let Ok(api_url) = get_download_api(*source_type, ResourceType::MojangJava)
-      && let Ok(response) = client.get(api_url).send().await
-      && let Ok(parsed_json) = response.json::<Value>().await
-    {
-      json = Some(parsed_json);
-      break;
-    }
-  }
-
-  let json =
-    json.ok_or_else(|| SJMCLError("Failed to fetch Mojang Java runtime manifest".into()))?;
-  let manifest_url = json[platform][runtime_type][0]["manifest"]["url"]
-    .as_str()
-    .ok_or_else(|| SJMCLError("Failed to parse manifest URL".into()))?;
-
-  let manifest: Value = client.get(manifest_url).send().await?.json().await?;
   let runtime_dir = app.path().resolve(
     format!("runtime/java-{}", version),
     tauri::path::BaseDirectory::AppData,

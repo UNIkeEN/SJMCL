@@ -530,7 +530,8 @@
     },
     "warning": {
       "mojang": "El tiempo de ejecución de Java de Mojang será instalado por SJMCL en un directorio específico.",
-      "oracle": "Descargar desde Oracle puede requerir inicio de sesión."
+      "oracle": "Descargar desde Oracle puede requerir inicio de sesión.",
+      "mojangUnavailable": "Mojang no ofrece un entorno Java para la plataforma actual. Elige otro proveedor."
     }
   },
   "DownloadModpackModal": {
@@ -2334,11 +2335,21 @@
           }
         }
       },
+      "retrieveMojangJavaVersions": {
+        "error": {
+          "title": "Error al obtener las versiones disponibles de Mojang Java",
+          "description": {
+            "FETCH_ERROR": "No se pudo obtener la lista de entornos Java de Mojang. Comprueba la conexión de red."
+          }
+        }
+      },
       "downloadMojangJava": {
         "error": {
           "title": "Error al descargar el entorno de ejecución de Mojang Java",
           "description": {
-            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación",
+            "FETCH_ERROR": "No se pudo obtener la lista de entornos Java de Mojang. Comprueba la conexión de red.",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang no ofrece esta versión de Java para la plataforma actual. Elige otro proveedor o añade Java manualmente."
           }
         }
       },
@@ -2775,7 +2786,9 @@
             "NETWORK_ERROR": "Error al conectar con el servidor",
             "CLIENT_JSON_PARSE_ERROR": "Error al analizar la información de versión de la instancia",
             "ASSET_INDEX_PARSE_ERROR": "Error al analizar el índice de recursos",
-            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación"
+            "DOWNLOAD_ENGINE_ERROR": "El motor de descargas no pudo completar la operación",
+            "FETCH_ERROR": "No se pudo obtener la lista de entornos Java de Mojang. Comprueba la conexión de red.",
+            "MOJANG_JAVA_UNAVAILABLE": "Mojang no ofrece esta versión de Java para la plataforma actual. Elige otro proveedor o añade Java manualmente."
           }
         }
       },
