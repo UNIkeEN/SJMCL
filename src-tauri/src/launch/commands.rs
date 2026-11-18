@@ -483,9 +483,10 @@ pub fn export_game_crash_info(
     BaseDirectory::AppLog,
   )?;
 
-  // crash report
+  // crash report & hs_err log
   let crash_report_path =
     parse_crash_report_path_from_log(&game_log_path).filter(|path| path.exists());
+  let hs_err_path = parse_hs_err_path_from_log(&game_log_path).filter(|path| path.exists());
 
   // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
@@ -498,22 +499,6 @@ pub fn export_game_crash_info(
     .version_path
     .join(format!("{}.json", launching.selected_instance.name));
   let version_config_path = launching.selected_instance.get_json_cfg_path();
-
-  // hs_err log (parse from game log first, fallback to work_dir/hs_err_pid{pid}.log)
-  let hs_err_path = parse_hs_err_path_from_log(&game_log_path)
-    .filter(|path| path.exists())
-    .or_else(|| {
-      if launching.pid == 0 {
-        return None;
-      }
-      let work_dir = get_instance_subdir_paths(
-        &app,
-        &launching.selected_instance,
-        &[&InstanceSubdirType::Root],
-      )?;
-      let candidate = work_dir.first()?.join(format!("hs_err_pid{}.log", launching.pid));
-      candidate.exists().then_some(candidate)
-    });
 
   // full launch script
   let launch_script_path = app.path().resolve::<PathBuf>(
