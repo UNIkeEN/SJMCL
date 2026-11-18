@@ -9,8 +9,8 @@ lazy_static! {
     Regex::new(r"^#@!@# Game crashed! Crash report saved to: #@!@# (.+)$").unwrap();
 }
 
-/// Try to parse the crash report path from the game log.
-pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<PathBuf> {
+/// Read the trailing chunk of a log file (last ~8KB) for crash/error path parsing.
+fn read_log_tail<P: AsRef<Path>>(log_path: P) -> Option<String> {
   let file = File::open(log_path).ok()?;
   let mut reader = BufReader::new(file);
 
@@ -22,6 +22,12 @@ pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<P
 
   let mut content = String::new();
   reader.read_to_string(&mut content).ok()?;
+  Some(content)
+}
+
+/// Try to parse the crash report path from the game log.
+pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<PathBuf> {
+  let content = read_log_tail(log_path)?;
 
   // Scan backwards so the most recent crash report wins.
   for line in content.lines().rev() {
@@ -33,4 +39,69 @@ pub fn parse_crash_report_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<P
   }
 
   None
+}
+
+/// Try to parse the JVM `hs_err` report path from the game log.
+pub fn parse_hs_err_path_from_log<P: AsRef<Path>>(log_path: P) -> Option<PathBuf> {
+  let content = read_log_tail(log_path)?;
+  let lines: Vec<&str> = content.lines().collect();
+
+  // JVM prints:
+  // # An error report file with more information is saved as:
+  // # /path/to/hs_err_pid1234.log
+  for pair in lines.windows(2).rev() {
+    if pair[0].trim() == "# An error report file with more information is saved as:"
+      && let Some(path_str) = pair[1].strip_prefix('#')
+    {
+      let trimmed = path_str.trim();
+      if !trimmed.is_empty() {
+        return Some(PathBuf::from(trimmed));
+      }
+    }
+  }
+
+  None
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use std::io::Write;
+
+  #[test]
+  fn test_parse_hs_err_path_from_log() {
+    let temp_dir = std::env::temp_dir();
+    let log_path = temp_dir.join("sjmcl_test_hs_err_parse.log");
+    {
+      let mut file = File::create(&log_path).unwrap();
+      writeln!(file, "[12:00:00] [main/INFO]: Starting game").unwrap();
+      writeln!(file, "# A fatal error has been detected by the Java Runtime Environment:").unwrap();
+      writeln!(file, "# An error report file with more information is saved as:").unwrap();
+      writeln!(file, "# C:\\Users\\Test User\\.minecraft\\hs_err_pid12345.log").unwrap();
+      writeln!(file, "# If you would like to submit a bug report, please visit:").unwrap();
+    }
+
+    let parsed = parse_hs_err_path_from_log(&log_path);
+    let _ = std::fs::remove_file(&log_path);
+
+    assert_eq!(
+      parsed,
+      Some(PathBuf::from(r"C:\Users\Test User\.minecraft\hs_err_pid12345.log"))
+    );
+  }
+
+  #[test]
+  fn test_parse_hs_err_path_from_log_none() {
+    let temp_dir = std::env::temp_dir();
+    let log_path = temp_dir.join("sjmcl_test_hs_err_none.log");
+    {
+      let mut file = File::create(&log_path).unwrap();
+      writeln!(file, "[12:00:00] [main/INFO]: Normal exit").unwrap();
+    }
+
+    let parsed = parse_hs_err_path_from_log(&log_path);
+    let _ = std::fs::remove_file(&log_path);
+
+    assert_eq!(parsed, None);
+  }
 }
