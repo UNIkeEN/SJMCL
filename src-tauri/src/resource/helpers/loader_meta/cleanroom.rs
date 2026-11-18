@@ -1,3 +1,4 @@
+use semver::Version;
 use serde::{Deserialize, Serialize};
 use sjmcl_types::error::SJMCLResult;
 use tauri::{AppHandle, Manager};
@@ -54,7 +55,8 @@ pub async fn get_cleanroom_meta_by_game_version(
     return Ok(Vec::new());
   }
 
-  if let Ok(meta) = get_cleanroom_meta_by_game_version_official(app).await {
+  if let Ok(mut meta) = get_cleanroom_meta_by_game_version_official(app).await {
+    meta.retain(|it| Version::parse(&it.version).is_ok_and(|v| (v.major, v.minor) < (0, 7)));
     return Ok(meta);
   }
 
