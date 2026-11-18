@@ -249,14 +249,14 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
     ),
     mcp_tool!(
       "delete_game_server",
-      "Delete a saved multiplayer server from a Minecraft instance's server list. Requires confirm=true.",
+      "Delete a saved multiplayer server entry from a Minecraft instance's server list by its list index. Requires confirm=true.",
       |app, params|
       #[serde(deny_unknown_fields)]
       {
         #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]
         instance_id: String,
-        #[schemars(description = "Server address returned as `ip` by `retrieve_game_server_list`.")]
-        server_addr: String,
+        #[schemars(description = "Entry index returned as `index` by `retrieve_game_server_list`.")]
+        index: usize,
         #[schemars(description = "Must be true to confirm deleting this saved server entry.")]
         confirm: bool,
       } => async move {
@@ -264,13 +264,31 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
           return Err(MCPError::ToolNeedsConfirmation.into());
         }
 
-        delete_game_server(app, params.instance_id, params.server_addr).await
+        delete_game_server(app, params.instance_id, params.index).await
+      }
+    ),
+    mcp_tool!(
+      "update_game_server",
+      "Update the address and/or display name of a saved multiplayer server entry by list index.",
+      |app, params|
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]
+        instance_id: String,
+        #[schemars(description = "Entry index returned as `index` by `retrieve_game_server_list`.")]
+        index: usize,
+        #[schemars(description = "New server address, for example `mc.example.com` or `127.0.0.1:25565`.")]
+        server_addr: String,
+        #[schemars(description = "New display name. Empty string keeps the current name.")]
+        server_name: String,
+      } => async move {
+        update_game_server(app, params.instance_id, params.index, params.server_addr, params.server_name).await
       }
     ),
     mcp_tool!(
       "add_game_server",
       add_game_server,
-      "Add a saved multiplayer server to a Minecraft instance's server list.",
+      "Add a saved multiplayer server to a Minecraft instance's server list. Appends at the end; duplicate addresses are allowed (vanilla behavior).",
       #[serde(deny_unknown_fields)]
       {
         #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]
@@ -279,6 +297,22 @@ pub fn tool_routes() -> Vec<ToolRoute<McpContext>> {
         server_addr: String,
         #[schemars(description = "Display name saved for this server entry.")]
         server_name: String,
+      }
+    ),
+    mcp_tool!(
+      "move_game_server",
+      "Move a saved multiplayer server entry up or down in a Minecraft instance's server list (vanilla reorder).",
+      |app, params|
+      #[serde(deny_unknown_fields)]
+      {
+        #[schemars(description = "Minecraft instance ID returned by `retrieve_instance_list`.")]
+        instance_id: String,
+        #[schemars(description = "Entry index returned as `index` by `retrieve_game_server_list`.")]
+        index: usize,
+        #[schemars(description = "true to move up, false to move down.")]
+        move_up: bool,
+      } => async move {
+        move_game_server(app, params.instance_id, params.index, params.move_up).await
       }
     ),
     mcp_tool!(
