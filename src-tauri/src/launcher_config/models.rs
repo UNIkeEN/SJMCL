@@ -407,6 +407,7 @@ structstruck::strike! {
       pub instance_worlds_page: struct {
         #[default([true, true])]
         pub accordion_states: [bool; 2],
+        pub show_hidden_servers: bool,
       },
       pub instance_shader_packs_page: struct {
         #[default([true, true])]
