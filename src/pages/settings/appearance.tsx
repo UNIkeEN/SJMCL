@@ -19,9 +19,10 @@ import {
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir } from "@tauri-apps/api/path";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useCallback, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPlus, LuTrash } from "react-icons/lu";
+import { AutoSizer, List } from "react-virtualized";
 import { ChakraColorSelectPopover } from "@/components/chakra-color-selector";
 import { MenuSelector } from "@/components/common/menu-selector";
 import {
@@ -34,6 +35,50 @@ import { useToast } from "@/contexts/toast";
 import { ConfigService } from "@/services/config";
 import { UtilsService } from "@/services/utils";
 import { removeFileExt } from "@/utils/string";
+
+const FontMenuList = ({
+  rowCount,
+  renderOption,
+}: {
+  rowCount: number;
+  renderOption: (index: number, isScrolling?: boolean) => ReactElement;
+}) => {
+  const [rowHeight, setRowHeight] = useState(0);
+  const [minWidth, setMinWidth] = useState(0);
+  const measureOption = (node: HTMLDivElement | null) => {
+    if (!node) return;
+    setMinWidth((width) => Math.max(width, node.scrollWidth));
+    if (!rowHeight) setRowHeight(node.offsetHeight);
+  };
+
+  return (
+    <div style={{ height: rowCount * rowHeight, minHeight: 0, minWidth }}>
+      {rowHeight ? (
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              height={height}
+              width={width}
+              rowHeight={rowHeight}
+              rowCount={rowCount}
+              rowRenderer={({ index, key, style, isScrolling }) => (
+                <div
+                  key={key}
+                  style={style}
+                  ref={isScrolling ? undefined : measureOption}
+                >
+                  {renderOption(index, isScrolling)}
+                </div>
+              )}
+            />
+          )}
+        </AutoSizer>
+      ) : (
+        <div ref={measureOption}>{renderOption(0)}</div>
+      )}
+    </div>
+  );
+};
 
 const AppearanceSettingsPage = () => {
   const { t } = useTranslation();
@@ -211,6 +256,7 @@ const AppearanceSettingsPage = () => {
             <Text
               fontFamily={font === "%built-in" ? "-apple-system, Sinter" : font}
               fontSize="xs"
+              whiteSpace="nowrap"
             >
               {buildFontName(font)}
             </Text>
@@ -221,6 +267,23 @@ const AppearanceSettingsPage = () => {
         placeholder={buildFontName(value)}
         isLazy
         menuListProps={{ maxH: "40vh", overflowY: "auto" }}
+        renderOptions={(renderOption) =>
+          fonts.length > 0 && (
+            <FontMenuList
+              rowCount={fonts.length}
+              renderOption={(index, isScrolling) =>
+                renderOption(
+                  index,
+                  isScrolling ? (
+                    <Text whiteSpace="nowrap">
+                      {buildFontName(fonts[index])}
+                    </Text>
+                  ) : undefined
+                )
+              }
+            />
+          )
+        }
       />
     );
   };
