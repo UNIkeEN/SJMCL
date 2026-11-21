@@ -160,6 +160,7 @@ jobs:
       upload_artifacts: true
       branch: "nightly"
       build_type: "nightly"
+      windows_signing: false
     secrets:
       SJMCL_CURSEFORGE_API_KEY: ${{ secrets.SJMCL_CURSEFORGE_API_KEY }}
 
