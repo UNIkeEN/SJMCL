@@ -67,6 +67,8 @@ pub fn get_modrinth_api(
         project_id
       )
     }
+    OtherResourceApiEndpoint::VersionFiles => format!("{}/version_files", base_url),
+    OtherResourceApiEndpoint::Projects => format!("{}/projects", base_url),
   };
 
   Ok(url_str)
