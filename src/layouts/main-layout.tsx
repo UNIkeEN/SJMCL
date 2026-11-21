@@ -12,6 +12,7 @@ import {
 import { exit } from "@tauri-apps/api/app";
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
+import { MotionGlobalConfig } from "framer-motion";
 import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef } from "react";
@@ -206,6 +207,18 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       body.style.removeProperty("--custom-global-font-family");
     }
   }, [config.appearance.font.fontFamily]);
+
+  // disable framer-motion (used by chakra) and CSS animations by config.
+  useEffect(() => {
+    const reduceMotion = config.appearance.accessibility.reduceMotion;
+
+    MotionGlobalConfig.skipAnimations = reduceMotion;
+    if (reduceMotion) {
+      document.body.setAttribute("reduce-motion", "true");
+    } else {
+      document.body.removeAttribute("reduce-motion");
+    }
+  }, [config.appearance.accessibility.reduceMotion]);
 
   // update font size to body CSS by config.
   useEffect(() => {

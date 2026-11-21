@@ -302,6 +302,7 @@ structstruck::strike! {
       pub accessibility: struct {
         pub invert_colors: bool,
         pub enhance_contrast: bool,
+        pub reduce_motion: bool,
       }
     },
     pub download: struct DownloadConfig {

@@ -344,6 +344,10 @@
         },
         "enhanceContrast": {
           "title": "Mejorar Contraste"
+        },
+        "reduceMotion": {
+          "title": "Reducir Movimiento",
+          "description": "Cuando está activado, se desactivarán las animaciones como las transiciones de página y las ventanas emergentes."
         }
       }
     }

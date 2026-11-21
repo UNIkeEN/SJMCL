@@ -344,6 +344,10 @@
         },
         "enhanceContrast": {
           "title": "增强对比度"
+        },
+        "reduceMotion": {
+          "title": "减弱动态效果",
+          "description": "启用后，将关闭页面切换、弹窗等界面动画"
         }
       }
     }

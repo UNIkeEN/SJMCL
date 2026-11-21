@@ -78,3 +78,9 @@
     animation: none;
   }
 }
+
+:global(body[reduce-motion]) .book,
+:global(body[reduce-motion]) .creeper,
+:global(body[reduce-motion]) .gear {
+  animation: none;
+}
