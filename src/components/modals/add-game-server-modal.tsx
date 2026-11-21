@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface AddGameServerModalProps extends Omit<ModalProps, "children"> {
   presetAddr?: string;
@@ -87,6 +88,14 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
     [trimmedServerAddr, serverName, serverNamePlaceholder, toast, onClose]
   );
 
+  const isConfirmDisabled = !trimmedServerAddr;
+
+  const handleConfirm = () => {
+    if (instanceId) {
+      handleAddGameServer(instanceId);
+    }
+  };
+
   return (
     <Modal
       size={{ base: "md", lg: "lg", xl: "xl" }}
@@ -111,6 +120,10 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
                 value={serverAddr}
                 onChange={(e) => setServerAddr(e.target.value)}
                 onBlur={() => setIsServerAddrTouched(true)}
+                onKeyDown={onEnterKeyDown(
+                  handleConfirm,
+                  isConfirmDisabled || isLoading
+                )}
                 ref={initialRef}
                 focusBorderColor={`${primaryColor}.500`}
               />
@@ -131,6 +144,10 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
                 placeholder={serverNamePlaceholder}
                 value={serverName}
                 onChange={(e) => setServerName(e.target.value)}
+                onKeyDown={onEnterKeyDown(
+                  handleConfirm,
+                  isConfirmDisabled || isLoading
+                )}
                 focusBorderColor={`${primaryColor}.500`}
               />
             </FormControl>
@@ -143,13 +160,9 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
           </Button>
           <Button
             colorScheme={primaryColor}
-            onClick={() => {
-              if (instanceId) {
-                handleAddGameServer(instanceId);
-              }
-            }}
+            onClick={handleConfirm}
             isLoading={isLoading}
-            isDisabled={!trimmedServerAddr}
+            isDisabled={isConfirmDisabled}
           >
             {t("General.confirm")}
           </Button>

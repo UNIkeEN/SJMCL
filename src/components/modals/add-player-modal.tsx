@@ -58,6 +58,7 @@ import {
 } from "@/models/response";
 import { AccountService } from "@/services/account";
 import { isOfflinePlayernameValid, isUuidValid } from "@/utils/account";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface AddPlayerModalProps extends Omit<ModalProps, "children"> {
   initialPlayerType?: PlayerType;
@@ -287,6 +288,22 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     });
   };
 
+  const isConfirmDisabled =
+    !playername ||
+    (playerType === PlayerType.Offline &&
+      config.basicInfo.allowFullLoginFeature &&
+      !isOfflinePlayernameValid(playername)) ||
+    (!!uuid && !isUuidValid(uuid)) ||
+    (playerType === PlayerType.ThirdParty &&
+      config.basicInfo.allowFullLoginFeature &&
+      authServerList.length > 0 &&
+      (!authServer || !password));
+
+  const handleInputKeyDown = onEnterKeyDown(
+    () => handleLogin(),
+    isConfirmDisabled || isLoading
+  );
+
   const playerTypeList = [
     {
       key: "offline",
@@ -371,6 +388,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                     )}
                     value={playername}
                     onChange={(e) => setPlayername(e.target.value)}
+                    onKeyDown={handleInputKeyDown}
                     required
                     ref={initialRef}
                     focusBorderColor={`${primaryColor}.500`}
@@ -403,6 +421,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                       )}
                       value={uuid}
                       onChange={(e) => setUuid(e.target.value)}
+                      onKeyDown={handleInputKeyDown}
                       focusBorderColor={`${primaryColor}.500`}
                     />
                     <FormErrorMessage>
@@ -496,6 +515,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                               )}
                               value={playername}
                               onChange={(e) => setPlayername(e.target.value)}
+                              onKeyDown={handleInputKeyDown}
                               required
                               ref={initialRef}
                               focusBorderColor={`${primaryColor}.500`}
@@ -512,6 +532,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                               type="password"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
+                              onKeyDown={handleInputKeyDown}
                               required
                               focusBorderColor={`${primaryColor}.500`}
                             />
@@ -596,17 +617,7 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
                 colorScheme={primaryColor}
                 onClick={() => handleLogin()}
                 isLoading={isLoading}
-                isDisabled={
-                  !playername ||
-                  (playerType === PlayerType.Offline &&
-                    config.basicInfo.allowFullLoginFeature &&
-                    !isOfflinePlayernameValid(playername)) ||
-                  (uuid && !isUuidValid(uuid)) ||
-                  (playerType === PlayerType.ThirdParty &&
-                    config.basicInfo.allowFullLoginFeature &&
-                    authServerList.length > 0 &&
-                    (!authServer || !password))
-                }
+                isDisabled={isConfirmDisabled}
               >
                 {t("General.confirm")}
               </Button>
