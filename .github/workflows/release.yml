@@ -239,6 +239,9 @@ jobs:
             echo "" >> release-notes.md
             echo "⚠️ **Note:** macOS artifacts in this release are **not code-signed**. macOS users may see security warnings when running the application." >> release-notes.md
           fi
+
+          echo "" >> release-notes.md
+          echo "[Code signing policy for Windows](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/CODE_SIGNING_POLICY.md)" >> release-notes.md
         shell: bash
 
 # [TESTING COMMENTED] Do not publish actual release during test run

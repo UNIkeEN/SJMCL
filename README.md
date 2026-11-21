@@ -120,6 +120,10 @@ For more installation options and platform notes, see the [User Documentation](h
 
 </details>
 
+### Code signing policy
+
+See our [Code signing policy](docs/CODE_SIGNING_POLICY.md) for Windows signing, team responsibilities, and privacy information.
+
 ## Development and Contributing
 
 To get started, clone the repository and install the required dependencies:

@@ -119,6 +119,10 @@ winget install SJMC.SJMCL
 
 </details>
 
+### 程式碼簽章政策
+
+有關 Windows 簽章、團隊職責與隱私資訊，請參閱 [Code signing policy](CODE_SIGNING_POLICY.md)。
+
 ## 開發與貢獻
 
 首先複製（clone）本專案並安裝前端依賴：
