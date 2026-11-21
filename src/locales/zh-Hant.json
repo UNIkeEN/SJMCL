@@ -770,6 +770,10 @@
       "windows": "檔案總管"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "下載任務進行中",
+    "body": "目前仍有下載任務正在進行。現在退出將中斷這些任務，可在下次開啟 SJMCL 時繼續。是否仍要退出？"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "將 {{param}} 匯出為模組包"

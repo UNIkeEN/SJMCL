@@ -770,6 +770,10 @@
       "windows": "文件资源管理器"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "下载任务进行中",
+    "body": "当前仍有下载任务正在进行。现在退出将中断这些任务，可在下次打开 SJMCL 时继续。是否仍要退出？"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "将 {{param}} 导出为整合包"

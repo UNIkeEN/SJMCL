@@ -770,6 +770,10 @@
       "windows": "Explorador de Archivos"
     }
   },
+  "ExitWithActiveDownloadsConfirmDialog": {
+    "title": "Descargas en curso",
+    "body": "Todavía hay tareas de descarga en curso. Si sales ahora, se interrumpirán y podrás continuarlas la próxima vez que abras SJMCL. ¿Quieres salir de todos modos?"
+  },
   "ExportModpackModal": {
     "header": {
       "title": "Exportar {{param}} como Modpack"
