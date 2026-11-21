@@ -154,6 +154,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 dotenvy.workspace = true
 tauri-build.workspace = true
 
+[dev-dependencies]
+object.workspace = true
+
 [features]
 default = []
 # Enables WebView DevTools in optimized builds. Off by default so production

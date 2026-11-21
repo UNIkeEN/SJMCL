@@ -26,6 +26,7 @@ dependencies = [
  "log",
  "murmur2",
  "native-dialog",
+ "object",
  "plist",
  "quartz_nbt",
  "rand 0.9.4",
@@ -3881,6 +3882,15 @@ dependencies = [
  "objc2-app-kit",
  "objc2-core-foundation",
  "objc2-foundation",
+]
+
+[[package]]
+name = "object"
+version = "0.40.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd229a0361b9d0d4396176e02d65897f487eebeab7caa6d443855ee152ca0b9c"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
