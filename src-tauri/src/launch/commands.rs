@@ -50,13 +50,14 @@ use crate::utils::window::create_webview_window;
 use crate::launch::helpers::file_validator::get_invalid_windows_mesa_loader_file;
 
 // Step 1: select suitable java runtime environment.
+// Returns the id of the new launching state, which is used to cancel this launching process.
 #[tauri::command]
 pub async fn select_suitable_jre(
   app: AppHandle,
   instance_id: String,
   instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
-) -> SJMCLResult<()> {
+) -> SJMCLResult<u64> {
   let instance = instances_state
     .lock()?
     .get(&instance_id)
@@ -93,7 +94,7 @@ pub async fn select_suitable_jre(
     ..LaunchingState::default()
   });
 
-  Ok(())
+  Ok(timestamp)
 }
 
 // Step 2: extract native libraries, validate game and dependency files, and prepare legacy game assets (if needed).
@@ -413,11 +414,12 @@ pub async fn launch_game(
 #[tauri::command]
 pub fn cancel_launch_process(
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
+  launching_id: u64,
 ) -> SJMCLResult<()> {
   let mut launching_queue = launching_queue_state.lock()?;
 
-  // kill process if pid exists
-  if let Some(launching) = launching_queue.last_mut()
+  // kill process if pid exists, only for the given launching process (not other running games)
+  if let Some(launching) = launching_queue.iter_mut().find(|l| l.id == launching_id)
     && launching.pid != 0
   {
     launching.current_step = 0; // mark as manually cancelled to avoid game error window popping up
