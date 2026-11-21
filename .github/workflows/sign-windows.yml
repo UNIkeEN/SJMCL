@@ -121,7 +121,9 @@ jobs:
           if-no-files-found: error
 
       - name: Sign main executable
+        id: sign-main
         if: steps.validate.outputs.should_sign == 'true'
+        continue-on-error: true
         uses: signpath/github-action-submit-signing-request@v3
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -134,10 +136,17 @@ jobs:
           output-artifact-directory: signed-main-output
 
       - name: Apply signed main executable
-        if: steps.validate.outputs.should_sign == 'true'
+        id: apply-signed-main
+        if: steps.validate.outputs.should_sign == 'true' && steps.sign-main.outcome == 'success'
         shell: bash
         run: |
-          cp signed-main-output/SJMCL.exe "src-tauri/target/${{ matrix.target }}/release/SJMCL.exe"
+          if [ -f signed-main-output/SJMCL.exe ]; then
+            cp signed-main-output/SJMCL.exe "src-tauri/target/${{ matrix.target }}/release/SJMCL.exe"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::SignPath did not provide the signed main executable; falling back to unsigned artifacts."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Bundle NSIS installer
         run: |
@@ -158,7 +167,7 @@ jobs:
           cp "src-tauri/target/${{ matrix.target }}/release/bundle/nsis/"*.exe signing-final-input/SJMCL-setup.exe
 
       - name: Upload unsigned final Windows artifacts
-        if: steps.validate.outputs.should_sign == 'true'
+        if: steps.apply-signed-main.outputs.signed == 'true'
         id: upload-final-artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -167,7 +176,9 @@ jobs:
           if-no-files-found: error
 
       - name: Sign final Windows artifacts
-        if: steps.validate.outputs.should_sign == 'true'
+        id: sign-final
+        if: steps.apply-signed-main.outputs.signed == 'true'
+        continue-on-error: true
         uses: signpath/github-action-submit-signing-request@v3
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
@@ -180,19 +191,25 @@ jobs:
           output-artifact-directory: signed-final-output
 
       - name: Organize release artifacts and calculate SHA256
+        id: organize
         shell: bash
         run: |
           mkdir -p artifacts
           ARTIFACT_BASE="SJMCL_${{ inputs.version }}_windows_${{ matrix.arch }}"
 
-          if [ "${{ steps.validate.outputs.should_sign }}" = "true" ] && [ -d signed-final-output ]; then
+          if [ "${{ steps.validate.outputs.should_sign }}" = "true" ] \
+            && [ "${{ steps.sign-final.outcome }}" = "success" ] \
+            && [ -f signed-final-output/SJMCL-setup.exe ] \
+            && [ -f signed-final-output/SJMCL-patched.exe ]; then
             echo "Using signed Windows artifacts"
             cp signed-final-output/SJMCL-setup.exe "artifacts/${ARTIFACT_BASE}_setup.exe"
             cp signed-final-output/SJMCL-patched.exe "artifacts/${ARTIFACT_BASE}_portable.exe"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
           else
             echo "Using unsigned Windows artifacts"
             cp signing-final-input/SJMCL-setup.exe "artifacts/${ARTIFACT_BASE}_setup.exe"
             cp signing-final-input/SJMCL-patched.exe "artifacts/${ARTIFACT_BASE}_portable.exe"
+            echo "signed=false" >> "$GITHUB_OUTPUT"
           fi
 
           echo "$(sha256sum "artifacts/${ARTIFACT_BASE}_setup.exe" | awk '{print $1}') ${ARTIFACT_BASE}" > "artifacts/${ARTIFACT_BASE}.sha256"
@@ -203,7 +220,7 @@ jobs:
           ls -la artifacts/
 
       - name: Upload signed Windows artifacts
-        if: steps.validate.outputs.should_sign == 'true'
+        if: steps.organize.outputs.signed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: SJMCL_${{ inputs.version }}_windows_${{ matrix.arch }}_signed
@@ -211,7 +228,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload unsigned Windows artifacts
-        if: steps.validate.outputs.should_sign != 'true'
+        if: steps.organize.outputs.signed != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: SJMCL_${{ inputs.version }}_windows_${{ matrix.arch }}

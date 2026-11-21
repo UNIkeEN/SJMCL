@@ -136,27 +136,16 @@ jobs:
         env:
           VERSION: ${{ needs.Version-Check.outputs.version }}
           MACOS_SIGNING_SUCCESS: ${{ needs.Code-Sign-macOS.result == 'success' }}
-          WINDOWS_SIGNING_SUCCESS: ${{ needs.Code-Sign-Windows.result == 'success' }}
         run: |
           mkdir -p release-artifacts
           
           # Copy Linux artifacts
           find artifacts -name "SJMCL_${{ env.VERSION }}_linux_*" -exec cp {} release-artifacts/ \;
           
-          # Copy Windows artifacts (signed if available, unsigned otherwise)
-          WIN_SIGNED=false
-          if [ "${{ env.WINDOWS_SIGNING_SUCCESS }}" = "true" ] && [ -d artifacts-signed-windows ]; then
-            WIN_FILE_COUNT=$(find artifacts-signed-windows -name "SJMCL_${{ env.VERSION }}_windows_*" -type f | wc -l)
-            if [ "$WIN_FILE_COUNT" -gt 0 ]; then
-              echo "Using signed Windows artifacts ($WIN_FILE_COUNT files)"
-              find artifacts-signed-windows -name "SJMCL_${{ env.VERSION }}_windows_*" -type f -exec cp {} release-artifacts/ \;
-              WIN_SIGNED=true
-            fi
-          fi
-
-          if [ "$WIN_SIGNED" != "true" ]; then
-            echo "⚠️ WARNING: Using unsigned Windows artifacts (signing failed or was skipped)"
-            find artifacts -name "SJMCL_${{ env.VERSION }}_windows_*" -exec cp {} release-artifacts/ \;
+          # Copy Windows artifacts from the base download, then overlay signed outputs per architecture.
+          find artifacts -name "SJMCL_${{ env.VERSION }}_windows_*" -type f -exec cp {} release-artifacts/ \;
+          if [ -d artifacts-signed-windows ]; then
+            find artifacts-signed-windows -name "SJMCL_${{ env.VERSION }}_windows_*" -type f -exec cp {} release-artifacts/ \;
           fi
 
           # Copy macOS artifacts (signed if available, unsigned otherwise)
@@ -179,12 +168,8 @@ jobs:
           echo "# Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> SHA256SUMS.txt
           echo "" >> SHA256SUMS.txt
           
-          # Collect SHA256 from downloaded base artifacts (Linux, and unsigned Windows/macOS if any)
+          # Collect SHA256 from downloaded base artifacts (Linux, Windows, and unsigned macOS if any)
           find artifacts -name "*.sha256" -type f | sort | while read sha256_file; do
-            # If signed Windows is available, skip unsigned Windows sha256
-            if [ "$WIN_SIGNED" = "true" ] && [[ "$sha256_file" == *"_windows_"* ]]; then
-              continue
-            fi
             # If signed macOS is available, skip unsigned macOS sha256
             if [ "${{ env.MACOS_SIGNING_SUCCESS }}" = "true" ] && [[ "$sha256_file" == *"_macos_"* ]]; then
               continue
@@ -192,13 +177,6 @@ jobs:
             cat "$sha256_file" >> SHA256SUMS.txt
           done
 
-          # Also collect from signed Windows artifacts if available
-          if [ "$WIN_SIGNED" = "true" ] && [ -d artifacts-signed-windows ]; then
-            find artifacts-signed-windows -name "*.sha256" -type f | sort | while read sha256_file; do
-              cat "$sha256_file" >> SHA256SUMS.txt
-            done
-          fi
-          
           # Also collect from signed macOS artifacts if available
           if [ "${{ env.MACOS_SIGNING_SUCCESS }}" = "true" ] && [ -d artifacts-signed-macos ]; then
             find artifacts-signed-macos -name "*.sha256" -type f | sort | while read sha256_file; do
@@ -242,15 +220,16 @@ jobs:
           python scripts/release/generate_changelog_draft.py > release-notes.md
           
           # Add warning if Windows signing failed or was skipped
-          WIN_FILE_COUNT=0
+          WIN_ARCH_COUNT=$(find artifacts -maxdepth 1 -type f -name "SJMCL_${{ needs.Version-Check.outputs.version }}_windows_*_setup.exe" | wc -l)
+          WIN_SIGNED_ARCH_COUNT=0
           if [ -d artifacts-signed-windows ]; then
-            WIN_FILE_COUNT=$(find artifacts-signed-windows -name "SJMCL_${{ needs.Version-Check.outputs.version }}_windows_*" -type f | wc -l)
+            WIN_SIGNED_ARCH_COUNT=$(find artifacts-signed-windows -type f -name "SJMCL_${{ needs.Version-Check.outputs.version }}_windows_*_setup.exe" | wc -l)
           fi
-          if [ "${{ env.WINDOWS_SIGNING_SUCCESS }}" != "true" ] || [ "$WIN_FILE_COUNT" -eq 0 ]; then
+          if [ "${{ env.WINDOWS_SIGNING_SUCCESS }}" != "true" ] || [ "$WIN_SIGNED_ARCH_COUNT" -lt "$WIN_ARCH_COUNT" ]; then
             echo "" >> release-notes.md
             echo "---" >> release-notes.md
             echo "" >> release-notes.md
-            echo "⚠️ **Note:** Windows artifacts in this release are **not code-signed**. Windows SmartScreen may show security warnings when running the installer or portable application." >> release-notes.md
+            echo "⚠️ **Note:** Windows artifacts in this release may be **unsigned**. Windows SmartScreen may show security warnings when running the installer or portable application." >> release-notes.md
           fi
 
           # Add warning if macOS signing failed or was skipped
