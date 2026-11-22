@@ -6,7 +6,7 @@ This policy applies to official Windows releases (the application executable, NS
 
 ## Team roles
 
-- **Committers and reviewers:** [SJMC-Dev](https://github.com/SJMC-Dev) (external contributions via pull requests are reviewed and merged by project maintainers).
+- **Committers and reviewers:** [UNIkeEN](https://github.com/UNIkeEN), [1357310795](https://github.com/1357310795), [baiyuansjtu](https://github.com/baiyuansjtu), [coffeageno](https://github.com/coffeageno), [ff98sha](https://github.com/ff98sha), [hans362](https://github.com/hans362), [hbz114514](https://github.com/hbz114514), [hebingchang](https://github.com/hebingchang), [icgnos](https://github.com/icgnos), [Minecrafter-Pythoner](https://github.com/Minecrafter-Pythoner), [pangbo13](https://github.com/pangbo13), [SundayChen](https://github.com/SundayChen), [ToolmanP](https://github.com/ToolmanP), [w1049](https://github.com/w1049), [xunying123](https://github.com/xunying123), [zaixiZaixiSJTU](https://github.com/zaixiZaixiSJTU) (external [contributors](https://github.com/UNIkeEN/SJMCL/graphs/contributors) may submit pull requests, which must be reviewed and merged by these maintainers).
 - **Approvers:** [UNIkeEN](https://github.com/UNIkeEN), [pangbo13](https://github.com/pangbo13)
 
 ## Signing process
