@@ -44,10 +44,7 @@ div[role="progressbar"] {
   animation: dropInElastic 0.7s ease-out forwards;
 }
 
-/*
- * Reduce motion (appearance.accessibility.reduceMotion), framer-motion animations are skipped in main-layout.
- * Keep a tiny duration rather than none, so that transitionend / animationend listeners still get notified.
- */
+/* Keep a tiny duration rather than none so transitionend / animationend still fire. */
 body[reduce-motion] *,
 body[reduce-motion] *::before,
 body[reduce-motion] *::after {

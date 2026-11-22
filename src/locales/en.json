@@ -346,8 +346,7 @@
           "title": "Enhance Contrast"
         },
         "reduceMotion": {
-          "title": "Reduce Motion",
-          "description": "When enabled, animations such as page transitions and pop-ups will be turned off."
+          "title": "Reduce Motion"
         }
       }
     }

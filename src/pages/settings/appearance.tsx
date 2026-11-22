@@ -603,9 +603,6 @@ const AppearanceSettingsPage = () => {
           title: t(
             "AppearanceSettingsPage.accessibility.settings.reduceMotion.title"
           ),
-          description: t(
-            "AppearanceSettingsPage.accessibility.settings.reduceMotion.description"
-          ),
           children: (
             <Switch
               colorScheme={primaryColor}
