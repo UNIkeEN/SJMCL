@@ -344,6 +344,9 @@
         },
         "enhanceContrast": {
           "title": "增强对比度"
+        },
+        "reduceMotion": {
+          "title": "减弱动态效果"
         }
       }
     }

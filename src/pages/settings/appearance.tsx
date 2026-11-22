@@ -599,6 +599,23 @@ const AppearanceSettingsPage = () => {
             />
           ),
         },
+        {
+          title: t(
+            "AppearanceSettingsPage.accessibility.settings.reduceMotion.title"
+          ),
+          children: (
+            <Switch
+              colorScheme={primaryColor}
+              isChecked={appearanceConfigs.accessibility.reduceMotion}
+              onChange={(e) => {
+                update(
+                  "appearance.accessibility.reduceMotion",
+                  e.target.checked
+                );
+              }}
+            />
+          ),
+        },
       ],
     },
   ];

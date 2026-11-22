@@ -344,6 +344,9 @@
         },
         "enhanceContrast": {
           "title": "益其對比"
+        },
+        "reduceMotion": {
+          "title": "省其動效"
         }
       }
     }

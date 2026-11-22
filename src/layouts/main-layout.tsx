@@ -12,6 +12,7 @@ import {
 import { exit } from "@tauri-apps/api/app";
 import { appLogDir, join } from "@tauri-apps/api/path";
 import { openPath, openUrl } from "@tauri-apps/plugin-opener";
+import { MotionGlobalConfig } from "framer-motion";
 import { t } from "i18next";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef } from "react";
@@ -197,15 +198,22 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   useEffect(() => {
     const body = document.body;
     const fontFamily = config.appearance.font.fontFamily;
+    const useCustomFont = fontFamily !== "%built-in";
 
-    if (fontFamily !== "%built-in") {
-      body.setAttribute("use-custom-font", "true");
-      body.style.setProperty("--custom-global-font-family", fontFamily);
-    } else {
-      body.removeAttribute("use-custom-font");
-      body.style.removeProperty("--custom-global-font-family");
-    }
+    body.toggleAttribute("use-custom-font", useCustomFont);
+    body.style.setProperty(
+      "--custom-global-font-family",
+      useCustomFont ? fontFamily : ""
+    );
   }, [config.appearance.font.fontFamily]);
+
+  // disable framer-motion (used by chakra) and CSS animations by config.
+  useEffect(() => {
+    const reduceMotion = config.appearance.accessibility.reduceMotion;
+
+    MotionGlobalConfig.skipAnimations = reduceMotion;
+    document.body.toggleAttribute("reduce-motion", reduceMotion);
+  }, [config.appearance.accessibility.reduceMotion]);
 
   // update font size to body CSS by config.
   useEffect(() => {

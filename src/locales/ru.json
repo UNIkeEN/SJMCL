@@ -344,6 +344,9 @@
         },
         "enhanceContrast": {
           "title": "Повысить контрастность"
+        },
+        "reduceMotion": {
+          "title": "Уменьшить движение"
         }
       }
     }
