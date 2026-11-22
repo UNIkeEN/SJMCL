@@ -32,9 +32,7 @@ use crate::launch::helpers::graphics_handler::{
   build_graphics_environment_variables, parse_environment_variables,
 };
 use crate::launch::helpers::jre_selector::select_java_runtime;
-use crate::launch::helpers::log_parser::{
-  parse_crash_report_path_from_log, parse_hs_err_path_from_log,
-};
+use crate::launch::helpers::log_parser::{parse_crash_paths_from_log, redact_access_token};
 use crate::launch::helpers::misc::get_separator;
 use crate::launch::helpers::process_monitor::{
   kill_process, monitor_process, set_process_priority,
@@ -483,10 +481,20 @@ pub fn export_game_crash_info(
     BaseDirectory::AppLog,
   )?;
 
-  // crash report & hs_err log
-  let crash_report_path =
-    parse_crash_report_path_from_log(&game_log_path).filter(|path| path.exists());
-  let hs_err_path = parse_hs_err_path_from_log(&game_log_path).filter(|path| path.exists());
+  // crash report & redacted hs_err log
+  let (crash_report_path, hs_err_path) = parse_crash_paths_from_log(&game_log_path);
+  let crash_report_path = crash_report_path.filter(|path| path.exists());
+  let hs_err_path = hs_err_path.filter(|path| path.exists()).and_then(|path| {
+    let bytes = fs::read(&path).ok()?;
+    let sanitized = redact_access_token(&String::from_utf8_lossy(&bytes));
+    let file_name = path.file_name()?;
+    let temp_path = app
+      .path()
+      .resolve(PathBuf::from(file_name), BaseDirectory::Temp)
+      .ok()?;
+    fs::write(&temp_path, sanitized).ok()?;
+    Some(temp_path)
+  });
 
   // version json and sjmcl instance config
   let launching_queue = launching_queue_state.lock()?;
