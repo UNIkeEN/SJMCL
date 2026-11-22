@@ -6,16 +6,16 @@ use axum::{
   routing::{get, post},
 };
 use base64::{Engine, engine::general_purpose};
+use getrandom::SysRng;
 use image::{ImageFormat, RgbaImage};
 use rsa::{
-  RsaPrivateKey, RsaPublicKey,
+  PrivateKey, PublicKey,
   pkcs1v15::SigningKey,
   pkcs8::EncodePublicKey,
-  rand_core,
   signature::{SignatureEncoding, Signer},
 };
 use serde_json::{Map, Value, json};
-use sha1::Sha1;
+use sha1_signature::Sha1;
 use sha2::{Digest, Sha256};
 use sjmcl_types::error::SJMCLResult;
 use std::{
@@ -32,21 +32,21 @@ use crate::account::models::{PlayerInfo, SkinModel};
 use crate::utils::image::ImageWrapper;
 use crate::utils::sys_info::find_free_port;
 
-static KEY_PAIR: OnceLock<(RsaPrivateKey, RsaPublicKey)> = OnceLock::new();
+static KEY_PAIR: OnceLock<(PrivateKey, PublicKey)> = OnceLock::new();
 
-fn generate_key_pair() -> (RsaPrivateKey, RsaPublicKey) {
-  let mut rng = rand_core::OsRng;
+fn generate_key_pair() -> (PrivateKey, PublicKey) {
+  let mut rng = SysRng;
   // 4096-bit RSA generation is noticeably slow in unoptimized debug builds.
   let bits = cfg_select! {
     debug_assertions => 2048,
     _ => 4096,
   };
-  let private_key = RsaPrivateKey::new(&mut rng, bits).expect("Failed to generate private key");
-  let public_key = RsaPublicKey::from(&private_key);
+  let private_key = PrivateKey::new(&mut rng, bits).expect("Failed to generate private key");
+  let public_key = PublicKey::from(&private_key);
   (private_key, public_key)
 }
 
-fn key_pair() -> &'static (RsaPrivateKey, RsaPublicKey) {
+fn key_pair() -> &'static (PrivateKey, PublicKey) {
   KEY_PAIR.get_or_init(generate_key_pair)
 }
 
