@@ -64,10 +64,7 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
     }
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        if let Some(downloads) = &library.downloads
-          && let Some(classifiers) = &downloads.classifiers
-          && let Some(artifact) = classifiers.get(&native)
-        {
+        if let Some(artifact) = get_native_library_artifact(library, &native) {
           artifacts.insert(artifact.clone());
         }
       } else {
@@ -76,6 +73,23 @@ pub fn get_native_library_artifacts(client_info: &McClientInfo) -> Vec<Downloads
     }
   }
   artifacts.into_iter().collect()
+}
+
+fn get_native_library_artifact<'a>(
+  library: &'a LibrariesValue,
+  native: &str,
+) -> Option<&'a DownloadsArtifact> {
+  let downloads = library.downloads.as_ref()?;
+  // Platform replacements can give the native JAR its own explicit classifier and artifact.
+  if parse_library_name(&library.name, None)
+    .ok()?
+    .classifier
+    .is_some()
+    && let Some(artifact) = &downloads.artifact
+  {
+    return Some(artifact);
+  }
+  downloads.classifiers.as_ref()?.get(native)
 }
 
 pub async fn get_invalid_library_files(
@@ -250,15 +264,20 @@ struct LibraryKey {
   extension: String,
 }
 
-// merge two vectors of libraries, remove duplicates by name, keep the one with the highest version. also remove libraries with invalid names
+// Merge plain libraries by coordinate; legacy native entries have separate platform rules.
 pub fn merge_library_lists(
   libraries_a: &[LibrariesValue],
   libraries_b: &[LibrariesValue],
 ) -> Vec<LibrariesValue> {
   let mut library_map: HashMap<LibraryKey, LibrariesValue> = HashMap::new();
+  let mut native_libraries = Vec::new();
 
   for library in libraries_a.iter().chain(libraries_b.iter()) {
     if let Ok(library_parts) = parse_library_name(&library.name, None) {
+      if library.natives.is_some() {
+        native_libraries.push(library.clone());
+        continue;
+      }
       let key = LibraryKey {
         path: library_parts.path,
         pack_name: library_parts.pack_name,
@@ -282,7 +301,8 @@ pub fn merge_library_lists(
     }
   }
 
-  library_map.into_values().collect()
+  native_libraries.extend(library_map.into_values());
+  native_libraries
 }
 
 fn parse_sem_version(version: &str) -> Version {
@@ -381,8 +401,8 @@ pub fn get_native_library_paths(
   library_path: &Path,
   #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_glfw: bool,
   #[cfg_attr(not(target_os = "linux"), allow(unused_variables))] use_native_openal: bool,
-) -> SJMCLResult<Vec<PathBuf>> {
-  let mut result = Vec::new();
+) -> SJMCLResult<HashSet<PathBuf>> {
+  let mut result = HashSet::new();
   let feature = FeaturesInfo::default();
   for library in &client_info.libraries {
     if !library.is_allowed(&feature).unwrap_or(false) {
@@ -390,7 +410,6 @@ pub fn get_native_library_paths(
     }
     if let Some(natives) = &library.natives {
       if let Some(native) = get_natives_string(natives) {
-        let path = convert_library_name_to_path(&library.name, Some(native))?;
         #[cfg(target_os = "linux")]
         {
           if use_native_glfw && library.name.to_lowercase().contains("glfw") {
@@ -400,7 +419,11 @@ pub fn get_native_library_paths(
             continue;
           }
         }
-        result.push(library_path.join(path));
+        let path = match get_native_library_artifact(library, &native) {
+          Some(artifact) if !artifact.path.is_empty() => artifact.path.clone(),
+          _ => convert_library_name_to_path(&library.name, Some(native))?,
+        };
+        result.insert(library_path.join(path));
       } else {
         println!("natives is None");
       }
@@ -479,9 +502,17 @@ pub async fn extract_native_libraries(
     .map(|library_path| {
       let extract_dir = extract_dir.clone();
       tokio::spawn(async move {
-        let file = Cursor::new(fs::read(library_path).await?);
+        let bytes = fs::read(&library_path).await.map_err(|error| {
+          SJMCLError(format!(
+            "Failed to read native library {}: {error}",
+            library_path.display()
+          ))
+        })?;
+        let file = Cursor::new(bytes);
         let mut jar = ZipArchive::new(file)?;
         jar.extract(&extract_dir)?;
+        #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+        expose_nested_lwjgl_natives(&mut jar, &extract_dir)?;
         Ok(())
       })
     })
@@ -490,12 +521,33 @@ pub async fn extract_native_libraries(
   let results = futures::future::join_all(tasks).await;
 
   for result in results {
-    if let Err(e) = result {
-      println!("Error handling artifact: {:?}", e);
-      return Err(sjmcl_types::error::SJMCLError::from(e));
-    }
+    result??;
   }
 
+  Ok(())
+}
+
+#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+fn expose_nested_lwjgl_natives(
+  jar: &mut ZipArchive<Cursor<Vec<u8>>>,
+  extract_dir: &Path,
+) -> SJMCLResult<()> {
+  // LWJGL 3 ARM64 JARs nest dylibs, but legacy launchers look in java.library.path itself.
+  for index in 0..jar.len() {
+    let entry = jar.by_index(index)?;
+    if !entry.is_file() {
+      continue;
+    }
+    let Some(path) = entry.enclosed_name() else {
+      continue;
+    };
+    if path.starts_with("macos/arm64/org/lwjgl")
+      && path.extension().is_some_and(|ext| ext == "dylib")
+      && let Some(name) = path.file_name()
+    {
+      std::fs::copy(extract_dir.join(&path), extract_dir.join(name))?;
+    }
+  }
   Ok(())
 }
 

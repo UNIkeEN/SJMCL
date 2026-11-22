@@ -386,7 +386,8 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
   let mut library_names = HashSet::new();
   for patch in &patches {
     for library in &patch.libraries {
-      if library_names.insert(library.name.clone()) {
+      // Legacy native entries can share a coordinate with a plain library.
+      if library.natives.is_some() || library_names.insert(library.name.clone()) {
         client_info.libraries.push(library.clone());
       }
     }
@@ -458,6 +459,34 @@ pub fn reset_fields_from_patches(client_info: &mut McClientInfo) {
         Some(base_arguments) => base_arguments.push_str(minecraft_arguments),
         None => client_info.minecraft_arguments = Some(minecraft_arguments.clone()),
       }
+    }
+  }
+}
+
+pub fn restore_missing_legacy_library_variants(client_info: &mut McClientInfo) {
+  let Some(game_patch) = client_info.patches.iter().find(|patch| patch.id == "game") else {
+    return;
+  };
+
+  let legacy_native_names: HashSet<_> = game_patch
+    .libraries
+    .iter()
+    .filter(|lib| lib.natives.is_some())
+    .map(|lib| lib.name.as_str())
+    .collect();
+
+  // Older merges kept either the native or the plain entry, depending on their order.
+  for library in game_patch
+    .libraries
+    .iter()
+    .filter(|lib| legacy_native_names.contains(lib.name.as_str()))
+  {
+    let mut same_name = client_info
+      .libraries
+      .iter()
+      .filter(|lib| lib.name == library.name);
+    if same_name.clone().next().is_some() && !same_name.any(|lib| lib.natives == library.natives) {
+      client_info.libraries.push(library.clone());
     }
   }
 }
@@ -668,38 +697,55 @@ pub async fn replace_native_libraries(
     }
   };
 
-  for lib in &mut client_info.libraries {
-    let key = lib.name.clone();
-
-    if lib.natives.is_some() {
-      let natives_key = format!("{key}:natives");
-      if let Some(Some(new_lib)) = platform_map.get(&natives_key) {
-        lib.name = new_lib.name.clone();
-        if new_lib.downloads.is_some() {
-          lib.downloads = new_lib.downloads.clone();
-        }
-        if new_lib.natives.is_some() {
-          lib.natives = new_lib.natives.clone();
-        }
-        if new_lib.extract.is_some() {
-          lib.extract = new_lib.extract.clone();
-        }
-        continue;
-      }
-    }
-
-    if let Some(Some(new_lib_opt)) = platform_map.get(&key) {
-      lib.name = new_lib_opt.name.clone();
-      if new_lib_opt.downloads.is_some() {
-        lib.downloads = new_lib_opt.downloads.clone();
-      }
-      if new_lib_opt.natives.is_some() {
-        lib.natives = new_lib_opt.natives.clone();
-      }
-      if new_lib_opt.extract.is_some() {
-        lib.extract = new_lib_opt.extract.clone();
-      }
-    }
-  }
+  apply_native_library_replacements(&mut client_info.libraries, platform_map);
   Ok(())
+}
+
+fn apply_native_library_replacements(
+  libraries: &mut Vec<LibrariesValue>,
+  platform_map: &HashMap<String, Option<LibrariesValue>>,
+) {
+  let plain_replacements: HashSet<_> = platform_map
+    .iter()
+    .filter(|(_, replacement)| replacement.is_none())
+    .filter_map(|(key, _)| key.strip_suffix(":natives"))
+    .filter_map(|name| platform_map.get(name)?.as_ref())
+    .map(|lib| lib.name.as_str())
+    .collect();
+
+  libraries.retain_mut(|lib| {
+    // An older launcher could save the plain replacement with the obsolete native selector.
+    if lib.natives.is_some()
+      && plain_replacements.contains(lib.name.as_str())
+      && lib
+        .downloads
+        .as_ref()
+        .is_some_and(|downloads| downloads.artifact.is_some() && downloads.classifiers.is_none())
+    {
+      lib.natives = None;
+      lib.extract = None;
+    }
+
+    let replacement = if lib.natives.is_some() {
+      platform_map.get(&format!("{}:natives", lib.name))
+    } else {
+      platform_map.get(&lib.name)
+    };
+    let new_lib = match replacement {
+      Some(Some(new_lib)) => new_lib,
+      Some(None) => return false,
+      None => return true,
+    };
+    lib.name = new_lib.name.clone();
+    if new_lib.downloads.is_some() {
+      lib.downloads = new_lib.downloads.clone();
+    }
+    if new_lib.natives.is_some() {
+      lib.natives = new_lib.natives.clone();
+    }
+    if new_lib.extract.is_some() {
+      lib.extract = new_lib.extract.clone();
+    }
+    true
+  });
 }
