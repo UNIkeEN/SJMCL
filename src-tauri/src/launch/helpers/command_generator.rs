@@ -106,17 +106,13 @@ pub struct LaunchCommand {
 
 pub async fn generate_launch_command(
   app: &AppHandle,
+  launching: &LaunchingState,
   quick_play_singleplayer: Option<String>,
   quick_play_multiplayer: Option<String>,
 ) -> SJMCLResult<LaunchCommand> {
   let launcher_config = { app.state::<Mutex<LauncherConfig>>().lock()?.clone() };
-  let launching_queue = { app.state::<Mutex<Vec<LaunchingState>>>().lock()?.clone() };
 
   let LauncherConfig { basic_info, .. } = launcher_config;
-  let launching = launching_queue
-    .last()
-    .ok_or(LaunchError::LaunchingStateNotFound)?
-    .clone();
   let LaunchingState {
     selected_java,
     selected_instance,
@@ -150,7 +146,7 @@ pub async fn generate_launch_command(
   // -----------------------------------------
   let related_dirs = get_instance_subdir_paths(
     app,
-    &selected_instance,
+    selected_instance,
     &[
       &InstanceSubdirType::Root,
       &InstanceSubdirType::Assets,
@@ -165,7 +161,7 @@ pub async fn generate_launch_command(
   };
 
   let mut class_paths: Vec<String> = get_nonnative_library_paths(
-    &client_info,
+    client_info,
     libraries_dir,
     selected_instance.mod_loader.loader_type,
   )?
@@ -463,7 +459,7 @@ pub async fn generate_launch_command(
     cmd.extend(replace_arguments(client_jvm_args, &jvm_map));
   }
 
-  if let Some(arg) = base64_mitigation_arg(&selected_java).await {
+  if let Some(arg) = base64_mitigation_arg(selected_java).await {
     cmd.push(arg.to_string());
   }
 
@@ -471,14 +467,14 @@ pub async fn generate_launch_command(
   cmd.push(
     client_info
       .main_class
-      .ok_or(InstanceError::MainClassNotFound)?
-      .clone(),
+      .clone()
+      .ok_or(InstanceError::MainClassNotFound)?,
   );
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;
     cmd.extend(replace_arguments(client_game_args, &game_map));
-  } else if let Some(client_args_str) = client_info.minecraft_arguments {
+  } else if let Some(client_args_str) = &client_info.minecraft_arguments {
     let client_game_args = client_args_str.split(' ').map(|s| s.to_string()).collect();
     cmd.extend(replace_arguments(client_game_args, &game_map));
   } else {
