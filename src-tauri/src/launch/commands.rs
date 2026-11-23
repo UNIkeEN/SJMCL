@@ -5,8 +5,7 @@ use std::fs;
 use std::io::BufReader;
 use std::io::prelude::*;
 use std::path::PathBuf;
-use std::process::{Child, Command, Stdio};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::process::{Command, Stdio};
 use std::sync::{Mutex, mpsc};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::path::BaseDirectory;
@@ -50,12 +49,6 @@ use crate::utils::window::create_webview_window;
 #[cfg(target_os = "windows")]
 use crate::launch::helpers::file_validator::get_invalid_windows_mesa_loader_file;
 
-fn next_launching_id(timestamp: u64) -> u64 {
-  static NEXT_LAUNCHING_ID: AtomicU64 = AtomicU64::new(0);
-  NEXT_LAUNCHING_ID.fetch_max(timestamp, Ordering::Relaxed);
-  NEXT_LAUNCHING_ID.fetch_add(1, Ordering::Relaxed)
-}
-
 // Step 1: select suitable java runtime environment.
 #[tauri::command]
 pub async fn select_suitable_jre(
@@ -63,7 +56,7 @@ pub async fn select_suitable_jre(
   instance_id: String,
   instances_state: State<'_, Mutex<HashMap<String, Instance>>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
-) -> SJMCLResult<u64> {
+) -> SJMCLResult<()> {
   let instance = instances_state
     .lock()?
     .get(&instance_id)
@@ -89,12 +82,10 @@ pub async fn select_suitable_jre(
   )
   .await?;
 
-  // Use a timestamp for log filenames and keep IDs distinct within the same millisecond.
-  let timestamp = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
-  let launching_id = next_launching_id(timestamp);
+  let timestamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
   let mut launching = launching_queue_state.lock()?;
   launching.push(LaunchingState {
-    id: launching_id,
+    id: timestamp,
     game_config,
     client_info,
     selected_java,
@@ -102,22 +93,20 @@ pub async fn select_suitable_jre(
     ..LaunchingState::default()
   });
 
-  Ok(launching_id)
+  Ok(())
 }
 
 // Step 2: extract native libraries, validate game and dependency files, and prepare legacy game assets (if needed).
 #[tauri::command]
 pub async fn validate_game_files(
   app: AppHandle,
-  launching_id: u64,
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
   let (instance, mut client_info, game_config) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
-      .iter_mut()
-      .find(|launching| launching.id == launching_id)
+      .last_mut()
       .ok_or(LaunchError::LaunchingStateNotFound)?;
     launching.current_step = 2;
     (
@@ -146,8 +135,7 @@ pub async fn validate_game_files(
   {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
-      .iter_mut()
-      .find(|launching| launching.id == launching_id)
+      .last_mut()
       .ok_or(LaunchError::LaunchingStateNotFound)?;
 
     launching.client_info = client_info.clone();
@@ -237,7 +225,6 @@ pub async fn validate_game_files(
 #[tauri::command]
 pub async fn validate_selected_player(
   app: AppHandle,
-  launching_id: u64,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
   local_ygg_server_state: State<'_, Mutex<YggdrasilServer>>,
 ) -> SJMCLResult<bool> {
@@ -278,8 +265,7 @@ pub async fn validate_selected_player(
   {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
-      .iter_mut()
-      .find(|launching| launching.id == launching_id)
+      .last_mut()
       .ok_or(LaunchError::LaunchingStateNotFound)?;
     launching.current_step = 3;
     launching.selected_player = Some(player.clone());
@@ -296,36 +282,28 @@ pub async fn validate_selected_player(
 #[tauri::command]
 pub async fn launch_game(
   app: AppHandle,
-  launching_id: u64,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
   quick_play_singleplayer: Option<String>,
   quick_play_multiplayer: Option<String>,
 ) -> SJMCLResult<()> {
-  let launching = {
+  let (id, selected_java, game_config, instance) = {
     let mut launching_queue = launching_queue_state.lock()?;
-    let Some(launching) = launching_queue
-      .iter_mut()
-      .find(|launching| launching.id == launching_id)
-    else {
-      return Ok(());
-    };
-    if launching.pid != 0 {
-      return Ok(());
-    }
+    let launching = launching_queue
+      .last_mut()
+      .ok_or(LaunchError::LaunchingStateNotFound)?;
     launching.current_step = 4;
-    launching.clone()
+    (
+      launching.id,
+      launching.selected_java.clone(),
+      launching.game_config.clone(),
+      launching.selected_instance.clone(),
+    )
   };
-  let LaunchingState {
-    selected_java,
-    game_config,
-    selected_instance: instance,
-    ..
-  } = &launching;
 
   let instance_id = instance.id.clone();
   let subdirs = get_instance_subdir_paths(
     &app,
-    instance,
+    &instance,
     &[
       &InstanceSubdirType::Root,
       &InstanceSubdirType::NativeLibraries,
@@ -338,24 +316,10 @@ pub async fn launch_game(
   let (work_dir, natives_dir) = (work_dir.clone(), natives_dir.clone());
 
   // generate launch command
-  let launch_command = generate_launch_command(
-    &app,
-    &launching,
-    quick_play_singleplayer,
-    quick_play_multiplayer,
-  )
-  .await;
-  if !launching_queue_state
-    .lock()?
-    .iter()
-    .any(|launching| launching.id == launching_id)
-  {
-    return Ok(());
-  }
   let LaunchCommand {
     class_paths,
     args: cmd_args,
-  } = launch_command?;
+  } = generate_launch_command(&app, quick_play_singleplayer, quick_play_multiplayer).await?;
 
   let wrapper = game_config
     .advanced
@@ -391,32 +355,34 @@ pub async fn launch_game(
   #[cfg(target_os = "windows")]
   cmd_base.creation_flags(0x08000000);
 
-  cmd_base
+  let child = cmd_base
     .current_dir(&work_dir)
     .env("CLASSPATH", class_paths.join(get_separator()))
     .envs(graphics_env_var)
     .args(cmd_args)
     .stdout(Stdio::piped())
-    .stderr(Stdio::piped());
+    .stderr(Stdio::piped())
+    .spawn()?;
 
-  let Some(child) = spawn_game_process(
-    &launching_queue_state,
-    launching_id,
-    &mut cmd_base,
-    full_cmd,
-  )?
-  else {
-    return Ok(());
-  };
+  let pid = child.id();
 
   // set process priority (if error, keep silent)
-  let _ = set_process_priority(child.id(), &game_config.performance.process_priority);
+  let _ = set_process_priority(pid, &game_config.performance.process_priority);
+
+  {
+    let mut launching_queue = launching_queue_state.lock()?;
+    let launching = launching_queue
+      .last_mut()
+      .ok_or(LaunchError::LaunchingStateNotFound)?;
+    launching.pid = pid;
+    launching.full_command = full_cmd;
+  }
 
   // wait for the game window, create log window if needed
   let (tx, rx) = mpsc::channel();
   monitor_process(
     app.clone(),
-    launching_id,
+    id,
     child,
     instance_id,
     game_config.display_game_log,
@@ -444,52 +410,21 @@ pub async fn launch_game(
   Ok(())
 }
 
-fn spawn_game_process(
-  launching_queue_state: &Mutex<Vec<LaunchingState>>,
-  launching_id: u64,
-  command: &mut Command,
-  full_command: String,
-) -> SJMCLResult<Option<Child>> {
-  // Keep the cancellation check, process creation and PID assignment under the same lock.
-  let mut launching_queue = launching_queue_state.lock()?;
-  let Some(launching) = launching_queue
-    .iter_mut()
-    .find(|launching| launching.id == launching_id && launching.pid == 0)
-  else {
-    return Ok(None);
-  };
-  let child = command.spawn()?;
-  launching.pid = child.id();
-  launching.full_command = full_command;
-  Ok(Some(child))
-}
-
 #[tauri::command]
 pub fn cancel_launch_process(
-  launching_id: u64,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
   let mut launching_queue = launching_queue_state.lock()?;
 
-  if let Some(pid) = cancel_launch(&mut launching_queue, launching_id) {
-    kill_process(pid)?;
+  // kill process if pid exists
+  if let Some(launching) = launching_queue.last_mut()
+    && launching.pid != 0
+  {
+    launching.current_step = 0; // mark as manually cancelled to avoid game error window popping up
+    kill_process(launching.pid)?;
   }
 
   Ok(())
-}
-
-fn cancel_launch(launching_queue: &mut Vec<LaunchingState>, launching_id: u64) -> Option<u32> {
-  let index = launching_queue
-    .iter()
-    .position(|launching| launching.id == launching_id)?;
-  let launching = &mut launching_queue[index];
-  if launching.pid == 0 {
-    launching_queue.remove(index);
-    None
-  } else {
-    launching.current_step = 0; // mark as manually cancelled to avoid game error window popping up
-    Some(launching.pid)
-  }
 }
 
 #[tauri::command]
@@ -588,71 +523,4 @@ pub fn export_game_crash_info(
 
   paths_to_zip.extend(crash_report_path);
   create_zip_from_dirs(paths_to_zip, zip_file_path.clone())
-}
-
-#[cfg(test)]
-mod tests {
-  use std::process::{Command, Stdio};
-  use std::sync::Mutex;
-
-  use crate::launch::commands::{cancel_launch, next_launching_id, spawn_game_process};
-  use crate::launch::models::LaunchingState;
-
-  fn pending_launch(id: u64) -> LaunchingState {
-    LaunchingState {
-      id,
-      ..LaunchingState::default()
-    }
-  }
-
-  #[test]
-  fn launch_ids_are_distinct_in_the_same_millisecond() {
-    let timestamp = 100;
-    assert!(next_launching_id(timestamp) < next_launching_id(timestamp));
-  }
-
-  #[test]
-  fn cancelled_launch_cannot_spawn_when_another_launch_is_pending() {
-    let queue = Mutex::new(vec![pending_launch(1), pending_launch(2)]);
-    {
-      let mut launches = queue.lock().unwrap();
-      assert_eq!(cancel_launch(&mut launches, 1), None);
-      assert_eq!(launches.len(), 1);
-      assert_eq!(launches[0].id, 2);
-    }
-
-    // An empty executable would fail if spawn were attempted.
-    assert!(
-      spawn_game_process(&queue, 1, &mut Command::new(""), String::new())
-        .unwrap()
-        .is_none()
-    );
-  }
-
-  #[test]
-  fn process_tracking_and_cancellation_use_the_launch_id() {
-    let queue = Mutex::new(vec![pending_launch(1), pending_launch(2)]);
-    let mut command = Command::new(std::env::current_exe().unwrap());
-    command
-      .arg("--list")
-      .stdout(Stdio::null())
-      .stderr(Stdio::null());
-    let mut child = spawn_game_process(&queue, 1, &mut command, "launch A".to_string())
-      .unwrap()
-      .unwrap();
-    let pid = child.id();
-    assert!(child.wait().unwrap().success());
-
-    let mut launches = queue.lock().unwrap();
-    assert_eq!(launches[0].pid, pid);
-    assert_eq!(launches[0].full_command, "launch A");
-    assert_eq!(launches[1].pid, 0);
-    assert!(launches[1].full_command.is_empty());
-    assert_eq!(cancel_launch(&mut launches, 1), Some(pid));
-    assert_eq!(launches[0].current_step, 0);
-    assert_ne!(launches[1].current_step, 0);
-    assert_eq!(cancel_launch(&mut launches, 2), None);
-    assert_eq!(launches.len(), 1);
-    assert_eq!(launches[0].id, 1);
-  }
 }

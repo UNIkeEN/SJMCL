@@ -17,7 +17,6 @@ use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
-use crate::launch::helpers::java_base64_mitigation::base64_mitigation_arg;
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
@@ -104,15 +103,52 @@ pub struct LaunchCommand {
   pub args: Vec<String>,
 }
 
+// Use the affected version ranges from https://github.com/HMCL-dev/HMCL/pull/7318.
+fn should_disable_base64_intrinsics(java: &JavaInfo) -> bool {
+  // IBM Semeru uses OpenJ9, while this flag is for HotSpot.
+  if !matches!(java.arch.as_deref(), Some("amd64" | "x86_64")) || java.vendor.starts_with("IBM") {
+    return false;
+  }
+
+  let version = java.full_version.split('+').next().unwrap_or_default();
+  let (number, prerelease) = version.split_once('-').unwrap_or((version, ""));
+  let mut components = [0; 4];
+  for (index, part) in number.split('.').enumerate() {
+    let Ok(value) = part.parse::<u32>() else {
+      return false;
+    };
+    // Compare through the fourth component, excluding vendor-specific build numbers.
+    if let Some(component) = components.get_mut(index) {
+      *component = value;
+    }
+  }
+
+  let [major, interim, update, patch] = components;
+  let version = (interim, update, patch);
+  let fixed = match major {
+    17 if version >= (0, 6, 0) => (0, 21, 1),
+    21 => (0, 13, 1),
+    25 => (0, 5, 1),
+    27 => (0, 1, 1),
+    18..=20 | 22..=24 | 26 => return true,
+    _ => return false,
+  };
+  version < fixed || (version == fixed && !prerelease.is_empty())
+}
+
 pub async fn generate_launch_command(
   app: &AppHandle,
-  launching: &LaunchingState,
   quick_play_singleplayer: Option<String>,
   quick_play_multiplayer: Option<String>,
 ) -> SJMCLResult<LaunchCommand> {
   let launcher_config = { app.state::<Mutex<LauncherConfig>>().lock()?.clone() };
+  let launching_queue = { app.state::<Mutex<Vec<LaunchingState>>>().lock()?.clone() };
 
   let LauncherConfig { basic_info, .. } = launcher_config;
+  let launching = launching_queue
+    .last()
+    .ok_or(LaunchError::LaunchingStateNotFound)?
+    .clone();
   let LaunchingState {
     selected_java,
     selected_instance,
@@ -146,7 +182,7 @@ pub async fn generate_launch_command(
   // -----------------------------------------
   let related_dirs = get_instance_subdir_paths(
     app,
-    selected_instance,
+    &selected_instance,
     &[
       &InstanceSubdirType::Root,
       &InstanceSubdirType::Assets,
@@ -161,7 +197,7 @@ pub async fn generate_launch_command(
   };
 
   let mut class_paths: Vec<String> = get_nonnative_library_paths(
-    client_info,
+    &client_info,
     libraries_dir,
     selected_instance.mod_loader.loader_type,
   )?
@@ -459,22 +495,23 @@ pub async fn generate_launch_command(
     cmd.extend(replace_arguments(client_jvm_args, &jvm_map));
   }
 
-  if let Some(arg) = base64_mitigation_arg(selected_java).await {
-    cmd.push(arg.to_string());
+  // CVE-2026-114938
+  if should_disable_base64_intrinsics(&selected_java) {
+    cmd.push("-XX:-UseBASE64Intrinsics".to_string());
   }
 
   // main class (after replace jvm args)
   cmd.push(
     client_info
       .main_class
-      .clone()
-      .ok_or(InstanceError::MainClassNotFound)?,
+      .ok_or(InstanceError::MainClassNotFound)?
+      .clone(),
   );
 
   if let Some(client_args) = &client_info.arguments {
     let client_game_args = client_args.to_game_arguments(&launch_feature)?;
     cmd.extend(replace_arguments(client_game_args, &game_map));
-  } else if let Some(client_args_str) = &client_info.minecraft_arguments {
+  } else if let Some(client_args_str) = client_info.minecraft_arguments {
     let client_game_args = client_args_str.split(' ').map(|s| s.to_string()).collect();
     cmd.extend(replace_arguments(client_game_args, &game_map));
   } else {

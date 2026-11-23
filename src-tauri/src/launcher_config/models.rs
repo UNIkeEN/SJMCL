@@ -37,6 +37,8 @@ pub struct JavaInfo {
   pub name: String, // JDK/JRE + full version
   #[serde(skip)]
   pub(crate) full_version: String,
+  #[serde(skip)]
+  pub(crate) arch: Option<String>,
   pub exec_path: String,
   pub vendor: String,
   pub major_version: i32, // major version + LTS flag
