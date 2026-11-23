@@ -76,11 +76,17 @@ fn discover_and_update_javas(app: &AppHandle) {
 
     // get java metadata (prioritize release file, fallback to command)
     let (mut vendor, mut version, mut arch) = get_java_info_from_release_file(&java_exec_path);
-    if vendor.is_none() || version.is_none() {
-      let (cmd_vendor, cmd_version, cmd_arch) = get_java_info_from_command(&java_exec_path);
+    let mut runtime_version = None;
+    // Oracle's Java 8 EPP identifies itself in java.runtime.version.
+    let needs_runtime_version = cfg!(target_os = "linux")
+      && version.as_deref().and_then(|v| v.split('-').next()) == Some("1.8.0_511");
+    if vendor.is_none() || version.is_none() || needs_runtime_version {
+      let (cmd_vendor, cmd_version, cmd_arch, cmd_runtime_version) =
+        get_java_info_from_command(&java_exec_path);
       vendor = vendor.or(cmd_vendor);
       version = version.or(cmd_version);
       arch = arch.or(cmd_arch);
+      runtime_version = cmd_runtime_version;
     }
     let full_version = match version {
       Some(v) => v,
@@ -105,7 +111,9 @@ fn discover_and_update_javas(app: &AppHandle) {
 
     let java_info = JavaInfo {
       name: format!("{} {}", if is_jdk { "JDK" } else { "JRE" }, full_version),
-      full_version: full_version,
+      full_version: runtime_version
+        .filter(|_| cfg!(target_os = "linux") && major_version == 8)
+        .unwrap_or(full_version),
       arch,
       major_version,
       is_lts,
@@ -465,7 +473,12 @@ pub fn get_java_info_from_release_file(
 
 pub fn get_java_info_from_command(
   java_path: &str,
-) -> (Option<String>, Option<String>, Option<String>) {
+) -> (
+  Option<String>,
+  Option<String>,
+  Option<String>,
+  Option<String>,
+) {
   // use "java -version -XshowSettings:properties" command to get info
   #[cfg(target_os = "windows")]
   let output = Command::new(java_path)
@@ -479,7 +492,7 @@ pub fn get_java_info_from_command(
 
   let output = match output {
     Ok(o) if o.status.success() => o,
-    _ => return (None, None, None),
+    _ => return (None, None, None, None),
   };
 
   let mut output_str = String::new();
@@ -489,6 +502,7 @@ pub fn get_java_info_from_command(
   let mut vendor = None;
   let mut full_version = None;
   let mut arch = None;
+  let mut runtime_version = None;
 
   for line in output_str.lines() {
     let trimmed = line.trim();
@@ -505,9 +519,12 @@ pub fn get_java_info_from_command(
     if let Some(val) = trimmed.strip_prefix("os.arch = ") {
       arch = Some(val.trim().to_string());
     }
+    if let Some(val) = trimmed.strip_prefix("java.runtime.version = ") {
+      runtime_version = Some(val.trim().to_string());
+    }
   }
 
-  (vendor, full_version, arch)
+  (vendor, full_version, arch, runtime_version)
 }
 
 pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {

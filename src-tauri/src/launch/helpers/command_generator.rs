@@ -110,6 +110,13 @@ fn should_disable_base64_intrinsics(java: &JavaInfo) -> bool {
     return false;
   }
 
+  // Oracle Java 8u511 EPP uses HotSpot 17 and reports a -perf runtime version.
+  if cfg!(target_os = "linux")
+    && (java.full_version == "1.8.0_511-perf" || java.full_version.starts_with("1.8.0_511-perf-"))
+  {
+    return true;
+  }
+
   let version = java.full_version.split('+').next().unwrap_or_default();
   let (number, prerelease) = version.split_once('-').unwrap_or((version, ""));
   let mut components = [0; 4];
