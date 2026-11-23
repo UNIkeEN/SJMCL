@@ -104,6 +104,7 @@ fn discover_and_update_javas(app: &AppHandle) {
 
     let java_info = JavaInfo {
       name: format!("{} {}", if is_jdk { "JDK" } else { "JRE" }, full_version),
+      full_version: full_version,
       major_version,
       is_lts,
       exec_path: java_exec_path.clone(),

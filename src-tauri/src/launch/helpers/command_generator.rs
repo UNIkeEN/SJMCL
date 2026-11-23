@@ -17,6 +17,7 @@ use crate::instance::helpers::game_version::compare_game_versions;
 use crate::instance::helpers::misc::get_instance_subdir_paths;
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
+use crate::launch::helpers::java_base64_mitigation::base64_mitigation_arg;
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
@@ -460,6 +461,10 @@ pub async fn generate_launch_command(
       "-Dminecraft.launcher.version=${launcher_version}".to_string(),
     ]);
     cmd.extend(replace_arguments(client_jvm_args, &jvm_map));
+  }
+
+  if let Some(arg) = base64_mitigation_arg(&selected_java).await {
+    cmd.push(arg.to_string());
   }
 
   // main class (after replace jvm args)

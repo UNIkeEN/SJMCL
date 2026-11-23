@@ -35,6 +35,8 @@ pub struct MemoryInfo {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct JavaInfo {
   pub name: String, // JDK/JRE + full version
+  #[serde(skip)]
+  pub(crate) full_version: String,
   pub exec_path: String,
   pub vendor: String,
   pub major_version: i32, // major version + LTS flag
