@@ -64,5 +64,7 @@ pub fn parse_crash_paths_from_log<P: AsRef<Path>>(
 
 /// Redact `--accessToken` values from exported text such as `hs_err` logs.
 pub fn redact_access_token(content: &str) -> String {
-  ACCESS_TOKEN_REGEX.replace_all(content, "${1}***").into_owned()
+  ACCESS_TOKEN_REGEX
+    .replace_all(content, "${1}***")
+    .into_owned()
 }
