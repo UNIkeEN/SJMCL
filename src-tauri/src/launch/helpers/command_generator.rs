@@ -1,5 +1,6 @@
 use base64::Engine;
 use base64::engine::general_purpose;
+use semver::Version;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
 use shlex::try_quote;
@@ -119,24 +120,26 @@ fn should_disable_base64_intrinsics(java: &JavaInfo) -> bool {
 
   let version = java.full_version.split('+').next().unwrap_or_default();
   let (number, prerelease) = version.split_once('-').unwrap_or((version, ""));
-  let mut components = [0; 4];
-  for (index, part) in number.split('.').enumerate() {
-    let Ok(value) = part.parse::<u32>() else {
-      return false;
-    };
-    // Compare through the fourth component, excluding vendor-specific build numbers.
-    if let Some(component) = components.get_mut(index) {
-      *component = value;
-    }
+  let mut components = number.split('.');
+  let Ok(major) = components.next().unwrap_or_default().parse::<u32>() else {
+    return false;
+  };
+  // Within a Java release line, compare interim.update.patch as three numbers.
+  let interim = components.next().unwrap_or("0");
+  let update = components.next().unwrap_or("0");
+  let patch = components.next().unwrap_or("0");
+  let Ok(version) = Version::parse(&format!("{interim}.{update}.{patch}")) else {
+    return false;
+  };
+  if components.any(|part| part.parse::<u32>().is_err()) {
+    return false;
   }
 
-  let [major, interim, update, patch] = components;
-  let version = (interim, update, patch);
   let fixed = match major {
-    17 if version >= (0, 6, 0) => (0, 21, 1),
-    21 => (0, 13, 1),
-    25 => (0, 5, 1),
-    27 => (0, 1, 1),
+    17 if version >= Version::new(0, 6, 0) => Version::new(0, 21, 1),
+    21 => Version::new(0, 13, 1),
+    25 => Version::new(0, 5, 1),
+    27 => Version::new(0, 1, 1),
     18..=20 | 22..=24 | 26 => return true,
     _ => return false,
   };
