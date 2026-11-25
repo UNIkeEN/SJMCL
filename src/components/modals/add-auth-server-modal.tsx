@@ -22,10 +22,12 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
 import { AccountService } from "@/services/account";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface AddAuthServerModalProps extends Omit<ModalProps, "children"> {
   presetUrl?: string;
@@ -160,6 +162,10 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
                 value={serverUrl}
                 onChange={(e) => setServerUrl(e.target.value)}
                 onBlur={() => setIsServerUrlTouched(true)}
+                onKeyDown={onEnterKeyDown(
+                  handleNextStep,
+                  !trimmedServerUrl || isLoading
+                )}
                 ref={initialRef}
                 focusBorderColor={`${primaryColor}.500`}
               />
@@ -208,11 +214,12 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
           ) : (
             <Button
               colorScheme={primaryColor}
+              aria-keyshortcuts="Enter"
               onClick={handleNextStep}
               isLoading={isLoading}
               isDisabled={!trimmedServerUrl}
             >
-              {t("General.next")}
+              <EnterKeyButtonLabel>{t("General.next")}</EnterKeyButtonLabel>
             </Button>
           )}
         </ModalFooter>

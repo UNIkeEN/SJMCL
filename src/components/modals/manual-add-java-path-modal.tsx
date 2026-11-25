@@ -18,8 +18,10 @@ import {
 import { open } from "@tauri-apps/plugin-dialog";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface ManualAddJavaPathModalProps extends Omit<ModalProps, "children"> {
   onSubmitCallback?: (path: string | null) => void;
@@ -95,6 +97,7 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
                   pr={12}
                   value={innerPath}
                   onChange={(e) => setInnerPath(e.target.value)}
+                  onKeyDown={onEnterKeyDown(handleSubmit, !innerPath.trim())}
                   placeholder={t("ManualAddJavaPathModal.placeholder.javaPath")}
                   focusBorderColor={`${primaryColor}.500`}
                   required
@@ -120,10 +123,11 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
           </Button>
           <Button
             colorScheme={primaryColor}
+            aria-keyshortcuts="Enter"
             onClick={handleSubmit}
             isDisabled={!innerPath.trim()}
           >
-            {t("General.confirm")}
+            <EnterKeyButtonLabel>{t("General.confirm")}</EnterKeyButtonLabel>
           </Button>
         </ModalFooter>
       </ModalContent>
