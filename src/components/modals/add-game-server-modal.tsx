@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { InstanceService } from "@/services/instance";
@@ -160,11 +161,12 @@ const AddGameServerModal: React.FC<AddGameServerModalProps> = ({
           </Button>
           <Button
             colorScheme={primaryColor}
+            aria-keyshortcuts="Enter"
             onClick={handleConfirm}
             isLoading={isLoading}
             isDisabled={isConfirmDisabled}
           >
-            {t("General.confirm")}
+            <EnterKeyButtonLabel>{t("General.confirm")}</EnterKeyButtonLabel>
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -33,6 +33,7 @@ import {
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { OptionItemGroup } from "@/components/common/option-item";
 import PlayerAvatar from "@/components/player-avatar";
 import { useLauncherConfig } from "@/contexts/config";
@@ -45,6 +46,7 @@ import {
 } from "@/enums/account";
 import { MicrosoftFriend, MicrosoftFriendList, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface MicrosoftFriendsModalProps extends Omit<ModalProps, "children"> {
   curPlayer: Player;
@@ -70,6 +72,7 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
 
   const trimmedNewFriendName = newFriendName.trim();
   const isOperating = isAddingFriend || !!pendingActionKey;
+  const isAddFriendDisabled = !trimmedNewFriendName || isOperating;
 
   const getFriendStatusValue = useCallback((friend: MicrosoftFriend) => {
     if (friend.invited) {
@@ -412,26 +415,19 @@ const MicrosoftFriendsModal: React.FC<MicrosoftFriendsModalProps> = ({
                 placeholder={t("MicrosoftFriendsModal.placeholder.playerName")}
                 focusBorderColor={`${primaryColor}.500`}
                 isDisabled={isOperating}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    trimmedNewFriendName &&
-                    !isOperating
-                  ) {
-                    handleAddFriend();
-                  }
-                }}
+                onKeyDown={onEnterKeyDown(handleAddFriend, isAddFriendDisabled)}
               />
               <Button
                 colorScheme={primaryColor}
+                aria-keyshortcuts="Enter"
                 isLoading={isAddingFriend}
-                isDisabled={!trimmedNewFriendName || isOperating}
+                isDisabled={isAddFriendDisabled}
                 onClick={handleAddFriend}
               >
-                <HStack spacing={1.5}>
+                <EnterKeyButtonLabel>
                   <LuUserRoundPlus />
                   <Text>{t("MicrosoftFriendsModal.button.add")}</Text>
-                </HStack>
+                </EnterKeyButtonLabel>
               </Button>
               <CommonIconButton
                 icon={LuRefreshCcw}

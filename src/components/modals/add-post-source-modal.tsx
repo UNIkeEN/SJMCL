@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { useLauncherConfig } from "@/contexts/config";
 import { onEnterKeyDown } from "@/utils/keyboard";
 
@@ -66,10 +67,11 @@ const AddDiscoverSourceModal: React.FC<Omit<ModalProps, "children">> = ({
           </Button>
           <Button
             colorScheme={primaryColor}
+            aria-keyshortcuts="Enter"
             onClick={handleConfirm}
             isDisabled={!endpointUrl.trim()}
           >
-            {t("General.confirm")}
+            <EnterKeyButtonLabel>{t("General.confirm")}</EnterKeyButtonLabel>
           </Button>
         </ModalFooter>
       </ModalContent>

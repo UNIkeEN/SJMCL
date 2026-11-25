@@ -18,6 +18,7 @@ import {
 import { open } from "@tauri-apps/plugin-dialog";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { onEnterKeyDown } from "@/utils/keyboard";
@@ -122,10 +123,11 @@ const ManualAddJavaPathModal: React.FC<ManualAddJavaPathModalProps> = ({
           </Button>
           <Button
             colorScheme={primaryColor}
+            aria-keyshortcuts="Enter"
             onClick={handleSubmit}
             isDisabled={!innerPath.trim()}
           >
-            {t("General.confirm")}
+            <EnterKeyButtonLabel>{t("General.confirm")}</EnterKeyButtonLabel>
           </Button>
         </ModalFooter>
       </ModalContent>

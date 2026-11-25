@@ -41,6 +41,7 @@ import {
   LuServer,
   LuSquareUserRound,
 } from "react-icons/lu";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { Section } from "@/components/common/section";
 import SegmentedControl from "@/components/common/segmented";
 import SelectPlayerModal from "@/components/modals/select-player-modal";
@@ -615,11 +616,14 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
             {!showOAuth && playerType !== PlayerType.Microsoft && (
               <Button
                 colorScheme={primaryColor}
+                aria-keyshortcuts="Enter"
                 onClick={() => handleLogin()}
                 isLoading={isLoading}
                 isDisabled={isConfirmDisabled}
               >
-                {t("General.confirm")}
+                <EnterKeyButtonLabel>
+                  {t("General.confirm")}
+                </EnterKeyButtonLabel>
               </Button>
             )}
           </HStack>

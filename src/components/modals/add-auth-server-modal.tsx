@@ -22,6 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import { useLauncherConfig } from "@/contexts/config";
 import { useGlobalData } from "@/contexts/global-data";
 import { useToast } from "@/contexts/toast";
@@ -213,11 +214,12 @@ const AddAuthServerModal: React.FC<AddAuthServerModalProps> = ({
           ) : (
             <Button
               colorScheme={primaryColor}
+              aria-keyshortcuts="Enter"
               onClick={handleNextStep}
               isLoading={isLoading}
               isDisabled={!trimmedServerUrl}
             >
-              {t("General.next")}
+              <EnterKeyButtonLabel>{t("General.next")}</EnterKeyButtonLabel>
             </Button>
           )}
         </ModalFooter>

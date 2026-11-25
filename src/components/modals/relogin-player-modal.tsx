@@ -17,6 +17,7 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
@@ -176,11 +177,14 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
             </Button>
             <Button
               colorScheme={primaryColor}
+              aria-keyshortcuts="Enter"
               onClick={() => handleReLogin()}
               isDisabled={!password.trim()}
               isLoading={isLoading}
             >
-              {t("ReLoginPlayerModal.button.login")}
+              <EnterKeyButtonLabel>
+                {t("ReLoginPlayerModal.button.login")}
+              </EnterKeyButtonLabel>
             </Button>
           </ModalFooter>
         )}
