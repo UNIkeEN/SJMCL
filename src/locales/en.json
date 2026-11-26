@@ -2333,7 +2333,7 @@
           }
         }
       },
-      "retrieveMojangJavaVersions": {
+      "fetchMojangJavaVersions": {
         "error": {
           "title": "Failed to retrieve available Mojang Java versions",
           "description": {

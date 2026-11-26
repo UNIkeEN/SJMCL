@@ -134,8 +134,8 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
     setMojangVersions(null);
     setIsLoadingMojangVersions(true);
 
-    const handleRetrieveMojangJavaVersions = async () => {
-      const res = await ConfigService.retrieveMojangJavaVersions();
+    const handleFetchMojangJavaVersions = async () => {
+      const res = await ConfigService.fetchMojangJavaVersions();
       if (!active) return;
       if (res.status === "success") {
         setMojangVersions(res.data);
@@ -148,7 +148,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
       }
       setIsLoadingMojangVersions(false);
     };
-    handleRetrieveMojangJavaVersions();
+    handleFetchMojangJavaVersions();
     return () => {
       active = false;
     };

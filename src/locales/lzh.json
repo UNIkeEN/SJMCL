@@ -2333,7 +2333,7 @@
           }
         }
       },
-      "retrieveMojangJavaVersions": {
+      "fetchMojangJavaVersions": {
         "error": {
           "title": "Mojang 爪哇可用諸版取得未成",
           "description": {

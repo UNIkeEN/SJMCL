@@ -239,7 +239,7 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
-pub async fn retrieve_mojang_java_versions(app: AppHandle) -> SJMCLResult<Vec<String>> {
+pub async fn fetch_mojang_java_versions(app: AppHandle) -> SJMCLResult<Vec<String>> {
   get_mojang_java_versions(&app).await
 }
 

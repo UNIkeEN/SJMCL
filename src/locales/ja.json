@@ -2333,7 +2333,7 @@
           }
         }
       },
-      "retrieveMojangJavaVersions": {
+      "fetchMojangJavaVersions": {
         "error": {
           "title": "利用可能な Mojang Java バージョンの取得に失敗",
           "description": {
