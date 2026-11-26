@@ -252,6 +252,7 @@ structstruck::strike! {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct AuthServerInfo {
   pub auth_url: String,
+  pub server_name: Option<String>,
   pub client_id: Option<String>,
   pub metadata: Value,
   pub timestamp: u64,
@@ -260,10 +261,12 @@ pub struct AuthServerInfo {
 impl From<AuthServerInfo> for AuthServer {
   fn from(info: AuthServerInfo) -> Self {
     AuthServer {
-      name: info.metadata["meta"]["serverName"]
-        .as_str()
-        .unwrap_or_default()
-        .to_string(),
+      name: info.server_name.unwrap_or(
+        info.metadata["meta"]["serverName"]
+          .as_str()
+          .unwrap_or_default()
+          .to_string(),
+      ),
       auth_url: info.auth_url,
       homepage_url: info.metadata["meta"]["links"]["homepage"]
         .as_str()
@@ -302,6 +305,7 @@ impl Default for AccountInfo {
       auth_servers: PRESET_AUTH_SERVERS
         .iter()
         .map(|url| AuthServerInfo {
+          server_name: None,
           auth_url: url.to_string(),
           client_id: None,
           metadata: Value::Null,
