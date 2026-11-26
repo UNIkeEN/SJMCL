@@ -1,9 +1,17 @@
-import { Flex, HStack, Tag, Text, useDisclosure } from "@chakra-ui/react";
+import {
+  Center,
+  Flex,
+  HStack,
+  Tag,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
+import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import Empty from "@/components/common/empty";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
@@ -23,7 +31,7 @@ const JavaSettingsPage = () => {
   const primaryColor = config.appearance.theme.primaryColor;
   const { closeSharedModal, openGenericConfirmDialog } = useSharedModals();
 
-  const [javaInfos, setJavaInfos] = useState<JavaInfo[]>([]);
+  const [javaInfos, setJavaInfos] = useState<JavaInfo[]>();
   const [selectedJava, setSelectedJava] = useState<JavaInfo | null>(null);
 
   // for manual add java path modal
@@ -32,7 +40,7 @@ const JavaSettingsPage = () => {
   >(null);
 
   useEffect(() => {
-    setJavaInfos(getJavaInfos() || []);
+    setJavaInfos(getJavaInfos());
   }, [getJavaInfos]);
 
   const {
@@ -89,7 +97,7 @@ const JavaSettingsPage = () => {
 
       const isDuplicated =
         config.extraJavaPaths.includes(newJavaPath) ||
-        javaInfos.some((java) => java.execPath === newJavaPath);
+        javaInfos?.some((java) => java.execPath === newJavaPath);
       if (isDuplicated) {
         toast({
           title: t("JavaSettingsPage.toast.addFailed.title"),
@@ -110,7 +118,7 @@ const JavaSettingsPage = () => {
           return;
         } else {
           update("extraJavaPaths", [...config.extraJavaPaths, newJavaPath]);
-          setJavaInfos(getJavaInfos(true) || []);
+          setJavaInfos(getJavaInfos(true));
           toast({
             title: t("JavaSettingsPage.toast.addSuccess.title"),
             description: t("JavaSettingsPage.toast.addSuccess.description"),
@@ -140,7 +148,7 @@ const JavaSettingsPage = () => {
       (path) => path !== selectedJava.execPath
     );
     update("extraJavaPaths", updatedJavaPaths);
-    setJavaInfos(getJavaInfos(true) || []);
+    setJavaInfos(getJavaInfos(true));
     closeSharedModal("generic-confirm");
     setSelectedJava(null);
   };
@@ -198,7 +206,11 @@ const JavaSettingsPage = () => {
           </HStack>
         }
       >
-        {javaInfos.length > 0 ? (
+        {javaInfos === undefined ? (
+          <Center mt={4}>
+            <BeatLoader size={16} color="gray" />
+          </Center>
+        ) : javaInfos.length > 0 ? (
           <OptionItemGroup
             items={javaInfos.map((java) => (
               <OptionItem
