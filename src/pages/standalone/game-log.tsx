@@ -14,7 +14,7 @@ import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronsDown, LuFileInput, LuTrash } from "react-icons/lu";
+import { LuChevronsDown, LuFileInput, LuTrash, LuX } from "react-icons/lu";
 import {
   AutoSizer,
   CellMeasurer,
@@ -297,6 +297,11 @@ const GameLogPage: React.FC = () => {
 
   const clearLogs = () => setLogs([]);
 
+  const terminateGameProcess = () => {
+    if (launchingIdRef.current != null)
+      LaunchService.terminateGameProcess(launchingIdRef.current);
+  };
+
   const revealRawLogFile = async () => {
     if (!launchingIdRef.current) return;
 
@@ -388,6 +393,16 @@ const GameLogPage: React.FC = () => {
             {level} ({logCounts[level] || 0})
           </Button>
         ))}
+        <Tooltip label={t("GameLogPage.terminate")} placement="bottom">
+          <IconButton
+            icon={<LuX />}
+            aria-label={t("GameLogPage.terminate")}
+            variant="ghost"
+            size="sm"
+            colorScheme="gray"
+            onClick={terminateGameProcess}
+          />
+        </Tooltip>
         <Tooltip label={t("GameLogPage.revealRawLog")} placement="bottom">
           <IconButton
             icon={<LuFileInput />}
