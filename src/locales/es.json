@@ -1665,6 +1665,7 @@
     },
     "serverList": {
       "title": "Servidores",
+      "showHidden": "Mostrar ocultos",
       "players": "Jugadores",
       "tag": {
         "online": "En línea",

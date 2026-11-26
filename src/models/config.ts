@@ -194,6 +194,7 @@ export interface LauncherConfig {
     };
     instanceWorldsPage: {
       accordionStates: boolean[];
+      showHiddenServers: boolean;
     };
     instanceShaderPacksPage: {
       accordionStates: boolean[];
@@ -391,6 +392,7 @@ export const defaultConfig: LauncherConfig = {
     },
     instanceWorldsPage: {
       accordionStates: [true, true],
+      showHiddenServers: false,
     },
     instanceShaderPacksPage: {
       accordionStates: [true, true],
