@@ -23,6 +23,10 @@ bun.lock
 /build
 /target
 
+# nix
+/result
+/result-*
+
 # misc
 .DS_Store
 *.pem
