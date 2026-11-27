@@ -73,34 +73,26 @@ pub async fn get_legacy_forge_file(
   app: &AppHandle,
   game_version: &str,
   loader_version: &str,
-) -> SJMCLResult<Option<ForgeFile>> {
-  // Minecraft 1.5.2+ (Forge 7.8+) keeps the existing installer path.
-  let mut version = loader_version.split('.');
-  let major = version.next().and_then(|part| part.parse::<u32>().ok());
-  let minor = version.next().and_then(|part| part.parse::<u32>().ok());
-  if !matches!((major, minor), (Some(major), Some(minor)) if (major, minor) < (7, 8)) {
-    return Ok(None);
-  }
-
-  let meta = fetch_forge_meta_bmcl(app, game_version)
-    .await?
-    .into_iter()
-    .find(|meta| meta.version == loader_version)
-    .ok_or(ResourceError::ParseError)?;
+  branch: Option<&str>,
+) -> Option<ForgeFile> {
+  // An unavailable or incomplete mirror index must not block the standard installer URL.
+  let manifest = fetch_forge_meta_bmcl(app, game_version).await.ok()?;
+  let meta = manifest.into_iter().find(|meta| {
+    let meta_branch = meta.branch.as_ref().and_then(Value::as_str);
+    meta.version == loader_version && meta_branch.unwrap_or("") == branch.unwrap_or("")
+  })?;
   if meta
     .files
     .iter()
     .any(|file| file.category == "installer" && file.format == "jar")
   {
-    return Ok(None);
+    return None;
   }
   meta
     .files
     .into_iter()
     .filter(|file| file.format == "zip" && matches!(file.category.as_str(), "universal" | "client"))
     .min_by_key(|file| file.category != "universal")
-    .map(Some)
-    .ok_or_else(|| ResourceError::ParseError.into())
 }
 
 async fn get_forge_meta_by_game_version_official(

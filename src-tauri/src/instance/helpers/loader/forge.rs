@@ -83,7 +83,8 @@ pub async fn install_forge_loader(
   lib_dir: PathBuf,
   task_params: &mut Vec<DownloadTask>,
 ) -> SJMCLResult<()> {
-  let legacy_file = get_legacy_forge_file(app, game_version, &loader.version).await?;
+  let legacy_file =
+    get_legacy_forge_file(app, game_version, &loader.version, loader.branch.as_deref()).await;
   let (category, format) = legacy_file
     .as_ref()
     .map(|file| (file.category.as_str(), file.format.as_str()))
@@ -126,18 +127,25 @@ pub async fn download_forge_libraries(
   let mut task_params = vec![];
   let mut processors = vec![];
 
-  if let Some(file) =
-    get_legacy_forge_file(app, &instance.version, &instance.mod_loader.version).await?
-  {
-    return prepare_legacy_forge(priority, instance, root_dir, lib_dir, client_info, &file);
-  }
-
   let installer_coord = format!(
     "net.minecraftforge:forge:{}-installer",
     instance.mod_loader.version
   );
   let installer_rel = convert_library_name_to_path(&installer_coord, None)?;
   let installer_path = lib_dir.join(&installer_rel);
+  if !installer_path.is_file() {
+    if let Some(file) = get_legacy_forge_file(
+      app,
+      &instance.version,
+      &instance.mod_loader.version,
+      instance.mod_loader.branch.as_deref(),
+    )
+    .await
+    {
+      return prepare_legacy_forge(priority, instance, root_dir, lib_dir, client_info, &file);
+    }
+    return Err(InstanceError::LoaderInstallerNotFound.into());
+  }
   let bin_patch = lib_dir.join(convert_library_name_to_path(
     &format!(
       "net.minecraftforge:forge:{}:clientdata@lzma",
@@ -145,9 +153,6 @@ pub async fn download_forge_libraries(
     ),
     None,
   )?);
-  if !installer_path.exists() {
-    return Err(InstanceError::LoaderInstallerNotFound.into());
-  }
   let file = File::open(&installer_path)?;
   let mut archive = ZipArchive::new(file)?;
 
@@ -467,7 +472,6 @@ fn prepare_legacy_forge(
     return Err(InstanceError::LoaderInstallerNotFound.into());
   }
   let mut archive = ZipArchive::new(File::open(&archive_path)?)?;
-  let tasks = get_legacy_fml_library_tasks(&mut archive, root_dir, priority)?;
   let sources = get_forge_file_sources(
     &[SourceType::Official],
     &instance.version,
@@ -476,8 +480,7 @@ fn prepare_legacy_forge(
     &file.format,
   )?;
 
-  // Pre-installer Forge overrides vanilla classes through the classpath, not processors.
-  client_info.patches.push(McClientInfo {
+  let mut patch = McClientInfo {
     id: "forge".to_string(),
     version: Some(instance.mod_loader.version.clone()),
     priority: Some(30000),
@@ -496,7 +499,83 @@ fn prepare_legacy_forge(
       ..Default::default()
     }],
     ..Default::default()
-  });
+  };
+  let tasks = if archive
+    .index_for_name("cpw/mods/fml/common/launcher/FMLTweaker.class")
+    .is_some()
+  {
+    // Early 1.6.1 archives use LaunchWrapper and bundle their deobfuscation data.
+    let arguments = client_info
+      .minecraft_arguments
+      .as_deref()
+      .ok_or(InstanceError::InstallProfileParseError)?;
+    patch.main_class = Some("net.minecraft.launchwrapper.Launch".into());
+    patch.minecraft_arguments = Some(format!(
+      "{arguments} --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"
+    ));
+    let mut tasks = Vec::new();
+    // These are the extra client libraries from the first 1.6.1 installer (8.9.0.753).
+    for (name, resource_type, size, sha1) in [
+      (
+        "net.minecraft:launchwrapper:1.3",
+        ResourceType::Libraries,
+        17357,
+        "78049b4cc4611e812a8d2e27c08a295d15df1fba",
+      ),
+      (
+        "org.ow2.asm:asm-all:4.1",
+        ResourceType::Libraries,
+        214592,
+        "054986e962b88d8660ae4566475658469595ef58",
+      ),
+      (
+        "lzma:lzma:0.0.1",
+        ResourceType::Libraries,
+        5762,
+        "521616dc7487b42bef0e803bd2fa3faf668101d7",
+      ),
+      (
+        "org.scala-lang:scala-library:2.10.2",
+        ResourceType::ForgeMavenNew,
+        7121818,
+        "6ba65d12cd09d441083262d6f73d2257fec7c663",
+      ),
+      (
+        "org.scala-lang:scala-compiler:2.10.2",
+        ResourceType::ForgeMavenNew,
+        14411577,
+        "64c8b1380cc53d6850823d6e4e7ae984aa44ef9c",
+      ),
+    ] {
+      let path = convert_library_name_to_path(name, None)?;
+      let url = get_download_api(SourceType::Official, resource_type)?.join(&path)?;
+      patch.libraries.push(LibrariesValue {
+        name: name.to_string(),
+        downloads: Some(LibrariesDownloads {
+          artifact: Some(DownloadsArtifact {
+            path: path.clone(),
+            url: url.to_string(),
+            sha1: sha1.to_string(),
+            size,
+          }),
+          ..Default::default()
+        }),
+        ..Default::default()
+      });
+      tasks.push(DownloadTask {
+        sources: get_download_urls(&url, &[resource_type], priority)?,
+        dest: lib_dir.join(path),
+        filename: None,
+        size: Some(size as u64),
+        sha1: Some(sha1.to_string()),
+      });
+    }
+    tasks
+  } else {
+    // Pre-LaunchWrapper Forge overrides vanilla classes directly through the classpath.
+    get_legacy_fml_library_tasks(&mut archive, root_dir, priority)?
+  };
+  client_info.patches.push(patch);
   reset_fields_from_patches(client_info);
 
   Ok(InstallPlan {

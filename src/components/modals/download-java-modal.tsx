@@ -26,12 +26,13 @@ type VendorKey = "mojang" | "zulu" | "bellsoft" | "oracle";
 const DEFAULT_VENDOR: VendorKey = "mojang";
 const DEFAULT_VERSION = "25" as const;
 const DEFAULT_TYPE = "jre" as const;
+const LTS_VERSIONS = ["8", "11", "17", "21", "25"];
 
 interface JavaVendor {
   label: string;
   hasJre: boolean;
   archMap: Record<string, string>;
-  versions?: string[];
+  versions: string[];
   getUrl: (params: {
     version: string;
     os: string;
@@ -64,9 +65,6 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   const [type, setType] = useState<"" | "jdk" | "jre">(DEFAULT_TYPE);
   const [mojangVersions, setMojangVersions] = useState<string[] | null>(null);
   const [isLoadingMojangVersions, setIsLoadingMojangVersions] = useState(false);
-  const isVersionAvailable =
-    vendor !== "mojang" || (mojangVersions?.includes(version) ?? false);
-
   const VENDORS: Record<VendorKey, JavaVendor> = {
     mojang: {
       label: "Mojang",
@@ -78,6 +76,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
     zulu: {
       label: "Zulu",
       hasJre: true,
+      versions: LTS_VERSIONS,
       archMap: {
         x86_64: "x86-64-bit",
         aarch64: "arm-64-bit",
@@ -97,6 +96,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
     bellsoft: {
       label: "BellSoft",
       hasJre: true,
+      versions: LTS_VERSIONS,
       archMap: {
         x86_64: "x86",
         aarch64: "arm",
@@ -113,6 +113,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
     oracle: {
       label: "Oracle",
       hasJre: false,
+      versions: LTS_VERSIONS,
       archMap: {},
       getUrl: ({ version, os }) => {
         const javaOrJdk = ["8", "11", "17"].includes(version) ? "java" : "jdk";
@@ -120,6 +121,10 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
       },
     },
   };
+  const selectedVendor = vendor ? VENDORS[vendor] : undefined;
+  const availableVersions = selectedVendor?.versions ?? [];
+  const canConfirm =
+    !!selectedVendor && !!type && availableVersions.includes(version);
 
   useEffect(() => {
     if (!props.isOpen) return;
@@ -165,7 +170,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
   }, [vendor, version, mojangVersions]);
 
   const handleConfirm = async () => {
-    if (!vendor || !version || !type || !isVersionAvailable) return;
+    if (!selectedVendor || !type || !canConfirm) return;
 
     if (vendor === "mojang") {
       ConfigService.downloadMojangJava(version).then((res) => {
@@ -181,13 +186,12 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
         }
       });
     } else {
-      const selectedVendor = VENDORS[vendor as VendorKey];
       const archParam = selectedVendor.archMap[arch] || "";
       const url = selectedVendor.getUrl({
         version,
         os,
         archParam,
-        type: type as "jdk" | "jre",
+        type,
       });
       openUrl(url);
     }
@@ -220,10 +224,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
                   } else if (selected === "mojang") {
                     setType("jre");
                   }
-                  if (
-                    VENDORS[selected]?.versions &&
-                    !VENDORS[selected].versions.includes(version)
-                  ) {
+                  if (!VENDORS[selected].versions.includes(version)) {
                     setVersion("");
                   }
                   setVendor(selected);
@@ -234,17 +235,9 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
               />
 
               <MenuSelector
-                options={
-                  VENDORS[vendor as VendorKey]?.versions || [
-                    "8",
-                    "11",
-                    "17",
-                    "21",
-                    "25",
-                  ]
-                }
+                options={availableVersions}
                 value={version}
-                disabled={vendor === "mojang" && !mojangVersions?.length}
+                disabled={availableVersions.length === 0}
                 onSelect={(val) => setVersion(val as typeof version)}
                 placeholder={t("DownloadJavaModal.selector.version")}
                 size="sm"
@@ -254,7 +247,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
               <MenuSelector
                 options={[
                   { value: "jdk", label: "JDK" },
-                  ...(vendor && VENDORS[vendor as VendorKey]?.hasJre
+                  ...(selectedVendor?.hasJre
                     ? [{ value: "jre", label: "JRE" }]
                     : []),
                 ]}
@@ -287,7 +280,7 @@ export const DownloadJavaModal: React.FC<Omit<ModalProps, "children">> = ({
           <Button
             colorScheme={primaryColor}
             rightIcon={vendor !== "mojang" ? <LuExternalLink /> : undefined}
-            isDisabled={!(vendor && version && type) || !isVersionAvailable}
+            isDisabled={!canConfirm}
             isLoading={vendor === "mojang" && isLoadingMojangVersions}
             onClick={handleConfirm}
           >
