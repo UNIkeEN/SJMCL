@@ -16,7 +16,6 @@ pub enum InstanceSubdirType {
   Assets,
   Libraries,
   Mods,
-  NativeLibraries,
   ResourcePacks,
   Root,
   Saves,

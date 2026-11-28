@@ -65,10 +65,6 @@ pub fn get_instance_subdir_paths(
         InstanceSubdirType::Screenshots => path.join("screenshots"),
         InstanceSubdirType::ServerResourcePacks => path.join("server-resource-packs"),
         InstanceSubdirType::ShaderPacks => path.join("shaderpacks"),
-        // native libraries extracted by SJMCL
-        InstanceSubdirType::NativeLibraries => {
-          get_instance_native_libraries_dir(instance, tauri_plugin_os::arch())
-        }
       };
 
       // Create directory if it doesn't exist

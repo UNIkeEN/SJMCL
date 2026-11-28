@@ -59,7 +59,7 @@ use crate::instance::models::world::{WorldDetails, WorldInfo};
 use crate::launch::helpers::file_validator::{get_invalid_assets, get_invalid_library_files};
 use crate::launch::helpers::jre_selector::{get_minimum_java_version_by_game, select_java_runtime};
 use crate::launch::models::LaunchError;
-use crate::launcher_config::helpers::java::build_mojang_java_download_params;
+use crate::launcher_config::helpers::java::{MojangJavaVersion, build_mojang_java_download_params};
 use crate::launcher_config::helpers::misc::get_global_game_config;
 use crate::launcher_config::models::{GameConfig, GameDirectory, LauncherConfig};
 use crate::resource::helpers::misc::{get_download_urls, get_source_priority_list};
@@ -1123,7 +1123,7 @@ pub async fn create_instance(
   let mut task_params = Vec::<DownloadTask>::new();
 
   // auto download recommended java if needed
-  let mut java_version_to_download: Option<String> = None;
+  let mut java_version_to_download = None;
   let client_java_version = version_info
     .java_version
     .as_ref()
@@ -1142,9 +1142,11 @@ pub async fn create_instance(
       if auto_download_java && err.0 == LaunchError::NoSuitableJava.to_string() {
         let minimum_java_version =
           get_minimum_java_version_by_game(&app, &instance, client_java_version, false).await;
-        let minimum_java_version = minimum_java_version.to_string();
-        task_params.extend(build_mojang_java_download_params(&app, &minimum_java_version).await?);
-        java_version_to_download = Some(minimum_java_version);
+        let (version, java_tasks) =
+          build_mojang_java_download_params(&app, MojangJavaVersion::AtLeast(minimum_java_version))
+            .await?;
+        task_params.extend(java_tasks);
+        java_version_to_download = Some(version);
       }
       // A newly downloaded runtime follows the launcher's platform.
       tauri_plugin_os::arch().to_string()

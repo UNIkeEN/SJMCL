@@ -546,13 +546,19 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
   (major_version, is_lts)
 }
 
-const MOJANG_JAVA_RUNTIMES: &[(&str, &str)] = &[
-  ("8", "jre-legacy"),
-  ("16", "java-runtime-alpha"),
-  ("17", "java-runtime-gamma"),
-  ("21", "java-runtime-delta"),
-  ("25", "java-runtime-epsilon"),
+const MOJANG_JAVA_RUNTIMES: &[(i32, &str)] = &[
+  (8, "jre-legacy"),
+  (16, "java-runtime-alpha"),
+  (17, "java-runtime-gamma"),
+  (21, "java-runtime-delta"),
+  (25, "java-runtime-epsilon"),
 ];
+
+#[derive(Debug, Clone, Copy)]
+pub enum MojangJavaVersion {
+  Exact(i32),
+  AtLeast(i32),
+}
 
 fn mojang_java_platform(os: &str, arch: &str) -> Option<&'static str> {
   Some(match (os, normalize_java_arch(arch)) {
@@ -578,6 +584,24 @@ fn mojang_java_manifest_url<'a>(
     .get("manifest")?
     .get("url")?
     .as_str()
+    .filter(|url| !url.is_empty())
+}
+
+fn select_mojang_java_runtime<'a>(
+  manifest: &'a Value,
+  platform: &str,
+  request: MojangJavaVersion,
+) -> Option<(i32, &'a str)> {
+  MOJANG_JAVA_RUNTIMES
+    .iter()
+    .filter(|&&(version, _)| match request {
+      MojangJavaVersion::Exact(required) => version == required,
+      MojangJavaVersion::AtLeast(minimum) => version >= minimum,
+    })
+    .filter_map(|&(version, runtime)| {
+      mojang_java_manifest_url(manifest, platform, runtime).map(|url| (version, url))
+    })
+    .min_by_key(|(version, _)| *version)
 }
 
 async fn fetch_mojang_java_manifest(
@@ -618,26 +642,25 @@ pub async fn get_mojang_java_versions(app: &AppHandle) -> SJMCLResult<Vec<String
 
 pub async fn build_mojang_java_download_params(
   app: &AppHandle,
-  version: &str,
-) -> SJMCLResult<Vec<DownloadTask>> {
+  request: MojangJavaVersion,
+) -> SJMCLResult<(i32, Vec<DownloadTask>)> {
   let config = app.state::<Mutex<LauncherConfig>>().lock()?.clone();
   let client = app.state::<reqwest::Client>();
-  let platform = mojang_java_platform(&config.basic_info.os_type, &config.basic_info.arch);
-  let runtime = MOJANG_JAVA_RUNTIMES.iter().find(|(v, _)| *v == version);
-  let (Some(platform), Some((_, runtime))) = (platform, runtime) else {
+  let Some(platform) = mojang_java_platform(&config.basic_info.os_type, &config.basic_info.arch)
+  else {
     log::warn!(
-      "Mojang Java {} is unavailable for {}/{}",
-      version,
+      "Mojang Java {request:?} is unavailable for {}/{}",
       config.basic_info.os_type,
       config.basic_info.arch
     );
     return Err(LauncherConfigError::MojangJavaUnavailable.into());
   };
   let json = fetch_mojang_java_manifest(app, &config).await?;
-  let manifest_url = mojang_java_manifest_url(&json, platform, runtime).ok_or_else(|| {
-    log::warn!("Mojang Java {} is unavailable for {}", version, platform);
-    LauncherConfigError::MojangJavaUnavailable
-  })?;
+  let (version, manifest_url) =
+    select_mojang_java_runtime(&json, platform, request).ok_or_else(|| {
+      log::warn!("Mojang Java {request:?} is unavailable for {platform}");
+      LauncherConfigError::MojangJavaUnavailable
+    })?;
 
   let manifest: Value = client
     .get(manifest_url)
@@ -680,5 +703,5 @@ pub async fn build_mojang_java_download_params(
     });
   }
 
-  Ok(download_params)
+  Ok((version, download_params))
 }

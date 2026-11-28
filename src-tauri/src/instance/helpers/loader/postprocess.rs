@@ -174,8 +174,8 @@ async fn prepare_installation(
     remove_mod_loader_from_client_info(&mut client_info, kind);
     let plan = match kind {
       ModLoaderType::Forge => {
-        download_forge_libraries(app, &priority_list, &instance, &mut client_info)
-          .await
+        let tasks = engine.0.list_tasks(group_id.to_string()).await?;
+        download_forge_libraries(app, &priority_list, &instance, &mut client_info, &tasks)
           .map_err(task_error)?
       }
       ModLoaderType::Cleanroom => {
