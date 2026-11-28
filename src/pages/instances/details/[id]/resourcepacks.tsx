@@ -3,11 +3,11 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPackage } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
 import { FormattedMCText } from "@/components/common/formatted-mc-text";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useFileDnD } from "@/components/special/file-dnd-overlay";
@@ -233,7 +233,7 @@ const InstanceResourcePacksPage = () => {
           >
             {value.isLoading ? (
               <Center mt={4}>
-                <BeatLoader size={16} color="gray" />
+                <LogoLoader />
               </Center>
             ) : value.data.length > 0 ? (
               <OptionItemGroup

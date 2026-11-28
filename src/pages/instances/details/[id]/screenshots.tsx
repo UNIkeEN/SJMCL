@@ -2,8 +2,8 @@ import { Center, Image, useDisclosure } from "@chakra-ui/react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import router from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
 import PreviewScreenshotModal from "@/components/modals/preview-screenshot-modal";
@@ -74,7 +74,7 @@ const InstanceScreenshotsPage: React.FC = () => {
     <Section>
       {isLoading ? (
         <Center mt={4}>
-          <BeatLoader size={16} color="gray" />
+          <LogoLoader />
         </Center>
       ) : screenshots.length > 0 ? (
         <WrapCardGroup

@@ -23,8 +23,8 @@ import {
   LuPackagePlus,
   LuScrollText,
 } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import AdvancedCard from "@/components/common/advanced-card";
+import LogoLoader from "@/components/common/logo-loader";
 import DevToolbar from "@/components/dev/dev-toolbar";
 import HeadNavBar from "@/components/head-navbar-v2";
 import LanguageMenu from "@/components/language-menu";
@@ -287,7 +287,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   if (config.mocked)
     return (
       <Center h="100vh" style={getGlobalExtraStyle(config)}>
-        <BeatLoader size={16} color="gray" />
+        <LogoLoader />
       </Center>
     );
 

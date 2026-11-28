@@ -7,6 +7,7 @@ import { LuNewspaper } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { Section } from "@/components/common/section";
 import PosterCard from "@/components/poster-card";
 import { useLauncherConfig } from "@/contexts/config";
@@ -133,7 +134,7 @@ export const CommunityNewsPage = () => {
     >
       {isLoading && visiblePosts.length === 0 ? (
         <Center mt={8}>
-          <BeatLoader size={16} color="gray" />
+          <LogoLoader />
         </Center>
       ) : visiblePosts.length === 0 ? (
         <Empty withIcon={false} size="sm" />

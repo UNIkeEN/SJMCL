@@ -16,6 +16,7 @@ import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import AddGameServerModal from "@/components/modals/add-game-server-modal";
@@ -335,7 +336,7 @@ const InstanceWorldsPage = () => {
       >
         {isLoading ? (
           <Center mt={4}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : worlds.length > 0 ? (
           <OptionItemGroup
