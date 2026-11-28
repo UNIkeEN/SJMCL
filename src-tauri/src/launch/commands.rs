@@ -19,7 +19,9 @@ use crate::account::helpers::offline::yggdrasil_server::YggdrasilServer;
 use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::download::submit_download_group;
-use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
+use crate::instance::helpers::client_json::{
+  McClientInfo, replace_native_libraries, restore_missing_legacy_library_variants,
+};
 use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
 use crate::launch::helpers::command_generator::{
@@ -67,7 +69,8 @@ pub async fn select_suitable_jre(
   let client_path = instance
     .version_path
     .join(format!("{}.json", instance.name));
-  let client_info = load_json_async::<McClientInfo>(&client_path).await?;
+  let mut client_info = load_json_async::<McClientInfo>(&client_path).await?;
+  restore_missing_legacy_library_variants(&mut client_info);
 
   refresh_and_update_javas(&app).await?;
 
@@ -96,7 +99,7 @@ pub async fn select_suitable_jre(
   Ok(())
 }
 
-// Step 2: extract native libraries, validate game and dependency files, and prepare legacy game assets (if needed).
+// Step 2: validate game files, extract native libraries, and prepare legacy assets (if needed).
 #[tauri::command]
 pub async fn validate_game_files(
   app: AppHandle,
@@ -141,7 +144,6 @@ pub async fn validate_game_files(
     launching.client_info = client_info.clone();
   }
 
-  // extract native libraries
   let dirs = get_instance_subdir_paths(
     &app,
     &instance,
@@ -156,15 +158,6 @@ pub async fn validate_game_files(
   let [root_dir, libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
-  extract_native_libraries(
-    &client_info,
-    libraries_dir,
-    natives_dir,
-    workaround.use_native_glfw,
-    workaround.use_native_openal,
-  )
-  .await?;
-
   let priority_list = {
     let launcher_config = launcher_config_state.lock()?;
     get_source_priority_list(&launcher_config)
@@ -206,6 +199,14 @@ pub async fn validate_game_files(
   };
 
   if incomplete_files.is_empty() {
+    extract_native_libraries(
+      &client_info,
+      libraries_dir,
+      natives_dir,
+      workaround.use_native_glfw,
+      workaround.use_native_openal,
+    )
+    .await?;
     prepare_legacy_assets(root_dir, assets_dir, &client_info.asset_index.id).await?;
     Ok(())
   } else {
