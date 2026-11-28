@@ -30,6 +30,7 @@ use crate::launch::helpers::command_generator::{
 use crate::launch::helpers::file_validator::{
   extract_native_libraries, get_invalid_assets, get_invalid_library_files, prepare_legacy_assets,
 };
+use crate::launch::helpers::freetype_security::prepare_freetype_security_libraries;
 use crate::launch::helpers::graphics_handler::{
   build_graphics_environment_variables, parse_environment_variables,
 };
@@ -135,16 +136,6 @@ pub async fn validate_game_files(
     .await
     .map_err(|_| InstanceError::ClientJsonParseError)?;
 
-  {
-    let mut launching_queue = launching_queue_state.lock()?;
-    let launching = launching_queue
-      .last_mut()
-      .ok_or(LaunchError::LaunchingStateNotFound)?;
-
-    launching.client_info = client_info.clone();
-  }
-
-  // extract native libraries
   let dirs = get_instance_subdir_paths(
     &app,
     &instance,
@@ -158,6 +149,39 @@ pub async fn validate_game_files(
   let [root_dir, libraries_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
+  let priority_list = {
+    let launcher_config = launcher_config_state.lock()?;
+    get_source_priority_list(&launcher_config)
+  };
+
+  // Security updates are mandatory even if normal game file validation is disabled.
+  let security_downloads = prepare_freetype_security_libraries(
+    &mut client_info,
+    libraries_dir,
+    priority_list[0],
+    &selected_java.arch,
+  )
+  .await?;
+  if !security_downloads.is_empty() {
+    submit_download_group(
+      app,
+      format!("patch-files?{}", client_info.id),
+      security_downloads,
+      true,
+    )
+    .await?;
+    return Err(LaunchError::GameFilesIncomplete.into());
+  }
+
+  {
+    let mut launching_queue = launching_queue_state.lock()?;
+    let launching = launching_queue
+      .last_mut()
+      .ok_or(LaunchError::LaunchingStateNotFound)?;
+    launching.client_info = client_info.clone();
+  }
+
+  // extract native libraries
   let natives_dir = get_instance_native_libraries_dir(&instance, &selected_java.arch);
   extract_native_libraries(
     &client_info,
@@ -168,11 +192,6 @@ pub async fn validate_game_files(
     workaround.use_native_openal,
   )
   .await?;
-
-  let priority_list = {
-    let launcher_config = launcher_config_state.lock()?;
-    get_source_priority_list(&launcher_config)
-  };
 
   // validate game files
   let incomplete_files = match workaround.game_file_validate_policy {
