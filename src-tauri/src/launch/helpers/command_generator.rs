@@ -1,6 +1,5 @@
 use base64::Engine;
 use base64::engine::general_purpose;
-use semver::Version;
 use serde::{self, Deserialize, Serialize};
 use serde_json::Value;
 use shlex::try_quote;
@@ -15,11 +14,14 @@ use crate::account::helpers::authlib_injector::jar::get_jar_path as get_authlib_
 use crate::account::models::{AccountError, PlayerType};
 use crate::instance::helpers::client_json::FeaturesInfo;
 use crate::instance::helpers::game_version::compare_game_versions;
-use crate::instance::helpers::misc::get_instance_subdir_paths;
+use crate::instance::helpers::misc::{
+  get_instance_native_libraries_dir, get_instance_subdir_paths,
+};
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
+use crate::launcher_config::helpers::java::should_disable_base64_intrinsics;
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
@@ -104,48 +106,6 @@ pub struct LaunchCommand {
   pub args: Vec<String>,
 }
 
-// Use the affected version ranges from https://github.com/HMCL-dev/HMCL/pull/7318.
-fn should_disable_base64_intrinsics(java: &JavaInfo) -> bool {
-  // IBM Semeru uses OpenJ9, while this flag is for HotSpot.
-  if !matches!(java.arch.as_deref(), Some("amd64" | "x86_64")) || java.vendor.starts_with("IBM") {
-    return false;
-  }
-
-  // Oracle Java 8u511 EPP uses HotSpot 17 and reports a -perf runtime version.
-  if cfg!(target_os = "linux")
-    && (java.full_version == "1.8.0_511-perf" || java.full_version.starts_with("1.8.0_511-perf-"))
-  {
-    return true;
-  }
-
-  let version = java.full_version.split('+').next().unwrap_or_default();
-  let (number, prerelease) = version.split_once('-').unwrap_or((version, ""));
-  let mut components = number.split('.');
-  let Ok(major) = components.next().unwrap_or_default().parse::<u32>() else {
-    return false;
-  };
-  // Within a Java release line, compare interim.update.patch as three numbers.
-  let interim = components.next().unwrap_or("0");
-  let update = components.next().unwrap_or("0");
-  let patch = components.next().unwrap_or("0");
-  let Ok(version) = Version::parse(&format!("{interim}.{update}.{patch}")) else {
-    return false;
-  };
-  if components.any(|part| part.parse::<u32>().is_err()) {
-    return false;
-  }
-
-  let fixed = match major {
-    17 if version >= Version::new(0, 6, 0) => Version::new(0, 21, 1),
-    21 => Version::new(0, 13, 1),
-    25 => Version::new(0, 5, 1),
-    27 => Version::new(0, 1, 1),
-    18..=20 | 22..=24 | 26 => return true,
-    _ => return false,
-  };
-  version < fixed || (version == fixed && !prerelease.is_empty())
-}
-
 pub async fn generate_launch_command(
   app: &AppHandle,
   quick_play_singleplayer: Option<String>,
@@ -197,19 +157,20 @@ pub async fn generate_launch_command(
       &InstanceSubdirType::Root,
       &InstanceSubdirType::Assets,
       &InstanceSubdirType::Libraries,
-      &InstanceSubdirType::NativeLibraries,
     ],
   )
   .ok_or(InstanceError::InstanceNotFoundByID)?;
 
-  let [root_dir, assets_dir, libraries_dir, natives_dir] = related_dirs.as_slice() else {
+  let [root_dir, assets_dir, libraries_dir] = related_dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
+  let natives_dir = get_instance_native_libraries_dir(&selected_instance, &selected_java.arch);
 
   let mut class_paths: Vec<String> = get_nonnative_library_paths(
     &client_info,
     libraries_dir,
     selected_instance.mod_loader.loader_type,
+    &selected_java.arch,
   )?
   .into_iter()
   .collect::<HashSet<_>>()
@@ -355,7 +316,9 @@ pub async fn generate_launch_command(
     &game_config.advanced.graphics.api,
     &game_config.advanced.graphics.renderer,
   ) {
-    if let Some(mesa_loader_path) = get_windows_mesa_loader_path(app, libraries_dir)? {
+    if let Some(mesa_loader_path) =
+      get_windows_mesa_loader_path(app, libraries_dir, &selected_java.arch)?
+    {
       cmd.push(format!(
         "-javaagent:{}={}",
         mesa_loader_path.to_string_lossy(),
@@ -391,6 +354,19 @@ pub async fn generate_launch_command(
 
     cmd.push("-Dfml.ignoreInvalidMinecraftCertificates=true".to_string());
     cmd.push("-Dfml.ignorePatchDiscrepancies=true".to_string());
+  }
+
+  // Pre-installer FML ignores --gameDir when rebuilding its class loader.
+  if client_info.patches.iter().any(|patch| {
+    matches!(patch.id.as_str(), "forge" | "legacyforge")
+      && patch.libraries.iter().any(|library| {
+        library.name.starts_with("net.minecraftforge:forge:") && library.name.ends_with("@zip")
+      })
+  }) {
+    cmd.push(format!(
+      "-Dminecraft.applet.TargetDirectory={}",
+      root_dir.to_string_lossy()
+    ));
   }
 
   // TODO: lwjgl non-ASCII path fix (HMCL DefaultLauncher.java#L236)
@@ -472,7 +448,7 @@ pub async fn generate_launch_command(
 
   if let Some(client_args) = &client_info.arguments {
     // specified jvm params
-    let mut client_jvm_args = client_args.to_jvm_arguments(&launch_feature)?;
+    let mut client_jvm_args = client_args.to_jvm_arguments(&launch_feature, &selected_java.arch)?;
     if let Some(classpath_pos) = client_jvm_args.iter().position(|s| s == "-cp") {
       // remove -cp and "${classpath}" and move them to the env to make command shorter
       client_jvm_args.remove(classpath_pos);
@@ -519,7 +495,7 @@ pub async fn generate_launch_command(
   );
 
   if let Some(client_args) = &client_info.arguments {
-    let client_game_args = client_args.to_game_arguments(&launch_feature)?;
+    let client_game_args = client_args.to_game_arguments(&launch_feature, &selected_java.arch)?;
     cmd.extend(replace_arguments(client_game_args, &game_map));
   } else if let Some(client_args_str) = client_info.minecraft_arguments {
     let client_game_args = client_args_str.split(' ').map(|s| s.to_string()).collect();

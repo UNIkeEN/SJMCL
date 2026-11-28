@@ -20,7 +20,9 @@ use crate::account::helpers::{authlib_injector, microsoft};
 use crate::account::models::PlayerType;
 use crate::download::submit_download_group;
 use crate::instance::helpers::client_json::{McClientInfo, replace_native_libraries};
-use crate::instance::helpers::misc::{get_instance_game_config, get_instance_subdir_paths};
+use crate::instance::helpers::misc::{
+  get_instance_game_config, get_instance_native_libraries_dir, get_instance_subdir_paths,
+};
 use crate::instance::models::misc::{Instance, InstanceError, InstanceSubdirType, ModLoaderStatus};
 use crate::launch::helpers::command_generator::{
   LaunchCommand, export_full_launch_command, generate_launch_command,
@@ -103,7 +105,7 @@ pub async fn validate_game_files(
   launcher_config_state: State<'_, Mutex<LauncherConfig>>,
   launching_queue_state: State<'_, Mutex<Vec<LaunchingState>>>,
 ) -> SJMCLResult<()> {
-  let (instance, mut client_info, game_config) = {
+  let (instance, mut client_info, game_config, selected_java) = {
     let mut launching_queue = launching_queue_state.lock()?;
     let launching = launching_queue
       .last_mut()
@@ -113,6 +115,7 @@ pub async fn validate_game_files(
       launching.selected_instance.clone(),
       launching.client_info.clone(),
       launching.game_config.clone(),
+      launching.selected_java.clone(),
     )
   };
   let workaround = game_config.advanced.workaround.clone();
@@ -128,7 +131,7 @@ pub async fn validate_game_files(
     return Err(LaunchError::OptifineNotInstalled.into());
   }
 
-  replace_native_libraries(&app, &mut client_info, &instance)
+  replace_native_libraries(&app, &mut client_info, &instance, &selected_java.arch)
     .await
     .map_err(|_| InstanceError::ClientJsonParseError)?;
 
@@ -148,18 +151,19 @@ pub async fn validate_game_files(
     &[
       &InstanceSubdirType::Root,
       &InstanceSubdirType::Libraries,
-      &InstanceSubdirType::NativeLibraries,
       &InstanceSubdirType::Assets,
     ],
   )
   .ok_or(InstanceError::InstanceNotFoundByID)?;
-  let [root_dir, libraries_dir, natives_dir, assets_dir] = dirs.as_slice() else {
+  let [root_dir, libraries_dir, assets_dir] = dirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
+  let natives_dir = get_instance_native_libraries_dir(&instance, &selected_java.arch);
   extract_native_libraries(
     &client_info,
     libraries_dir,
-    natives_dir,
+    &natives_dir,
+    &selected_java.arch,
     workaround.use_native_glfw,
     workaround.use_native_openal,
   )
@@ -174,12 +178,26 @@ pub async fn validate_game_files(
   let incomplete_files = match workaround.game_file_validate_policy {
     FileValidatePolicy::Disable => Vec::new(), // skip
     FileValidatePolicy::Normal => [
-      get_invalid_library_files(priority_list[0], libraries_dir, &client_info, false).await?,
+      get_invalid_library_files(
+        priority_list[0],
+        libraries_dir,
+        &client_info,
+        &selected_java.arch,
+        false,
+      )
+      .await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, false).await?,
     ]
     .concat(),
     FileValidatePolicy::Full => [
-      get_invalid_library_files(priority_list[0], libraries_dir, &client_info, true).await?,
+      get_invalid_library_files(
+        priority_list[0],
+        libraries_dir,
+        &client_info,
+        &selected_java.arch,
+        true,
+      )
+      .await?,
       get_invalid_assets(&app, &client_info, priority_list[0], assets_dir, true).await?,
     ]
     .concat(),
@@ -198,6 +216,7 @@ pub async fn validate_game_files(
         priority_list[0],
         libraries_dir,
         &game_config,
+        &selected_java.arch,
         check_hash,
       )
       .await?,
@@ -301,19 +320,13 @@ pub async fn launch_game(
   };
 
   let instance_id = instance.id.clone();
-  let subdirs = get_instance_subdir_paths(
-    &app,
-    &instance,
-    &[
-      &InstanceSubdirType::Root,
-      &InstanceSubdirType::NativeLibraries,
-    ],
-  )
-  .ok_or(InstanceError::InstanceNotFoundByID)?;
-  let [work_dir, natives_dir] = subdirs.as_slice() else {
+  let subdirs = get_instance_subdir_paths(&app, &instance, &[&InstanceSubdirType::Root])
+    .ok_or(InstanceError::InstanceNotFoundByID)?;
+  let [work_dir] = subdirs.as_slice() else {
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
-  let (work_dir, natives_dir) = (work_dir.clone(), natives_dir.clone());
+  let work_dir = work_dir.clone();
+  let natives_dir = get_instance_native_libraries_dir(&instance, &selected_java.arch);
 
   // generate launch command
   let LaunchCommand {

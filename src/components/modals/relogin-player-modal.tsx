@@ -17,12 +17,14 @@ import {
 import { openUrl } from "@tauri-apps/plugin-opener";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import EnterKeyButtonLabel from "@/components/common/enter-key-button-label";
 import OAuthLoginPanel from "@/components/oauth-login-panel";
 import { useLauncherConfig } from "@/contexts/config";
 import { useToast } from "@/contexts/toast";
 import { PlayerType } from "@/enums/account";
 import { DeviceAuthResponseInfo, Player } from "@/models/account";
 import { AccountService } from "@/services/account";
+import { onEnterKeyDown } from "@/utils/keyboard";
 
 interface ReLoginPlayerModalProps extends Omit<ModalProps, "children"> {
   player: Player;
@@ -156,6 +158,10 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={onEnterKeyDown(
+                      () => handleReLogin(),
+                      !password.trim() || isLoading
+                    )}
                     placeholder={t("ReLoginPlayerModal.placeholder.password")}
                     focusBorderColor={`${primaryColor}.500`}
                   />
@@ -171,11 +177,14 @@ const ReLoginPlayerModal: React.FC<ReLoginPlayerModalProps> = ({
             </Button>
             <Button
               colorScheme={primaryColor}
+              aria-keyshortcuts="Enter"
               onClick={() => handleReLogin()}
               isDisabled={!password.trim()}
               isLoading={isLoading}
             >
-              {t("ReLoginPlayerModal.button.login")}
+              <EnterKeyButtonLabel>
+                {t("ReLoginPlayerModal.button.login")}
+              </EnterKeyButtonLabel>
             </Button>
           </ModalFooter>
         )}

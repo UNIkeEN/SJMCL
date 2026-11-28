@@ -1,42 +1,47 @@
 ---
 name: sjmcl-frontend-dev-preview
-description: Preview SJMCL components in a browser without tauri dev. Use when developing frontend styles and interactions, or showing changes to a developer.
+description: Reproduce visible SJMCL bugs and compare UI changes using real launcher pages with mock data. Capture screenshots or GIFs for local review or issue and PR discussions.
 ---
 
-# SJMCL 前端开发预览
+# SJMCL 前端页面预览
 
-修改前端样式或交互逻辑时，可以用这里的预览环境在浏览器调试，而无需启动 `tauri dev`。预览框架已接入项目的 Chakra 主题、全局样式和国际化组件，并支持切换语言和深浅色。
+## 目标
 
-## 编写组件
+一、用 SJMCL 的实际页面复现界面问题或验证界面改动。
+二、生成截图或动图，供本地检查或 issue、PR 讨论使用。
 
-新建一个默认导出 React 组件的 TSX 文件，在其中导入要测试的组件或页面，并提供所需的 props，可以参考[添加服务器弹窗的示例代码](examples/add-server/preview.tsx)。`@/` 仍然指向仓库的 `src/`，`public/` 下的资源也可以直接使用。
+## 触发场景
 
-如果组件依赖后端服务或应用上下文，参考示例中的 [preview.mjs](examples/add-server/preview.mjs) 和 [mocks.ts](examples/add-server/mocks.ts)，用 `alias` 替换相应模块。mock 只需提供组件会用到的数据和方法。配置中的路径相对于配置文件。
+- 复现前端 Bug。
+- 对比界面改动前后的布局、交互或动画。
+- 为 issue 或 PR 评论页面截图、操作动图或前后对照。
 
-## 启动预览
+注意：单组件调试或预览请使用 [sjmcl-frontend-component-test](../sjmcl-frontend-component-test/SKILL.md)。
 
-安装好项目依赖后，在仓库根目录执行，将 TSX 文件传入启动脚本：
+## 基本规则
 
-```bash
-node .agents/skills/sjmcl-frontend-dev-preview/scripts/serve.mjs /tmp/my-preview.tsx
-```
+### 一、用实际页面复现场景
 
-使用 mock 时，传入配置文件：
+定位目标页面和触发操作，复用 `src/pages/_app.tsx`、实际布局和组件。按需用路由 mock 进入目标页，再用 Tauri `mockIPC` 模拟 Tauri command 的返回值和请求时机。
 
-```bash
-node .agents/skills/sjmcl-frontend-dev-preview/scripts/serve.mjs /tmp/my-preview/preview.mjs
-```
+例如，复现列表续载时先返回首批数据和游标，再挂起下一页请求。[新闻续载示例](examples/news-load-more.md)
 
-不传参数时，会默认启动添加服务器弹窗的示例。打开终端输出的地址即可查看，修改源码后页面自动刷新、修改配置后需要重启服务。
+### 二、在独立的无头浏览器中预览
 
-默认端口是 `3176`，需要时可通过 `PORT` 更换。
+- 通过 Playwright 或 Chromium DevTools Protocol 在独立的无头浏览器中操作和截图，使用临时 profile 和独立的本机预览端口。禁用 Computer Use。
+- 连接和清理仅限本次启动的预览服务和无头浏览器，避免影响用户正在使用的启动器和浏览器进程。
+- 若用户没有特殊要求，视口按目标平台的启动器默认主窗口设置，macOS 和 Linux 为 800 × 550，Windows 为 820 × 550。触发目标状态后，等界面和字体就绪再捕获。
 
-## 在浏览器中检查
+### 三、按要展示的变化选择素材
 
-预览服务启动后，用当前环境提供的浏览器工具打开终端输出的地址。例如，使用 Playwright 时通过 `page.goto(url)` 访问；使用电脑操作工具 CUA 时，可先调用 `cua.getApp("Google Chrome")` 打开或连接 Chrome，再通过地址栏访问预览。**具体调用方式以具体情况为准，用户指定了浏览器就使用该浏览器**。
+- 用截图记录布局、加载占位或某一步的结果。取景保留必要的页面标题、控件和状态。
+- 用动图记录动画、状态切换或只在操作中出现的问题。采样完整过程，检查导出画面的循环衔接。
+- 对比新旧实现时使用相同的模拟数据、主题、语言、视口和操作。并排展示对照素材，多个相似场景可选代表截图并注明覆盖范围。
 
-操作本次修改涉及的控件，检查显示效果和控制台错误，按需调整窗口大小、语言和深浅色。
+### 四、遮蔽真实信息
 
-回复时说明实际检查了什么、哪些数据用了 mock。需要给开发者查看效果时，请保留服务并附上预览地址。
+用仓库默认配置和示例数据替换账户、令牌、目录路径、服务器地址等等可能敏感的开发者信息。交付前检查截图、动图每一帧、文件名和说明。含真实信息的素材先裁剪或用实色遮盖，再重新导出。
 
-涉及后端逻辑的真实实现时，仍需在 Tauri 中测试验证。
+### 五、交付素材
+
+提供素材和简短的场景说明，标明模拟数据。对外发布（如上传并评论于 GitHub）前确认用户已明确授权发布的目标和内容。发布后核对素材的渲染效果。

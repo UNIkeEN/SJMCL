@@ -14,8 +14,8 @@ use crate::download::{has_active_downloads, submit_java_download_group};
 use crate::instance::helpers::misc::refresh_instances;
 use crate::launcher_config::helpers::graphics::supported_graphics_renderers;
 use crate::launcher_config::helpers::java::{
-  build_mojang_java_download_params, get_java_info_from_command, get_java_info_from_release_file,
-  refresh_and_update_javas,
+  MojangJavaVersion, build_mojang_java_download_params, get_java_info_from_command,
+  get_java_info_from_release_file, get_mojang_java_versions, refresh_and_update_javas,
 };
 use crate::launcher_config::helpers::updater::{
   self, download_target_version, fetch_latest_version,
@@ -239,8 +239,17 @@ pub async fn validate_java(java_path: String) -> SJMCLResult<()> {
 }
 
 #[tauri::command]
+pub async fn fetch_mojang_java_versions(app: AppHandle) -> SJMCLResult<Vec<String>> {
+  get_mojang_java_versions(&app).await
+}
+
+#[tauri::command]
 pub async fn download_mojang_java(app: AppHandle, version: String) -> SJMCLResult<()> {
-  let download_params = build_mojang_java_download_params(&app, &version).await?;
+  let version = version
+    .parse()
+    .map_err(|_| LauncherConfigError::MojangJavaUnavailable)?;
+  let (version, download_params) =
+    build_mojang_java_download_params(&app, MojangJavaVersion::Exact(version)).await?;
 
   submit_java_download_group(app, format!("mojang-java?{}", version), download_params).await?;
 
