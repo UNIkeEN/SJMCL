@@ -11,6 +11,8 @@ import {
   ResourcePackInfo,
   SchematicInfo,
   ScreenshotInfo,
+  ServerExportOptions,
+  ServerExportPlan,
   ShaderPackInfo,
 } from "@/models/instance/misc";
 import { WorldDetails, WorldInfo } from "@/models/instance/world";
@@ -598,6 +600,46 @@ export class InstanceService {
       savePath,
       options,
       files,
+    });
+  }
+
+  /**
+   * Analyze mods in an instance for server pack export.
+   * @param {string} instanceId - The ID of the instance.
+   * @returns {Promise<InvokeResponse<ServerExportPlan>>}
+   */
+  @responseHandler("instance")
+  static async analyzeServerExport(
+    instanceId: string
+  ): Promise<InvokeResponse<ServerExportPlan>> {
+    return await invoke("analyze_server_export", {
+      instanceId,
+    });
+  }
+
+  /**
+   * Export the instance as a ready-to-run server zip.
+   * @param {string} instanceId - The ID of the instance to export.
+   * @param {string} savePath - The destination path for the exported zip.
+   * @param {ServerExportOptions} options - Export configuration options.
+   * @param {string[]} mods - The selected mod paths to include.
+   * @param {string[]} folders - The selected folders to include.
+   * @returns {Promise<InvokeResponse<void>>}
+   */
+  @responseHandler("instance")
+  static async exportServerPack(
+    instanceId: string,
+    savePath: string,
+    options: ServerExportOptions,
+    mods: string[],
+    folders: string[]
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("export_server_pack", {
+      instanceId,
+      savePath,
+      options,
+      mods,
+      folders,
     });
   }
 }
