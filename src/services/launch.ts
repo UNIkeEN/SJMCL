@@ -14,12 +14,12 @@ export class LaunchService {
    * Launching Step 1: select suitable Java runtime environment for the specified instance.
    * At this step, pass the ID of the instance to be launched (which may not be the same as the selected instance ID), and no further input is required afterwards.
    * @param {string} instanceId - The ID of the instance.
-   * @returns {Promise<InvokeResponse<void>>}
+   * @returns {Promise<InvokeResponse<number>>} The id of the launching state.
    */
   @responseHandler("launch")
   static async selectSuitableJRE(
     instanceId: string
-  ): Promise<InvokeResponse<void>> {
+  ): Promise<InvokeResponse<number>> {
     return await invoke("select_suitable_jre", { instanceId });
   }
 
@@ -61,11 +61,14 @@ export class LaunchService {
 
   /**
    * CANCEL the launching process.
+   * @param {number} launchingId The id of the launching state.
    * @returns {Promise<InvokeResponse<void>>}
    */
   @responseHandler("launch")
-  static async cancelLaunchProcess(): Promise<InvokeResponse<void>> {
-    return await invoke("cancel_launch_process");
+  static async cancelLaunchProcess(
+    launchingId: number
+  ): Promise<InvokeResponse<void>> {
+    return await invoke("cancel_launch_process", { launchingId });
   }
 
   /**
