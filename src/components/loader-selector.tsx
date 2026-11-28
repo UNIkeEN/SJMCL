@@ -9,8 +9,8 @@ import {
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import {
   OptionItemProps,
   VirtualOptionItemGroup,
@@ -366,7 +366,7 @@ export const LoaderSelector: React.FC<LoaderSelectorProps> = ({
       <Section overflow="auto" flexGrow={1} w="100%" h="100%">
         {isLoading ? (
           <Center h="100%">
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : versionList.length === 0 ? (
           <Center h="100%">

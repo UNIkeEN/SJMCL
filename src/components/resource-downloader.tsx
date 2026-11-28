@@ -32,6 +32,7 @@ import {
 } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItemProps } from "@/components/common/option-item";
 import { VirtualOptionItemGroup } from "@/components/common/option-item-virtual";
 import { useLauncherConfig } from "@/contexts/config";
@@ -619,7 +620,7 @@ const ResourceDownloader: React.FC<ResourceDownloaderProps> = ({
       <Box flexGrow={1} w="100%" overflowX="hidden">
         {isLoadingResourceList ? (
           <VStack mt={8}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </VStack>
         ) : (
           <ResourceDownloaderList

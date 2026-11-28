@@ -3,10 +3,10 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuBookDashed } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { useFileDnD } from "@/components/special/file-dnd-overlay";
@@ -154,7 +154,7 @@ const InstanceSchematicsPage = () => {
       >
         {isLoading ? (
           <Center mt={4}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : schematics.length > 0 ? (
           <OptionItemGroup

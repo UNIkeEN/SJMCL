@@ -28,10 +28,10 @@ import {
   LuTriangleAlert,
   LuX,
 } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
@@ -584,7 +584,7 @@ const InstanceModsPage = () => {
           )}
         {isLoading ? (
           <Center mt={8}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : filteredMods.length > 0 ? (
           <OptionItemGroup

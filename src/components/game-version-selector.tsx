@@ -20,9 +20,9 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuEarth, LuRefreshCcw, LuSearch } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import {
   OptionItemProps,
   VirtualOptionItemGroup,
@@ -229,7 +229,7 @@ export const GameVersionSelector: React.FC<GameVersionSelectorProps> = ({
       <Section overflow="auto" flexGrow={1} h="100%">
         {isLoading ? (
           <Center mt={8}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : selectedTypes.size === 0 || filteredVersions.length === 0 ? (
           <Empty withIcon={false} size="sm" />

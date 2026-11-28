@@ -13,10 +13,10 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronRight, LuHaze } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import CountTag from "@/components/common/count-tag";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { WrapCardGroup } from "@/components/common/wrap-card";
@@ -250,7 +250,7 @@ const InstanceShaderPacksPage = () => {
       >
         {isLoading ? (
           <Center mt={4}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : shaderPacks.length > 0 ? (
           <OptionItemGroup

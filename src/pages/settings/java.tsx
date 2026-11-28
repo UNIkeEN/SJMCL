@@ -11,9 +11,9 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuX } from "react-icons/lu";
-import { BeatLoader } from "react-spinners";
 import { CommonIconButton } from "@/components/common/common-icon-button";
 import Empty from "@/components/common/empty";
+import LogoLoader from "@/components/common/logo-loader";
 import { OptionItem, OptionItemGroup } from "@/components/common/option-item";
 import { Section } from "@/components/common/section";
 import { DownloadJavaModal } from "@/components/modals/download-java-modal";
@@ -208,7 +208,7 @@ const JavaSettingsPage = () => {
       >
         {javaInfos === undefined ? (
           <Center mt={4}>
-            <BeatLoader size={16} color="gray" />
+            <LogoLoader />
           </Center>
         ) : javaInfos.length > 0 ? (
           <OptionItemGroup
