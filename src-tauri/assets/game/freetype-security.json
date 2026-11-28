@@ -1,0 +1,25 @@
+{
+  "3.4.1": {
+    "version": "3.4.1-mojang-2.15.0.3",
+    "artifacts": {
+      "": ["adc701da456af7e4efd08385e55428ce986739e8", 465189],
+      "natives-linux": ["0a6df23d807a883883eda82941b7d0dc31813259", 1423205],
+      "natives-macos": ["5491169c04d6fd9088d7c0e1efa58820ad26d303", 1225021],
+      "natives-macos-arm64": ["8f1c52741cbb1ba5f5a9af7ec122dea7e3f68946", 1125234],
+      "natives-windows": ["c9d78fd1df6e7ff7eff4db0126786755a6a19cd9", 1190827],
+      "natives-windows-arm64": ["c97ff519f79011208e5fb8be9bed7743d3b6da51", 1043882],
+      "natives-windows-x86": ["cae34fec6b4622218af1e3b14af90fef58df3013", 1000778]
+    }
+  },
+  "3.4.3": {
+    "version": "3.4.3-mojang-2.15.0",
+    "artifacts": {
+      "": ["134bc57b83e78a7f954a0f078093e319739d42ea", 469281],
+      "natives-linux": ["f20ae220999240d484896d839694b02c2a655608", 1423204],
+      "natives-macos": ["6a46815640d9ce43533200986a330642a96e9590", 1225020],
+      "natives-macos-arm64": ["95ef1d3420179187f0b5e1ba947329b539e73412", 1125234],
+      "natives-windows": ["f85d0f5acaa594f9e93d657f8feff85d6a427b6a", 1190826],
+      "natives-windows-arm64": ["5f475c76490bb368f235017985d8d9dc6b5b5121", 1043884]
+    }
+  }
+}

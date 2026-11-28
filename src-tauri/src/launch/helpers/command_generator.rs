@@ -19,9 +19,11 @@ use crate::instance::helpers::misc::{
 };
 use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
+use crate::launch::helpers::freetype_security::prepare_freetype_security_libraries;
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
 use crate::launcher_config::models::*;
+use crate::resource::models::SourceType;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
 
@@ -122,7 +124,7 @@ pub async fn generate_launch_command(
     selected_java,
     selected_instance,
     game_config,
-    client_info,
+    mut client_info,
     auth_server_meta,
     ..
   } = launching;
@@ -164,6 +166,18 @@ pub async fn generate_launch_command(
     return Err(InstanceError::InstanceNotFoundByID.into());
   };
   let natives_dir = get_instance_native_libraries_dir(&selected_instance, &selected_java.arch);
+
+  if !prepare_freetype_security_libraries(
+    &mut client_info,
+    libraries_dir,
+    SourceType::Official,
+    &selected_java.arch,
+  )
+  .await?
+  .is_empty()
+  {
+    return Err(LaunchError::GameFilesIncomplete.into());
+  }
 
   let mut class_paths: Vec<String> = get_nonnative_library_paths(
     &client_info,
