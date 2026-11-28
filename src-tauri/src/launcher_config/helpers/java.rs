@@ -1,3 +1,4 @@
+use semver::Version;
 use serde_json::Value;
 use sjmcl_types::error::{SJMCLError, SJMCLResult};
 use std::collections::{HashMap, HashSet};
@@ -76,11 +77,17 @@ fn discover_and_update_javas(app: &AppHandle) {
 
     // Get Java metadata from the release file, falling back to the JVM properties.
     let (mut vendor, mut version, mut arch) = get_java_info_from_release_file(&java_exec_path);
-    if vendor.is_none() || version.is_none() || arch.is_none() {
-      let (cmd_vendor, cmd_version, cmd_arch) = get_java_info_from_command(&java_exec_path);
+    let mut runtime_version = None;
+    // Oracle's Java 8 EPP identifies itself in java.runtime.version.
+    let needs_runtime_version = cfg!(target_os = "linux")
+      && version.as_deref().and_then(|v| v.split('-').next()) == Some("1.8.0_511");
+    if vendor.is_none() || version.is_none() || arch.is_none() || needs_runtime_version {
+      let (cmd_vendor, cmd_version, cmd_arch, cmd_runtime_version) =
+        get_java_info_from_command(&java_exec_path);
       vendor = vendor.or(cmd_vendor);
       version = version.or(cmd_version);
       arch = arch.or(cmd_arch);
+      runtime_version = cmd_runtime_version;
     }
     let full_version = match version {
       Some(v) => v,
@@ -109,6 +116,9 @@ fn discover_and_update_javas(app: &AppHandle) {
 
     let java_info = JavaInfo {
       name: format!("{} {}", if is_jdk { "JDK" } else { "JRE" }, full_version),
+      full_version: runtime_version
+        .filter(|_| cfg!(target_os = "linux") && major_version == 8)
+        .unwrap_or(full_version),
       major_version,
       is_lts,
       exec_path: java_exec_path.clone(),
@@ -478,7 +488,12 @@ pub fn get_java_info_from_release_file(
 
 pub fn get_java_info_from_command(
   java_path: &str,
-) -> (Option<String>, Option<String>, Option<String>) {
+) -> (
+  Option<String>,
+  Option<String>,
+  Option<String>,
+  Option<String>,
+) {
   // use "java -version -XshowSettings:properties" command to get info
   #[cfg(target_os = "windows")]
   let output = Command::new(java_path)
@@ -492,7 +507,7 @@ pub fn get_java_info_from_command(
 
   let output = match output {
     Ok(o) if o.status.success() => o,
-    _ => return (None, None, None),
+    _ => return (None, None, None, None),
   };
 
   let mut output_str = String::new();
@@ -502,6 +517,7 @@ pub fn get_java_info_from_command(
   let mut vendor = None;
   let mut full_version = None;
   let mut arch = None;
+  let mut runtime_version = None;
 
   for line in output_str.lines() {
     let trimmed = line.trim();
@@ -518,9 +534,12 @@ pub fn get_java_info_from_command(
     if let Some(val) = trimmed.strip_prefix("os.arch = ") {
       arch = Some(val.trim().to_string());
     }
+    if let Some(val) = trimmed.strip_prefix("java.runtime.version = ") {
+      runtime_version = Some(val.trim().to_string());
+    }
   }
 
-  (vendor, full_version, arch)
+  (vendor, full_version, arch, runtime_version)
 }
 
 pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
@@ -544,6 +563,48 @@ pub fn parse_java_major_version(full_version: &str) -> (i32, bool) {
 
   let is_lts = [8, 11, 17, 21, 25].contains(&major_version);
   (major_version, is_lts)
+}
+
+// Use the affected version ranges from https://github.com/HMCL-dev/HMCL/pull/7318.
+pub(crate) fn should_disable_base64_intrinsics(java: &JavaInfo) -> bool {
+  // IBM Semeru uses OpenJ9, while this flag is for HotSpot.
+  if normalize_java_arch(&java.arch) != "x86_64" || java.vendor.starts_with("IBM") {
+    return false;
+  }
+
+  // Oracle Java 8u511 EPP uses HotSpot 17 and reports a -perf runtime version.
+  if cfg!(target_os = "linux")
+    && (java.full_version == "1.8.0_511-perf" || java.full_version.starts_with("1.8.0_511-perf-"))
+  {
+    return true;
+  }
+
+  let version = java.full_version.split('+').next().unwrap_or_default();
+  let (number, prerelease) = version.split_once('-').unwrap_or((version, ""));
+  let mut components = number.split('.');
+  let Ok(major) = components.next().unwrap_or_default().parse::<u32>() else {
+    return false;
+  };
+  // Within a Java release line, compare interim.update.patch as three numbers.
+  let interim = components.next().unwrap_or("0");
+  let update = components.next().unwrap_or("0");
+  let patch = components.next().unwrap_or("0");
+  let Ok(version) = Version::parse(&format!("{interim}.{update}.{patch}")) else {
+    return false;
+  };
+  if components.any(|part| part.parse::<u32>().is_err()) {
+    return false;
+  }
+
+  let fixed = match major {
+    17 if version >= Version::new(0, 6, 0) => Version::new(0, 21, 1),
+    21 => Version::new(0, 13, 1),
+    25 => Version::new(0, 5, 1),
+    27 => Version::new(0, 1, 1),
+    18..=20 | 22..=24 | 26 => return true,
+    _ => return false,
+  };
+  version < fixed || (version == fixed && !prerelease.is_empty())
 }
 
 const MOJANG_JAVA_RUNTIMES: &[(i32, &str)] = &[

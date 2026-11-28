@@ -21,6 +21,7 @@ use crate::instance::models::misc::{InstanceError, InstanceSubdirType};
 use crate::launch::helpers::file_validator::get_nonnative_library_paths;
 use crate::launch::helpers::misc::{get_separator, replace_arguments};
 use crate::launch::models::{LaunchError, LaunchingState};
+use crate::launcher_config::helpers::java::should_disable_base64_intrinsics;
 use crate::launcher_config::models::*;
 use crate::utils::fs::get_app_resource_filepath;
 use crate::utils::sys_info::get_memory_info;
@@ -478,6 +479,11 @@ pub async fn generate_launch_command(
       "-Dminecraft.launcher.version=${launcher_version}".to_string(),
     ]);
     cmd.extend(replace_arguments(client_jvm_args, &jvm_map));
+  }
+
+  // CVE-2026-114938
+  if should_disable_base64_intrinsics(&selected_java) {
+    cmd.push("-XX:-UseBASE64Intrinsics".to_string());
   }
 
   // main class (after replace jvm args)
